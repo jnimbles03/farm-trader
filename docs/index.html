@@ -99,27 +99,41 @@
     .call-sub  { font-size: 13px; color: var(--muted); margin-top: 6px; }
     .call-dot  { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; vertical-align: middle; }
 
-    /* ────── Tranche card + thermometer ────── */
+    /* ────── Tranche grid + compact cards ────── */
+    .tranche-grid { display: grid; grid-template-columns: 1fr; gap: 6px; margin-bottom: 6px; }
+    @media (min-width: 520px) { .tranche-grid { grid-template-columns: 1fr 1fr; } }
+    @media (min-width: 900px) { .tranche-grid { grid-template-columns: repeat(4, 1fr); } }
+
     .tranche-card {
-      background: #fff; border: 1px solid var(--line); border-radius: 10px;
-      padding: 12px 14px; display: grid; grid-template-columns: 54px 1fr; gap: 12px;
-      margin-bottom: 10px;
+      background: #fff; border: 1px solid var(--line); border-radius: 8px;
+      padding: 8px 10px; display: grid; grid-template-columns: 28px 1fr; gap: 8px;
+      min-width: 0;
     }
-    .therm { width: 54px; height: 140px; display: block; }
+    .therm { width: 28px; height: 66px; display: block; align-self: center; }
     .tranche-body { min-width: 0; }
     .tranche-title {
-      display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; margin-bottom: 3px;
+      display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-bottom: 2px;
     }
-    .tranche-title .name { font-weight: 700; font-size: 14px; }
-    .tranche-title .state { font-size: 10px; }
-    .tranche-note { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
-    .tranche-kv { font-size: 12px; color: #444; display: grid; grid-template-columns: 70px 1fr; row-gap: 2px; }
-    .tranche-kv .k { color: var(--muted); }
-    .tranche-kv .v { font-variant-numeric: tabular-nums; }
-    .tranche-kv .v .good { color: var(--hit); font-weight: 600; }
-    .tranche-kv .v .bad  { color: var(--wait); }
+    .tranche-title .name  { font-weight: 700; font-size: 12px; line-height: 1.2; }
+    .tranche-title .state { font-size: 9px; padding: 1px 5px; }
+    .tranche-meta {
+      font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums;
+      line-height: 1.35; margin-bottom: 3px;
+    }
+    .tranche-meta .price { color: var(--ink); font-weight: 600; }
+    .tranche-meta .good  { color: var(--hit);  font-weight: 600; }
+    .tranche-meta .bad   { color: var(--wait); }
+    .tranche-meta .cd    { color: var(--muted); }
+    .tranche-progress .bar {
+      height: 3px; background: #efece6; border-radius: 2px; overflow: hidden;
+    }
+    .tranche-progress .bar > div { height: 100%; transition: width .3s ease; }
+    .tranche-progress .txt {
+      font-size: 10px; color: var(--muted); margin-top: 2px; font-variant-numeric: tabular-nums;
+    }
 
-    /* Section header with commodity accent */
+    /* Section header with commodity accent — tighter margins for decision aid */
+    .sec-corn, .sec-soy { margin-top: 16px; margin-bottom: 6px; }
     .sec-corn { color: var(--corn); }
     .sec-soy  { color: var(--soy); }
 
@@ -622,30 +636,20 @@ function gaugeColor(score) {
 }
 
 function thermometer(score, done) {
-  // Fill from bulb (y=122) up to top (y=18). Range 104px tall.
+  // Compact thermometer. Range: fill top (y=6) → bulb center (y=56). 50px travel.
   const s = Math.max(0, Math.min(100, score));
-  const fillTop = 122 - (s / 100) * 104;
+  const fillTop = 56 - (s / 100) * 50;
   const color = done ? "#8a8a8a" : gaugeColor(s);
   return `
-    <svg class="therm" viewBox="0 0 54 140" aria-label="Urgency ${s.toFixed(0)}">
-      <!-- outer stem -->
-      <rect x="20" y="10" width="14" height="112" rx="7" fill="#fff" stroke="#b5b0a7" stroke-width="1.2"/>
-      <!-- outer bulb -->
-      <circle cx="27" cy="122" r="12" fill="#fff" stroke="#b5b0a7" stroke-width="1.2"/>
-      <!-- fill bulb -->
-      <circle cx="27" cy="122" r="9" fill="${color}"/>
-      <!-- fill stem -->
-      <rect x="23" y="${fillTop}" width="8" height="${122 - fillTop}" fill="${color}"/>
-      <!-- scale ticks -->
-      <g stroke="#b5b0a7" stroke-width="0.8">
-        <line x1="34" y1="30"  x2="38" y2="30"/>
-        <line x1="34" y1="56"  x2="38" y2="56"/>
-        <line x1="34" y1="82"  x2="38" y2="82"/>
-        <line x1="34" y1="108" x2="38" y2="108"/>
-      </g>
-      <text x="42" y="33" font-size="8" fill="#8a8a8a">75</text>
-      <text x="42" y="59" font-size="8" fill="#8a8a8a">50</text>
-      <text x="42" y="85" font-size="8" fill="#8a8a8a">25</text>
+    <svg class="therm" viewBox="0 0 16 70" aria-label="Urgency ${s.toFixed(0)}">
+      <!-- stem outline -->
+      <rect x="5" y="3" width="6" height="55" rx="3" fill="#fff" stroke="#b5b0a7" stroke-width="0.9"/>
+      <!-- bulb outline -->
+      <circle cx="8" cy="60" r="6" fill="#fff" stroke="#b5b0a7" stroke-width="0.9"/>
+      <!-- bulb fill -->
+      <circle cx="8" cy="60" r="4.2" fill="${color}"/>
+      <!-- stem fill -->
+      <rect x="6.2" y="${fillTop}" width="3.6" height="${60 - fillTop}" fill="${color}"/>
     </svg>`;
 }
 
@@ -685,18 +689,23 @@ function countdown(now, winS, winE) {
 function renderTranches(cfg, live, mountId) {
   const host = document.getElementById(mountId);
   const now = today();
-  host.innerHTML = cfg.tranches.map(tr => {
+  const cards = cfg.tranches.map(tr => {
     const e = evaluateTranche(cfg, tr, live);
     const priceGap = (e.target != null && live != null)
       ? (((live - e.target) / e.target) * 100)
       : null;
-    const gapStr = priceGap == null ? "—" :
+    const gapStr = priceGap == null ? "" :
       (priceGap >= 0 ? `<span class="good">+${priceGap.toFixed(1)}%</span>` :
-                        `<span class="bad">${priceGap.toFixed(1)}%</span>`);
+                       `<span class="bad">${priceGap.toFixed(1)}%</span>`);
 
-    const priceLine = e.target
-      ? `$${fmt2(e.target)} <span style="color:var(--muted)">(Oct×${tr.mult.toFixed(2)})</span>`
-      : `<span style="color:var(--muted)">calendar-only</span>`;
+    // Compact meta: target · gap · countdown (all separated by dots)
+    const targetPart = e.target ? `<span class="price">$${fmt2(e.target)}</span>` : `<span class="cd">calendar</span>`;
+    const cdPart     = `<span class="cd">${countdown(now, e.winS, e.winE)}</span>`;
+    const metaParts  = [targetPart];
+    if (gapStr) metaParts.push(gapStr);
+    metaParts.push(cdPart);
+
+    const progPct = e.targetBu > 0 ? Math.min(100, (e.sold / e.targetBu) * 100) : 0;
 
     return `
     <div class="tranche-card">
@@ -706,16 +715,15 @@ function renderTranches(cfg, live, mountId) {
           <span class="name" style="color:${cfg.color}">${tr.label}</span>
           <span class="state">${statePill(e.state)}</span>
         </div>
-        <div class="tranche-note">${tr.note}</div>
-        <div class="tranche-kv">
-          <div class="k">Target</div><div class="v">${priceLine}</div>
-          <div class="k">Live vs</div><div class="v">${live == null ? "—" : "$"+fmt2(live)} · ${gapStr}</div>
-          <div class="k">Window</div><div class="v">${countdown(now, e.winS, e.winE)}</div>
-          <div class="k">Progress</div><div class="v">${fmtBu(e.sold)} / ${fmtBu(e.targetBu)} bu${e.done ? " ✓" : ""}</div>
+        <div class="tranche-meta">${metaParts.join(" · ")}</div>
+        <div class="tranche-progress">
+          <div class="bar"><div style="width:${progPct}%; background:${cfg.color}; opacity:.75"></div></div>
+          <div class="txt">${fmtBu(e.sold)} / ${fmtBu(e.targetBu)} bu${e.done ? " ✓" : ""}</div>
         </div>
       </div>
     </div>`;
   }).join("");
+  host.innerHTML = `<div class="tranche-grid">${cards}</div>`;
 }
 
 function todaysCall(p) {
