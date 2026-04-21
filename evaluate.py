@@ -39,7 +39,6 @@ from pathlib import Path
 from typing import Any
 
 import httpx
-import yfinance as yf
 
 
 # ---------------------------------------------------------------------------
@@ -79,17 +78,17 @@ log = logging.getLogger("evaluate")
 # ---------------------------------------------------------------------------
 
 GRAIN_ROOT = {
-    "corn":         "ZC",
-    "soybean":      "ZS",
-    "soybeans":     "ZS",
-    "wheat":        "ZW",
-    "kc_wheat":     "KE",
-    "soybean_meal": "ZM",
-    "soybean_oil":  "ZL",
-    "oats":         "ZO",
+    "corn":         "zc",
+    "soybean":      "zs",
+    "soybeans":     "zs",
+    "wheat":        "zw",
+    "kc_wheat":     "ke",
+    "soybean_meal": "zm",
+    "soybean_oil":  "zl",
+    "oats":         "zo",
 }
 
-# Yahoo quotes grains in cents/bu (ZC=F = 461.75 = $4.6175/bu),
+# Stooq quotes grains in cents/bu (ZC.C = 456.5 = $4.565/bu),
 # soy oil in cents/lb, soy meal in $/short ton. Normalize at the edge.
 GRAIN_SCALE = {
     "corn":         0.01,
@@ -102,17 +101,14 @@ GRAIN_SCALE = {
     "soybean_meal": 1.0,
 }
 
-MONTH_CODES = {1: "F", 2: "G", 3: "H", 4: "J", 5: "K", 6: "M",
-               7: "N", 8: "Q", 9: "U", 10: "V", 11: "X", 12: "Z"}
 
-
-def yahoo_symbol(commodity: str,
+def stooq_symbol(commodity: str,
                  year: int | None = None,
                  month: int | None = None) -> str:
-    root = GRAIN_ROOT[commodity.lower()]
-    if year is None or month is None:
-        return f"{root}=F"
-    return f"{root}{MONTH_CODES[month]}{year % 100:02d}.CBT"
+    # Stooq's free CSV feed only carries continuous front-month for CBOT
+    # grains — specific contract months return N/D. year/month are accepted
+    # for API parity; callers get continuous regardless.
+    return f"{GRAIN_ROOT[commodity.lower()]}.c"
 
 
 # ---------------------------------------------------------------------------
@@ -121,15 +117,22 @@ def yahoo_symbol(commodity: str,
 
 _cache: dict[str, float] = {}
 
-
+# Stooq is happy to serve CSV from datacenter IPs (GitHub Actions, etc.),
+# unlike Yahoo which blocks yfinance and the chart API with 429s.
+# Row format: Symbol,Date,Time,Open,High,Low,Close,Volume
 def _fetch_raw(symbol: str) -> float:
-    t = yf.Ticker(symbol)
-    hist = t.history(period="1d", interval="1m")
-    if hist.empty:
-        hist = t.history(period="5d", interval="1d")
-    if hist.empty:
-        raise RuntimeError(f"no data for {symbol}")
-    return float(hist["Close"].iloc[-1])
+    url = f"https://stooq.com/q/l/?s={symbol}&f=sd2t2ohlcv&h&e=csv"
+    with httpx.Client(timeout=10, follow_redirects=True) as c:
+        r = c.get(url)
+        r.raise_for_status()
+    lines = r.text.strip().splitlines()
+    if len(lines) < 2:
+        raise RuntimeError(f"no rows for {symbol}")
+    cols = lines[1].split(",")
+    close = cols[6] if len(cols) > 6 else "N/D"
+    if close in ("N/D", ""):
+        raise RuntimeError(f"no close for {symbol}")
+    return float(close)
 
 
 def get_price(commodity: str,
@@ -137,7 +140,7 @@ def get_price(commodity: str,
               month: int | None = None) -> float | None:
     """Dollar-denominated last price, None on failure."""
     scale = GRAIN_SCALE.get(commodity.lower(), 1.0)
-    sym = yahoo_symbol(commodity, year, month)
+    sym = stooq_symbol(commodity, year, month)
     if sym in _cache:
         return _cache[sym] * scale
     try:
@@ -150,7 +153,7 @@ def get_price(commodity: str,
             # Specific-month symbols on Yahoo are flaky — fall back to
             # continuous front-month so the row still renders.
             try:
-                fallback = yahoo_symbol(commodity)
+                fallback = stooq_symbol(commodity)
                 raw = _cache.get(fallback) or _fetch_raw(fallback)
                 _cache[fallback] = raw
                 return raw * scale
@@ -292,7 +295,7 @@ def build_prices_snapshot() -> dict[str, Any]:
         "corn_basis_il": None,   # Yahoo doesn't carry IL cash basis
         "soy_basis_il":  None,
         "date":          datetime.now(timezone.utc).strftime("%Y-%m-%d"),
-        "source":        "yahoo finance (~10 min delayed)",
+        "source":        "stooq (end-of-day close)",
         "generated_at":  datetime.now(timezone.utc).isoformat(),
     }
 
