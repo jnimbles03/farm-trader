@@ -344,14 +344,18 @@
     </table>
   </div>
 
-  <!-- ───────── SEASONAL PRICE INDEX ───────── -->
-  <h2>Seasonal Price Pattern</h2>
+  <!-- ───────── SEASONAL PRICE INDEX — the "why" panel ───────── -->
+  <h2 id="why">Why — Pattern, Plan &amp; Catalysts</h2>
+  <p style="margin:-4px 0 8px 0; font-size:12px; color:var(--muted)">
+    One glance: where prices usually go · where your plan says to sell · where you are right now · what dates could move the market.
+  </p>
   <div class="chart-wrap">
     <div class="chart-legend">
-      <span><span class="sw" style="background:var(--corn)"></span>Corn</span>
-      <span><span class="sw" style="background:var(--soy)"></span>Soybeans</span>
-      <span><span class="sw" style="background:#fff; border:2px solid var(--ink); border-radius:50%"></span>Today</span>
-      <span>% of Oct harvest low · USDA 1980–2024</span>
+      <span><span class="sw" style="background:var(--corn)"></span>Corn curve</span>
+      <span><span class="sw" style="background:var(--soy)"></span>Soy curve</span>
+      <span><span class="sw" style="background:#fff; border:2px solid var(--ink); border-radius:50%"></span>Today's price</span>
+      <span><span class="sw" style="background:var(--corn); border-radius:50%; opacity:.9"></span>Sell-plan (numbered T1–T4)</span>
+      <span><span class="sw" style="background:#8a3324; transform: rotate(45deg)"></span>USDA catalyst</span>
     </div>
     <svg id="seasonal-chart" viewBox="0 0 900 280" width="100%" height="auto" aria-label="Seasonal price index chart" preserveAspectRatio="xMidYMid meet">
       <g font-family="inherit" font-size="11" fill="#6b6b6b">
@@ -388,13 +392,18 @@
         <circle cx="740" cy="88" r="4" fill="#a8722c"/>
         <text x="740" y="78" text-anchor="middle" font-weight="700">Soy peak +11%</text>
       </g>
-      <!-- today marker (populated by JS) -->
+      <!-- schedule dots (populated by JS) -->
+      <g id="seasonal-schedule" font-family="inherit"></g>
+      <!-- USDA report markers (populated by JS) -->
+      <g id="seasonal-usda" font-family="inherit"></g>
+      <!-- today marker (populated by JS) — drawn last, sits on top -->
       <g id="seasonal-today" font-family="inherit"></g>
     </svg>
     <div class="chart-caption">
-      Corn peaks June (+13%), soy peaks July (+11%). Both lows are October at harvest.
-      Pattern holds in 80–90% of years studied.
-      <strong>Today's dots</strong> show live price as % of last Oct low — above the curve means the market is running hotter than seasonal, below means it's lagging.
+      <strong>Why this plan:</strong> the solid curves are the 45-year seasonal pattern (corn peaks +13% in June, soy peaks +11% in July; both lows at Oct harvest; holds 80–90% of years).
+      <strong>Numbered dots (T1–T4)</strong> are your pre-committed sell tranches placed at target % of Oct low — the plan your Today's Call is executing against.
+      <strong>Today's open dot</strong> is live price vs. that normalized history — above the curve = market running hotter than seasonal (sell pressure up), below = lagging (wait or stay patient).
+      <strong>Diamonds/triangles/ticks</strong> near the bottom are upcoming USDA reports: red diamonds are major movers (Plantings Mar 31, Acreage Jun 30, Aug WASDE), brown triangles are meaningful (Outlook, May/Jul WASDE, quarterly Stocks), gray ticks are routine WASDE.
     </div>
   </div>
 
@@ -550,6 +559,27 @@ const STRATEGY = {
     ]
   }
 };
+
+/* USDA report calendar — typical dates; move-size indicates historical
+   price impact on CBOT grains. Update in February for the current year. */
+const USDA_REPORTS = [
+  { month:10, day:10, label:"WASDE",        size:"s", note:"Monthly WASDE" },
+  { month:11, day:10, label:"WASDE",        size:"s", note:"Monthly WASDE" },
+  { month:12, day:10, label:"WASDE",        size:"s", note:"Monthly WASDE" },
+  { month:1,  day:12, label:"Stocks+WASDE", size:"m", note:"Q4 Grain Stocks + Jan WASDE — end-of-year supply print" },
+  { month:2,  day:10, label:"WASDE",        size:"s", note:"Feb WASDE" },
+  { month:2,  day:20, label:"Outlook",      size:"m", note:"USDA Outlook Forum — sets acreage expectations" },
+  { month:3,  day:10, label:"WASDE",        size:"s", note:"Mar WASDE" },
+  { month:3,  day:31, label:"Plantings+Stocks", size:"l", note:"Prospective Plantings + Q1 Grain Stocks — major move" },
+  { month:4,  day:10, label:"WASDE",        size:"s", note:"Apr WASDE" },
+  { month:5,  day:10, label:"WASDE",        size:"m", note:"May WASDE — first new-crop balance sheet" },
+  { month:6,  day:10, label:"WASDE",        size:"s", note:"Jun WASDE" },
+  { month:6,  day:30, label:"Acreage+Stocks", size:"l", note:"Acreage + Q2 Grain Stocks — major move" },
+  { month:7,  day:10, label:"WASDE",        size:"m", note:"Jul WASDE — weather/yield adjustments" },
+  { month:8,  day:12, label:"WASDE+CropProd", size:"l", note:"First survey-based yield estimate" },
+  { month:9,  day:10, label:"WASDE",        size:"m", note:"Sep WASDE" },
+  { month:9,  day:30, label:"Stocks",       size:"m", note:"Q3 Grain Stocks — old-crop carryout" }
+];
 
 /* ─────────────────────────────────────────────────────────────
    SALES LOG (localStorage)
@@ -769,37 +799,36 @@ function todaysCall(p) {
   return { dot, msg, sub };
 }
 
+/* Shared month→x interpolation for the seasonal chart.
+   Chart x-axis covers the crop year Oct→Sep. */
+const SEASONAL_MONX = [74, 148, 222, 296, 370, 444, 518, 592, 666, 740, 814, 858];
+function seasonalX(month, day) {
+  const idx   = month >= 10 ? month - 10 : month + 2;   // crop-year index
+  const dim   = new Date(2001, month, 0).getDate();     // days in this month (2001 = non-leap reference)
+  const thisX = SEASONAL_MONX[idx];
+  const nextX = SEASONAL_MONX[idx + 1] ?? SEASONAL_MONX[SEASONAL_MONX.length - 1];
+  return thisX + ((day - 1) / dim) * (nextX - thisX);
+}
+const seasonalY = pct => 220 - (Math.max(97, Math.min(115, pct)) - 100) * 12;
+
 /* Place a "today" marker on the seasonal chart showing where live prices
    sit vs. the historical Oct-low-normalized pattern. */
 function renderSeasonalDots(prices) {
   const g = document.getElementById("seasonal-today");
   if (!g) return;
 
-  const now   = today();
-  const m     = now.getMonth() + 1;          // 1-12
-  const d     = now.getDate();
-  // Crop-year index: Oct=0, Nov=1, ..., Sep=11
-  const idx   = m >= 10 ? m - 10 : m + 2;
-  // x positions matching the month tick marks in the SVG
-  const monX  = [74, 148, 222, 296, 370, 444, 518, 592, 666, 740, 814, 858];
-  const dim   = new Date(now.getFullYear(), m, 0).getDate(); // days in this month
-  const thisX = monX[idx];
-  const nextX = monX[idx + 1] ?? monX[monX.length - 1];
-  const x     = thisX + ((d - 1) / dim) * (nextX - thisX);
-
-  // y: 100% → 220, 115% → 40. Clamp to 97..115 for display only.
-  const yOf = pct => 220 - (Math.max(97, Math.min(115, pct)) - 100) * 12;
+  const now = today();
+  const x   = seasonalX(now.getMonth() + 1, now.getDate());
 
   const cornPct = (prices.corn != null) ? (prices.corn / STRATEGY.corn.octLow) * 100 : null;
   const soyPct  = (prices.soy  != null) ? (prices.soy  / STRATEGY.soy.octLow ) * 100 : null;
 
   const parts = [];
-  // vertical dashed line at today's x
   parts.push(`<line x1="${x.toFixed(1)}" y1="30" x2="${x.toFixed(1)}" y2="220" stroke="#888" stroke-dasharray="2 3" stroke-width="1"/>`);
   parts.push(`<text x="${x.toFixed(1)}" y="22" text-anchor="middle" font-size="10" fill="#444" font-weight="700">today</text>`);
 
   function dot(pct, color, priceLabel, side) {
-    const cy = yOf(pct);
+    const cy = seasonalY(pct);
     const off = side === "right" ? 9 : -9;
     const anchor = side === "right" ? "start" : "end";
     const clampStar = (pct < 97 || pct > 115) ? "*" : "";
@@ -817,12 +846,96 @@ function renderSeasonalDots(prices) {
   g.innerHTML = parts.join("");
 }
 
+/* Plot scheduled sell tranches on the seasonal chart.
+   Each dot sits at (midpoint of window, target % of Oct low).
+   Calendar-only tranches (no price gate) get a dashed ring on the curve. */
+function renderSeasonalSchedule() {
+  const g = document.getElementById("seasonal-schedule");
+  if (!g) return;
+
+  // Corn seasonal curve y-values at month boundaries (from the static polyline)
+  const CORN_CURVE_Y = [220, 184, 148, 124, 106, 94, 88, 76, 64, 94, 148, 190];
+  const curvePct = idx => 100 + (220 - CORN_CURVE_Y[idx]) / 12;
+
+  const parts = [];
+
+  for (const cfg of [STRATEGY.corn, STRATEGY.soy]) {
+    const yOffset = cfg.key === "corn" ? -12 : 14; // label above for corn, below for soy
+    for (const tr of cfg.tranches) {
+      const s = new Date(2001, tr.winS[0] - 1, tr.winS[1]);
+      const e = new Date(2001, tr.winE[0] - 1, tr.winE[1]);
+      const mid = new Date((s.getTime() + e.getTime()) / 2);
+      const mMonth = mid.getMonth() + 1;
+      const mDay = mid.getDate();
+      const x = seasonalX(mMonth, mDay);
+
+      let pct, y, isCal = false;
+      if (tr.mult != null) {
+        pct = tr.mult * 100;
+        y = seasonalY(pct);
+      } else {
+        // Calendar-only: plant on the corn seasonal curve at that month
+        const idx = mMonth >= 10 ? mMonth - 10 : mMonth + 2;
+        pct = curvePct(idx);
+        y = seasonalY(pct);
+        isCal = true;
+      }
+
+      const num = tr.id.slice(1); // "1", "2", "3", "4"
+      const dash = isCal ? ' stroke-dasharray="2 1.5"' : '';
+      parts.push(`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="7" fill="${cfg.color}" fill-opacity="${isCal ? 0.35 : 0.9}" stroke="#fff" stroke-width="1.2"${dash}/>`);
+      parts.push(`<text x="${x.toFixed(1)}" y="${(y + 3).toFixed(1)}" text-anchor="middle" font-size="8" fill="#fff" font-weight="700">${num}</text>`);
+      // tiny label above/below the dot with target
+      const labelTxt = tr.mult ? (tr.mult * 100).toFixed(0) + "%" : "cal";
+      parts.push(`<text x="${x.toFixed(1)}" y="${(y + yOffset).toFixed(1)}" text-anchor="middle" font-size="9" fill="${cfg.color}" font-weight="600">${labelTxt}</text>`);
+    }
+  }
+
+  g.innerHTML = parts.join("");
+}
+
+/* Plot USDA report events along a ribbon near the top of the chart.
+   Size: s=small WASDE (tick mark), m=medium (triangle), l=major (diamond + label). */
+function renderSeasonalUSDA() {
+  const g = document.getElementById("seasonal-usda");
+  if (!g) return;
+
+  const RIBBON_Y = 252; // just above the month labels row
+  const parts = [];
+
+  for (const r of USDA_REPORTS) {
+    const x = seasonalX(r.month, r.day);
+    const sz = r.size;
+    const color = sz === "l" ? "#8a3324" : (sz === "m" ? "#6a4a1a" : "#7a7a7a");
+
+    if (sz === "l") {
+      // Diamond + label
+      parts.push(`<polygon points="${x.toFixed(1)},${RIBBON_Y - 6} ${(x+5).toFixed(1)},${RIBBON_Y} ${x.toFixed(1)},${RIBBON_Y + 6} ${(x-5).toFixed(1)},${RIBBON_Y}" fill="${color}" stroke="#fff" stroke-width="1">
+        <title>${r.label} · ${r.month}/${r.day} — ${r.note}</title></polygon>`);
+      parts.push(`<text x="${x.toFixed(1)}" y="${RIBBON_Y - 9}" text-anchor="middle" font-size="9" fill="${color}" font-weight="700">${r.label}</text>`);
+    } else if (sz === "m") {
+      // Triangle
+      parts.push(`<polygon points="${x.toFixed(1)},${RIBBON_Y - 5} ${(x+4).toFixed(1)},${RIBBON_Y + 3} ${(x-4).toFixed(1)},${RIBBON_Y + 3}" fill="${color}" stroke="#fff" stroke-width="0.8">
+        <title>${r.label} · ${r.month}/${r.day} — ${r.note}</title></polygon>`);
+    } else {
+      // Small tick
+      parts.push(`<line x1="${x.toFixed(1)}" y1="${RIBBON_Y - 3}" x2="${x.toFixed(1)}" y2="${RIBBON_Y + 3}" stroke="${color}" stroke-width="1.3">
+        <title>${r.label} · ${r.month}/${r.day} — ${r.note}</title></line>`);
+    }
+  }
+
+  g.innerHTML = parts.join("");
+}
+
 function renderCall(p) {
   const c = todaysCall(p);
   document.getElementById("call").innerHTML = `
-    <div class="call-head">Today's Call · ${today().toLocaleDateString()}</div>
+    <div class="call-head">What to do today · ${today().toLocaleDateString()}</div>
     <div class="call-msg"><span class="call-dot" style="background:${c.dot}"></span>${c.msg}</div>
     ${c.sub ? `<div class="call-sub">${c.sub}</div>` : ""}
+    <div class="call-sub" style="margin-top:6px; font-size:11px; color:var(--muted); border-top:1px solid var(--line); padding-top:6px">
+      See <a href="#why" style="color:var(--muted)">Why — Pattern, Plan &amp; Catalysts</a> below for the chart that explains this recommendation.
+    </div>
   `;
 }
 
@@ -883,6 +996,8 @@ function rerender() {
   renderCall(_prices);
   renderTranches(STRATEGY.corn, _prices.corn, "corn-tranches");
   renderTranches(STRATEGY.soy,  _prices.soy,  "soy-tranches");
+  renderSeasonalSchedule();
+  renderSeasonalUSDA();
   renderSeasonalDots(_prices);
   renderRemain();
   renderSalesTable();
