@@ -12,67 +12,821 @@
       --line: #e3dfd8;
       --hit:  #1b7a3a;
       --wait: #8a6d00;
+      --corn: #1b7a3a;
+      --soy:  #a8722c;
+      --accent: #8a3324;
+      --cool: #3d7cba;
+      --warm: #c9a328;
+      --hot:  #d47a2a;
+      --burn: #b7321a;
     }
     * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
     body {
-      margin: 0; padding: 32px 24px;
       font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI",
             Roboto, "Helvetica Neue", Arial, sans-serif;
       background: var(--bg); color: var(--ink);
-      max-width: 900px; margin-left: auto; margin-right: auto;
+      padding: 16px 14px 40px;
     }
-    h1 { margin: 0 0 4px 0; font-size: 22px; font-weight: 700; }
-    .sub { color: var(--muted); font-size: 13px; margin-bottom: 28px; }
-    .strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px,1fr)); gap: 12px; margin-bottom: 32px; }
-    .tile {
-      background: #fff; border: 1px solid var(--line); border-radius: 10px;
-      padding: 14px 16px;
-    }
-    .tile .label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
-    .tile .val   { font-size: 22px; font-weight: 600; margin-top: 2px; }
-    table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
-    th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
-    th { background: #f1ede6; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+    .wrap { max-width: 1100px; margin: 0 auto; }
+
+    /* Typography */
+    h1 { margin: 0 0 2px 0; font-size: 20px; font-weight: 700; }
+    h2 { font-size: 15px; margin: 28px 0 8px 0; font-weight: 700; }
+    h3 { font-size: 12px; margin: 14px 0 6px 0; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+    .sub { color: var(--muted); font-size: 12px; margin-bottom: 18px; }
+    p { margin: 6px 0; }
+
+    /* Price strip — 2 cols on phone, 3 on small tablet, 6 on desktop */
+    .strip { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 18px; }
+    .tile  { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+    .tile .label { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .04em; }
+    .tile .val   { font-size: 18px; font-weight: 600; margin-top: 2px; font-variant-numeric: tabular-nums; }
+
+    /* Tables scroll horizontally on mobile */
+    .tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--line); border-radius: 10px; background: #fff; }
+    table { width: 100%; border-collapse: collapse; min-width: 520px; }
+    th, td { padding: 9px 11px; text-align: left; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; vertical-align: top; font-size: 13px; }
+    th { background: #f1ede6; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
     tr:last-child td { border-bottom: 0; }
-    .status-HIT    { color: var(--hit); font-weight: 600; }
+    .status-HIT    { color: var(--hit); font-weight: 700; }
     .status-WAIT   { color: var(--wait); }
     .status-NO_DATA{ color: var(--muted); }
-    .meta { color: var(--muted); font-size: 12px; margin-top: 24px; }
-    code { background: #eee9df; padding: 1px 5px; border-radius: 4px; font-size: 13px; }
-    a { color: #8a3324; }
+
+    .meta { color: var(--muted); font-size: 12px; margin-top: 28px; border-top: 1px solid var(--line); padding-top: 14px; }
+    code { background: #eee9df; padding: 1px 5px; border-radius: 4px; font-size: 12px; }
+    a { color: var(--accent); }
+
+    /* Panels */
+    .panel { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; margin-bottom: 12px; }
+
+    /* Pills */
+    .pill { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
+    .pill-store    { background: #fbe4e4; color: #9a2020; }
+    .pill-hold     { background: #fbeccb; color: #8a6d00; }
+    .pill-evaluate { background: #fbeccb; color: #8a6d00; }
+    .pill-sell     { background: #d4ecda; color: #1b7a3a; }
+    .pill-peak     { background: #b8e0c2; color: #0f5a28; }
+    .pill-pre      { background: #fbeccb; color: #8a6d00; }
+    .pill-done     { background: #e6e4de; color: #4a4a4a; }
+    .pill-hit      { background: #d4ecda; color: #1b7a3a; }
+    .pill-warm     { background: #fbeccb; color: #8a6d00; }
+    .pill-wait     { background: #e6e4de; color: #5a5a5a; }
+
+    /* Mobile-first grids: single column → expand at breakpoints */
+    .grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+    @media (min-width: 640px) {
+      body { padding: 24px 18px 48px; }
+      h1 { font-size: 22px; }
+      h2 { font-size: 16px; }
+      .strip { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+      .grid.two  { grid-template-columns: 1fr 1fr; }
+    }
+    @media (min-width: 960px) {
+      body { padding: 32px 24px 56px; }
+      .strip { grid-template-columns: repeat(6, 1fr); gap: 12px; }
+      .tile .val { font-size: 22px; }
+      .grid.three { grid-template-columns: 1fr 1fr 1fr; }
+    }
+
+    /* ────── Today's Call ────── */
+    .call {
+      background: #fff; border: 1px solid var(--line); border-radius: 10px;
+      padding: 14px 16px; margin-bottom: 16px;
+    }
+    .call-head { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+    .call-msg  { font-size: 16px; font-weight: 600; margin-top: 4px; line-height: 1.35; }
+    .call-sub  { font-size: 13px; color: var(--muted); margin-top: 6px; }
+    .call-dot  { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; vertical-align: middle; }
+
+    /* ────── Tranche card + thermometer ────── */
+    .tranche-card {
+      background: #fff; border: 1px solid var(--line); border-radius: 10px;
+      padding: 12px 14px; display: grid; grid-template-columns: 54px 1fr; gap: 12px;
+      margin-bottom: 10px;
+    }
+    .therm { width: 54px; height: 140px; display: block; }
+    .tranche-body { min-width: 0; }
+    .tranche-title {
+      display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; margin-bottom: 3px;
+    }
+    .tranche-title .name { font-weight: 700; font-size: 14px; }
+    .tranche-title .state { font-size: 10px; }
+    .tranche-note { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+    .tranche-kv { font-size: 12px; color: #444; display: grid; grid-template-columns: 70px 1fr; row-gap: 2px; }
+    .tranche-kv .k { color: var(--muted); }
+    .tranche-kv .v { font-variant-numeric: tabular-nums; }
+    .tranche-kv .v .good { color: var(--hit); font-weight: 600; }
+    .tranche-kv .v .bad  { color: var(--wait); }
+
+    /* Section header with commodity accent */
+    .sec-corn { color: var(--corn); }
+    .sec-soy  { color: var(--soy); }
+
+    /* ────── Sales log form ────── */
+    .log-form {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+      background: #faf8f3; border: 1px dashed var(--line); border-radius: 10px;
+      padding: 12px; margin-bottom: 12px;
+    }
+    .log-form label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; display: block; margin-bottom: 3px; }
+    .log-form input, .log-form select {
+      width: 100%; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px;
+      background: #fff; font: inherit; font-variant-numeric: tabular-nums;
+    }
+    .log-form .full { grid-column: 1 / -1; }
+    .log-form button {
+      width: 100%; padding: 10px 14px; border-radius: 6px; border: 0;
+      background: var(--accent); color: #fff; font-weight: 600; font-size: 14px;
+      cursor: pointer;
+    }
+    .log-form button:active { transform: translateY(1px); }
+    @media (min-width: 640px) {
+      .log-form { grid-template-columns: 1fr 1fr 1fr 1fr auto; align-items: end; }
+      .log-form .full { grid-column: auto; }
+      .log-form button { width: auto; }
+    }
+
+    /* ────── Live sale preview ────── */
+    .log-preview {
+      background: #fff; border: 1px solid var(--line); border-radius: 10px;
+      padding: 12px 14px; margin-bottom: 12px;
+      display: grid; grid-template-columns: 1fr; gap: 10px;
+    }
+    .log-preview .row { display: grid; grid-template-columns: 120px 1fr; gap: 8px; align-items: baseline; font-size: 13px; }
+    .log-preview .row .k { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .04em; }
+    .log-preview .row .v { font-variant-numeric: tabular-nums; }
+    .log-preview .big   { font-weight: 700; font-size: 16px; }
+    .log-preview .corn  { color: var(--corn); }
+    .log-preview .soy   { color: var(--soy); }
+    .log-preview .warn  { color: var(--accent); font-weight: 600; }
+    .log-preview .muted { color: var(--muted); }
+    .preview-bar { height: 8px; background: #efece6; border-radius: 4px; overflow: hidden; position: relative; }
+    .preview-bar .sold    { position: absolute; left: 0; top: 0; bottom: 0; background: currentColor; opacity: .85; }
+    .preview-bar .pending { position: absolute; top: 0; bottom: 0; background: currentColor; opacity: .4; }
+    @media (min-width: 640px) {
+      .log-preview { grid-template-columns: repeat(3, 1fr); }
+      .log-preview .row { grid-template-columns: 1fr; gap: 2px; }
+    }
+
+    /* ────── Remaining summary ────── */
+    .remain {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;
+    }
+    .remain .box {
+      background: #fff; border: 1px solid var(--line); border-radius: 10px;
+      padding: 12px 14px;
+    }
+    .remain .box .label { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+    .remain .box .big { font-size: 22px; font-weight: 700; margin-top: 2px; font-variant-numeric: tabular-nums; }
+    .remain .box .hint { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .remain .corn .big { color: var(--corn); }
+    .remain .soy  .big { color: var(--soy); }
+    .remain-bar { height: 6px; background: #efece6; border-radius: 3px; overflow: hidden; margin-top: 8px; }
+    .remain-bar > div { height: 100%; transition: width .3s ease; }
+
+    /* Sales history */
+    .sales-tbl th, .sales-tbl td { font-size: 12px; padding: 7px 9px; }
+    .sales-tbl .del {
+      border: 0; background: transparent; color: var(--muted);
+      font-size: 16px; cursor: pointer; line-height: 1; padding: 2px 4px;
+    }
+    .sales-tbl .del:hover { color: var(--accent); }
+    .empty { padding: 14px; text-align: center; color: var(--muted); font-size: 13px; }
+
+    /* Seasonal chart */
+    .chart-wrap { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 14px 12px; }
+    .chart-legend { display: flex; gap: 12px; font-size: 11px; color: var(--muted); margin-bottom: 6px; flex-wrap: wrap; }
+    .chart-legend .sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: middle; }
+    .chart-caption { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+    /* Calendar + tranche tiny-table */
+    .calendar td:first-child { white-space: nowrap; font-weight: 600; width: 90px; }
+    .calendar td.action { white-space: nowrap; width: 100px; }
+    .tranche-row { display: grid; grid-template-columns: 42px 80px 1fr; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 13px; align-items: baseline; }
+    .tranche-row:last-child { border-bottom: 0; }
+    .tranche-row .pct  { font-weight: 700; }
+    .tranche-row .when { color: var(--muted); font-size: 12px; }
+    .tranche-row.corn .pct { color: var(--corn); }
+    .tranche-row.soy  .pct { color: var(--soy); }
+    .pillar ol { padding-left: 18px; margin: 6px 0 0 0; }
+    .pillar li { font-size: 13px; padding: 3px 0; }
+    .pillar-num { font-size: 10px; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+    .pillar-title { font-size: 14px; font-weight: 700; margin-top: 2px; }
   </style>
 </head>
 <body>
+<div class="wrap">
   <h1>Freis Farm — grain board</h1>
   <div class="sub" id="sub">loading…</div>
 
   <div class="strip" id="strip"></div>
 
-  <h2 style="font-size:16px; margin:0 0 8px 0;">Signals</h2>
-  <table id="sigs">
-    <thead>
-      <tr>
-        <th>Contract</th>
-        <th>Commodity</th>
-        <th>Month</th>
-        <th style="text-align:right">Live</th>
-        <th style="text-align:right">Target</th>
-        <th>Status</th>
-        <th>Note</th>
-      </tr>
-    </thead>
-    <tbody><tr><td colspan="7" style="color:var(--muted)">loading…</td></tr></tbody>
-  </table>
-
-  <div class="meta">
-    Prices via Yahoo Finance (~10 min delayed). Signals evaluated every 15 min during CBOT grain day session.
-    Raw feeds: <a href="prices.json"><code>prices.json</code></a> &middot;
-    <a href="signals.json"><code>signals.json</code></a> &middot;
-    <a href="last_run.json"><code>last_run.json</code></a>
+  <!-- ───────── TODAY'S CALL ───────── -->
+  <div class="call" id="call">
+    <div class="call-head">Today's Call</div>
+    <div class="call-msg"><span class="call-dot" style="background:#ccc"></span>calculating…</div>
   </div>
 
+  <!-- ───────── DECISION AID — Corn ───────── -->
+  <h2 class="sec-corn">Corn — Decision Aid</h2>
+  <div id="corn-tranches"></div>
+
+  <!-- ───────── DECISION AID — Soy ───────── -->
+  <h2 class="sec-soy">Soybeans — Decision Aid</h2>
+  <div id="soy-tranches"></div>
+
+  <!-- ───────── SALES LOG ───────── -->
+  <h2>Sales Log</h2>
+  <div class="remain" id="remain">
+    <div class="box corn">
+      <div class="label">Corn remaining</div>
+      <div class="big" id="corn-remain">—</div>
+      <div class="hint" id="corn-hint">of target</div>
+      <div class="remain-bar"><div id="corn-bar" style="width:0%; background:var(--corn)"></div></div>
+    </div>
+    <div class="box soy">
+      <div class="label">Soy remaining</div>
+      <div class="big" id="soy-remain">—</div>
+      <div class="hint" id="soy-hint">of target</div>
+      <div class="remain-bar"><div id="soy-bar" style="width:0%; background:var(--soy)"></div></div>
+    </div>
+  </div>
+
+  <form class="log-form" id="log-form" onsubmit="return false;">
+    <div>
+      <label for="log-commodity">Commodity</label>
+      <select id="log-commodity">
+        <option value="corn">Corn</option>
+        <option value="soy">Soy</option>
+      </select>
+    </div>
+    <div>
+      <label for="log-bushels">Bushels</label>
+      <input id="log-bushels" type="number" min="1" step="1" inputmode="numeric" placeholder="e.g. 5000" />
+    </div>
+    <div>
+      <label for="log-price">Price / bu ($)</label>
+      <input id="log-price" type="number" min="0" step="0.0001" inputmode="decimal" placeholder="e.g. 4.55" />
+    </div>
+    <div>
+      <label for="log-tranche">Tranche</label>
+      <select id="log-tranche">
+        <option value="">Unassigned</option>
+        <optgroup label="Corn"><option value="C1">C1 · Feb–Mar</option><option value="C2">C2 · Apr–May</option><option value="C3">C3 · June</option><option value="C4">C4 · by Jul 3</option></optgroup>
+        <optgroup label="Soy"><option value="S1">S1 · Feb–Mar</option><option value="S2">S2 · Apr–May</option><option value="S3">S3 · Jun–Jul</option><option value="S4">S4 · Jul–Aug</option></optgroup>
+      </select>
+    </div>
+    <button id="log-add">Add sale</button>
+  </form>
+
+  <!-- Live preview of the pending sale -->
+  <div class="log-preview" id="log-preview">
+    <div class="row">
+      <div class="k">Sale total</div>
+      <div class="v big" id="prev-total">—</div>
+    </div>
+    <div class="row">
+      <div class="k" id="prev-remain-label">Remaining after</div>
+      <div class="v">
+        <div class="big" id="prev-remain">—</div>
+        <div class="muted" id="prev-remain-sub" style="font-size:11px">enter bushels to preview</div>
+        <div class="preview-bar" id="prev-bar-wrap" style="color:var(--corn); margin-top:6px">
+          <div class="sold"    id="prev-bar-sold"    style="width:0%"></div>
+          <div class="pending" id="prev-bar-pending" style="width:0%; left:0%"></div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="k">Tranche impact</div>
+      <div class="v" id="prev-tranche">—</div>
+    </div>
+  </div>
+
+  <div class="tbl-wrap">
+    <table class="sales-tbl" id="sales-tbl">
+      <thead><tr>
+        <th>Date</th><th>Crop</th><th>Tranche</th>
+        <th style="text-align:right">Bushels</th>
+        <th style="text-align:right">$/bu</th>
+        <th style="text-align:right">Total</th>
+        <th></th>
+      </tr></thead>
+      <tbody><tr><td colspan="7" class="empty">No sales logged yet. Add your first lot above.</td></tr></tbody>
+    </table>
+  </div>
+
+  <!-- ───────── SIGNALS ───────── -->
+  <h2>Signals</h2>
+  <div class="tbl-wrap">
+    <table id="sigs">
+      <thead><tr>
+        <th>Contract</th><th>Crop</th><th>Mo</th>
+        <th style="text-align:right">Live</th>
+        <th style="text-align:right">Target</th>
+        <th>Status</th><th>Note</th>
+      </tr></thead>
+      <tbody><tr><td colspan="7" style="color:var(--muted)">loading…</td></tr></tbody>
+    </table>
+  </div>
+
+  <!-- ───────── SEASONAL PRICE INDEX ───────── -->
+  <h2>Seasonal Price Pattern</h2>
+  <div class="chart-wrap">
+    <div class="chart-legend">
+      <span><span class="sw" style="background:var(--corn)"></span>Corn</span>
+      <span><span class="sw" style="background:var(--soy)"></span>Soybeans</span>
+      <span>% of Oct harvest low · USDA 1980–2024</span>
+    </div>
+    <svg viewBox="0 0 900 280" width="100%" height="auto" aria-label="Seasonal price index chart" preserveAspectRatio="xMidYMid meet">
+      <g font-family="inherit" font-size="11" fill="#6b6b6b">
+        <line x1="52" y1="40"  x2="872" y2="40"  stroke="#e3dfd8" stroke-dasharray="2 4"/>
+        <line x1="52" y1="100" x2="872" y2="100" stroke="#e3dfd8" stroke-dasharray="2 4"/>
+        <line x1="52" y1="160" x2="872" y2="160" stroke="#e3dfd8" stroke-dasharray="2 4"/>
+        <line x1="52" y1="220" x2="872" y2="220" stroke="#b5b0a7"/>
+        <text x="46" y="44"  text-anchor="end">115%</text>
+        <text x="46" y="104" text-anchor="end">110%</text>
+        <text x="46" y="164" text-anchor="end">105%</text>
+        <text x="46" y="224" text-anchor="end">100%</text>
+        <text x="74"  y="250" text-anchor="middle">Oct</text>
+        <text x="148" y="250" text-anchor="middle">Nov</text>
+        <text x="222" y="250" text-anchor="middle">Dec</text>
+        <text x="296" y="250" text-anchor="middle">Jan</text>
+        <text x="370" y="250" text-anchor="middle">Feb</text>
+        <text x="444" y="250" text-anchor="middle">Mar</text>
+        <text x="518" y="250" text-anchor="middle">Apr</text>
+        <text x="592" y="250" text-anchor="middle">May</text>
+        <text x="666" y="250" text-anchor="middle">Jun</text>
+        <text x="740" y="250" text-anchor="middle">Jul</text>
+        <text x="814" y="250" text-anchor="middle">Aug</text>
+        <text x="858" y="250" text-anchor="middle">Sep</text>
+      </g>
+      <polyline fill="none" stroke="#1b7a3a" stroke-width="2.5"
+        points="74,220 148,184 222,148 296,124 370,106 444,94 518,88 592,76 666,64 740,94 814,148 858,190"/>
+      <polyline fill="none" stroke="#a8722c" stroke-width="2.5"
+        points="74,220 148,190 222,166 296,148 370,136 444,118 518,106 592,100 666,88 740,88 814,124 858,172"/>
+      <g font-family="inherit" font-size="10" fill="#1b7a3a">
+        <circle cx="666" cy="64" r="4" fill="#1b7a3a"/>
+        <text x="666" y="52" text-anchor="middle" font-weight="700">Corn peak +13%</text>
+      </g>
+      <g font-family="inherit" font-size="10" fill="#a8722c">
+        <circle cx="740" cy="88" r="4" fill="#a8722c"/>
+        <text x="740" y="78" text-anchor="middle" font-weight="700">Soy peak +11%</text>
+      </g>
+    </svg>
+    <div class="chart-caption">
+      Corn peaks June (+13%), soy peaks July (+11%). Both lows are October at harvest.
+      Pattern holds in 80–90% of years studied.
+    </div>
+  </div>
+
+  <!-- ───────── MARKETING CALENDAR ───────── -->
+  <h2>Marketing Calendar</h2>
+  <div class="tbl-wrap">
+    <table class="calendar">
+      <thead><tr><th>Period</th><th>Action</th><th>Corn</th><th>Soybeans</th></tr></thead>
+      <tbody>
+        <tr><td>Oct–Nov</td><td class="action"><span class="pill pill-store">Store</span></td>
+            <td>Bin corn at harvest. Basis at seasonal worst. Do not sell spot.</td>
+            <td>Bin soybeans. Basis weakest; January futures already discounted.</td></tr>
+        <tr><td>Dec–Jan</td><td class="action"><span class="pill pill-hold">Hold</span></td>
+            <td>Prices strengthening +6–8%. Monitor basis for improvement.</td>
+            <td>Prices improving +4.5–6%. Watch South America weather closely.</td></tr>
+        <tr><td>Feb–Mar</td><td class="action"><span class="pill pill-evaluate">Evaluate</span></td>
+            <td>Acreage bidding lifts prices +9.5–10.5%. Sell first 25%.</td>
+            <td>SA harvest may cap rallies. Sell 15% if SA crop confirms large.</td></tr>
+        <tr><td>Apr–May</td><td class="action"><span class="pill pill-sell">Sell corn</span></td>
+            <td>Planting risk premium +11–12%. Sell next 25% of corn.</td>
+            <td>Building toward summer. Sell 15% of beans.</td></tr>
+        <tr><td>June</td><td class="action"><span class="pill pill-peak">Peak window</span></td>
+            <td><strong>Peak month +13%.</strong> Complete 40% of remaining corn sales.</td>
+            <td>Weather market heating up +11%. Start selling 40%.</td></tr>
+        <tr><td>July</td><td class="action"><span class="pill pill-sell">Sell soy</span></td>
+            <td>Declining. Final 10% of corn sold by July 4.</td>
+            <td><strong>Peak month +11%.</strong> Continue selling beans.</td></tr>
+        <tr><td>Aug–Sep</td><td class="action"><span class="pill pill-pre">Pre-harvest</span></td>
+            <td>New-crop hedging. Lock forward contracts for the coming year.</td>
+            <td>Still +4–8% above harvest. Final bean sales by Aug 15.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ───────── INCREMENTAL SALE SCHEDULE ───────── -->
+  <h2>Incremental Sale Schedule</h2>
+  <div class="grid two">
+    <div class="panel">
+      <h3 style="color:var(--corn)">Corn — 100% sold by July 4</h3>
+      <div class="tranche-row corn"><span class="pct">25%</span><span class="when">Feb–Mar</span><span>Acreage rally · Oct low × 1.09</span></div>
+      <div class="tranche-row corn"><span class="pct">25%</span><span class="when">Apr–May</span><span>Planting risk premium · Oct low × 1.11</span></div>
+      <div class="tranche-row corn"><span class="pct">40%</span><span class="when">June</span><span>Weather peak · Oct low × 1.12</span></div>
+      <div class="tranche-row corn"><span class="pct">10%</span><span class="when">Early Jul</span><span>Calendar cleanup · sell by Jul 3</span></div>
+    </div>
+    <div class="panel">
+      <h3 style="color:var(--soy)">Soybeans — 100% sold by Aug 15</h3>
+      <div class="tranche-row soy"><span class="pct">15%</span><span class="when">Feb–Mar</span><span>If SA crop large · Oct low × 1.07</span></div>
+      <div class="tranche-row soy"><span class="pct">15%</span><span class="when">Apr–May</span><span>US planting window · Oct low × 1.09</span></div>
+      <div class="tranche-row soy"><span class="pct">40%</span><span class="when">Jun–Jul</span><span>Weather peak · Oct low × 1.10</span></div>
+      <div class="tranche-row soy"><span class="pct">30%</span><span class="when">Jul–Aug</span><span>Extended summer · above Oct low × 1.08</span></div>
+    </div>
+  </div>
+
+  <!-- ───────── STRATEGIC PILLARS ───────── -->
+  <h2>Strategic Plan — 250 Acres, Wilmington IL</h2>
+  <div class="grid three">
+    <div class="panel pillar">
+      <div class="pillar-num">01 · Rotation</div>
+      <div class="pillar-title">Rotation Structure</div>
+      <ol>
+        <li>Maintain strict corn–soy rotation. Never go continuous corn at current prices.</li>
+        <li>Target 60/40 corn/soy split (150 ac / 100 ac) as baseline.</li>
+        <li>Shift to 50/50 when soy:corn price ratio exceeds 2.5:1.</li>
+        <li>Consider winter wheat double-crop soy on 20–30 ac as pest management.</li>
+      </ol>
+    </div>
+    <div class="panel pillar">
+      <div class="pillar-num">02 · Selling windows</div>
+      <div class="pillar-title">Marketing Discipline</div>
+      <ol>
+        <li>Never sell at October harvest. You leave 11–13% on the table.</li>
+        <li>Corn: sell incrementally Feb–June, 100% done by July 4.</li>
+        <li>Soy: sell incrementally Apr–August, heaviest Jun–Jul.</li>
+        <li>Watch SA crop Feb–Mar: large SA = sell earlier; small SA = hold for summer.</li>
+      </ol>
+    </div>
+    <div class="panel pillar">
+      <div class="pillar-num">03 · Risk</div>
+      <div class="pillar-title">Risk Management</div>
+      <ol>
+        <li>Revenue Protection crop insurance at February projected price.</li>
+        <li>Hedge 25–30% of expected production with CBOT futures pre-harvest.</li>
+        <li>Track basis at local elevators. Will County corn basis strengthens Apr–May.</li>
+        <li>Keep 10% unpriced as upside optionality for drought-year spikes.</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- ───────── DOLLAR IMPACT ───────── -->
+  <h2>Estimated Annual Impact</h2>
+  <div class="panel">
+    <p style="margin:0 0 10px 0; font-size:12px; color:var(--muted)">
+      Seasonal selling vs. harvest cash sales — 175 ac corn / 75 ac soy:
+    </p>
+    <div class="grid two">
+      <div>
+        <h3 style="color:var(--corn)">Corn premium</h3>
+        <div style="font-size:20px; font-weight:700; color:var(--corn)">+$15,400</div>
+        <div style="font-size:12px; color:var(--muted)">175 ac × 220 bu × $0.40/bu avg June premium</div>
+      </div>
+      <div>
+        <h3 style="color:var(--soy)">Soy premium</h3>
+        <div style="font-size:20px; font-weight:700; color:var(--soy)">+$3,600</div>
+        <div style="font-size:12px; color:var(--muted)">75 ac × 67 bu × $0.53/bu avg July premium</div>
+      </div>
+    </div>
+    <div style="margin-top:12px; padding-top:12px; border-top:1px solid var(--line); font-size:13px">
+      <strong>Total annual uplift: +$19,000</strong> vs. Oct harvest sale ·
+      <strong>5-yr cumulative: +$95,000</strong>
+    </div>
+  </div>
+
+  <div class="meta">
+    Prices via Stooq (end-of-day close). Signals evaluated every 15 min during CBOT grain day session.<br/>
+    Data sources: USDA NASS Monthly Ag Prices 1980–2024 · Iowa State Extension · U of I farmdoc · CME Group.<br/>
+    Raw feeds: <a href="prices.json"><code>prices.json</code></a> ·
+    <a href="signals.json"><code>signals.json</code></a> ·
+    <a href="last_run.json"><code>last_run.json</code></a><br/>
+    Sales log is stored on this device only (browser localStorage).
+  </div>
+</div>
+
 <script>
-const fmt = v => v == null ? "—" : (+v).toFixed(4);
+/* ─────────────────────────────────────────────────────────────
+   STRATEGY CONFIG
+   ───────────────────────────────────────────────────────────── */
+
+const STRATEGY = {
+  corn: {
+    key: "corn",
+    label: "Corn",
+    color: "#1b7a3a",
+    octLow: 4.10,       // placeholder — update after Oct 2026 harvest low
+    totalBushels: 38500, // 175 ac × 220 bu
+    tranches: [
+      { id:"C1", pct:25, label:"T1 · Feb–Mar",  winS:[2,1],  winE:[3,31], mult:1.09, note:"Acreage rally" },
+      { id:"C2", pct:25, label:"T2 · Apr–May",  winS:[4,1],  winE:[5,31], mult:1.11, note:"Planting premium" },
+      { id:"C3", pct:40, label:"T3 · June",     winS:[6,1],  winE:[6,30], mult:1.12, note:"Weather peak" },
+      { id:"C4", pct:10, label:"T4 · by Jul 3", winS:[7,1],  winE:[7,3],  mult:null, note:"Calendar cleanup — sell regardless of price" }
+    ]
+  },
+  soy: {
+    key: "soy",
+    label: "Soybeans",
+    color: "#a8722c",
+    octLow: 10.40,
+    totalBushels: 5025,  // 75 ac × 67 bu
+    tranches: [
+      { id:"S1", pct:15, label:"T1 · Feb–Mar", winS:[2,1],  winE:[3,31], mult:1.07, note:"Only if SA crop large" },
+      { id:"S2", pct:15, label:"T2 · Apr–May", winS:[4,1],  winE:[5,31], mult:1.09, note:"US planting window" },
+      { id:"S3", pct:40, label:"T3 · Jun–Jul", winS:[6,1],  winE:[7,15], mult:1.10, note:"Weather peak" },
+      { id:"S4", pct:30, label:"T4 · Jul–Aug", winS:[7,15], winE:[8,15], mult:1.08, note:"Extended summer — hold above trigger" }
+    ]
+  }
+};
+
+/* ─────────────────────────────────────────────────────────────
+   SALES LOG (localStorage)
+   ───────────────────────────────────────────────────────────── */
+
+const SALES_KEY = "freis.sales.v1";
+function loadSales() {
+  try { return JSON.parse(localStorage.getItem(SALES_KEY) || "[]"); }
+  catch { return []; }
+}
+function saveSales(s) { localStorage.setItem(SALES_KEY, JSON.stringify(s)); }
+function addSale(sale) { const s = loadSales(); s.push(sale); saveSales(s); }
+function removeSale(id) { saveSales(loadSales().filter(s => s.id !== id)); }
+
+function commoditySold(c)  { return loadSales().filter(s => s.commodity === c).reduce((a,s)=>a+s.bushels,0); }
+function trancheSold(tId)  { return loadSales().filter(s => s.tranche === tId).reduce((a,s)=>a+s.bushels,0); }
+function weightedAvg(c) {
+  const rows = loadSales().filter(s => s.commodity === c);
+  const bu = rows.reduce((a,s)=>a+s.bushels,0);
+  if (!bu) return null;
+  return rows.reduce((a,s)=>a+s.bushels*s.price,0) / bu;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   TRANCHE EVALUATION
+   ───────────────────────────────────────────────────────────── */
+
+function today() { return new Date(); }
+function dateAt(m, d) {
+  const t = today();
+  return new Date(t.getFullYear(), m-1, d);
+}
+function daysBetween(a, b) { return Math.round((b - a) / 86400000); }
+
+function evaluateTranche(cfg, tr, live) {
+  const target  = tr.mult ? +(cfg.octLow * tr.mult).toFixed(4) : null;
+  const now     = today();
+  const winS    = dateAt(tr.winS[0], tr.winS[1]);
+  const winE    = dateAt(tr.winE[0], tr.winE[1]);
+  const winLen  = Math.max(1, daysBetween(winS, winE));
+
+  // Price readiness 0..100 (100 = at or above target)
+  let priceR = 0;
+  if (target && live != null) {
+    priceR = Math.max(0, Math.min(100, (live / target) * 100));
+  }
+
+  // Time readiness 0..100 across the year
+  let timeR = 0;
+  if (now < winS) {
+    const daysOut = daysBetween(now, winS);
+    timeR = Math.max(0, 70 - daysOut * 0.6); // ramps as window approaches
+  } else if (now >= winS && now <= winE) {
+    const thru = daysBetween(winS, now) / winLen;
+    timeR = 60 + thru * 40; // 60 at window start → 100 at end
+  } else {
+    timeR = 100; // past the window — you're behind
+  }
+
+  // Completion
+  const targetBu = Math.round(cfg.totalBushels * tr.pct / 100);
+  const sold     = trancheSold(tr.id);
+  const done     = sold >= targetBu;
+
+  // Combined score: max of price and time (time dominates when prices lag seasonal pattern)
+  let score = Math.max(priceR, timeR);
+  if (done) score = 0; // tranche already filled — cool it back down
+
+  // Label
+  let state = "WAIT";
+  if (done)                                   state = "DONE";
+  else if (target && live != null && live >= target) state = "HIT";
+  else if (now >= winS && now <= winE)        state = "ACTIVE";
+  else if (now > winE)                        state = "OVERDUE";
+
+  return { target, priceR, timeR, score, state, targetBu, sold, done, winS, winE };
+}
+
+/* ─────────────────────────────────────────────────────────────
+   THERMOMETER SVG
+   ───────────────────────────────────────────────────────────── */
+
+function gaugeColor(score) {
+  if (score >= 85) return "var(--burn)";
+  if (score >= 65) return "var(--hot)";
+  if (score >= 40) return "var(--warm)";
+  return "var(--cool)";
+}
+
+function thermometer(score, done) {
+  // Fill from bulb (y=122) up to top (y=18). Range 104px tall.
+  const s = Math.max(0, Math.min(100, score));
+  const fillTop = 122 - (s / 100) * 104;
+  const color = done ? "#8a8a8a" : gaugeColor(s);
+  return `
+    <svg class="therm" viewBox="0 0 54 140" aria-label="Urgency ${s.toFixed(0)}">
+      <!-- outer stem -->
+      <rect x="20" y="10" width="14" height="112" rx="7" fill="#fff" stroke="#b5b0a7" stroke-width="1.2"/>
+      <!-- outer bulb -->
+      <circle cx="27" cy="122" r="12" fill="#fff" stroke="#b5b0a7" stroke-width="1.2"/>
+      <!-- fill bulb -->
+      <circle cx="27" cy="122" r="9" fill="${color}"/>
+      <!-- fill stem -->
+      <rect x="23" y="${fillTop}" width="8" height="${122 - fillTop}" fill="${color}"/>
+      <!-- scale ticks -->
+      <g stroke="#b5b0a7" stroke-width="0.8">
+        <line x1="34" y1="30"  x2="38" y2="30"/>
+        <line x1="34" y1="56"  x2="38" y2="56"/>
+        <line x1="34" y1="82"  x2="38" y2="82"/>
+        <line x1="34" y1="108" x2="38" y2="108"/>
+      </g>
+      <text x="42" y="33" font-size="8" fill="#8a8a8a">75</text>
+      <text x="42" y="59" font-size="8" fill="#8a8a8a">50</text>
+      <text x="42" y="85" font-size="8" fill="#8a8a8a">25</text>
+    </svg>`;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   RENDERERS
+   ───────────────────────────────────────────────────────────── */
+
+const fmt   = v => v == null || isNaN(v) ? "—" : (+v).toFixed(4);
+const fmt2  = v => v == null || isNaN(v) ? "—" : (+v).toFixed(2);
+const fmtBu = v => v == null ? "—" : v.toLocaleString();
+
+function statePill(state) {
+  const map = {
+    HIT:     ["pill-hit",  "Price hit"],
+    ACTIVE:  ["pill-warm", "Active"],
+    OVERDUE: ["pill-warm", "Overdue"],
+    DONE:    ["pill-done", "Done"],
+    WAIT:    ["pill-wait", "Wait"]
+  };
+  const [cls, txt] = map[state] || ["pill-wait", state];
+  return `<span class="pill ${cls}">${txt}</span>`;
+}
+
+function countdown(now, winS, winE) {
+  if (now < winS) {
+    const d = daysBetween(now, winS);
+    return `opens in ${d}d`;
+  } else if (now <= winE) {
+    const d = daysBetween(now, winE);
+    return `${d}d left in window`;
+  } else {
+    const d = daysBetween(winE, now);
+    return `${d}d past close`;
+  }
+}
+
+function renderTranches(cfg, live, mountId) {
+  const host = document.getElementById(mountId);
+  const now = today();
+  host.innerHTML = cfg.tranches.map(tr => {
+    const e = evaluateTranche(cfg, tr, live);
+    const priceGap = (e.target != null && live != null)
+      ? (((live - e.target) / e.target) * 100)
+      : null;
+    const gapStr = priceGap == null ? "—" :
+      (priceGap >= 0 ? `<span class="good">+${priceGap.toFixed(1)}%</span>` :
+                        `<span class="bad">${priceGap.toFixed(1)}%</span>`);
+
+    const priceLine = e.target
+      ? `$${fmt2(e.target)} <span style="color:var(--muted)">(Oct×${tr.mult.toFixed(2)})</span>`
+      : `<span style="color:var(--muted)">calendar-only</span>`;
+
+    return `
+    <div class="tranche-card">
+      ${thermometer(e.score, e.done)}
+      <div class="tranche-body">
+        <div class="tranche-title">
+          <span class="name" style="color:${cfg.color}">${tr.label}</span>
+          <span class="state">${statePill(e.state)}</span>
+        </div>
+        <div class="tranche-note">${tr.note}</div>
+        <div class="tranche-kv">
+          <div class="k">Target</div><div class="v">${priceLine}</div>
+          <div class="k">Live vs</div><div class="v">${live == null ? "—" : "$"+fmt2(live)} · ${gapStr}</div>
+          <div class="k">Window</div><div class="v">${countdown(now, e.winS, e.winE)}</div>
+          <div class="k">Progress</div><div class="v">${fmtBu(e.sold)} / ${fmtBu(e.targetBu)} bu${e.done ? " ✓" : ""}</div>
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function todaysCall(p) {
+  // Produce a single prioritized recommendation.
+  const all = [];
+  for (const key of ["corn","soy"]) {
+    const live = p[key];
+    const cfg  = STRATEGY[key];
+    for (const tr of cfg.tranches) {
+      const e = evaluateTranche(cfg, tr, live);
+      if (!e.done) all.push({ key, cfg, tr, e, live });
+    }
+  }
+  if (!all.length) {
+    return { dot:"#1b7a3a", msg:"All tranches are fully sold. Relax.", sub:"" };
+  }
+  all.sort((a,b) => b.e.score - a.e.score);
+  const top = all[0];
+  const tr = top.tr, e = top.e, cfg = top.cfg, live = top.live;
+  const dot = gaugeColor(e.score);
+
+  let msg = "", sub = "";
+  if (e.state === "HIT") {
+    msg = `SELL ${cfg.label} ${tr.label}: price $${fmt2(live)} is above $${fmt2(e.target)}.`;
+    sub = `Lock ${fmtBu(Math.max(0, e.targetBu - e.sold))} bu. Sold so far: ${fmtBu(e.sold)} / ${fmtBu(e.targetBu)}.`;
+  } else if (e.state === "OVERDUE") {
+    msg = `CATCH UP on ${cfg.label} ${tr.label} — window has closed.`;
+    sub = `Price ${live == null ? "—" : "$"+fmt2(live)} · target $${e.target ? fmt2(e.target) : "—"}. Sell the shortfall regardless.`;
+  } else if (e.state === "ACTIVE") {
+    const gap = e.target ? (((live - e.target)/e.target)*100).toFixed(1) : null;
+    msg = `Watch ${cfg.label} ${tr.label}. ${countdown(today(), e.winS, e.winE)}.`;
+    sub = e.target
+      ? `Live $${fmt2(live)} vs trigger $${fmt2(e.target)} (${gap}%). ${e.score >= 70 ? "Time pressure rising — consider a partial." : ""}`
+      : `Calendar-only window — sell regardless before ${e.winE.toLocaleDateString()}.`;
+  } else {
+    msg = `Hold. Next window: ${cfg.label} ${tr.label}.`;
+    sub = `${countdown(today(), e.winS, e.winE)} · target ${e.target ? "$"+fmt2(e.target) : "calendar-only"}.`;
+  }
+  return { dot, msg, sub };
+}
+
+function renderCall(p) {
+  const c = todaysCall(p);
+  document.getElementById("call").innerHTML = `
+    <div class="call-head">Today's Call · ${today().toLocaleDateString()}</div>
+    <div class="call-msg"><span class="call-dot" style="background:${c.dot}"></span>${c.msg}</div>
+    ${c.sub ? `<div class="call-sub">${c.sub}</div>` : ""}
+  `;
+}
+
+function renderRemain() {
+  for (const key of ["corn","soy"]) {
+    const cfg  = STRATEGY[key];
+    const sold = commoditySold(key);
+    const rem  = Math.max(0, cfg.totalBushels - sold);
+    const pct  = Math.min(100, (sold / cfg.totalBushels) * 100);
+    const avg  = weightedAvg(key);
+    document.getElementById(`${key}-remain`).textContent = `${fmtBu(rem)} bu`;
+    document.getElementById(`${key}-hint`).innerHTML =
+      `of ${fmtBu(cfg.totalBushels)} target · ${pct.toFixed(0)}% sold` +
+      (avg ? ` · avg $${fmt2(avg)}/bu` : "");
+    document.getElementById(`${key}-bar`).style.width = pct + "%";
+  }
+}
+
+function renderSalesTable() {
+  const tbody = document.querySelector("#sales-tbl tbody");
+  const rows = loadSales().slice().sort((a,b) => new Date(b.ts) - new Date(a.ts));
+  if (!rows.length) {
+    tbody.innerHTML = `<tr><td colspan="7" class="empty">No sales logged yet. Add your first lot above.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = rows.map(r => {
+    const total = r.bushels * r.price;
+    const tag = r.tranche || "—";
+    const cropColor = r.commodity === "corn" ? "var(--corn)" : "var(--soy)";
+    const cropLabel = r.commodity === "corn" ? "Corn" : "Soy";
+    return `<tr>
+      <td>${new Date(r.ts).toLocaleDateString()}</td>
+      <td style="color:${cropColor}; font-weight:600">${cropLabel}</td>
+      <td>${tag}</td>
+      <td style="text-align:right">${fmtBu(r.bushels)}</td>
+      <td style="text-align:right">$${fmt2(r.price)}</td>
+      <td style="text-align:right">$${total.toLocaleString(undefined,{maximumFractionDigits:0})}</td>
+      <td style="text-align:right"><button class="del" data-id="${r.id}" title="Delete">×</button></td>
+    </tr>`;
+  }).join("");
+
+  tbody.querySelectorAll(".del").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const id = +btn.getAttribute("data-id");
+      removeSale(id);
+      rerender();
+    });
+  });
+}
+
+/* ─────────────────────────────────────────────────────────────
+   LIVE PRICE RENDER + WIRE-UP
+   ───────────────────────────────────────────────────────────── */
+
+let _prices = { corn: null, soy: null, wheat: null };
+
+function rerender() {
+  renderCall(_prices);
+  renderTranches(STRATEGY.corn, _prices.corn, "corn-tranches");
+  renderTranches(STRATEGY.soy,  _prices.soy,  "soy-tranches");
+  renderRemain();
+  renderSalesTable();
+  renderLogPreview();
+}
 
 async function load() {
   const [pRes, sRes, lRes] = await Promise.all([
@@ -84,42 +838,188 @@ async function load() {
   const s = await sRes.json();
   const l = await lRes.json();
 
+  _prices = p;
+
   document.getElementById("sub").textContent =
     `As of ${new Date(l.ran_at).toLocaleString()} — ${s.signals.length} signal(s) tracked` +
     (l.sms_fired ? ` · ${l.sms_fired} SMS fired this run` : "");
 
   const strip = document.getElementById("strip");
   const tiles = [
-    ["Corn",       p.corn],
-    ["Soy",        p.soy],
-    ["Wheat",      p.wheat],
-    ["Corn Dec",   p.corn_dec],
-    ["Soy Nov",    p.soy_nov],
-    ["Wheat Jul",  p.wheat_jul],
+    ["Corn",      p.corn],
+    ["Soy",       p.soy],
+    ["Wheat",     p.wheat],
+    ["Corn Dec",  p.corn_dec],
+    ["Soy Nov",   p.soy_nov],
+    ["Wheat Jul", p.wheat_jul],
   ];
   strip.innerHTML = tiles.map(([k,v]) =>
     `<div class="tile"><div class="label">${k}</div><div class="val">${fmt(v)}</div></div>`
   ).join("");
 
   const tbody = document.querySelector("#sigs tbody");
-  if (!s.signals.length) {
-    tbody.innerHTML = `<tr><td colspan="7" style="color:var(--muted)">no signals</td></tr>`;
+  tbody.innerHTML = s.signals.length
+    ? s.signals.map(r => `
+      <tr>
+        <td>${r.contract_id}</td>
+        <td>${r.commodity}</td>
+        <td>${String(r.futures_year).slice(2)}-${String(r.futures_month).padStart(2,"0")}</td>
+        <td style="text-align:right">${fmt(r.live)}</td>
+        <td style="text-align:right">${fmt(r.target_price)}</td>
+        <td class="status-${r.status}">${r.status}</td>
+        <td>${r.note || ""}</td>
+      </tr>`).join("")
+    : `<tr><td colspan="7" style="color:var(--muted)">no signals</td></tr>`;
+
+  rerender();
+}
+
+/* ─────────────────────────────────────────────────────────────
+   LIVE SALE PREVIEW
+   ───────────────────────────────────────────────────────────── */
+
+function renderLogPreview() {
+  const commodity = document.getElementById("log-commodity").value;
+  const bushels   = +document.getElementById("log-bushels").value || 0;
+  const price     = +document.getElementById("log-price").value || 0;
+  const tranche   = document.getElementById("log-tranche").value || null;
+
+  const cfg         = STRATEGY[commodity];
+  const colorVar    = commodity === "corn" ? "var(--corn)" : "var(--soy)";
+  const currentSold = commoditySold(commodity);
+  const currentRem  = Math.max(0, cfg.totalBushels - currentSold);
+  const overshoot   = Math.max(0, bushels - currentRem);
+  const applied     = bushels - overshoot;
+  const newRem      = Math.max(0, currentRem - bushels);
+  const total       = bushels * price;
+
+  // Sale total
+  document.getElementById("prev-total").innerHTML = total
+    ? `$${total.toLocaleString(undefined,{maximumFractionDigits:0})}`
+    : `<span class="muted">—</span>`;
+
+  // Remaining label (per commodity)
+  document.getElementById("prev-remain-label").textContent =
+    `${cfg.label} remaining after`;
+
+  // Remaining line + sub
+  const remainEl = document.getElementById("prev-remain");
+  remainEl.className = `big ${commodity}`;
+  if (!bushels) {
+    remainEl.innerHTML = `${fmtBu(currentRem)} <span class="muted" style="font-size:12px">bu</span>`;
+    document.getElementById("prev-remain-sub").innerHTML =
+      `currently ${fmtBu(currentSold)} / ${fmtBu(cfg.totalBushels)} bu sold`;
+  } else {
+    const pct = (applied / cfg.totalBushels) * 100;
+    const subParts = [
+      `this lot = ${fmtBu(bushels)} bu`,
+      `leaves ${fmtBu(newRem)} of ${fmtBu(cfg.totalBushels)} target`,
+      `${pct.toFixed(1)}% added this sale`
+    ];
+    if (overshoot > 0) {
+      subParts.push(`<span class="warn">⚠ ${fmtBu(overshoot)} bu over target</span>`);
+    }
+    remainEl.innerHTML = `${fmtBu(newRem)} <span class="muted" style="font-size:12px">bu left</span>`;
+    document.getElementById("prev-remain-sub").innerHTML = subParts.join(" · ");
+  }
+
+  // Preview bar: already-sold + pending overlay
+  const bar = document.getElementById("prev-bar-wrap");
+  bar.style.color = colorVar;
+  const soldPct    = Math.min(100, (currentSold / cfg.totalBushels) * 100);
+  const pendingPct = Math.min(100 - soldPct, (applied / cfg.totalBushels) * 100);
+  document.getElementById("prev-bar-sold").style.width    = soldPct + "%";
+  const pendingEl = document.getElementById("prev-bar-pending");
+  pendingEl.style.left  = soldPct + "%";
+  pendingEl.style.width = pendingPct + "%";
+
+  // Tranche impact
+  const trancheEl = document.getElementById("prev-tranche");
+  if (!tranche) {
+    trancheEl.innerHTML = `<span class="muted">Unassigned — counts toward commodity total only</span>`;
+  } else {
+    const tr = cfg.tranches.find(t => t.id === tranche);
+    if (!tr) {
+      trancheEl.innerHTML = `<span class="muted">—</span>`;
+    } else {
+      const trTarget = Math.round(cfg.totalBushels * tr.pct / 100);
+      const trSold   = trancheSold(tranche);
+      const trNew    = trSold + bushels;
+      const trRemB4  = Math.max(0, trTarget - trSold);
+      const trRemAft = Math.max(0, trTarget - trNew);
+      const trOver   = Math.max(0, trNew - trTarget);
+      const trPct    = Math.min(100, (trNew / trTarget) * 100);
+      const lines = [
+        `<div class="big" style="color:${colorVar}">${tr.label}</div>`,
+        `<div style="font-size:12px">${fmtBu(trSold)} → <strong>${fmtBu(Math.min(trNew, trTarget))}</strong> / ${fmtBu(trTarget)} bu <span class="muted">(${trPct.toFixed(0)}%)</span></div>`,
+      ];
+      if (!bushels) {
+        lines.push(`<div class="muted" style="font-size:11px">${fmtBu(trRemB4)} bu needed to fill this tranche</div>`);
+      } else if (trOver > 0) {
+        lines.push(`<div class="warn" style="font-size:11px">⚠ ${fmtBu(trOver)} bu over tranche target — spills into commodity pool</div>`);
+      } else if (trRemAft === 0) {
+        lines.push(`<div style="font-size:11px; color:var(--hit)">✓ fills this tranche exactly</div>`);
+      } else {
+        lines.push(`<div class="muted" style="font-size:11px">${fmtBu(trRemAft)} bu still needed to fill tranche</div>`);
+      }
+      trancheEl.innerHTML = lines.join("");
+    }
+  }
+}
+
+/* Sales form wiring — real-time preview as user types */
+["log-commodity", "log-bushels", "log-price", "log-tranche"].forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener("input",  renderLogPreview);
+  el.addEventListener("change", renderLogPreview);
+});
+
+/* Tranche selection auto-sets commodity + suggests remaining bushels */
+document.getElementById("log-tranche").addEventListener("change", (e) => {
+  const tranche = e.target.value;
+  if (!tranche) { renderLogPreview(); return; }
+  const commodity = tranche.startsWith("C") ? "corn" : "soy";
+  document.getElementById("log-commodity").value = commodity;
+  const cfg = STRATEGY[commodity];
+  const tr  = cfg.tranches.find(t => t.id === tranche);
+  if (tr) {
+    const trTarget = Math.round(cfg.totalBushels * tr.pct / 100);
+    const trSold   = trancheSold(tranche);
+    const needed   = Math.max(0, trTarget - trSold);
+    const buInput  = document.getElementById("log-bushels");
+    // Pre-fill only if empty, and only up to what the commodity has remaining.
+    const commRem  = Math.max(0, cfg.totalBushels - commoditySold(commodity));
+    if (!buInput.value && needed > 0) buInput.value = Math.min(needed, commRem);
+  }
+  renderLogPreview();
+});
+
+document.getElementById("log-add").addEventListener("click", (e) => {
+  e.preventDefault();
+  const commodity = document.getElementById("log-commodity").value;
+  const bushels = +document.getElementById("log-bushels").value;
+  const price   = +document.getElementById("log-price").value;
+  const tranche = document.getElementById("log-tranche").value || null;
+  if (!bushels || !price) {
+    alert("Enter bushels and price per bushel.");
     return;
   }
-  tbody.innerHTML = s.signals.map(r => `
-    <tr>
-      <td>${r.contract_id}</td>
-      <td>${r.commodity}</td>
-      <td>${String(r.futures_year).slice(2)}-${String(r.futures_month).padStart(2,"0")}</td>
-      <td style="text-align:right">${fmt(r.live)}</td>
-      <td style="text-align:right">${fmt(r.target_price)}</td>
-      <td class="status-${r.status}">${r.status}</td>
-      <td>${r.note || ""}</td>
-    </tr>`).join("");
-}
+  addSale({
+    id: Date.now() + Math.floor(Math.random()*1000),
+    ts: new Date().toISOString(),
+    commodity, bushels, price, tranche
+  });
+  document.getElementById("log-bushels").value = "";
+  document.getElementById("log-price").value = "";
+  document.getElementById("log-tranche").value = "";
+  rerender();
+  renderLogPreview();
+});
+
 load().catch(e => {
   document.getElementById("sub").textContent = "failed to load — the Action may not have run yet";
   console.error(e);
+  rerender(); // still render sales log + tranches with nulls
 });
 </script>
 </body>
