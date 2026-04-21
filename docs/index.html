@@ -465,7 +465,7 @@
       <span><span class="sw" style="background:var(--corn); border-radius:50%; opacity:.9"></span>Sell-plan numbered T1–T4</span>
       <span><span class="sw" style="background:#8a3324; transform: rotate(45deg)"></span>USDA catalyst</span>
     </div>
-    <svg id="seasonal-chart" viewBox="0 0 900 280" width="100%" height="auto" aria-label="Seasonal price index chart" preserveAspectRatio="xMidYMid meet">
+    <svg id="seasonal-chart" viewBox="0 0 900 310" width="100%" height="auto" aria-label="Seasonal price index chart" preserveAspectRatio="xMidYMid meet">
       <g font-family="inherit" font-size="11" fill="#6b6b6b">
         <line x1="52" y1="40"  x2="872" y2="40"  stroke="#e3dfd8" stroke-dasharray="2 4"/>
         <line x1="52" y1="100" x2="872" y2="100" stroke="#e3dfd8" stroke-dasharray="2 4"/>
@@ -1103,13 +1103,14 @@ function renderSeasonalSchedule() {
   g.innerHTML = parts.join("");
 }
 
-/* Plot USDA report events along a ribbon near the top of the chart.
+/* Plot USDA report events along a ribbon BELOW the month labels so the major-report
+   labels don't collide with month names. ViewBox height extended to 310 to fit.
    Size: s=small WASDE (tick mark), m=medium (triangle), l=major (diamond + label). */
 function renderSeasonalUSDA() {
   const g = document.getElementById("seasonal-usda");
   if (!g) return;
 
-  const RIBBON_Y = 252; // just above the month labels row
+  const RIBBON_Y = 275; // BELOW the month labels row (months at y=250, their ink ~239-250)
   const parts = [];
 
   for (const r of USDA_REPORTS) {
@@ -1118,10 +1119,10 @@ function renderSeasonalUSDA() {
     const color = sz === "l" ? "#8a3324" : (sz === "m" ? "#6a4a1a" : "#7a7a7a");
 
     if (sz === "l") {
-      // Diamond + label
+      // Diamond + label BELOW it (so it doesn't touch the month row above)
       parts.push(`<polygon points="${x.toFixed(1)},${RIBBON_Y - 6} ${(x+5).toFixed(1)},${RIBBON_Y} ${x.toFixed(1)},${RIBBON_Y + 6} ${(x-5).toFixed(1)},${RIBBON_Y}" fill="${color}" stroke="#fff" stroke-width="1">
         <title>${r.label} · ${r.month}/${r.day} — ${r.note}</title></polygon>`);
-      parts.push(`<text x="${x.toFixed(1)}" y="${RIBBON_Y - 9}" text-anchor="middle" font-size="9" fill="${color}" font-weight="700">${r.label}</text>`);
+      parts.push(`<text x="${x.toFixed(1)}" y="${RIBBON_Y + 18}" text-anchor="middle" font-size="9" fill="${color}" font-weight="700">${r.label}</text>`);
     } else if (sz === "m") {
       // Triangle
       parts.push(`<polygon points="${x.toFixed(1)},${RIBBON_Y - 5} ${(x+4).toFixed(1)},${RIBBON_Y + 3} ${(x-4).toFixed(1)},${RIBBON_Y + 3}" fill="${color}" stroke="#fff" stroke-width="0.8">
