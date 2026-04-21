@@ -350,9 +350,10 @@
     <div class="chart-legend">
       <span><span class="sw" style="background:var(--corn)"></span>Corn</span>
       <span><span class="sw" style="background:var(--soy)"></span>Soybeans</span>
+      <span><span class="sw" style="background:#fff; border:2px solid var(--ink); border-radius:50%"></span>Today</span>
       <span>% of Oct harvest low · USDA 1980–2024</span>
     </div>
-    <svg viewBox="0 0 900 280" width="100%" height="auto" aria-label="Seasonal price index chart" preserveAspectRatio="xMidYMid meet">
+    <svg id="seasonal-chart" viewBox="0 0 900 280" width="100%" height="auto" aria-label="Seasonal price index chart" preserveAspectRatio="xMidYMid meet">
       <g font-family="inherit" font-size="11" fill="#6b6b6b">
         <line x1="52" y1="40"  x2="872" y2="40"  stroke="#e3dfd8" stroke-dasharray="2 4"/>
         <line x1="52" y1="100" x2="872" y2="100" stroke="#e3dfd8" stroke-dasharray="2 4"/>
@@ -387,10 +388,13 @@
         <circle cx="740" cy="88" r="4" fill="#a8722c"/>
         <text x="740" y="78" text-anchor="middle" font-weight="700">Soy peak +11%</text>
       </g>
+      <!-- today marker (populated by JS) -->
+      <g id="seasonal-today" font-family="inherit"></g>
     </svg>
     <div class="chart-caption">
       Corn peaks June (+13%), soy peaks July (+11%). Both lows are October at harvest.
       Pattern holds in 80–90% of years studied.
+      <strong>Today's dots</strong> show live price as % of last Oct low — above the curve means the market is running hotter than seasonal, below means it's lagging.
     </div>
   </div>
 
@@ -765,6 +769,54 @@ function todaysCall(p) {
   return { dot, msg, sub };
 }
 
+/* Place a "today" marker on the seasonal chart showing where live prices
+   sit vs. the historical Oct-low-normalized pattern. */
+function renderSeasonalDots(prices) {
+  const g = document.getElementById("seasonal-today");
+  if (!g) return;
+
+  const now   = today();
+  const m     = now.getMonth() + 1;          // 1-12
+  const d     = now.getDate();
+  // Crop-year index: Oct=0, Nov=1, ..., Sep=11
+  const idx   = m >= 10 ? m - 10 : m + 2;
+  // x positions matching the month tick marks in the SVG
+  const monX  = [74, 148, 222, 296, 370, 444, 518, 592, 666, 740, 814, 858];
+  const dim   = new Date(now.getFullYear(), m, 0).getDate(); // days in this month
+  const thisX = monX[idx];
+  const nextX = monX[idx + 1] ?? monX[monX.length - 1];
+  const x     = thisX + ((d - 1) / dim) * (nextX - thisX);
+
+  // y: 100% → 220, 115% → 40. Clamp to 97..115 for display only.
+  const yOf = pct => 220 - (Math.max(97, Math.min(115, pct)) - 100) * 12;
+
+  const cornPct = (prices.corn != null) ? (prices.corn / STRATEGY.corn.octLow) * 100 : null;
+  const soyPct  = (prices.soy  != null) ? (prices.soy  / STRATEGY.soy.octLow ) * 100 : null;
+
+  const parts = [];
+  // vertical dashed line at today's x
+  parts.push(`<line x1="${x.toFixed(1)}" y1="30" x2="${x.toFixed(1)}" y2="220" stroke="#888" stroke-dasharray="2 3" stroke-width="1"/>`);
+  parts.push(`<text x="${x.toFixed(1)}" y="22" text-anchor="middle" font-size="10" fill="#444" font-weight="700">today</text>`);
+
+  function dot(pct, color, priceLabel, side) {
+    const cy = yOf(pct);
+    const off = side === "right" ? 9 : -9;
+    const anchor = side === "right" ? "start" : "end";
+    const clampStar = (pct < 97 || pct > 115) ? "*" : "";
+    return `
+      <circle cx="${x.toFixed(1)}" cy="${cy.toFixed(1)}" r="6" fill="#fff" stroke="${color}" stroke-width="2"/>
+      <circle cx="${x.toFixed(1)}" cy="${cy.toFixed(1)}" r="2.5" fill="${color}"/>
+      <text x="${(x + off).toFixed(1)}" y="${(cy + 4).toFixed(1)}" text-anchor="${anchor}" font-size="10" fill="${color}" font-weight="700">
+        ${priceLabel} · ${pct.toFixed(0)}%${clampStar}
+      </text>`;
+  }
+
+  if (cornPct != null) parts.push(dot(cornPct, "#1b7a3a", "$" + fmt2(prices.corn), "right"));
+  if (soyPct  != null) parts.push(dot(soyPct,  "#a8722c", "$" + fmt2(prices.soy ), "left"));
+
+  g.innerHTML = parts.join("");
+}
+
 function renderCall(p) {
   const c = todaysCall(p);
   document.getElementById("call").innerHTML = `
@@ -831,6 +883,7 @@ function rerender() {
   renderCall(_prices);
   renderTranches(STRATEGY.corn, _prices.corn, "corn-tranches");
   renderTranches(STRATEGY.soy,  _prices.soy,  "soy-tranches");
+  renderSeasonalDots(_prices);
   renderRemain();
   renderSalesTable();
   renderLogPreview();
