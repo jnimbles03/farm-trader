@@ -144,6 +144,48 @@
       border: 1px solid rgba(0,0,0,.25);
     }
 
+    /* ────── Plan controls (Option A: reserve, Option B: SA crop) ────── */
+    .plan-controls {
+      background: #fff; border: 1px solid var(--line); border-radius: 10px;
+      padding: 10px 14px; margin-bottom: 16px;
+      display: grid; grid-template-columns: 1fr; gap: 8px;
+    }
+    @media (min-width: 720px) { .plan-controls { grid-template-columns: 1fr 1fr; gap: 16px; } }
+    .plan-row {
+      display: flex; align-items: center; flex-wrap: wrap; gap: 8px;
+      font-size: 12px; line-height: 1.35;
+    }
+    .plan-row .plan-label { font-weight: 600; color: var(--ink); }
+    .plan-row .plan-hint  { color: var(--muted); font-variant-numeric: tabular-nums; font-size: 11px; }
+    .plan-toggle { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-weight: 600; color: var(--ink); }
+    .plan-toggle input { width: 14px; height: 14px; margin: 0; accent-color: #1e4a7a; cursor: pointer; }
+    .segmented {
+      display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; background: #f7f4ed;
+    }
+    .segmented button {
+      border: 0; background: transparent; padding: 4px 10px; font-size: 11px;
+      font-weight: 600; color: var(--muted); cursor: pointer; border-right: 1px solid var(--line);
+      text-transform: uppercase; letter-spacing: .05em;
+    }
+    .segmented button:last-child { border-right: 0; }
+    .segmented button.active { background: #1e4a7a; color: #fff; }
+    .segmented button:hover:not(.active) { background: #ece7dc; color: var(--ink); }
+
+    /* Uplift line on tranche card + Today's Call */
+    .tranche-uplift {
+      font-size: 10px; font-weight: 700; color: #0f5a28;
+      margin-top: 1px; font-variant-numeric: tabular-nums; letter-spacing: .02em;
+    }
+    .tranche-uplift.neg { color: #8a1a1a; }
+    .tranche-uplift.skipped { color: var(--muted); font-weight: 600; }
+    .call-uplift {
+      margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--line);
+      font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums;
+      display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+    }
+    .call-uplift .captured { color: #0f5a28; font-weight: 700; }
+    .call-uplift .potential { color: var(--ink); font-weight: 600; }
+
     /* ────── Tranche grid + compact cards ────── */
     .tranche-grid { display: grid; grid-template-columns: 1fr; gap: 6px; margin-bottom: 6px; }
     @media (min-width: 520px) { .tranche-grid { grid-template-columns: 1fr 1fr; } }
@@ -155,6 +197,7 @@
       min-width: 0;
     }
     .therm { width: 28px; height: 66px; display: block; align-self: center; }
+    /* viewBox 22:52 ≈ 0.423 — matches 28:66 = 0.424 so SVG fills with no whitespace */
     .tranche-body { min-width: 0; }
     .tranche-title {
       display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-bottom: 2px;
@@ -285,6 +328,26 @@
   <div class="call" id="call">
     <div class="call-head">Today's Call</div>
     <div class="call-msg"><span class="call-dot" style="background:#ccc"></span>calculating…</div>
+  </div>
+
+  <!-- ───────── PLAN CONTROLS (reserve + SA crop) ───────── -->
+  <div class="plan-controls" id="plan-controls">
+    <div class="plan-row">
+      <label class="plan-toggle">
+        <input type="checkbox" id="plan-release"/>
+        <span>Release 10% unpriced reserve</span>
+      </label>
+      <span class="plan-hint" id="plan-release-hint">—</span>
+    </div>
+    <div class="plan-row">
+      <span class="plan-label">South American soy crop:</span>
+      <div class="segmented" id="plan-sa" role="group" aria-label="South American soy crop size">
+        <button type="button" data-v="small">Small</button>
+        <button type="button" data-v="normal">Normal</button>
+        <button type="button" data-v="large">Large</button>
+      </div>
+      <span class="plan-hint" id="plan-sa-hint">—</span>
+    </div>
   </div>
 
   <!-- ───────── DECISION AID — Corn ───────── -->
@@ -583,6 +646,7 @@ const STRATEGY = {
     color: "#1b7a3a",
     octLow: 4.10,       // placeholder — update after Oct 2026 harvest low
     totalBushels: 38500, // 175 ac × 220 bu
+    reserveFrac: 0.10,   // hold 10% unpriced for drought-spike / basis improvement
     tranches: [
       { id:"C1", pct:25, label:"T1 · Feb–Mar",  winS:[2,1],  winE:[3,31], mult:1.09, note:"Acreage rally" },
       { id:"C2", pct:25, label:"T2 · Apr–May",  winS:[4,1],  winE:[5,31], mult:1.11, note:"Planting premium" },
@@ -596,6 +660,7 @@ const STRATEGY = {
     color: "#a8722c",
     octLow: 10.40,
     totalBushels: 5025,  // 75 ac × 67 bu
+    reserveFrac: 0.10,   // hold 10% unpriced for drought-spike / basis improvement
     tranches: [
       { id:"S1", pct:15, label:"T1 · Feb–Mar", winS:[2,1],  winE:[3,31], mult:1.07, note:"Only if SA crop large" },
       { id:"S2", pct:15, label:"T2 · Apr–May", winS:[4,1],  winE:[5,31], mult:1.09, note:"US planting window" },
@@ -625,6 +690,61 @@ const USDA_REPORTS = [
   { month:9,  day:10, label:"WASDE",        size:"m", note:"Sep WASDE" },
   { month:9,  day:30, label:"Stocks",       size:"m", note:"Q3 Grain Stocks — old-crop carryout" }
 ];
+
+/* ─────────────────────────────────────────────────────────────
+   PLAN STATE (localStorage)
+   Stores user's plan-level choices that modulate tranche allocation:
+     - releaseReserve: if true, sell the 10% unpriced reserve (default false)
+     - saCrop: "small" | "normal" | "large" — gates Soy T1
+   ───────────────────────────────────────────────────────────── */
+
+const PLAN_KEY = "freis.plan.v1";
+const PLAN_DEFAULTS = { releaseReserve: false, saCrop: "normal" };
+function loadPlan() {
+  try { return { ...PLAN_DEFAULTS, ...JSON.parse(localStorage.getItem(PLAN_KEY) || "{}") }; }
+  catch { return { ...PLAN_DEFAULTS }; }
+}
+function savePlan(patch) {
+  const next = { ...loadPlan(), ...patch };
+  localStorage.setItem(PLAN_KEY, JSON.stringify(next));
+  return next;
+}
+
+/* plannedBu: total bushels that the plan intends to price this year.
+   Held-back bushels = totalBushels - plannedBu = the unpriced reserve. */
+function plannedBu(cfg) {
+  const plan = loadPlan();
+  const rf = plan.releaseReserve ? 0 : (cfg.reserveFrac || 0);
+  return cfg.totalBushels * (1 - rf);
+}
+function reservedBu(cfg) {
+  return Math.round(cfg.totalBushels - plannedBu(cfg));
+}
+
+/* effectiveTargetBu: how many bushels a tranche should aim for under the current plan.
+   - Respects reserveFrac (shrinks all tranches proportionally).
+   - SA crop toggle gates Soy T1: small → T1 skipped, its pct splits evenly across T2/T3.
+   - Returns 0 for skipped tranches. */
+function effectiveTargetBu(cfg, tr) {
+  const plan = loadPlan();
+  const base = plannedBu(cfg);
+  let pct = tr.pct;
+
+  if (cfg.key === "soy" && plan.saCrop === "small") {
+    if (tr.id === "S1") return 0;
+    const t1 = cfg.tranches.find(t => t.id === "S1");
+    if (t1 && (tr.id === "S2" || tr.id === "S3")) pct = tr.pct + t1.pct / 2;
+  }
+  return Math.round(base * pct / 100);
+}
+/* Label describing why a tranche is skipped, for UI hint text. */
+function skipReason(cfg, tr) {
+  const plan = loadPlan();
+  if (cfg.key === "soy" && plan.saCrop === "small" && tr.id === "S1") {
+    return "Skipped — SA crop small, volume moved to T2/T3";
+  }
+  return null;
+}
 
 /* ─────────────────────────────────────────────────────────────
    SALES LOG (localStorage)
@@ -684,23 +804,25 @@ function evaluateTranche(cfg, tr, live) {
     timeR = 100; // past the window — you're behind
   }
 
-  // Completion
-  const targetBu = Math.round(cfg.totalBushels * tr.pct / 100);
+  // Completion — honor plan state (reserve + SA crop gating)
+  const targetBu = effectiveTargetBu(cfg, tr);
+  const skipped  = targetBu === 0 && skipReason(cfg, tr) != null;
   const sold     = trancheSold(tr.id);
-  const done     = sold >= targetBu;
+  const done     = skipped ? true : sold >= targetBu;
 
   // Combined score: max of price and time (time dominates when prices lag seasonal pattern)
   let score = Math.max(priceR, timeR);
-  if (done) score = 0; // tranche already filled — cool it back down
+  if (done) score = 0; // tranche already filled or skipped — cool it back down
 
   // Label
   let state = "WAIT";
-  if (done)                                   state = "DONE";
+  if (skipped)                                state = "DONE"; // skipped treated as done for flow
+  else if (done)                              state = "DONE";
   else if (target && live != null && live >= target) state = "HIT";
   else if (now >= winS && now <= winE)        state = "ACTIVE";
   else if (now > winE)                        state = "OVERDUE";
 
-  return { target, priceR, timeR, score, state, targetBu, sold, done, winS, winE };
+  return { target, priceR, timeR, score, state, targetBu, sold, done, skipped, winS, winE };
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -785,6 +907,31 @@ function renderTranches(cfg, live, mountId) {
 
     const progPct = e.targetBu > 0 ? Math.min(100, (e.sold / e.targetBu) * 100) : 0;
 
+    // Option C: $ uplift line — value captured above Oct low baseline if tranche fires at trigger.
+    // Calendar-only tranches use live price (can be negative) so farmer sees current uplift risk.
+    // Skipped tranches show why they're skipped.
+    let upliftLine = "";
+    if (e.skipped) {
+      upliftLine = `<div class="tranche-uplift skipped">${skipReason(cfg, tr)}</div>`;
+    } else if (e.targetBu > 0) {
+      let uplift, label;
+      if (tr.mult) {
+        uplift = (cfg.octLow * tr.mult - cfg.octLow) * e.targetBu;
+        label  = "@ trigger";
+      } else if (live != null) {
+        uplift = (live - cfg.octLow) * e.targetBu;
+        label  = "@ live";
+      } else {
+        uplift = null;
+      }
+      if (uplift != null) {
+        const sign = uplift >= 0 ? "+" : "−";
+        const abs  = Math.abs(uplift).toLocaleString(undefined, {maximumFractionDigits:0});
+        const cls  = uplift >= 0 ? "" : "neg";
+        upliftLine = `<div class="tranche-uplift ${cls}">$${sign}${abs} above Oct low ${label}</div>`;
+      }
+    }
+
     return `
     <div class="tranche-card">
       ${thermometer(e.score, e.done)}
@@ -794,9 +941,10 @@ function renderTranches(cfg, live, mountId) {
           <span class="state">${statePill(e.state)}</span>
         </div>
         <div class="tranche-meta">${metaParts.join(" · ")}</div>
+        ${upliftLine}
         <div class="tranche-progress">
-          <div class="bar"><div style="width:${progPct}%; background:${cfg.color}; opacity:.75"></div></div>
-          <div class="txt">${fmtBu(e.sold)} / ${fmtBu(e.targetBu)} bu${e.done ? " ✓" : ""}</div>
+          <div class="bar"><div style="width:${progPct}%; background:${cfg.color}; opacity:${e.skipped ? 0.2 : 0.75}"></div></div>
+          <div class="txt">${fmtBu(e.sold)} / ${fmtBu(e.targetBu)} bu${e.done && !e.skipped ? " ✓" : ""}${e.skipped ? " (skipped)" : ""}</div>
         </div>
       </div>
     </div>`;
@@ -988,12 +1136,51 @@ function renderSeasonalUSDA() {
   g.innerHTML = parts.join("");
 }
 
+function capturedUplift() {
+  // $ above Oct low captured on sales already made.
+  let total = 0;
+  for (const s of loadSales()) {
+    const cfg = STRATEGY[s.commodity];
+    if (!cfg) continue;
+    total += (s.price - cfg.octLow) * s.bushels;
+  }
+  return total;
+}
+
+function potentialUplift() {
+  // $ uplift if every priced tranche fires exactly at trigger (skipped tranches excluded).
+  let total = 0;
+  for (const key of ["corn","soy"]) {
+    const cfg = STRATEGY[key];
+    for (const tr of cfg.tranches) {
+      if (!tr.mult) continue; // calendar-only tranche: no uplift premium planned
+      const targetBu = effectiveTargetBu(cfg, tr);
+      if (targetBu <= 0) continue;
+      total += (cfg.octLow * tr.mult - cfg.octLow) * targetBu;
+    }
+  }
+  return total;
+}
+
+function fmtUSD(v) {
+  const sign = v >= 0 ? "" : "−";
+  const abs  = Math.abs(v).toLocaleString(undefined, {maximumFractionDigits:0});
+  return `${sign}$${abs}`;
+}
+
 function renderCall(p) {
   const c = todaysCall(p);
+  const captured  = capturedUplift();
+  const potential = potentialUplift();
+  const pct = potential > 0 ? Math.max(0, Math.min(100, (captured / potential) * 100)) : 0;
   document.getElementById("call").innerHTML = `
     <div class="call-head">What to do today · ${today().toLocaleDateString()}</div>
     <div class="call-msg"><span class="call-dot" style="background:${c.dot}">${c.icon}</span>${c.msg}</div>
     ${c.sub ? `<div class="call-sub">${c.sub}</div>` : ""}
+    <div class="call-uplift">
+      <span>Captured <span class="captured">${fmtUSD(captured)}</span> above Oct low</span>
+      <span>Potential if all triggers fire: <span class="potential">${fmtUSD(potential)}</span>${potential>0 ? ` <span style="color:var(--muted)">(${pct.toFixed(0)}% captured)</span>` : ""}</span>
+    </div>
     <div class="call-sub" style="margin-top:6px; font-size:11px; color:var(--muted); border-top:1px solid var(--line); padding-top:6px">
       See <a href="#why" style="color:var(--muted)">Why — Pattern, Plan &amp; Catalysts</a> below for the chart that explains this recommendation.
     </div>
@@ -1001,15 +1188,20 @@ function renderCall(p) {
 }
 
 function renderRemain() {
+  const plan = loadPlan();
   for (const key of ["corn","soy"]) {
-    const cfg  = STRATEGY[key];
-    const sold = commoditySold(key);
-    const rem  = Math.max(0, cfg.totalBushels - sold);
-    const pct  = Math.min(100, (sold / cfg.totalBushels) * 100);
-    const avg  = weightedAvg(key);
+    const cfg     = STRATEGY[key];
+    const planned = plannedBu(cfg);
+    const sold    = commoditySold(key);
+    const rem     = Math.max(0, planned - sold);
+    const pct     = Math.min(100, (sold / Math.max(1, planned)) * 100);
+    const avg     = weightedAvg(key);
     document.getElementById(`${key}-remain`).textContent = `${fmtBu(rem)} bu`;
+    const targetLabel = plan.releaseReserve
+      ? `${fmtBu(cfg.totalBushels)} target`
+      : `${fmtBu(Math.round(planned))} planned (${fmtBu(reservedBu(cfg))} reserved)`;
     document.getElementById(`${key}-hint`).innerHTML =
-      `of ${fmtBu(cfg.totalBushels)} target · ${pct.toFixed(0)}% sold` +
+      `of ${targetLabel} · ${pct.toFixed(0)}% sold` +
       (avg ? ` · avg $${fmt2(avg)}/bu` : "");
     document.getElementById(`${key}-bar`).style.width = pct + "%";
   }
@@ -1053,8 +1245,43 @@ function renderSalesTable() {
 
 let _prices = { corn: null, soy: null, wheat: null };
 
+function renderPlanControls() {
+  const plan = loadPlan();
+
+  // Release-reserve checkbox state + hint
+  const releaseBox  = document.getElementById("plan-release");
+  const releaseHint = document.getElementById("plan-release-hint");
+  if (releaseBox) releaseBox.checked = !!plan.releaseReserve;
+  if (releaseHint) {
+    if (plan.releaseReserve) {
+      releaseHint.innerHTML = `Reserve released — tranches sized against full ${fmtBu(STRATEGY.corn.totalBushels)} corn + ${fmtBu(STRATEGY.soy.totalBushels)} soy bu`;
+    } else {
+      releaseHint.innerHTML = `Holding ${fmtBu(reservedBu(STRATEGY.corn))} corn + ${fmtBu(reservedBu(STRATEGY.soy))} soy bu back for drought spikes / basis improvement`;
+    }
+  }
+
+  // SA crop segmented control state + hint
+  const seg = document.getElementById("plan-sa");
+  const saHint = document.getElementById("plan-sa-hint");
+  if (seg) {
+    seg.querySelectorAll("button").forEach(b => {
+      b.classList.toggle("active", b.dataset.v === plan.saCrop);
+    });
+  }
+  if (saHint) {
+    if (plan.saCrop === "small") {
+      saHint.innerHTML = `Small SA crop — Soy T1 <strong>skipped</strong>, its 15% volume moved into T2 and T3`;
+    } else if (plan.saCrop === "large") {
+      saHint.innerHTML = `Large SA crop — all soy tranches armed (pressure to sell earlier)`;
+    } else {
+      saHint.innerHTML = `Normal SA crop — all soy tranches armed on schedule`;
+    }
+  }
+}
+
 function rerender() {
   renderCall(_prices);
+  renderPlanControls();
   renderTranches(STRATEGY.corn, _prices.corn, "corn-tranches");
   renderTranches(STRATEGY.soy,  _prices.soy,  "soy-tranches");
   renderSeasonalSchedule();
@@ -1211,7 +1438,8 @@ function renderLogPreview() {
   el.addEventListener("change", renderLogPreview);
 });
 
-/* Tranche selection auto-sets commodity + suggests remaining bushels */
+/* Tranche selection auto-sets commodity + suggests remaining bushels
+   Uses effective target (honors reserve + SA gating), so pre-fill respects the plan. */
 document.getElementById("log-tranche").addEventListener("change", (e) => {
   const tranche = e.target.value;
   if (!tranche) { renderLogPreview(); return; }
@@ -1220,7 +1448,7 @@ document.getElementById("log-tranche").addEventListener("change", (e) => {
   const cfg = STRATEGY[commodity];
   const tr  = cfg.tranches.find(t => t.id === tranche);
   if (tr) {
-    const trTarget = Math.round(cfg.totalBushels * tr.pct / 100);
+    const trTarget = effectiveTargetBu(cfg, tr);
     const trSold   = trancheSold(tranche);
     const needed   = Math.max(0, trTarget - trSold);
     const buInput  = document.getElementById("log-bushels");
@@ -1229,6 +1457,18 @@ document.getElementById("log-tranche").addEventListener("change", (e) => {
     if (!buInput.value && needed > 0) buInput.value = Math.min(needed, commRem);
   }
   renderLogPreview();
+});
+
+/* Plan controls wiring */
+document.getElementById("plan-release").addEventListener("change", (e) => {
+  savePlan({ releaseReserve: e.target.checked });
+  rerender();
+});
+document.getElementById("plan-sa").addEventListener("click", (e) => {
+  const btn = e.target.closest("button[data-v]");
+  if (!btn) return;
+  savePlan({ saCrop: btn.dataset.v });
+  rerender();
 });
 
 document.getElementById("log-add").addEventListener("click", (e) => {
