@@ -63,8 +63,11 @@ STATE_DIR.mkdir(parents=True, exist_ok=True)
 # Config
 # ---------------------------------------------------------------------------
 
-TEXTBELT_KEY   = os.environ.get("TEXTBELT_KEY", "")
-ALERT_PHONE    = os.environ.get("ALERT_PHONE", "")
+TEXTBELT_KEY         = os.environ.get("TEXTBELT_KEY", "")
+TWILIO_ACCOUNT_SID   = os.environ.get("TWILIO_ACCOUNT_SID", "")
+TWILIO_AUTH_TOKEN    = os.environ.get("TWILIO_AUTH_TOKEN", "")
+TWILIO_FROM          = os.environ.get("TWILIO_FROM", "")     # Twilio-owned phone number
+ALERT_PHONE          = os.environ.get("ALERT_PHONE", "")
 ALERT_COOLDOWN = int(os.environ.get("ALERT_COOLDOWN", "86400"))  # 24h
 
 logging.basicConfig(
@@ -354,10 +357,60 @@ def save_state(state: dict[str, dict[str, Any]]) -> None:
 # ---------------------------------------------------------------------------
 
 def send_sms(message: str) -> bool:
-    """Return True iff the SMS was actually accepted by TextBelt."""
-    if not TEXTBELT_KEY or not ALERT_PHONE:
-        log.warning("SMS skipped — TEXTBELT_KEY or ALERT_PHONE not set")
+    """Dispatch to the first configured SMS provider. True iff accepted.
+
+    Preference order:
+      1. Twilio (TWILIO_ACCOUNT_SID + TWILIO_AUTH_TOKEN + TWILIO_FROM)
+      2. TextBelt (TEXTBELT_KEY)
+    Both require ALERT_PHONE set.
+    """
+    if not ALERT_PHONE:
+        log.warning("SMS skipped — ALERT_PHONE not set")
         return False
+    if TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN and TWILIO_FROM:
+        return _send_sms_twilio(message)
+    if TEXTBELT_KEY:
+        return _send_sms_textbelt(message)
+    log.warning("SMS skipped — no SMS provider secrets configured")
+    return False
+
+
+def _send_sms_twilio(message: str) -> bool:
+    """POST to Twilio's REST API. Returns True on HTTP 2xx with no error_code.
+
+    Twilio responds 201 with JSON like
+      {"sid":"SMxxx","status":"queued","error_code":null,"error_message":null}
+    on accept; we treat any non-2xx OR any non-null error_code as failure.
+    """
+    url = f"https://api.twilio.com/2010-04-01/Accounts/{TWILIO_ACCOUNT_SID}/Messages.json"
+    try:
+        r = httpx.post(
+            url,
+            auth=(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN),
+            data={
+                "From": TWILIO_FROM,
+                "To":   ALERT_PHONE,
+                "Body": message,
+            },
+            timeout=15.0,
+        )
+        try:
+            body = r.json()
+        except Exception:
+            body = {"_raw": r.text}
+        log.info("twilio: http=%d sid=%s status=%s error_code=%s error_message=%s",
+                 r.status_code,
+                 body.get("sid"),
+                 body.get("status"),
+                 body.get("error_code"),
+                 body.get("error_message"))
+        return r.status_code < 300 and not body.get("error_code")
+    except Exception as e:
+        log.exception("twilio call failed: %s", e)
+        return False
+
+
+def _send_sms_textbelt(message: str) -> bool:
     try:
         r = httpx.post(
             "https://textbelt.com/text",
@@ -525,7 +578,10 @@ def main() -> int:
         "ran_at":      datetime.now(timezone.utc).isoformat(),
         "signal_count": len(rows),
         "sms_fired":    fired,
-        "sms_ready":    bool(TEXTBELT_KEY and ALERT_PHONE),
+        "sms_ready":    bool(ALERT_PHONE and (
+                            (TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN and TWILIO_FROM)
+                            or TEXTBELT_KEY
+                        )),
     }, indent=2) + "\n")
 
     return 0
