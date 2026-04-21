@@ -493,10 +493,12 @@
       <polyline fill="none" stroke="#a8722c" stroke-width="2.5" stroke-dasharray="8 4"
         points="74,220 148,190 222,166 296,148 370,136 444,118 518,106 592,100 666,88 740,88 814,124 858,172"/>
       <g font-family="inherit" font-size="10" fill="#1b7a3a">
+        <title>Historical corn peak: +13% above Oct low, usually in mid-June (45-year average, holds 80–90% of years)</title>
         <circle cx="666" cy="64" r="4" fill="#1b7a3a"/>
         <text x="666" y="52" text-anchor="middle" font-weight="700">Corn peak +13%</text>
       </g>
       <g font-family="inherit" font-size="10" fill="#a8722c">
+        <title>Historical soy peak: +11% above Oct low, usually in early July (45-year average, holds 80–90% of years)</title>
         <rect x="736" y="84" width="8" height="8" fill="#a8722c"/>
         <text x="740" y="78" text-anchor="middle" font-weight="700">Soy peak +11%</text>
       </g>
@@ -1023,28 +1025,32 @@ function renderSeasonalDots(prices) {
   const soyPct  = (prices.soy  != null) ? (prices.soy  / STRATEGY.soy.octLow ) * 100 : null;
 
   const parts = [];
-  parts.push(`<line x1="${x.toFixed(1)}" y1="30" x2="${x.toFixed(1)}" y2="220" stroke="#888" stroke-dasharray="2 3" stroke-width="1"/>`);
-  parts.push(`<text x="${x.toFixed(1)}" y="22" text-anchor="middle" font-size="10" fill="#444" font-weight="700">today</text>`);
+  parts.push(`<g><title>Today · ${now.toLocaleDateString()} — vertical line shows where we are in the crop year</title>
+    <line x1="${x.toFixed(1)}" y1="30" x2="${x.toFixed(1)}" y2="220" stroke="#888" stroke-dasharray="2 3" stroke-width="1"/>
+    <text x="${x.toFixed(1)}" y="22" text-anchor="middle" font-size="10" fill="#444" font-weight="700">today</text>
+  </g>`);
 
-  function dot(pct, color, priceLabel, side, shape) {
+  function dot(pct, color, priceLabel, side, shape, cropLabel) {
     const cy = seasonalY(pct);
     const off = side === "right" ? 9 : -9;
     const anchor = side === "right" ? "start" : "end";
     const clampStar = (pct < 97 || pct > 115) ? "*" : "";
+    const vsSeasonal = pct >= 100 ? `${(pct - 100).toFixed(1)}% above Oct low` : `${(100 - pct).toFixed(1)}% below Oct low`;
+    const tip = `Today · ${cropLabel} ${priceLabel} — ${vsSeasonal} (${pct.toFixed(1)}% of Oct low baseline)`;
     // Circle for corn, square for soy — shape + color = colorblind-safe distinction
     const shapeSvg = shape === "square"
       ? `<rect x="${(x-6).toFixed(1)}" y="${(cy-6).toFixed(1)}" width="12" height="12" fill="#fff" stroke="${color}" stroke-width="2"/>
          <rect x="${(x-2.5).toFixed(1)}" y="${(cy-2.5).toFixed(1)}" width="5" height="5" fill="${color}"/>`
       : `<circle cx="${x.toFixed(1)}" cy="${cy.toFixed(1)}" r="6" fill="#fff" stroke="${color}" stroke-width="2"/>
          <circle cx="${x.toFixed(1)}" cy="${cy.toFixed(1)}" r="2.5" fill="${color}"/>`;
-    return `${shapeSvg}
+    return `<g><title>${tip}</title>${shapeSvg}
       <text x="${(x + off).toFixed(1)}" y="${(cy + 4).toFixed(1)}" text-anchor="${anchor}" font-size="10" fill="${color}" font-weight="700">
         ${priceLabel} · ${pct.toFixed(0)}%${clampStar}
-      </text>`;
+      </text></g>`;
   }
 
-  if (cornPct != null) parts.push(dot(cornPct, "#1b7a3a", "$" + fmt2(prices.corn), "right", "circle"));
-  if (soyPct  != null) parts.push(dot(soyPct,  "#a8722c", "$" + fmt2(prices.soy ), "left",  "square"));
+  if (cornPct != null) parts.push(dot(cornPct, "#1b7a3a", "$" + fmt2(prices.corn), "right", "circle", "Corn"));
+  if (soyPct  != null) parts.push(dot(soyPct,  "#a8722c", "$" + fmt2(prices.soy ), "left",  "square", "Soy"));
 
   g.innerHTML = parts.join("");
 }
@@ -1087,16 +1093,23 @@ function renderSeasonalSchedule() {
       const num = tr.id.slice(1); // "1", "2", "3", "4"
       const dash = isCal ? ' stroke-dasharray="2 1.5"' : '';
       const opacity = isCal ? 0.35 : 0.9;
+      // Tooltip text — what this dot means when you hover
+      const trigger = tr.mult ? `$${(cfg.octLow * tr.mult).toFixed(2)} trigger (Oct low × ${tr.mult.toFixed(2)} = ${(tr.mult * 100).toFixed(0)}%)` : "calendar-only · sell regardless of price";
+      const targetBu = effectiveTargetBu(cfg, tr);
+      const skip = skipReason(cfg, tr);
+      const bushelsLine = skip ? skip : `${fmtBu(targetBu)} bu target · ${tr.pct}% of plan`;
+      const tip = `${cfg.label} ${tr.label} · ${trigger} · ${bushelsLine}${tr.note ? " · " + tr.note : ""}`;
       // Corn = circle, Soy = square — shape backs up color
+      let shapeSvg;
       if (cfg.key === "corn") {
-        parts.push(`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="7" fill="${cfg.color}" fill-opacity="${opacity}" stroke="#fff" stroke-width="1.2"${dash}/>`);
+        shapeSvg = `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="7" fill="${cfg.color}" fill-opacity="${opacity}" stroke="#fff" stroke-width="1.2"${dash}/>`;
       } else {
-        parts.push(`<rect x="${(x-7).toFixed(1)}" y="${(y-7).toFixed(1)}" width="14" height="14" fill="${cfg.color}" fill-opacity="${opacity}" stroke="#fff" stroke-width="1.2"${dash}/>`);
+        shapeSvg = `<rect x="${(x-7).toFixed(1)}" y="${(y-7).toFixed(1)}" width="14" height="14" fill="${cfg.color}" fill-opacity="${opacity}" stroke="#fff" stroke-width="1.2"${dash}/>`;
       }
-      parts.push(`<text x="${x.toFixed(1)}" y="${(y + 3).toFixed(1)}" text-anchor="middle" font-size="8" fill="#fff" font-weight="700">${num}</text>`);
       // tiny label above/below the dot with target
       const labelTxt = tr.mult ? (tr.mult * 100).toFixed(0) + "%" : "cal";
-      parts.push(`<text x="${x.toFixed(1)}" y="${(y + yOffset).toFixed(1)}" text-anchor="middle" font-size="9" fill="${cfg.color}" font-weight="600">${labelTxt}</text>`);
+      // Wrap shape + numeric + label in a <g> with <title> so hover reveals full context
+      parts.push(`<g style="cursor:help"><title>${tip}</title>${shapeSvg}<text x="${x.toFixed(1)}" y="${(y + 3).toFixed(1)}" text-anchor="middle" font-size="8" fill="#fff" font-weight="700">${num}</text><text x="${x.toFixed(1)}" y="${(y + yOffset).toFixed(1)}" text-anchor="middle" font-size="9" fill="${cfg.color}" font-weight="600">${labelTxt}</text></g>`);
     }
   }
 
