@@ -398,13 +398,17 @@ def _send_sms_twilio(message: str) -> bool:
             body = r.json()
         except Exception:
             body = {"_raw": r.text}
-        log.info("twilio: http=%d sid=%s status=%s error_code=%s error_message=%s",
+        # Successful responses use "status" + "error_code"/"error_message".
+        # 4xx/5xx errors use "code" + "message" + "more_info".
+        err_code = body.get("error_code") or body.get("code")
+        err_msg  = body.get("error_message") or body.get("message")
+        log.info("twilio: http=%d sid=%s status=%s err_code=%s err_msg=%s",
                  r.status_code,
                  body.get("sid"),
                  body.get("status"),
-                 body.get("error_code"),
-                 body.get("error_message"))
-        return r.status_code < 300 and not body.get("error_code")
+                 err_code,
+                 err_msg)
+        return r.status_code < 300 and not err_code
     except Exception as e:
         log.exception("twilio call failed: %s", e)
         return False
