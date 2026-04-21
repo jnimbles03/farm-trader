@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Freis Farm — grain board</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg:   #f8f6f2;
+      --ink:  #2a2a2a;
+      --muted:#6b6b6b;
+      --line: #e3dfd8;
+      --hit:  #1b7a3a;
+      --wait: #8a6d00;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; padding: 32px 24px;
+      font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI",
+            Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg); color: var(--ink);
+      max-width: 900px; margin-left: auto; margin-right: auto;
+    }
+    h1 { margin: 0 0 4px 0; font-size: 22px; font-weight: 700; }
+    .sub { color: var(--muted); font-size: 13px; margin-bottom: 28px; }
+    .strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px,1fr)); gap: 12px; margin-bottom: 32px; }
+    .tile {
+      background: #fff; border: 1px solid var(--line); border-radius: 10px;
+      padding: 14px 16px;
+    }
+    .tile .label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+    .tile .val   { font-size: 22px; font-weight: 600; margin-top: 2px; }
+    table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+    th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+    th { background: #f1ede6; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+    tr:last-child td { border-bottom: 0; }
+    .status-HIT    { color: var(--hit); font-weight: 600; }
+    .status-WAIT   { color: var(--wait); }
+    .status-NO_DATA{ color: var(--muted); }
+    .meta { color: var(--muted); font-size: 12px; margin-top: 24px; }
+    code { background: #eee9df; padding: 1px 5px; border-radius: 4px; font-size: 13px; }
+    a { color: #8a3324; }
+  </style>
+</head>
+<body>
+  <h1>Freis Farm — grain board</h1>
+  <div class="sub" id="sub">loading…</div>
+
+  <div class="strip" id="strip"></div>
+
+  <h2 style="font-size:16px; margin:0 0 8px 0;">Signals</h2>
+  <table id="sigs">
+    <thead>
+      <tr>
+        <th>Contract</th>
+        <th>Commodity</th>
+        <th>Month</th>
+        <th style="text-align:right">Live</th>
+        <th style="text-align:right">Target</th>
+        <th>Status</th>
+        <th>Note</th>
+      </tr>
+    </thead>
+    <tbody><tr><td colspan="7" style="color:var(--muted)">loading…</td></tr></tbody>
+  </table>
+
+  <div class="meta">
+    Prices via Yahoo Finance (~10 min delayed). Signals evaluated every 15 min during CBOT grain day session.
+    Raw feeds: <a href="prices.json"><code>prices.json</code></a> &middot;
+    <a href="signals.json"><code>signals.json</code></a> &middot;
+    <a href="last_run.json"><code>last_run.json</code></a>
+  </div>
+
+<script>
+const fmt = v => v == null ? "—" : (+v).toFixed(4);
+
+async function load() {
+  const [pRes, sRes, lRes] = await Promise.all([
+    fetch("prices.json",   {cache: "no-store"}),
+    fetch("signals.json",  {cache: "no-store"}),
+    fetch("last_run.json", {cache: "no-store"}),
+  ]);
+  const p = await pRes.json();
+  const s = await sRes.json();
+  const l = await lRes.json();
+
+  document.getElementById("sub").textContent =
+    `As of ${new Date(l.ran_at).toLocaleString()} — ${s.signals.length} signal(s) tracked` +
+    (l.sms_fired ? ` · ${l.sms_fired} SMS fired this run` : "");
+
+  const strip = document.getElementById("strip");
+  const tiles = [
+    ["Corn",       p.corn],
+    ["Soy",        p.soy],
+    ["Wheat",      p.wheat],
+    ["Corn Dec",   p.corn_dec],
+    ["Soy Nov",    p.soy_nov],
+    ["Wheat Jul",  p.wheat_jul],
+  ];
+  strip.innerHTML = tiles.map(([k,v]) =>
+    `<div class="tile"><div class="label">${k}</div><div class="val">${fmt(v)}</div></div>`
+  ).join("");
+
+  const tbody = document.querySelector("#sigs tbody");
+  if (!s.signals.length) {
+    tbody.innerHTML = `<tr><td colspan="7" style="color:var(--muted)">no signals</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = s.signals.map(r => `
+    <tr>
+      <td>${r.contract_id}</td>
+      <td>${r.commodity}</td>
+      <td>${String(r.futures_year).slice(2)}-${String(r.futures_month).padStart(2,"0")}</td>
+      <td style="text-align:right">${fmt(r.live)}</td>
+      <td style="text-align:right">${fmt(r.target_price)}</td>
+      <td class="status-${r.status}">${r.status}</td>
+      <td>${r.note || ""}</td>
+    </tr>`).join("");
+}
+load().catch(e => {
+  document.getElementById("sub").textContent = "failed to load — the Action may not have run yet";
+  console.error(e);
+});
+</script>
+</body>
+</html>

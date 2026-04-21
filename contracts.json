@@ -1,0 +1,42 @@
+[
+  {
+    "contract_id":   "HTA-001",
+    "commodity":     "corn",
+    "contract_type": "HTA",
+    "futures_year":  2026,
+    "futures_month": 12,
+    "futures_price": 4.65,
+    "basis_cost":    null,
+    "quantity":      10000
+  },
+  {
+    "contract_id":   "HTA-002",
+    "commodity":     "corn",
+    "contract_type": "HTA",
+    "futures_year":  2027,
+    "futures_month": 3,
+    "futures_price": 4.82,
+    "basis_cost":    null,
+    "quantity":      5000
+  },
+  {
+    "contract_id":   "BAS-007",
+    "commodity":     "soybean",
+    "contract_type": "BASIS",
+    "futures_year":  2027,
+    "futures_month": 1,
+    "futures_price": null,
+    "basis_cost":    -0.35,
+    "quantity":      12000
+  },
+  {
+    "contract_id":   "CSH-012",
+    "commodity":     "wheat",
+    "contract_type": "CASH",
+    "futures_year":  2026,
+    "futures_month": 7,
+    "futures_price": 5.40,
+    "basis_cost":    0.10,
+    "quantity":      3000
+  }
+]
