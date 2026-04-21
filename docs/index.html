@@ -42,6 +42,14 @@
     .tile  { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
     .tile .label { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .04em; }
     .tile .val   { font-size: 18px; font-weight: 600; margin-top: 2px; font-variant-numeric: tabular-nums; }
+    .tile .val-row { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px; }
+    .tile .tile-chg { font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: .01em; }
+    .tile .tile-chg.up   { color: var(--hit); }
+    .tile .tile-chg.down { color: var(--burn); }
+    .tile .tile-chg.flat { color: var(--muted); }
+    .tile .tile-sub { font-size: 11px; color: var(--muted); margin-top: 4px; font-variant-numeric: tabular-nums; line-height: 1.3; }
+    .tile .tile-bar { height: 3px; background: var(--line); border-radius: 2px; margin-top: 5px; position: relative; overflow: hidden; }
+    .tile .tile-bar > i { position: absolute; top: -2px; width: 2px; height: 7px; background: var(--ink); border-radius: 1px; }
 
     /* Tables scroll horizontally on mobile */
     .tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--line); border-radius: 10px; background: #fff; }
@@ -871,6 +879,48 @@ const fmt   = v => v == null || isNaN(v) ? "—" : (+v).toFixed(4);
 const fmt2  = v => v == null || isNaN(v) ? "—" : (+v).toFixed(2);
 const fmtBu = v => v == null ? "—" : v.toLocaleString();
 
+/* Price tile with day-over-day delta + rolling range indicator.
+   Gracefully degrades to bare price when `detail` is absent — so an
+   un-enriched prices.json (older snapshot, cold-start history) still
+   renders. */
+function renderTile({ label, value, detail }) {
+  const chgPct = detail?.day_chg_pct;
+  const chgAbs = detail?.day_chg;
+  let chgHtml = "";
+  if (chgPct != null && !isNaN(chgPct)) {
+    const cls = chgPct > 0 ? "up" : chgPct < 0 ? "down" : "flat";
+    const arrow = chgPct > 0 ? "▲" : chgPct < 0 ? "▼" : "▪";
+    const pctTxt = `${chgPct > 0 ? "+" : ""}${chgPct.toFixed(2)}%`;
+    const absTxt = chgAbs != null ? ` (${chgAbs > 0 ? "+$" : chgAbs < 0 ? "-$" : "$"}${Math.abs(chgAbs).toFixed(3)})` : "";
+    chgHtml = `<span class="tile-chg ${cls}" title="Day-over-day change${absTxt}">${arrow} ${pctTxt}</span>`;
+  }
+
+  let subHtml = "";
+  if (detail && detail.low_range != null && detail.high_range != null && value != null) {
+    const days = detail.range_days || 0;
+    const rangeLabel = days >= 240 ? "52w" : days >= 30 ? `${days}d` : "";
+    const span = detail.high_range - detail.low_range;
+    if (rangeLabel && span > 0) {
+      const pctInRange = Math.max(0, Math.min(100, ((value - detail.low_range) / span) * 100));
+      subHtml =
+        `<div class="tile-sub">${rangeLabel} $${detail.low_range.toFixed(2)}–$${detail.high_range.toFixed(2)}</div>` +
+        `<div class="tile-bar" title="${value.toFixed(3)} is ${pctInRange.toFixed(0)}% of the ${rangeLabel} range">` +
+          `<i style="left:${pctInRange.toFixed(1)}%"></i></div>`;
+    }
+  }
+
+  return (
+    `<div class="tile">` +
+      `<div class="label">${label}</div>` +
+      `<div class="val-row">` +
+        `<div class="val">${fmt2(value)}</div>` +
+        chgHtml +
+      `</div>` +
+      subHtml +
+    `</div>`
+  );
+}
+
 function statePill(state) {
   const map = {
     HIT:     ["pill-hit",     "Hit"],
@@ -1322,17 +1372,16 @@ async function load() {
     (l.sms_fired ? ` · ${l.sms_fired} SMS fired this run` : "");
 
   const strip = document.getElementById("strip");
+  const detail = p.detail || {};
   const tiles = [
-    ["Corn",      p.corn],
-    ["Soy",       p.soy],
-    ["Wheat",     p.wheat],
-    ["Corn Dec",  p.corn_dec],
-    ["Soy Nov",   p.soy_nov],
-    ["Wheat Jul", p.wheat_jul],
+    { label: "Corn",      value: p.corn,      detail: detail.corn  },
+    { label: "Soy",       value: p.soy,       detail: detail.soy   },
+    { label: "Wheat",     value: p.wheat,     detail: detail.wheat },
+    { label: "Corn Dec",  value: p.corn_dec,  detail: detail.corn  },
+    { label: "Soy Nov",   value: p.soy_nov,   detail: detail.soy   },
+    { label: "Wheat Jul", value: p.wheat_jul, detail: detail.wheat },
   ];
-  strip.innerHTML = tiles.map(([k,v]) =>
-    `<div class="tile"><div class="label">${k}</div><div class="val">${fmt(v)}</div></div>`
-  ).join("");
+  strip.innerHTML = tiles.map(renderTile).join("");
 
   const tbody = document.querySelector("#sigs tbody");
   tbody.innerHTML = s.signals.length

@@ -2,13 +2,13 @@
   "corn|2026-12|SELL|4.8500": {
     "last_fired": null,
     "last_price": 4.565,
-    "last_updated": "2026-04-21T19:54:34.049286+00:00",
+    "last_updated": "2026-04-21T22:20:29.807894+00:00",
     "status": "WAIT"
   },
   "corn|2027-03|SELL|5.0200": {
     "last_fired": null,
     "last_price": 4.565,
-    "last_updated": "2026-04-21T19:54:34.049286+00:00",
+    "last_updated": "2026-04-21T22:20:29.807894+00:00",
     "status": "WAIT"
   }
 }

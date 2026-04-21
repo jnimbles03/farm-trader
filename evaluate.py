@@ -50,6 +50,7 @@ CONTRACTS    = ROOT / "contracts.json"
 DOCS_DIR     = ROOT / "docs"
 STATE_DIR    = ROOT / "state"
 STATE_FILE   = STATE_DIR / "alerts_state.json"
+HISTORY_FILE = STATE_DIR / "price_history.json"
 PRICES_FILE  = DOCS_DIR / "prices.json"
 SIGNALS_FILE = DOCS_DIR / "signals.json"
 LASTRUN_FILE = DOCS_DIR / "last_run.json"
@@ -120,7 +121,11 @@ _cache: dict[str, float] = {}
 # Stooq is happy to serve CSV from datacenter IPs (GitHub Actions, etc.),
 # unlike Yahoo which blocks yfinance and the chart API with 429s.
 # Row format: Symbol,Date,Time,Open,High,Low,Close,Volume
-def _fetch_raw(symbol: str) -> float:
+#
+# Returns (close, date_str). Stooq's free daily-history endpoint now requires
+# an API key, so we only use this light quote endpoint and accumulate our
+# own history in state/price_history.json across runs.
+def _fetch_raw(symbol: str) -> tuple[float, str]:
     url = f"https://stooq.com/q/l/?s={symbol}&f=sd2t2ohlcv&h&e=csv"
     with httpx.Client(timeout=10, follow_redirects=True) as c:
         r = c.get(url)
@@ -129,10 +134,95 @@ def _fetch_raw(symbol: str) -> float:
     if len(lines) < 2:
         raise RuntimeError(f"no rows for {symbol}")
     cols = lines[1].split(",")
+    date  = cols[1] if len(cols) > 1 else ""
     close = cols[6] if len(cols) > 6 else "N/D"
     if close in ("N/D", ""):
         raise RuntimeError(f"no close for {symbol}")
-    return float(close)
+    return float(close), date
+
+
+# ---------------------------------------------------------------------------
+# Self-accumulating daily history
+# ---------------------------------------------------------------------------
+#
+# Stooq's /q/d/l/ (full daily history) now gates behind an API key, so we
+# build our own rolling file at state/price_history.json. Each GitHub
+# Actions run appends the latest close if the date is new, trims to the
+# last ~260 trading days (~1 year), and commits the file back. First
+# few runs won't have day_chg/52w yet — dashboard degrades gracefully.
+
+HISTORY_MAX = 260  # trading days retained per symbol
+
+def load_history() -> dict[str, list[list[Any]]]:
+    if not HISTORY_FILE.exists():
+        return {}
+    try:
+        return json.loads(HISTORY_FILE.read_text())
+    except json.JSONDecodeError as e:
+        log.error("price_history is corrupt, resetting: %s", e)
+        return {}
+
+
+def save_history(hist: dict[str, list[list[Any]]]) -> None:
+    HISTORY_FILE.write_text(json.dumps(hist, indent=2, sort_keys=True) + "\n")
+
+
+def _append_history(hist: dict[str, list[list[Any]]],
+                    key: str, date: str, close_dollar: float) -> None:
+    """Upsert today's close under `key`, keep the series sorted + trimmed.
+
+    Uses a dict to dedupe by date (later writes for the same trade date win —
+    useful when an intraday run later gets corrected to an official close).
+    """
+    if not date or close_dollar is None:
+        return
+    series = hist.get(key) or []
+    by_date = {row[0]: row[1] for row in series}
+    by_date[date] = round(close_dollar, 4)
+    merged = sorted(by_date.items())
+    if len(merged) > HISTORY_MAX:
+        merged = merged[-HISTORY_MAX:]
+    hist[key] = [[d, p] for d, p in merged]
+
+
+def _price_detail(key: str, hist: dict[str, list[list[Any]]],
+                  live: float | None = None, as_of: str | None = None) -> dict[str, Any]:
+    """
+    Derive day-over-day change + rolling range from the accumulated history.
+    If `live` + `as_of` are provided, they take precedence as "latest close" —
+    this keeps the top-level price and the detail block in lockstep even when
+    the seeded bootstrap has a newer row than Stooq's end-of-day feed.
+    """
+    series = hist.get(key) or []
+    if not series and live is None:
+        return {}
+
+    # Resolve latest close
+    if live is not None:
+        last = live
+        last_date = as_of or (series[-1][0] if series else "")
+    else:
+        last_date, last = series[-1]
+
+    # Find the most recent entry in history strictly before last_date
+    prev = None
+    for d, p in reversed(series):
+        if d < last_date:
+            prev = p
+            break
+
+    chg     = (last - prev) if prev is not None else None
+    chg_pct = (chg / prev * 100) if prev else None
+    highs = [row[1] for row in series] + ([last] if live is not None else [])
+    return {
+        "prev_close":  round(prev, 4)    if prev is not None else None,
+        "day_chg":     round(chg, 4)     if chg is not None else None,
+        "day_chg_pct": round(chg_pct, 2) if chg_pct is not None else None,
+        "high_range":  round(max(highs), 4),
+        "low_range":   round(min(highs), 4),
+        "range_days":  len(series),
+        "as_of":       last_date,
+    }
 
 
 def get_price(commodity: str,
@@ -144,7 +234,7 @@ def get_price(commodity: str,
     if sym in _cache:
         return _cache[sym] * scale
     try:
-        raw = _fetch_raw(sym)
+        raw, _date = _fetch_raw(sym)
         _cache[sym] = raw
         return raw * scale
     except Exception as e:
@@ -154,12 +244,28 @@ def get_price(commodity: str,
             # continuous front-month so the row still renders.
             try:
                 fallback = stooq_symbol(commodity)
-                raw = _cache.get(fallback) or _fetch_raw(fallback)
-                _cache[fallback] = raw
+                if fallback in _cache:
+                    raw = _cache[fallback]
+                else:
+                    raw, _ = _fetch_raw(fallback)
+                    _cache[fallback] = raw
                 return raw * scale
             except Exception as e2:
                 log.warning("continuous fallback failed: %s", e2)
         return None
+
+
+def get_price_with_date(commodity: str) -> tuple[float | None, str | None]:
+    """Dollar-denominated last close + its trade date, for history recording."""
+    scale = GRAIN_SCALE.get(commodity.lower(), 1.0)
+    sym = stooq_symbol(commodity)
+    try:
+        raw, date = _fetch_raw(sym)
+        _cache[sym] = raw
+        return raw * scale, date
+    except Exception as e:
+        log.warning("dated fetch failed for %s: %s", sym, e)
+        return None, None
 
 
 # ---------------------------------------------------------------------------
@@ -275,13 +381,27 @@ def build_prices_snapshot() -> dict[str, Any]:
     Response shape matches what freis-farm-v5.jsx fetchGrainPrices() expects.
     Fields that fail to fetch stay null; the React site's existing null-guard
     keeps it from crashing.
+
+    Side effect: appends today's close for corn/soy/wheat to
+    state/price_history.json, which backs the day-change / range detail.
     """
-    corn_front  = get_price("corn")
-    soy_front   = get_price("soybean")
-    wheat_front = get_price("wheat")
+    corn_front_date  = get_price_with_date("corn")
+    soy_front_date   = get_price_with_date("soybean")
+    wheat_front_date = get_price_with_date("wheat")
+    corn_front,  corn_date  = corn_front_date
+    soy_front,   soy_date   = soy_front_date
+    wheat_front, wheat_date = wheat_front_date
+
     corn_dec    = get_price("corn",    2026, 12)
     soy_nov     = get_price("soybean", 2026, 11)
     wheat_jul   = get_price("wheat",   2026,  7)
+
+    # Accumulate history and persist
+    hist = load_history()
+    if corn_front  is not None: _append_history(hist, "corn",  corn_date,  corn_front)
+    if soy_front   is not None: _append_history(hist, "soy",   soy_date,   soy_front)
+    if wheat_front is not None: _append_history(hist, "wheat", wheat_date, wheat_front)
+    save_history(hist)
 
     def r(v): return round(v, 4) if v is not None else None
 
@@ -294,6 +414,11 @@ def build_prices_snapshot() -> dict[str, Any]:
         "wheat_jul":     r(wheat_jul),
         "corn_basis_il": None,   # Yahoo doesn't carry IL cash basis
         "soy_basis_il":  None,
+        "detail": {
+            "corn":  _price_detail("corn",  hist, corn_front,  corn_date),
+            "soy":   _price_detail("soy",   hist, soy_front,   soy_date),
+            "wheat": _price_detail("wheat", hist, wheat_front, wheat_date),
+        },
         "date":          datetime.now(timezone.utc).strftime("%Y-%m-%d"),
         "source":        "stooq (end-of-day close)",
         "generated_at":  datetime.now(timezone.utc).isoformat(),

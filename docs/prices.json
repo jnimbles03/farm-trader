@@ -7,7 +7,36 @@
   "wheat_jul": 5.995,
   "corn_basis_il": null,
   "soy_basis_il": null,
+  "detail": {
+    "corn": {
+      "prev_close": 4.4875,
+      "day_chg": 0.0775,
+      "day_chg_pct": 1.73,
+      "high_range": 4.8175,
+      "low_range": 3.715,
+      "range_days": 252,
+      "as_of": "2026-04-20"
+    },
+    "soy": {
+      "prev_close": 11.6725,
+      "day_chg": -0.2725,
+      "day_chg_pct": -2.33,
+      "high_range": 12.13,
+      "low_range": 9.615,
+      "range_days": 252,
+      "as_of": "2026-04-20"
+    },
+    "wheat": {
+      "prev_close": 5.9125,
+      "day_chg": 0.0825,
+      "day_chg_pct": 1.4,
+      "high_range": 6.185,
+      "low_range": 4.95,
+      "range_days": 252,
+      "as_of": "2026-04-20"
+    }
+  },
   "date": "2026-04-21",
   "source": "stooq (end-of-day close)",
-  "generated_at": "2026-04-21T19:54:34.048742+00:00"
+  "generated_at": "2026-04-21T22:20:29.807458+00:00"
 }
