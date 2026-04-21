@@ -492,6 +492,17 @@ def evaluate_signals(state: dict[str, dict[str, Any]]) -> tuple[list[dict[str, A
 
 
 def main() -> int:
+    # --test-sms: smoke-test the TextBelt pipeline by firing one message,
+    # writing no other outputs. Exits 0 on success, 1 on failure.
+    if "--test-sms" in sys.argv:
+        log.info("evaluate --test-sms: firing test message")
+        msg = (f"FREIS FARM test SMS — "
+               f"{datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')} — "
+               f"if you got this, the pipeline works.")
+        ok = send_sms(msg)
+        log.info("test SMS %s", "DELIVERED" if ok else "FAILED")
+        return 0 if ok else 1
+
     log.info("evaluate starting")
     state = load_state()
 
