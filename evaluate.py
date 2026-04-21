@@ -549,15 +549,58 @@ def evaluate_signals(state: dict[str, dict[str, Any]]) -> tuple[list[dict[str, A
 
 
 def main() -> int:
-    # --test-sms: smoke-test the TextBelt pipeline by firing one message,
-    # writing no other outputs. Exits 0 on success, 1 on failure.
+    # --test-sms: smoke-test the SMS pipeline by firing one message. Writes
+    # no other outputs. Polls Twilio for final status so the job tells the
+    # truth about carrier delivery, not just queueing. Exits 0 on delivered.
     if "--test-sms" in sys.argv:
         log.info("evaluate --test-sms: firing test message")
         msg = (f"FREIS FARM test SMS — "
                f"{datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')} — "
                f"if you got this, the pipeline works.")
+        # Capture the Twilio sid so we can poll; the shared send_sms() only
+        # returns bool. Call Twilio directly here when configured.
+        import time
+        final_status: str | None = None
+        if TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN and TWILIO_FROM and ALERT_PHONE:
+            url = f"https://api.twilio.com/2010-04-01/Accounts/{TWILIO_ACCOUNT_SID}/Messages.json"
+            r = httpx.post(
+                url,
+                auth=(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN),
+                data={"From": TWILIO_FROM, "To": ALERT_PHONE, "Body": msg},
+                timeout=15.0,
+            )
+            try:
+                body = r.json()
+            except Exception:
+                body = {}
+            sid = body.get("sid")
+            err_code = body.get("error_code") or body.get("code")
+            err_msg  = body.get("error_message") or body.get("message")
+            log.info("twilio create: http=%d sid=%s status=%s err_code=%s err_msg=%s",
+                     r.status_code, sid, body.get("status"), err_code, err_msg)
+            if not sid or r.status_code >= 300 or err_code:
+                return 1
+            # Poll up to 30s for a terminal status
+            poll_url = f"https://api.twilio.com/2010-04-01/Accounts/{TWILIO_ACCOUNT_SID}/Messages/{sid}.json"
+            for i in range(10):
+                time.sleep(3)
+                p = httpx.get(poll_url, auth=(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN), timeout=15.0)
+                try:
+                    pbody = p.json()
+                except Exception:
+                    pbody = {}
+                status = pbody.get("status")
+                pec    = pbody.get("error_code")
+                pem    = pbody.get("error_message")
+                log.info("twilio poll[%d]: status=%s err_code=%s err_msg=%s", i + 1, status, pec, pem)
+                if status in ("delivered", "undelivered", "failed", "sent"):
+                    final_status = status
+                    break
+            log.info("test SMS final status: %s", final_status or "unknown (still queued/sending)")
+            return 0 if final_status == "delivered" else 1
+        # Fallback: TextBelt path — only tells us whether it was accepted
         ok = send_sms(msg)
-        log.info("test SMS %s", "DELIVERED" if ok else "FAILED")
+        log.info("test SMS %s", "ACCEPTED" if ok else "FAILED")
         return 0 if ok else 1
 
     log.info("evaluate starting")
