@@ -301,6 +301,12 @@
     .chart-legend { display: flex; gap: 12px; font-size: 11px; color: var(--muted); margin-bottom: 6px; flex-wrap: wrap; }
     .chart-legend .sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: middle; }
     .chart-caption { font-size: 11px; color: var(--muted); margin-top: 4px; }
+    details.chart-caption > summary {
+      cursor: pointer; font-size: 11px; color: var(--ink); font-weight: 600;
+      padding: 4px 0; user-select: none; list-style-position: outside;
+    }
+    details.chart-caption[open] > summary { margin-bottom: 4px; }
+    details.chart-caption > summary:hover { color: var(--corn); }
 
     /* Calendar + tranche tiny-table */
     .calendar td:first-child { white-space: nowrap; font-weight: 600; width: 90px; }
@@ -459,11 +465,11 @@
   </p>
   <div class="chart-wrap">
     <div class="chart-legend">
-      <span><span class="sw" style="background:var(--corn); border-radius:50%"></span>Corn (solid line, ● circles)</span>
-      <span><span class="sw" style="background:var(--soy)"></span>Soy (dashed line, ■ squares)</span>
-      <span><span class="sw" style="background:#fff; border:2px solid var(--ink); border-radius:50%"></span>Today's price</span>
-      <span><span class="sw" style="background:var(--corn); border-radius:50%; opacity:.9"></span>Sell-plan numbered T1–T4</span>
-      <span><span class="sw" style="background:#8a3324; transform: rotate(45deg)"></span>USDA catalyst</span>
+      <span><span class="sw" style="background:var(--corn); border-radius:50%"></span>Corn ●</span>
+      <span><span class="sw" style="background:var(--soy)"></span>Soy ■</span>
+      <span><span class="sw" style="background:#fff; border:2px solid var(--ink); border-radius:50%"></span>Today ○</span>
+      <span><span class="sw" style="background:var(--corn); border-radius:50%; opacity:.9"></span>Plan T1–T4</span>
+      <span><span class="sw" style="background:#8a3324; transform: rotate(45deg)"></span>USDA ◆</span>
     </div>
     <svg id="seasonal-chart" viewBox="0 0 900 310" width="100%" height="auto" aria-label="Seasonal price index chart" preserveAspectRatio="xMidYMid meet">
       <g font-family="inherit" font-size="11" fill="#6b6b6b">
@@ -509,12 +515,14 @@
       <!-- today marker (populated by JS) — drawn last, sits on top -->
       <g id="seasonal-today" font-family="inherit"></g>
     </svg>
-    <div class="chart-caption">
+    <details class="chart-caption">
+      <summary>How to read this chart</summary>
       <strong>Why this plan:</strong> the solid curves are the 45-year seasonal pattern (corn peaks +13% in June, soy peaks +11% in July; both lows at Oct harvest; holds 80–90% of years).
       <strong>Numbered dots (T1–T4)</strong> are your pre-committed sell tranches placed at target % of Oct low — the plan your Today's Call is executing against.
       <strong>Today's open dot</strong> is live price vs. that normalized history — above the curve = market running hotter than seasonal (sell pressure up), below = lagging (wait or stay patient).
       <strong>Diamonds/triangles/ticks</strong> near the bottom are upcoming USDA reports: red diamonds are major movers (Plantings Mar 31, Acreage Jun 30, Aug WASDE), brown triangles are meaningful (Outlook, May/Jul WASDE, quarterly Stocks), gray ticks are routine WASDE.
-    </div>
+      <em style="display:block; margin-top:6px; color:var(--muted); font-size:11px">Tip: hover any dot, diamond, triangle or peak marker for details.</em>
+    </details>
   </div>
 
   <!-- ───────── MARKETING CALENDAR ───────── -->
@@ -1030,27 +1038,21 @@ function renderSeasonalDots(prices) {
     <text x="${x.toFixed(1)}" y="22" text-anchor="middle" font-size="10" fill="#444" font-weight="700">today</text>
   </g>`);
 
-  function dot(pct, color, priceLabel, side, shape, cropLabel) {
+  function dot(pct, color, priceLabel, shape, cropLabel) {
     const cy = seasonalY(pct);
-    const off = side === "right" ? 9 : -9;
-    const anchor = side === "right" ? "start" : "end";
-    const clampStar = (pct < 97 || pct > 115) ? "*" : "";
     const vsSeasonal = pct >= 100 ? `${(pct - 100).toFixed(1)}% above Oct low` : `${(100 - pct).toFixed(1)}% below Oct low`;
     const tip = `Today · ${cropLabel} ${priceLabel} — ${vsSeasonal} (${pct.toFixed(1)}% of Oct low baseline)`;
-    // Circle for corn, square for soy — shape + color = colorblind-safe distinction
+    // Shape only — prices are in the top stat strip. Hover reveals the context.
     const shapeSvg = shape === "square"
       ? `<rect x="${(x-6).toFixed(1)}" y="${(cy-6).toFixed(1)}" width="12" height="12" fill="#fff" stroke="${color}" stroke-width="2"/>
          <rect x="${(x-2.5).toFixed(1)}" y="${(cy-2.5).toFixed(1)}" width="5" height="5" fill="${color}"/>`
       : `<circle cx="${x.toFixed(1)}" cy="${cy.toFixed(1)}" r="6" fill="#fff" stroke="${color}" stroke-width="2"/>
          <circle cx="${x.toFixed(1)}" cy="${cy.toFixed(1)}" r="2.5" fill="${color}"/>`;
-    return `<g><title>${tip}</title>${shapeSvg}
-      <text x="${(x + off).toFixed(1)}" y="${(cy + 4).toFixed(1)}" text-anchor="${anchor}" font-size="10" fill="${color}" font-weight="700">
-        ${priceLabel} · ${pct.toFixed(0)}%${clampStar}
-      </text></g>`;
+    return `<g style="cursor:help"><title>${tip}</title>${shapeSvg}</g>`;
   }
 
-  if (cornPct != null) parts.push(dot(cornPct, "#1b7a3a", "$" + fmt2(prices.corn), "right", "circle", "Corn"));
-  if (soyPct  != null) parts.push(dot(soyPct,  "#a8722c", "$" + fmt2(prices.soy ), "left",  "square", "Soy"));
+  if (cornPct != null) parts.push(dot(cornPct, "#1b7a3a", "$" + fmt2(prices.corn), "circle", "Corn"));
+  if (soyPct  != null) parts.push(dot(soyPct,  "#a8722c", "$" + fmt2(prices.soy ), "square", "Soy"));
 
   g.innerHTML = parts.join("");
 }
@@ -1069,7 +1071,6 @@ function renderSeasonalSchedule() {
   const parts = [];
 
   for (const cfg of [STRATEGY.corn, STRATEGY.soy]) {
-    const yOffset = cfg.key === "corn" ? -12 : 14; // label above for corn, below for soy
     for (const tr of cfg.tranches) {
       const s = new Date(2001, tr.winS[0] - 1, tr.winS[1]);
       const e = new Date(2001, tr.winE[0] - 1, tr.winE[1]);
@@ -1106,10 +1107,8 @@ function renderSeasonalSchedule() {
       } else {
         shapeSvg = `<rect x="${(x-7).toFixed(1)}" y="${(y-7).toFixed(1)}" width="14" height="14" fill="${cfg.color}" fill-opacity="${opacity}" stroke="#fff" stroke-width="1.2"${dash}/>`;
       }
-      // tiny label above/below the dot with target
-      const labelTxt = tr.mult ? (tr.mult * 100).toFixed(0) + "%" : "cal";
-      // Wrap shape + numeric + label in a <g> with <title> so hover reveals full context
-      parts.push(`<g style="cursor:help"><title>${tip}</title>${shapeSvg}<text x="${x.toFixed(1)}" y="${(y + 3).toFixed(1)}" text-anchor="middle" font-size="8" fill="#fff" font-weight="700">${num}</text><text x="${x.toFixed(1)}" y="${(y + yOffset).toFixed(1)}" text-anchor="middle" font-size="9" fill="${cfg.color}" font-weight="600">${labelTxt}</text></g>`);
+      // Number inside dot + hover tooltip convey target — no external % label needed.
+      parts.push(`<g style="cursor:help"><title>${tip}</title>${shapeSvg}<text x="${x.toFixed(1)}" y="${(y + 3).toFixed(1)}" text-anchor="middle" font-size="8" fill="#fff" font-weight="700">${num}</text></g>`);
     }
   }
 
