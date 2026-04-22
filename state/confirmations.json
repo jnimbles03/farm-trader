@@ -3,6 +3,8 @@
     "message": "FREIS FARM SELL: Corn Dec '26 at $4.75 (target $4.74). 8,250 bu \u2014 Tranche 1 (25%). Reply Y to confirm, N to veto.",
     "recipients": {
       "+16302479950": {
+        "last_reminded_at": "2026-04-22T19:05:29.356291+00:00",
+        "reminders_sent": 1,
         "vote": null
       }
     },
