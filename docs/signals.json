@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-21T22:20:29.807917+00:00",
+  "generated_at": "2026-04-22T13:32:34.805522+00:00",
   "signals": [
     {
       "signal_key": "corn|2026-12|SELL|4.8500",
@@ -10,7 +10,7 @@
       "action": "SELL",
       "target_price": 4.85,
       "note": "locked + $0.20 on HTA-001",
-      "live": 4.565,
+      "live": 4.5825,
       "status": "WAIT",
       "prior_status": "WAIT",
       "last_fired": null
@@ -24,7 +24,7 @@
       "action": "SELL",
       "target_price": 5.02,
       "note": "locked + $0.20 on HTA-002",
-      "live": 4.565,
+      "live": 4.5825,
       "status": "WAIT",
       "prior_status": "WAIT",
       "last_fired": null
