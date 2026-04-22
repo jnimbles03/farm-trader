@@ -99,6 +99,12 @@ GRAIN_ROOT = {
     "oats":         "zo",
 }
 
+# For SMS readability — "Dec '26" beats "2026-12" at 6am.
+_MONTH_ABBR = ["",
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+]
+
 # Stooq quotes grains in cents/bu (ZC.C = 456.5 = $4.565/bu),
 # soy oil in cents/lb, soy meal in $/short ton. Normalize at the edge.
 GRAIN_SCALE = {
@@ -574,20 +580,27 @@ def evaluate_signals(state: dict[str, dict[str, Any]]) -> tuple[list[dict[str, A
         if should_fire:
             now = datetime.now(timezone.utc)
             recipients = _recipients()
-            base_msg = (f"FREIS FARM {s.action} target hit — "
-                        f"{s.commodity} {s.futures_year}-{s.futures_month:02d} "
-                        f"live {live:.4f} vs target {s.target_price:.4f} "
-                        f"({s.note})")
+            # Human-readable SMS body: lead with the action, then the
+            # contract in plain English ("corn Dec '26"), then the two
+            # prices that explain WHY this fired. Note comes last as
+            # parenthetical context.
+            month_abbr = _MONTH_ABBR[s.futures_month]
+            yr2 = f"'{s.futures_year % 100:02d}"
+            verb = "SELL" if s.action == "SELL" else "BUY BACK"
+            base_msg = (f"FREIS FARM {verb} alert: "
+                        f"{s.commodity} {month_abbr} {yr2} is at "
+                        f"${live:.2f} (target ${s.target_price:.2f}, "
+                        f"{s.note}).")
 
-            # If the webhook is configured, tag the message with a short_id
-            # and record the outbound so inbound replies can be matched up.
-            # Without a webhook we just send the alert — no confirmation flow.
+            # If the webhook is configured, record the outbound so the
+            # inbound collector can match a plain Y/N reply against the
+            # most recent pending for that phone. Short_id is kept in
+            # state for dashboard/debugging but no longer sent to the
+            # recipient — just say "Reply Y / N".
             sid: str | None = None
             if REPLY_WEBHOOK_URL and recipients:
                 sid = _short_id(s.signal_key, now)
-                msg = (base_msg +
-                       f". Reply 'Y {sid}' to confirm, "
-                       f"'N {sid}' to veto.")
+                msg = base_msg + " Reply Y to confirm, N to veto."
                 _record_outbound(sid, s.signal_key, msg, recipients)
             else:
                 msg = base_msg
@@ -660,8 +673,8 @@ def main() -> int:
         now = datetime.now(timezone.utc)
         fake_key = f"test|{now.strftime('%Y-%m-%dT%H-%M-%S')}|CONFIRM"
         sid = _short_id(fake_key, now)
-        msg = (f"FREIS FARM confirmation test — this is a drill, not a real "
-               f"signal. Reply 'Y {sid}' to confirm, 'N {sid}' to veto.")
+        msg = ("FREIS FARM confirmation test — this is a drill, not a "
+               "real signal. Reply Y to confirm, N to veto.")
         _record_outbound(sid, fake_key, msg, recipients)
         log.info("test-confirmation sid=%s recipients=%s",
                  sid, ", ".join(recipients))

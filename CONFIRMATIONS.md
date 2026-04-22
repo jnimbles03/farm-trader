@@ -1,9 +1,15 @@
 # SMS confirmation flow
 
-When a signal fires, every recipient in `ALERT_PHONE` gets a text with a
-6-char confirmation code. They reply `Y abc123` to confirm or `N abc123`
-to veto. When everyone confirms, the group gets a follow-up "all confirmed"
-SMS. Any veto immediately notifies the group.
+When a signal fires, every recipient in `ALERT_PHONE` gets a text and
+simply replies `Y` to confirm or `N` to veto. When everyone confirms,
+the group gets a follow-up "all confirmed" SMS. Any veto immediately
+notifies the group.
+
+A 6-char `short_id` is still minted internally so the dashboard / state
+file can distinguish simultaneous firings, but it's no longer printed
+in the outbound SMS — keeping replies to a single keystroke. The
+collector matches a bare `Y` / `N` against the *most recent* pending
+prompt for the replying phone number.
 
 ```
 evaluate.py (GHA cron)
@@ -71,13 +77,14 @@ takes ~10-20s).
 
 The collector accepts:
 
-- `Y abc123` / `y abc123` / `YES abc123` → confirm
-- `N abc123` / `n abc123` / `NO abc123` → veto
-- `Y` / `N` alone → inferred to the most recent pending prompt for that phone
+- `Y` / `y` / `YES` / `yes` → confirm (matched to most recent pending for that phone)
+- `N` / `n` / `NO` / `no` → veto (matched to most recent pending for that phone)
+- `Y abc123` / `N abc123` → confirm/veto explicitly by short_id (still supported for the dashboard / manual testing)
 - Anything else → stashed in `_orphans` for later review
 
 The 6-char code is hex (`[a-f0-9]{6}`), generated as the first 6 chars of
-`sha256(signal_key + iso_timestamp)` at send time.
+`sha256(signal_key + iso_timestamp)` at send time. It's kept in
+`state/confirmations.json` but not printed in outbound SMS.
 
 ## Disabling confirmations
 
@@ -88,12 +95,12 @@ reply instructions — the rest of the pipeline goes back to fire-and-forget.
 ## Testing the whole flow
 
 1. From the GitHub Actions tab, dispatch **Test SMS delivery**. You should
-   get a plain test SMS (no reply code — `test-sms.yml` deliberately
-   doesn't invoke the confirmation path).
+   get a plain test SMS (no confirmation tracking — `test-sms.yml`
+   deliberately doesn't invoke the confirmation path).
 2. Wait for the next scheduled `Evaluate grain signals` run (or dispatch it
    manually) with a signal in HIT state. You'll get an SMS ending with
-   `Reply 'Y abc123' to confirm, 'N abc123' to veto.`
-3. Reply `Y abc123`. Within ~20s, a new commit should appear on `main`
+   `Reply Y to confirm, N to veto.`
+3. Reply `Y`. Within ~20s, a new commit should appear on `main`
    from `freis-farm-bot` updating `state/confirmations.json`.
 4. When every recipient has replied Y, a final group SMS lands:
    `FREIS FARM OK All confirmed — <signal_key>`.
