@@ -552,16 +552,19 @@ def main() -> int:
     # --test-sms: smoke-test the SMS pipeline by firing one message. Writes
     # no other outputs. Polls Twilio for final status so the job tells the
     # truth about carrier delivery, not just queueing. Exits 0 on delivered.
+    # --force-textbelt: skip Twilio even if configured, use TextBelt path.
     if "--test-sms" in sys.argv:
         log.info("evaluate --test-sms: firing test message")
         msg = (f"FREIS FARM test SMS — "
                f"{datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')} — "
                f"if you got this, the pipeline works.")
+        force_textbelt = "--force-textbelt" in sys.argv
         # Capture the Twilio sid so we can poll; the shared send_sms() only
         # returns bool. Call Twilio directly here when configured.
         import time
         final_status: str | None = None
-        if TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN and TWILIO_FROM and ALERT_PHONE:
+        if (not force_textbelt
+            and TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN and TWILIO_FROM and ALERT_PHONE):
             url = f"https://api.twilio.com/2010-04-01/Accounts/{TWILIO_ACCOUNT_SID}/Messages.json"
             r = httpx.post(
                 url,

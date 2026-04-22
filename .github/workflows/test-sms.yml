@@ -6,6 +6,15 @@ name: Test SMS delivery
 # prices.json, signals.json, or state.
 on:
   workflow_dispatch:
+    inputs:
+      provider:
+        description: "SMS provider to test"
+        type: choice
+        required: true
+        default: "auto"
+        options:
+          - auto        # Twilio if configured, else TextBelt
+          - textbelt    # force TextBelt even when Twilio secrets exist
 
 permissions:
   contents: read
@@ -33,4 +42,9 @@ jobs:
           TWILIO_FROM:        ${{ secrets.TWILIO_FROM }}
           TEXTBELT_KEY:       ${{ secrets.TEXTBELT_KEY }}
           ALERT_PHONE:        ${{ secrets.ALERT_PHONE }}
-        run: python evaluate.py --test-sms
+        run: |
+          if [ "${{ inputs.provider }}" = "textbelt" ]; then
+            python evaluate.py --test-sms --force-textbelt
+          else
+            python evaluate.py --test-sms
+          fi
