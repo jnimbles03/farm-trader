@@ -36,12 +36,14 @@
         "vote": "Y"
       },
       "+16302479950": {
-        "vote": null
+        "raw": "Y",
+        "replied_at": "2026-04-22T23:48:34.250Z",
+        "vote": "Y"
       }
     },
     "sent_at": "2026-04-22T23:47:13.430042+00:00",
     "signal_key": "sim|corn|Dec '26|SELL|4.7400|2026-04-22T23:47:13",
-    "status": "pending"
+    "status": "confirmed"
   },
   "_orphans": [
     {
