@@ -1,4 +1,15 @@
 {
+  "20624a": {
+    "message": "FREIS FARM SELL: Corn Dec '26 at $4.75 (target $4.74). 8,250 bu \u2014 Tranche 1 (25%). Reply Y to confirm, N to veto.",
+    "recipients": {
+      "+16302479950": {
+        "vote": null
+      }
+    },
+    "sent_at": "2026-04-22T18:59:41.850032+00:00",
+    "signal_key": "sim|corn|Dec '26|SELL|4.7400|2026-04-22T18:59:41",
+    "status": "pending"
+  },
   "46061e": {
     "message": "FREIS FARM confirmation test \u2014 this is a drill, not a real signal. Reply 'Y 46061e' to confirm, 'N 46061e' to veto.",
     "recipients": {
@@ -20,18 +31,5 @@
       "text": "Y 460616",
       "vote": "Y"
     }
-  ],
-  "smoke1": {
-    "message": "FREIS FARM reminder-system smoke test (round 2)",
-    "recipients": {
-      "+16302479950": {
-        "last_reminded_at": "2026-04-22T18:35:03.613975+00:00",
-        "reminders_sent": 2,
-        "vote": null
-      }
-    },
-    "sent_at": "2026-04-22T18:00:40.698865+00:00",
-    "signal_key": "test|reminder-smoketest",
-    "status": "pending"
-  }
+  ]
 }

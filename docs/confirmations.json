@@ -1,4 +1,12 @@
 {
+  "20624a": {
+    "no": 0,
+    "sent_at": "2026-04-22T18:59:41.850032+00:00",
+    "signal_key": "sim|corn|Dec '26|SELL|4.7400|2026-04-22T18:59:41",
+    "status": "pending",
+    "total": 1,
+    "yes": 0
+  },
   "46061e": {
     "no": 0,
     "sent_at": "2026-04-22T04:03:14.657736+00:00",
@@ -6,13 +14,5 @@
     "status": "confirmed",
     "total": 1,
     "yes": 1
-  },
-  "smoke1": {
-    "no": 0,
-    "sent_at": "2026-04-22T18:00:40.698865+00:00",
-    "signal_key": "test|reminder-smoketest",
-    "status": "pending",
-    "total": 1,
-    "yes": 0
   }
 }
