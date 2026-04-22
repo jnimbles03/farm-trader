@@ -27,6 +27,20 @@
     "signal_key": "test|2026-04-22T04-03-14|CONFIRM",
     "status": "confirmed"
   },
+  "7596be": {
+    "message": "FREIS FARM SELL: Corn Dec '26 at $4.75 (target $4.74). 8,250 bu \u2014 Tranche 1 (25%). Reply Y to confirm, N to veto.",
+    "recipients": {
+      "+16232937553": {
+        "vote": null
+      },
+      "+16302479950": {
+        "vote": null
+      }
+    },
+    "sent_at": "2026-04-22T23:47:13.430042+00:00",
+    "signal_key": "sim|corn|Dec '26|SELL|4.7400|2026-04-22T23:47:13",
+    "status": "pending"
+  },
   "_orphans": [
     {
       "phone": "+16302479950",

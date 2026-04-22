@@ -14,5 +14,13 @@
     "status": "confirmed",
     "total": 1,
     "yes": 1
+  },
+  "7596be": {
+    "no": 0,
+    "sent_at": "2026-04-22T23:47:13.430042+00:00",
+    "signal_key": "sim|corn|Dec '26|SELL|4.7400|2026-04-22T23:47:13",
+    "status": "pending",
+    "total": 2,
+    "yes": 0
   }
 }
