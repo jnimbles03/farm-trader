@@ -4,13 +4,15 @@
     "recipients": {
       "+16302479950": {
         "last_reminded_at": "2026-04-22T19:05:29.356291+00:00",
+        "raw": "Y",
         "reminders_sent": 1,
-        "vote": null
+        "replied_at": "2026-04-22T19:32:03.969Z",
+        "vote": "Y"
       }
     },
     "sent_at": "2026-04-22T18:59:41.850032+00:00",
     "signal_key": "sim|corn|Dec '26|SELL|4.7400|2026-04-22T18:59:41",
-    "status": "pending"
+    "status": "confirmed"
   },
   "46061e": {
     "message": "FREIS FARM confirmation test \u2014 this is a drill, not a real signal. Reply 'Y 46061e' to confirm, 'N 46061e' to veto.",
