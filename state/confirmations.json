@@ -8,7 +8,7 @@
     },
     "sent_at": "2026-04-22T04:16:15.856351+00:00",
     "signal_key": "test|2026-04-22T04-16-15|CONFIRM",
-    "status": "pending"
+    "status": "confirmed"
   },
   "46061e": {
     "message": "FREIS FARM confirmation test \u2014 this is a drill, not a real signal. Reply 'Y 46061e' to confirm, 'N 46061e' to veto.",
