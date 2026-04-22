@@ -601,10 +601,15 @@ def main() -> int:
                     break
             log.info("test SMS final status: %s", final_status or "unknown (still queued/sending)")
             return 0 if final_status == "delivered" else 1
-        # Fallback: TextBelt path — only tells us whether it was accepted
-        ok = send_sms(msg)
-        log.info("test SMS %s", "ACCEPTED" if ok else "FAILED")
-        return 0 if ok else 1
+        # TextBelt path — used when Twilio isn't configured OR --force-textbelt.
+        # Calls the TextBelt helper directly so `send_sms()`'s internal
+        # Twilio preference doesn't override the forced path.
+        if TEXTBELT_KEY and ALERT_PHONE:
+            ok = _send_sms_textbelt(msg)
+            log.info("test SMS via textbelt: %s", "ACCEPTED" if ok else "FAILED")
+            return 0 if ok else 1
+        log.warning("test SMS skipped — no provider configured")
+        return 1
 
     log.info("evaluate starting")
     state = load_state()
