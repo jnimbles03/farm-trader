@@ -25,8 +25,8 @@
     "message": "FREIS FARM reminder-system smoke test (round 2)",
     "recipients": {
       "+16302479950": {
-        "last_reminded_at": "2026-04-22T18:09:10.698865+00:00",
-        "reminders_sent": 1,
+        "last_reminded_at": "2026-04-22T18:35:03.613975+00:00",
+        "reminders_sent": 2,
         "vote": null
       }
     },
