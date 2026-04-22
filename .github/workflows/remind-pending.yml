@@ -4,7 +4,7 @@ name: Remind pending confirmations
 #
 # Cadence knobs live in remind_pending.py itself (FIRST_REMINDER_DELAY,
 # REMINDER_INTERVAL, MAX_REMINDERS). Defaults: first nudge 5 min after
-# the original alert, then every 1 min, capped at 30 nudges per
+# the original alert, then every 1 min, capped at 5 nudges per
 # recipient.
 #
 # Cron runs every minute during the same window evaluate.yml covers.
