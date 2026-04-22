@@ -1,0 +1,209 @@
+#!/usr/bin/env python3
+"""
+One-shot realistic end-to-end test: send an initial alert SMS shaped
+like a real Tranche-1 corn fire (with price AND unit size), then
+record it as pending in state/confirmations.json so remind-pending.yml
+fires the 5-min reminder on schedule.
+
+Use this when you want to see what a production alert + reminder
+actually looks like on your phone. Fires one SMS; the remind-pending
+sweep handles any follow-up nudges.
+
+Env (set as workflow secrets or exported locally):
+
+  TEXTBELT_KEY       paid TextBelt key
+  ALERT_PHONE        comma-separated E.164 numbers
+  REPLY_WEBHOOK_URL  Cloudflare Worker URL for Y/N replies
+
+Optional overrides:
+
+  SIM_COMMODITY   default "corn"
+  SIM_CONTRACT    default "Dec '26"
+  SIM_LIVE        default "4.75"   (USD/bu)
+  SIM_TARGET      default "4.74"   (USD/bu)
+  SIM_QUANTITY    default "8250"   (bushels)
+  SIM_TRANCHE     default "Tranche 1 (25%)"
+"""
+
+from __future__ import annotations
+
+import hashlib
+import json
+import logging
+import os
+import sys
+from datetime import datetime, timezone
+from pathlib import Path
+
+import httpx
+
+
+ROOT               = Path(__file__).resolve().parent.parent
+STATE_DIR          = ROOT / "state"
+DOCS_DIR           = ROOT / "docs"
+CONFIRMATIONS_FILE = STATE_DIR / "confirmations.json"
+PUBLIC_CONF_FILE   = DOCS_DIR / "confirmations.json"
+
+TEXTBELT_KEY      = os.environ.get("TEXTBELT_KEY", "")
+ALERT_PHONE       = os.environ.get("ALERT_PHONE", "")
+REPLY_WEBHOOK_URL = os.environ.get("REPLY_WEBHOOK_URL", "")
+
+SIM_COMMODITY = os.environ.get("SIM_COMMODITY", "corn")
+SIM_CONTRACT  = os.environ.get("SIM_CONTRACT",  "Dec '26")
+SIM_LIVE      = float(os.environ.get("SIM_LIVE",     "4.75"))
+SIM_TARGET    = float(os.environ.get("SIM_TARGET",   "4.74"))
+SIM_QUANTITY  = int(os.environ.get("SIM_QUANTITY",   "8250"))
+SIM_TRANCHE   = os.environ.get("SIM_TRANCHE",    "Tranche 1 (25%)")
+
+logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
+log = logging.getLogger("send_realistic_test")
+
+
+# ---------------------------------------------------------------------------
+# State I/O (mirrors remind_pending.py / collect_reply.py)
+# ---------------------------------------------------------------------------
+
+def _load() -> dict:
+    if not CONFIRMATIONS_FILE.exists():
+        return {}
+    try:
+        return json.loads(CONFIRMATIONS_FILE.read_text())
+    except json.JSONDecodeError as e:
+        log.error("confirmations.json corrupt, refusing to overwrite: %s", e)
+        sys.exit(1)
+
+
+def _save(data: dict) -> None:
+    STATE_DIR.mkdir(exist_ok=True)
+    CONFIRMATIONS_FILE.write_text(
+        json.dumps(data, indent=2, sort_keys=True) + "\n"
+    )
+    sanitized: dict[str, dict] = {}
+    for sid, entry in data.items():
+        if sid.startswith("_"):
+            continue
+        recipients = entry.get("recipients", {})
+        sanitized[sid] = {
+            "signal_key": entry.get("signal_key"),
+            "sent_at":    entry.get("sent_at"),
+            "status":     entry.get("status"),
+            "total":      len(recipients),
+            "yes":        sum(1 for r in recipients.values() if r.get("vote") == "Y"),
+            "no":         sum(1 for r in recipients.values() if r.get("vote") == "N"),
+        }
+    DOCS_DIR.mkdir(exist_ok=True)
+    PUBLIC_CONF_FILE.write_text(
+        json.dumps(sanitized, indent=2, sort_keys=True) + "\n"
+    )
+
+
+def _recipients() -> list[str]:
+    return [p.strip() for p in ALERT_PHONE.split(",") if p.strip()]
+
+
+def _short_id(signal_key: str, when: datetime) -> str:
+    payload = f"{signal_key}|{when.isoformat()}".encode()
+    return hashlib.sha256(payload).hexdigest()[:6]
+
+
+def _drop_stale_sim_entries(data: dict) -> None:
+    """Keep the state file from accumulating old sim/smoke pending rows.
+
+    Leaves anything that isn't a previous run of this script alone —
+    real signals, resolved tests, and orphan replies all stay put.
+    """
+    stale: list[str] = []
+    for k, v in data.items():
+        if k.startswith("_"):
+            continue
+        if v.get("status") != "pending":
+            continue
+        sig = v.get("signal_key", "")
+        is_sim  = sig.startswith("sim|") or sig.startswith("test|reminder-smoketest")
+        is_old  = k in ("smoke1", "smoke-test")
+        if is_sim or is_old:
+            stale.append(k)
+    for k in stale:
+        log.info("dropping stale pending entry %s", k)
+        data.pop(k, None)
+
+
+# ---------------------------------------------------------------------------
+# Send
+# ---------------------------------------------------------------------------
+
+def _send(phone: str, message: str) -> bool:
+    payload = {"phone": phone, "message": message, "key": TEXTBELT_KEY}
+    if REPLY_WEBHOOK_URL:
+        payload["replyWebhookUrl"] = REPLY_WEBHOOK_URL
+    try:
+        r = httpx.post("https://textbelt.com/text", data=payload, timeout=15.0)
+        body = r.json()
+        log.info("textbelt[%s]: %s", phone, body)
+        return bool(body.get("success"))
+    except Exception as e:
+        log.exception("textbelt call failed for %s: %s", phone, e)
+        return False
+
+
+def _build_message() -> str:
+    """Production-shape SMS body: verb, contract, prices, size, tranche, reply."""
+    return (
+        f"FREIS FARM SELL: {SIM_COMMODITY.capitalize()} {SIM_CONTRACT} "
+        f"at ${SIM_LIVE:.2f} (target ${SIM_TARGET:.2f}). "
+        f"{SIM_QUANTITY:,} bu — {SIM_TRANCHE}. "
+        f"Reply Y to confirm, N to veto."
+    )
+
+
+# ---------------------------------------------------------------------------
+# Main
+# ---------------------------------------------------------------------------
+
+def main() -> int:
+    recipients = _recipients()
+    if not TEXTBELT_KEY:
+        log.error("TEXTBELT_KEY not set; aborting")
+        return 1
+    if not recipients:
+        log.error("ALERT_PHONE not set; aborting")
+        return 1
+
+    message = _build_message()
+    log.info("message (%d chars): %s", len(message), message)
+
+    now = datetime.now(timezone.utc)
+    signal_key = (
+        f"sim|{SIM_COMMODITY}|{SIM_CONTRACT}|SELL|{SIM_TARGET:.4f}|"
+        f"{now.strftime('%Y-%m-%dT%H:%M:%S')}"
+    )
+    sid = _short_id(signal_key, now)
+
+    # Send first; only stamp pending state if TextBelt accepted at least one
+    # recipient. Otherwise we'd leave a ghost row for remind-pending to chase.
+    any_ok = False
+    for phone in recipients:
+        if _send(phone, message):
+            any_ok = True
+
+    if not any_ok:
+        log.error("no recipient accepted; not recording pending state")
+        return 1
+
+    data = _load()
+    _drop_stale_sim_entries(data)
+    data[sid] = {
+        "signal_key": signal_key,
+        "sent_at":    now.isoformat(),
+        "message":    message,
+        "status":     "pending",
+        "recipients": {p: {"vote": None} for p in recipients},
+    }
+    _save(data)
+    log.info("recorded pending sid=%s; remind-pending will nudge at +5 min",
+             sid)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
