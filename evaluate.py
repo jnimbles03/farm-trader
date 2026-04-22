@@ -581,16 +581,16 @@ def evaluate_signals(state: dict[str, dict[str, Any]]) -> tuple[list[dict[str, A
             now = datetime.now(timezone.utc)
             recipients = _recipients()
             # Human-readable SMS body: lead with the action, then the
-            # contract in plain English ("corn Dec '26"), then the two
-            # prices that explain WHY this fired. Note comes last as
-            # parenthetical context.
+            # contract in plain English ("Corn Dec '26"), then the two
+            # prices that explain WHY this fired. Note (e.g. "locked +
+            # $0.20 on ABC") is stored in state but not shown on SMS —
+            # recipients have their own context for what the target is.
             month_abbr = _MONTH_ABBR[s.futures_month]
             yr2 = f"'{s.futures_year % 100:02d}"
             verb = "SELL" if s.action == "SELL" else "BUY BACK"
             base_msg = (f"FREIS FARM {verb} alert: "
-                        f"{s.commodity} {month_abbr} {yr2} is at "
-                        f"${live:.2f} (target ${s.target_price:.2f}, "
-                        f"{s.note}).")
+                        f"{s.commodity.capitalize()} {month_abbr} {yr2} is at "
+                        f"${live:.2f} (target ${s.target_price:.2f})")
 
             # If the webhook is configured, record the outbound so the
             # inbound collector can match a plain Y/N reply against the
@@ -600,10 +600,10 @@ def evaluate_signals(state: dict[str, dict[str, Any]]) -> tuple[list[dict[str, A
             sid: str | None = None
             if REPLY_WEBHOOK_URL and recipients:
                 sid = _short_id(s.signal_key, now)
-                msg = base_msg + " Reply Y to confirm, N to veto."
+                msg = base_msg + ", Reply Y to confirm, N to veto."
                 _record_outbound(sid, s.signal_key, msg, recipients)
             else:
-                msg = base_msg
+                msg = base_msg + "."
 
             if send_sms(msg, reply_webhook_url=REPLY_WEBHOOK_URL):
                 fired += 1
