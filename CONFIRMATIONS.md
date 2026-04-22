@@ -68,7 +68,9 @@ takes ~10-20s).
 | `cloudflare-worker/src/index.ts` | Verifies TextBelt HMAC, fires `repository_dispatch` |
 | `cloudflare-worker/wrangler.toml` | Worker config + public env vars |
 | `.github/workflows/collect-reply.yml` | Triggered by `repository_dispatch: sms_reply` |
+| `.github/workflows/remind-pending.yml` | Per-minute cron that re-pings non-responders |
 | `scripts/collect_reply.py` | Parses one reply, updates confirmations state, sends follow-up |
+| `scripts/remind_pending.py` | Sweeps pending entries, sends reminders to recipients with `vote: null` |
 | `state/confirmations.json` | Full state (includes phone numbers) — private |
 | `docs/confirmations.json` | Sanitized state (vote tallies only) — public, for dashboard |
 | `evaluate.py::_record_outbound` | Stamps outbound alerts into confirmations state |
@@ -86,11 +88,59 @@ The 6-char code is hex (`[a-f0-9]{6}`), generated as the first 6 chars of
 `sha256(signal_key + iso_timestamp)` at send time. It's kept in
 `state/confirmations.json` but not printed in outbound SMS.
 
+## Reminders for non-responders
+
+Recipients who ignore the original alert get re-pinged by
+`scripts/remind_pending.py`, fired by `.github/workflows/remind-pending.yml`
+on a per-minute cron in the same window as `evaluate.yml`.
+
+Default cadence (all configurable via workflow env vars):
+
+| Env var                | Default | Meaning                                        |
+|------------------------|---------|------------------------------------------------|
+| `FIRST_REMINDER_DELAY` | 300     | Seconds after `sent_at` before the 1st nudge   |
+| `REMINDER_INTERVAL`    | 60      | Seconds between subsequent nudges              |
+| `MAX_REMINDERS`        | 5       | Hard cap per recipient — after this, give up   |
+
+So a recipient who never replies gets nudged at roughly t+5min, t+6min,
+t+7min, t+8min, t+9min — then the sweep leaves them alone.
+
+Only recipients whose `vote` is still `null` on a `status: pending`
+entry get pinged. When they finally vote (or anyone votes `N`, flipping
+the entry to `vetoed`), the sweep stops touching them.
+
+Per-recipient bookkeeping is stamped into `state/confirmations.json`:
+
+```json
+"recipients": {
+  "+13125551234": {
+    "vote": null,
+    "last_reminded_at": "2026-04-22T14:12:03+00:00",
+    "reminders_sent": 3
+  }
+}
+```
+
+Important caveat: GitHub Actions cron drifts 0–15 min under load, so
+the "every 1 minute" cadence is really a ceiling. When a backed-up
+tick finally fires, the script catches up whatever was due. Don't
+count on 1-minute SMS precision here — if you need sub-minute
+guarantees, move the sweep to a real scheduler (e.g., Cloudflare Cron
+Triggers) the same way the reply worker lives there today.
+
+Cost note: every reminder to every non-responder burns 1 TextBelt
+credit. With defaults (5 reminders × N recipients), a fully-ignored
+alert consumes `5·N` credits before the cap kicks in.
+
 ## Disabling confirmations
 
 To turn the feature off, delete the `REPLY_WEBHOOK_URL` repo secret. The
 evaluator sees it as empty, skips the short_id, and sends alerts with no
 reply instructions — the rest of the pipeline goes back to fire-and-forget.
+
+To disable *just the reminders* while keeping the confirmation flow,
+comment out the `cron:` line in `.github/workflows/remind-pending.yml`
+and commit. `workflow_dispatch` still works for on-demand testing.
 
 ## Testing the whole flow
 
