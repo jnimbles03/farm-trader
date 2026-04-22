@@ -1,0 +1,13 @@
+name = "freis-farm-sms-reply"
+main = "src/index.ts"
+compatibility_date = "2026-04-01"
+
+# Required secrets — set with `wrangler secret put NAME`:
+#   TEXTBELT_KEY   same paid key used by evaluate.py; used to HMAC-verify
+#                  that inbound POSTs actually came from TextBelt
+#   GITHUB_TOKEN   fine-grained PAT scoped to jnimbles03/farm-trader with
+#                  "Contents: read/write" + "Actions: read/write" so the
+#                  worker can fire a repository_dispatch event
+
+[vars]
+GITHUB_REPO = "jnimbles03/farm-trader"

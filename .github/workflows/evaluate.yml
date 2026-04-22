@@ -36,9 +36,10 @@ jobs:
 
       - name: Evaluate
         env:
-          TEXTBELT_KEY:   ${{ secrets.TEXTBELT_KEY }}
-          ALERT_PHONE:    ${{ secrets.ALERT_PHONE }}
-          ALERT_COOLDOWN: "86400"
+          TEXTBELT_KEY:      ${{ secrets.TEXTBELT_KEY }}
+          ALERT_PHONE:       ${{ secrets.ALERT_PHONE }}
+          REPLY_WEBHOOK_URL: ${{ secrets.REPLY_WEBHOOK_URL }}
+          ALERT_COOLDOWN:    "86400"
         run: python evaluate.py
 
       - name: Commit updated prices + state

@@ -30,6 +30,7 @@ is the workflow's job; state persistence is git commits.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 import os
@@ -46,15 +47,17 @@ import httpx
 # Paths
 # ---------------------------------------------------------------------------
 
-ROOT         = Path(__file__).resolve().parent
-CONTRACTS    = ROOT / "contracts.json"
-DOCS_DIR     = ROOT / "docs"
-STATE_DIR    = ROOT / "state"
-STATE_FILE   = STATE_DIR / "alerts_state.json"
-HISTORY_FILE = STATE_DIR / "price_history.json"
-PRICES_FILE  = DOCS_DIR / "prices.json"
-SIGNALS_FILE = DOCS_DIR / "signals.json"
-LASTRUN_FILE = DOCS_DIR / "last_run.json"
+ROOT               = Path(__file__).resolve().parent
+CONTRACTS          = ROOT / "contracts.json"
+DOCS_DIR           = ROOT / "docs"
+STATE_DIR          = ROOT / "state"
+STATE_FILE         = STATE_DIR / "alerts_state.json"
+HISTORY_FILE       = STATE_DIR / "price_history.json"
+CONFIRMATIONS_FILE = STATE_DIR / "confirmations.json"
+PRICES_FILE        = DOCS_DIR / "prices.json"
+SIGNALS_FILE       = DOCS_DIR / "signals.json"
+LASTRUN_FILE       = DOCS_DIR / "last_run.json"
+PUBLIC_CONF_FILE   = DOCS_DIR / "confirmations.json"
 
 DOCS_DIR.mkdir(parents=True, exist_ok=True)
 STATE_DIR.mkdir(parents=True, exist_ok=True)
@@ -64,9 +67,15 @@ STATE_DIR.mkdir(parents=True, exist_ok=True)
 # Config
 # ---------------------------------------------------------------------------
 
-TEXTBELT_KEY   = os.environ.get("TEXTBELT_KEY", "")
-ALERT_PHONE    = os.environ.get("ALERT_PHONE", "")
-ALERT_COOLDOWN = int(os.environ.get("ALERT_COOLDOWN", "86400"))  # 24h
+TEXTBELT_KEY      = os.environ.get("TEXTBELT_KEY", "")
+ALERT_PHONE       = os.environ.get("ALERT_PHONE", "")
+ALERT_COOLDOWN    = int(os.environ.get("ALERT_COOLDOWN", "86400"))  # 24h
+# Optional — set this to the Cloudflare Worker URL so recipients can
+# reply "Y <code>" / "N <code>" and the worker fans the reply into
+# state/confirmations.json via a repository_dispatch event. Leave blank
+# to disable the confirmation flow entirely; alerts still go out,
+# they just won't carry a reply code.
+REPLY_WEBHOOK_URL = os.environ.get("REPLY_WEBHOOK_URL", "")
 
 logging.basicConfig(
     level=logging.INFO,
@@ -365,13 +374,16 @@ def _recipients() -> list[str]:
     return [p.strip() for p in ALERT_PHONE.split(",") if p.strip()]
 
 
-def send_sms(message: str) -> bool:
+def send_sms(message: str, reply_webhook_url: str = "") -> bool:
     """Dispatch via TextBelt to every recipient in ALERT_PHONE.
 
     Returns True iff *every* recipient was accepted. A partial failure
     (one of two numbers accepted) still returns False so the caller
     knows to retry — TextBelt charges per accepted recipient so a retry
     will only cost credits for the previously-failed numbers.
+
+    If `reply_webhook_url` is provided, TextBelt will POST inbound replies
+    to it. We use that to fan confirmations into the collect-reply flow.
     """
     recipients = _recipients()
     if not recipients:
@@ -382,16 +394,20 @@ def send_sms(message: str) -> bool:
         return False
     all_ok = True
     for phone in recipients:
-        if not _send_sms_textbelt(message, phone):
+        if not _send_sms_textbelt(message, phone, reply_webhook_url):
             all_ok = False
     return all_ok
 
 
-def _send_sms_textbelt(message: str, phone: str) -> bool:
+def _send_sms_textbelt(message: str, phone: str,
+                       reply_webhook_url: str = "") -> bool:
     try:
+        data = {"phone": phone, "message": message, "key": TEXTBELT_KEY}
+        if reply_webhook_url:
+            data["replyWebhookUrl"] = reply_webhook_url
         r = httpx.post(
             "https://textbelt.com/text",
-            data={"phone": phone, "message": message, "key": TEXTBELT_KEY},
+            data=data,
             timeout=15.0,
         )
         body = r.json()
@@ -400,6 +416,72 @@ def _send_sms_textbelt(message: str, phone: str) -> bool:
     except Exception as e:
         log.exception("textbelt call failed for %s: %s", phone, e)
         return False
+
+
+# ---------------------------------------------------------------------------
+# Confirmations (outbound half — collect_reply.py handles inbound)
+# ---------------------------------------------------------------------------
+
+def _short_id(signal_key: str, when: datetime) -> str:
+    """Stable 6-char hex ID for one signal firing.
+
+    Combines signal_key + the wall-clock timestamp so a re-fire of the
+    same signal (post-cooldown) gets a distinct ID. Truncating sha256 to
+    6 hex chars (24 bits) collides ~1 in 16M — fine for tens of alerts.
+    """
+    payload = f"{signal_key}|{when.isoformat()}".encode()
+    return hashlib.sha256(payload).hexdigest()[:6]
+
+
+def _load_confirmations() -> dict[str, Any]:
+    if not CONFIRMATIONS_FILE.exists():
+        return {}
+    try:
+        return json.loads(CONFIRMATIONS_FILE.read_text())
+    except json.JSONDecodeError as e:
+        log.error("confirmations.json corrupt, resetting: %s", e)
+        return {}
+
+
+def _save_confirmations(data: dict[str, Any]) -> None:
+    CONFIRMATIONS_FILE.write_text(
+        json.dumps(data, indent=2, sort_keys=True) + "\n"
+    )
+    # Sanitized public copy — phone numbers stripped, just vote tallies.
+    # The dashboard can fetch docs/confirmations.json to show status dots.
+    sanitized: dict[str, dict[str, Any]] = {}
+    for sid, entry in data.items():
+        if sid.startswith("_"):
+            continue
+        recipients = entry.get("recipients", {})
+        total = len(recipients)
+        yes   = sum(1 for r in recipients.values() if r.get("vote") == "Y")
+        no    = sum(1 for r in recipients.values() if r.get("vote") == "N")
+        sanitized[sid] = {
+            "signal_key": entry.get("signal_key"),
+            "sent_at":    entry.get("sent_at"),
+            "status":     entry.get("status"),
+            "total":      total,
+            "yes":        yes,
+            "no":         no,
+        }
+    PUBLIC_CONF_FILE.write_text(
+        json.dumps(sanitized, indent=2, sort_keys=True) + "\n"
+    )
+
+
+def _record_outbound(sid: str, signal_key: str, message: str,
+                     recipients: list[str]) -> None:
+    """Stamp one outbound alert into confirmations.json as `pending`."""
+    data = _load_confirmations()
+    data[sid] = {
+        "signal_key": signal_key,
+        "sent_at":    datetime.now(timezone.utc).isoformat(),
+        "message":    message,
+        "status":     "pending",
+        "recipients": {p: {"vote": None} for p in recipients},
+    }
+    _save_confirmations(data)
 
 
 # ---------------------------------------------------------------------------
@@ -490,11 +572,27 @@ def evaluate_signals(state: dict[str, dict[str, Any]]) -> tuple[list[dict[str, A
                 should_fire = True
 
         if should_fire:
-            msg = (f"FREIS FARM {s.action} target hit — "
-                   f"{s.commodity} {s.futures_year}-{s.futures_month:02d} "
-                   f"live {live:.4f} vs target {s.target_price:.4f} "
-                   f"({s.note})")
-            if send_sms(msg):
+            now = datetime.now(timezone.utc)
+            recipients = _recipients()
+            base_msg = (f"FREIS FARM {s.action} target hit — "
+                        f"{s.commodity} {s.futures_year}-{s.futures_month:02d} "
+                        f"live {live:.4f} vs target {s.target_price:.4f} "
+                        f"({s.note})")
+
+            # If the webhook is configured, tag the message with a short_id
+            # and record the outbound so inbound replies can be matched up.
+            # Without a webhook we just send the alert — no confirmation flow.
+            sid: str | None = None
+            if REPLY_WEBHOOK_URL and recipients:
+                sid = _short_id(s.signal_key, now)
+                msg = (base_msg +
+                       f". Reply 'Y {sid}' to confirm, "
+                       f"'N {sid}' to veto.")
+                _record_outbound(sid, s.signal_key, msg, recipients)
+            else:
+                msg = base_msg
+
+            if send_sms(msg, reply_webhook_url=REPLY_WEBHOOK_URL):
                 fired += 1
                 last_fired = now_iso
             else:
@@ -502,6 +600,12 @@ def evaluate_signals(state: dict[str, dict[str, Any]]) -> tuple[list[dict[str, A
                 # to try again rather than silently sitting in cooldown.
                 log.warning("SMS did NOT land for %s — will retry next run",
                             s.signal_key)
+                # Drop the outbound record too so a retry can re-mint a
+                # fresh short_id rather than leaving a pending ghost.
+                if sid is not None:
+                    data = _load_confirmations()
+                    data.pop(sid, None)
+                    _save_confirmations(data)
 
         state[s.signal_key] = {
             "status":       new_status,

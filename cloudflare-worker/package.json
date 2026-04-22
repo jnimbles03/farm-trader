@@ -1,0 +1,17 @@
+{
+  "name": "freis-farm-sms-reply",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Cloudflare Worker that receives TextBelt reply webhooks and fires a GitHub repository_dispatch event so evaluate.py can record the confirmation.",
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "dev":    "wrangler dev",
+    "tail":   "wrangler tail",
+    "types":  "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240925.0",
+    "typescript": "^5.6.2",
+    "wrangler":   "^3.80.0"
+  }
+}
