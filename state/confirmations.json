@@ -20,18 +20,5 @@
       "text": "Y 460616",
       "vote": "Y"
     }
-  ],
-  "smoke1": {
-    "message": "FREIS FARM reminder-system smoke test",
-    "recipients": {
-      "+16302479950": {
-        "last_reminded_at": "2026-04-22T18:05:02.250179+00:00",
-        "reminders_sent": 1,
-        "vote": null
-      }
-    },
-    "sent_at": "2026-04-22T17:53:45.493735+00:00",
-    "signal_key": "test|reminder-smoketest",
-    "status": "pending"
-  }
+  ]
 }
