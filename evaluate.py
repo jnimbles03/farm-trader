@@ -20,7 +20,8 @@ transitions WAIT -> HIT, subject to a 24-hour cooldown per signal key.
 Environment (set as GitHub Actions secrets):
 
   TEXTBELT_KEY     paid key from textbelt.com (MVP)
-  ALERT_PHONE      E.164-ish, e.g. "+13125551234"
+  ALERT_PHONE      one or more E.164-ish numbers, comma-separated, e.g.
+                   "+13125551234,+13125559999" — each costs 1 TextBelt credit
   ALERT_COOLDOWN   seconds between repeat alerts (default 86400)
 
 This script deliberately has no FastAPI / scheduler / SQLite. Scheduling
@@ -63,11 +64,8 @@ STATE_DIR.mkdir(parents=True, exist_ok=True)
 # Config
 # ---------------------------------------------------------------------------
 
-TEXTBELT_KEY         = os.environ.get("TEXTBELT_KEY", "")
-TWILIO_ACCOUNT_SID   = os.environ.get("TWILIO_ACCOUNT_SID", "")
-TWILIO_AUTH_TOKEN    = os.environ.get("TWILIO_AUTH_TOKEN", "")
-TWILIO_FROM          = os.environ.get("TWILIO_FROM", "")     # Twilio-owned phone number
-ALERT_PHONE          = os.environ.get("ALERT_PHONE", "")
+TEXTBELT_KEY   = os.environ.get("TEXTBELT_KEY", "")
+ALERT_PHONE    = os.environ.get("ALERT_PHONE", "")
 ALERT_COOLDOWN = int(os.environ.get("ALERT_COOLDOWN", "86400"))  # 24h
 
 logging.basicConfig(
@@ -356,76 +354,51 @@ def save_state(state: dict[str, dict[str, Any]]) -> None:
 # SMS
 # ---------------------------------------------------------------------------
 
-def send_sms(message: str) -> bool:
-    """Dispatch to the first configured SMS provider. True iff accepted.
+def _recipients() -> list[str]:
+    """ALERT_PHONE may be a single number or a comma-separated list.
 
-    Preference order:
-      1. Twilio (TWILIO_ACCOUNT_SID + TWILIO_AUTH_TOKEN + TWILIO_FROM)
-      2. TextBelt (TEXTBELT_KEY)
-    Both require ALERT_PHONE set.
+    We split so the workflow secret can hold multiple recipients without
+    introducing ALERT_PHONE_2 / ALERT_PHONE_3 secrets. Whitespace and empty
+    entries are trimmed. TextBelt bills 1 credit per number, so sending
+    to N numbers deducts N credits per alert.
     """
-    if not ALERT_PHONE:
+    return [p.strip() for p in ALERT_PHONE.split(",") if p.strip()]
+
+
+def send_sms(message: str) -> bool:
+    """Dispatch via TextBelt to every recipient in ALERT_PHONE.
+
+    Returns True iff *every* recipient was accepted. A partial failure
+    (one of two numbers accepted) still returns False so the caller
+    knows to retry — TextBelt charges per accepted recipient so a retry
+    will only cost credits for the previously-failed numbers.
+    """
+    recipients = _recipients()
+    if not recipients:
         log.warning("SMS skipped — ALERT_PHONE not set")
         return False
-    if TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN and TWILIO_FROM:
-        return _send_sms_twilio(message)
-    if TEXTBELT_KEY:
-        return _send_sms_textbelt(message)
-    log.warning("SMS skipped — no SMS provider secrets configured")
-    return False
-
-
-def _send_sms_twilio(message: str) -> bool:
-    """POST to Twilio's REST API. Returns True on HTTP 2xx with no error_code.
-
-    Twilio responds 201 with JSON like
-      {"sid":"SMxxx","status":"queued","error_code":null,"error_message":null}
-    on accept; we treat any non-2xx OR any non-null error_code as failure.
-    """
-    url = f"https://api.twilio.com/2010-04-01/Accounts/{TWILIO_ACCOUNT_SID}/Messages.json"
-    try:
-        r = httpx.post(
-            url,
-            auth=(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN),
-            data={
-                "From": TWILIO_FROM,
-                "To":   ALERT_PHONE,
-                "Body": message,
-            },
-            timeout=15.0,
-        )
-        try:
-            body = r.json()
-        except Exception:
-            body = {"_raw": r.text}
-        # Successful responses use "status" + "error_code"/"error_message".
-        # 4xx/5xx errors use "code" + "message" + "more_info".
-        err_code = body.get("error_code") or body.get("code")
-        err_msg  = body.get("error_message") or body.get("message")
-        log.info("twilio: http=%d sid=%s status=%s err_code=%s err_msg=%s",
-                 r.status_code,
-                 body.get("sid"),
-                 body.get("status"),
-                 err_code,
-                 err_msg)
-        return r.status_code < 300 and not err_code
-    except Exception as e:
-        log.exception("twilio call failed: %s", e)
+    if not TEXTBELT_KEY:
+        log.warning("SMS skipped — TEXTBELT_KEY not set")
         return False
+    all_ok = True
+    for phone in recipients:
+        if not _send_sms_textbelt(message, phone):
+            all_ok = False
+    return all_ok
 
 
-def _send_sms_textbelt(message: str) -> bool:
+def _send_sms_textbelt(message: str, phone: str) -> bool:
     try:
         r = httpx.post(
             "https://textbelt.com/text",
-            data={"phone": ALERT_PHONE, "message": message, "key": TEXTBELT_KEY},
+            data={"phone": phone, "message": message, "key": TEXTBELT_KEY},
             timeout=15.0,
         )
         body = r.json()
-        log.info("textbelt: %s", body)
+        log.info("textbelt[%s]: %s", phone, body)
         return bool(body.get("success"))
     except Exception as e:
-        log.exception("textbelt call failed: %s", e)
+        log.exception("textbelt call failed for %s: %s", phone, e)
         return False
 
 
@@ -549,67 +522,22 @@ def evaluate_signals(state: dict[str, dict[str, Any]]) -> tuple[list[dict[str, A
 
 
 def main() -> int:
-    # --test-sms: smoke-test the SMS pipeline by firing one message. Writes
-    # no other outputs. Polls Twilio for final status so the job tells the
-    # truth about carrier delivery, not just queueing. Exits 0 on delivered.
-    # --force-textbelt: skip Twilio even if configured, use TextBelt path.
+    # --test-sms: smoke-test the SMS pipeline by firing one TextBelt message
+    # to every recipient in ALERT_PHONE. Writes no other outputs. Exits 0 iff
+    # every recipient was accepted.
     if "--test-sms" in sys.argv:
         log.info("evaluate --test-sms: firing test message")
         msg = (f"FREIS FARM test SMS — "
                f"{datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')} — "
                f"if you got this, the pipeline works.")
-        force_textbelt = "--force-textbelt" in sys.argv
-        # Capture the Twilio sid so we can poll; the shared send_sms() only
-        # returns bool. Call Twilio directly here when configured.
-        import time
-        final_status: str | None = None
-        if (not force_textbelt
-            and TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN and TWILIO_FROM and ALERT_PHONE):
-            url = f"https://api.twilio.com/2010-04-01/Accounts/{TWILIO_ACCOUNT_SID}/Messages.json"
-            r = httpx.post(
-                url,
-                auth=(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN),
-                data={"From": TWILIO_FROM, "To": ALERT_PHONE, "Body": msg},
-                timeout=15.0,
-            )
-            try:
-                body = r.json()
-            except Exception:
-                body = {}
-            sid = body.get("sid")
-            err_code = body.get("error_code") or body.get("code")
-            err_msg  = body.get("error_message") or body.get("message")
-            log.info("twilio create: http=%d sid=%s status=%s err_code=%s err_msg=%s",
-                     r.status_code, sid, body.get("status"), err_code, err_msg)
-            if not sid or r.status_code >= 300 or err_code:
-                return 1
-            # Poll up to 30s for a terminal status
-            poll_url = f"https://api.twilio.com/2010-04-01/Accounts/{TWILIO_ACCOUNT_SID}/Messages/{sid}.json"
-            for i in range(10):
-                time.sleep(3)
-                p = httpx.get(poll_url, auth=(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN), timeout=15.0)
-                try:
-                    pbody = p.json()
-                except Exception:
-                    pbody = {}
-                status = pbody.get("status")
-                pec    = pbody.get("error_code")
-                pem    = pbody.get("error_message")
-                log.info("twilio poll[%d]: status=%s err_code=%s err_msg=%s", i + 1, status, pec, pem)
-                if status in ("delivered", "undelivered", "failed", "sent"):
-                    final_status = status
-                    break
-            log.info("test SMS final status: %s", final_status or "unknown (still queued/sending)")
-            return 0 if final_status == "delivered" else 1
-        # TextBelt path — used when Twilio isn't configured OR --force-textbelt.
-        # Calls the TextBelt helper directly so `send_sms()`'s internal
-        # Twilio preference doesn't override the forced path.
-        if TEXTBELT_KEY and ALERT_PHONE:
-            ok = _send_sms_textbelt(msg)
-            log.info("test SMS via textbelt: %s", "ACCEPTED" if ok else "FAILED")
-            return 0 if ok else 1
-        log.warning("test SMS skipped — no provider configured")
-        return 1
+        recipients = _recipients()
+        if not (TEXTBELT_KEY and recipients):
+            log.warning("test SMS skipped — TEXTBELT_KEY or ALERT_PHONE missing")
+            return 1
+        log.info("test SMS recipients: %s", ", ".join(recipients))
+        ok = send_sms(msg)
+        log.info("test SMS via textbelt: %s", "ALL ACCEPTED" if ok else "PARTIAL/FAIL")
+        return 0 if ok else 1
 
     log.info("evaluate starting")
     state = load_state()
@@ -633,10 +561,7 @@ def main() -> int:
         "ran_at":      datetime.now(timezone.utc).isoformat(),
         "signal_count": len(rows),
         "sms_fired":    fired,
-        "sms_ready":    bool(ALERT_PHONE and (
-                            (TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN and TWILIO_FROM)
-                            or TEXTBELT_KEY
-                        )),
+        "sms_ready":    bool(ALERT_PHONE and TEXTBELT_KEY),
     }, indent=2) + "\n")
 
     return 0

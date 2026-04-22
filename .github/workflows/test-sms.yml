@@ -1,20 +1,11 @@
 name: Test SMS delivery
 
-# Dispatch-only: lets you fire one TextBelt message to ALERT_PHONE from
-# the Actions tab. Useful for verifying the secret is valid and the
-# carrier accepts TextBelt's originating number. Does NOT touch
-# prices.json, signals.json, or state.
+# Dispatch-only: fires one TextBelt message to every number in ALERT_PHONE
+# (comma-separated) from the Actions tab. Useful for verifying the key and
+# that each recipient's carrier accepts TextBelt's originating number.
+# Does NOT touch prices.json, signals.json, or state.
 on:
   workflow_dispatch:
-    inputs:
-      provider:
-        description: "SMS provider to test"
-        type: choice
-        required: true
-        default: "auto"
-        options:
-          - auto        # Twilio if configured, else TextBelt
-          - textbelt    # force TextBelt even when Twilio secrets exist
 
 permissions:
   contents: read
@@ -37,14 +28,6 @@ jobs:
 
       - name: Send test SMS
         env:
-          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
-          TWILIO_AUTH_TOKEN:  ${{ secrets.TWILIO_AUTH_TOKEN }}
-          TWILIO_FROM:        ${{ secrets.TWILIO_FROM }}
-          TEXTBELT_KEY:       ${{ secrets.TEXTBELT_KEY }}
-          ALERT_PHONE:        ${{ secrets.ALERT_PHONE }}
-        run: |
-          if [ "${{ inputs.provider }}" = "textbelt" ]; then
-            python evaluate.py --test-sms --force-textbelt
-          else
-            python evaluate.py --test-sms
-          fi
+          TEXTBELT_KEY: ${{ secrets.TEXTBELT_KEY }}
+          ALERT_PHONE:  ${{ secrets.ALERT_PHONE }}
+        run: python evaluate.py --test-sms
