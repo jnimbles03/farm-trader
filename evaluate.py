@@ -643,6 +643,33 @@ def main() -> int:
         log.info("test SMS via textbelt: %s", "ALL ACCEPTED" if ok else "PARTIAL/FAIL")
         return 0 if ok else 1
 
+    # --test-confirmation: exercise the full Y/N reply flow. Fires a fake
+    # "signal" SMS with a real confirmation code, records the outbound so
+    # the inbound collector can match the reply, and commits via the
+    # workflow afterward. Recipients reply `Y <code>` → collect-reply.yml
+    # lights up → state/confirmations.json updates → group follow-up SMS.
+    if "--test-confirmation" in sys.argv:
+        log.info("evaluate --test-confirmation: firing fake signal")
+        if not REPLY_WEBHOOK_URL:
+            log.error("REPLY_WEBHOOK_URL not set — the reply flow can't work")
+            return 1
+        recipients = _recipients()
+        if not (TEXTBELT_KEY and recipients):
+            log.warning("test-confirmation skipped — TEXTBELT_KEY or ALERT_PHONE missing")
+            return 1
+        now = datetime.now(timezone.utc)
+        fake_key = f"test|{now.strftime('%Y-%m-%dT%H-%M-%S')}|CONFIRM"
+        sid = _short_id(fake_key, now)
+        msg = (f"FREIS FARM confirmation test — this is a drill, not a real "
+               f"signal. Reply 'Y {sid}' to confirm, 'N {sid}' to veto.")
+        _record_outbound(sid, fake_key, msg, recipients)
+        log.info("test-confirmation sid=%s recipients=%s",
+                 sid, ", ".join(recipients))
+        ok = send_sms(msg, reply_webhook_url=REPLY_WEBHOOK_URL)
+        log.info("test-confirmation via textbelt: %s",
+                 "ALL ACCEPTED" if ok else "PARTIAL/FAIL")
+        return 0 if ok else 1
+
     log.info("evaluate starting")
     state = load_state()
 
