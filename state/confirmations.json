@@ -9,5 +9,14 @@
     "sent_at": "2026-04-22T04:03:14.657736+00:00",
     "signal_key": "test|2026-04-22T04-03-14|CONFIRM",
     "status": "pending"
-  }
+  },
+  "_orphans": [
+    {
+      "phone": "+16302479950",
+      "received_at": "2026-04-22T04:03:58.955Z",
+      "short_id": "460616",
+      "text": "Y 460616",
+      "vote": "Y"
+    }
+  ]
 }
