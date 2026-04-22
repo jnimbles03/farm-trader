@@ -1,0 +1,10 @@
+{
+  "46061e": {
+    "no": 0,
+    "sent_at": "2026-04-22T04:03:14.657736+00:00",
+    "signal_key": "test|2026-04-22T04-03-14|CONFIRM",
+    "status": "pending",
+    "total": 1,
+    "yes": 0
+  }
+}
