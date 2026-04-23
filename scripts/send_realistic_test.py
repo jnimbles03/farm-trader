@@ -168,9 +168,6 @@ def main() -> int:
         log.error("ALERT_PHONE not set; aborting")
         return 1
 
-    message = _build_message(sid)
-    log.info("message (%d chars): %s", len(message), message)
-
     now = datetime.now(timezone.utc)
     signal_key = (
         f"sim|{SIM_COMMODITY}|{SIM_CONTRACT}|SELL|{SIM_TARGET:.4f}|"
@@ -178,31 +175,12 @@ def main() -> int:
     )
     sid = _short_id(signal_key, now)
 
+    message = _build_message(sid)
+    log.info("message (%d chars): %s", len(message), message)
+
     # Send first; only stamp pending state if TextBelt accepted at least one
     # recipient. Otherwise we'd leave a ghost row for remind-pending to chase.
     any_ok = False
     for phone in recipients:
         if _send(phone, message):
             any_ok = True
-
-    if not any_ok:
-        log.error("no recipient accepted; not recording pending state")
-        return 1
-
-    data = _load()
-    _drop_stale_sim_entries(data)
-    data[sid] = {
-        "signal_key": signal_key,
-        "sent_at":    now.isoformat(),
-        "message":    message,
-        "status":     "pending",
-        "recipients": {p: {"vote": None} for p in recipients},
-    }
-    _save(data)
-    log.info("recorded pending sid=%s; remind-pending will nudge at +5 min",
-             sid)
-    return 0
-
-
-if __name__ == "__main__":
-    sys.exit(main())
