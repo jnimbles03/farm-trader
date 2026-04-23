@@ -26,12 +26,14 @@
     "recipients": {
       "+16302479950": {
         "last_reminded_at": "2026-04-23T13:40:15.020222+00:00",
+        "raw": "Y",
         "reminders_sent": 3,
-        "vote": null
+        "replied_at": "2026-04-23T13:42:39.613Z",
+        "vote": "Y"
       }
     },
     "sent_at": "2026-04-22T18:00:40.698865+00:00",
     "signal_key": "test|reminder-smoketest",
-    "status": "pending"
+    "status": "confirmed"
   }
 }

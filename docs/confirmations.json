@@ -11,8 +11,8 @@
     "no": 0,
     "sent_at": "2026-04-22T18:00:40.698865+00:00",
     "signal_key": "test|reminder-smoketest",
-    "status": "pending",
+    "status": "confirmed",
     "total": 1,
-    "yes": 0
+    "yes": 1
   }
 }
