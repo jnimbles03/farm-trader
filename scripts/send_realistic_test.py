@@ -168,7 +168,7 @@ def main() -> int:
         log.error("ALERT_PHONE not set; aborting")
         return 1
 
-    message = _build_message(SID)
+    message = _build_message(sid)
     log.info("message (%d chars): %s", len(message), message)
 
     now = datetime.now(timezone.utc)
