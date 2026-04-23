@@ -146,13 +146,12 @@ def _send(phone: str, message: str) -> bool:
         return False
 
 
-def _build_message() -> str:
-    """Production-shape SMS body: verb, contract, prices, size, tranche, reply."""
+def _build_message(code: str) -> str:
+    total = SIM_LIVE * SIM_QUANTITY
+    risk = int(round((abs(total) * 0.025 * 1.65) / 10) * 10)
     return (
-        f"FREIS FARM SELL: {SIM_COMMODITY.capitalize()} {SIM_CONTRACT} "
-        f"at ${SIM_LIVE:.2f} (target ${SIM_TARGET:.2f}). "
-        f"{SIM_QUANTITY:,} bu — {SIM_TRANCHE}. "
-        f"Reply Y to confirm, N to veto."
+        f"⚠️ {SIM_COMMODITY.upper()}: Sell {SIM_QUANTITY:,} @ ${SIM_LIVE:.2f} "
+        f"(${total:,.0f}). 1d risk -${risk:,.0f}. Reply Y {code} / N {code}."
     )
 
 
