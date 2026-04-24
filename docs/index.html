@@ -2143,33 +2143,40 @@ function renderTile({ label, value, detail }) {
 }
 
 function statePill(state, e) {
+  // Pill copy is the decision verb, not a status word. The audience
+  // (non-trader next-gen farmer) needs "Sell now" and "Waiting" — not
+  // "Hit" and "Active" which don't say what to do.
   const map = {
-    HIT:     ["pill-hit",     "Hit"],
-    ACTIVE:  ["pill-active",  "Active"],
-    OVERDUE: ["pill-overdue", "Overdue"],
+    HIT:     ["pill-hit",     "Sell now"],
+    ACTIVE:  ["pill-active",  "Watching"],
+    OVERDUE: ["pill-overdue", "Sell anyway"],
     DONE:    ["pill-done",    "Done"],
-    WAIT:    ["pill-wait",    "Wait"]
+    WAIT:    ["pill-wait",    "Waiting"]
   };
   const [cls, txt] = map[state] || ["pill-wait", state];
-  // On HIT pills, suffix the freshness label ("NEW" / "3H" / "2D" / "1W")
-  // and add `.stale` when the hit is >24h old so the color mutes.
+  // Stale hit → softer verb, it's been sitting for 24h+
+  if (state === "HIT" && e && e.hit_stale) {
+    return `<span class="pill pill-hit stale">Review<span class="since">${e.hit_label || "stale"}</span></span>`;
+  }
+  // Fresh hit → freshness tag as secondary text inside the pill
   if (state === "HIT" && e && e.hit_label) {
-    const stale = e.hit_stale ? " stale" : "";
-    return `<span class="pill ${cls}${stale}">${txt}<span class="since">${e.hit_label}</span></span>`;
+    return `<span class="pill ${cls}">${txt}<span class="since">${e.hit_label}</span></span>`;
   }
   return `<span class="pill ${cls}">${txt}</span>`;
 }
 
 function countdown(now, winS, winE) {
+  // Plain English, not "38d" / "past close" jargon.
   if (now < winS) {
     const d = daysBetween(now, winS);
-    return `opens in ${d}d`;
+    return d === 1 ? "opens tomorrow" : `opens in ${d} days`;
   } else if (now <= winE) {
     const d = daysBetween(now, winE);
-    return `${d}d left in window`;
+    if (d === 0) return "window closes today";
+    return d === 1 ? "1 day left in window" : `${d} days left in window`;
   } else {
     const d = daysBetween(winE, now);
-    return `${d}d past close`;
+    return d === 1 ? "window closed yesterday" : `window closed ${d} days ago`;
   }
 }
 
@@ -2178,73 +2185,105 @@ function renderTranches(cfg, live, mountId) {
   const now = today();
   const cards = cfg.tranches.map(tr => {
     const e = evaluateTranche(cfg, tr, live);
-    const priceGap = (e.target != null && live != null)
-      ? (((live - e.target) / e.target) * 100)
-      : null;
-    const gapStr = priceGap == null ? "" :
-      (priceGap >= 0 ? `<span class="good">+${priceGap.toFixed(1)}%</span>` :
-                       `<span class="bad">${priceGap.toFixed(1)}%</span>`);
-
-    // Compact meta: target · gap · countdown (all separated by dots)
-    const targetPart = e.target ? `<span class="price">$${fmt2(e.target)}</span>` : `<span class="cd">calendar</span>`;
-    const cdPart     = `<span class="cd">${countdown(now, e.winS, e.winE)}</span>`;
-    const metaParts  = [targetPart];
-    if (gapStr) metaParts.push(gapStr);
-    metaParts.push(cdPart);
-
+    const remaining = Math.max(0, e.targetBu - e.sold);
     const progPct = e.targetBu > 0 ? Math.min(100, (e.sold / e.targetBu) * 100) : 0;
 
-    // Option C: $ uplift line — value captured above Oct low baseline if tranche fires at trigger.
-    // Calendar-only tranches use live price (can be negative) so farmer sees current uplift risk.
-    // Skipped tranches show why they're skipped.
-    let upliftLine = "";
+    // Primary line: a plain-English sentence telling the farmer what to
+    // do with this tranche TODAY. Leads with the verb + bushel count
+    // so eye lands on action, not tranche number.
+    let headline = "";
+    let context  = "";
     if (e.skipped) {
-      upliftLine = `<div class="tranche-uplift skipped">${skipReason(cfg, tr)}</div>`;
-    } else if (e.targetBu > 0) {
-      let uplift, label;
+      headline = "Skipped for this season";
+      context  = skipReason(cfg, tr) || "Volume rolled into other tranches.";
+    } else if (e.state === "DONE") {
+      headline = `Done — ${fmtBu(e.targetBu)} bu sold`;
+      context  = "";
+    } else if (e.state === "HIT" && !e.hit_stale) {
+      headline = `Sell ${fmtBu(remaining)} bu now`;
+      const cdNow = (now > e.winE)
+        ? `Window closed ${daysBetween(e.winE, now)} days ago — price still above target $${fmt2(e.target)}.`
+        : `Price hit target $${fmt2(e.target)}.`;
+      const fresh = e.hit_label === "NEW" ? "Just crossed." : `Crossed ${e.hit_label.toLowerCase()} ago.`;
+      context = `${cdNow} ${fresh}`;
+    } else if (e.state === "HIT" && e.hit_stale) {
+      headline = `Still above target — ${fmtBu(remaining)} bu open`;
+      context  = `Price has been above $${fmt2(e.target)} for ${e.hit_label.toLowerCase()}. If you've already sold, mark it handled.`;
+    } else if (e.state === "OVERDUE") {
+      headline = `Sell ${fmtBu(remaining)} bu anyway`;
+      context  = `Window closed ${daysBetween(e.winE, now)} days ago at price $${fmt2(live ?? 0)} — below target $${tr.mult ? fmt2(e.target) : "—"}. Don't carry into the next tranche.`;
+    } else if (e.state === "ACTIVE") {
+      const gap = e.target ? (((e.target - live) / live) * 100) : null;
+      headline = `Waiting — ${fmtBu(e.targetBu)} bu pending`;
+      const cdStr = countdown(now, e.winS, e.winE);
+      if (e.target) {
+        context = `Sell when price reaches $${fmt2(e.target)} (today $${fmt2(live ?? 0)}, needs +${gap != null ? gap.toFixed(1) : "—"}%). ${cdStr}.`;
+      } else {
+        context = `Calendar-only — sell regardless before the window closes. ${cdStr}.`;
+      }
+    } else {
+      // WAIT — pre-window
+      headline = `Waiting — ${fmtBu(e.targetBu)} bu pending`;
+      if (e.target) {
+        context = `Window ${countdown(now, e.winS, e.winE)}. Target sell price $${fmt2(e.target)}.`;
+      } else {
+        context = `Window ${countdown(now, e.winS, e.winE)}. Calendar-only sale.`;
+      }
+    }
+
+    // $ uplift — simple "+$X more than last fall" phrasing. Only shown
+    // for active/waiting tranches where it's informative. Hidden on
+    // already-done rows (not useful) and overdue (distracting).
+    let upliftLine = "";
+    if (!e.skipped && e.state !== "DONE" && e.targetBu > 0) {
+      let uplift = null;
       if (tr.mult) {
         uplift = (cfg.octLow * tr.mult - cfg.octLow) * e.targetBu;
-        label  = "@ trigger";
       } else if (live != null) {
         uplift = (live - cfg.octLow) * e.targetBu;
-        label  = "@ live";
-      } else {
-        uplift = null;
       }
       if (uplift != null) {
         const sign = uplift >= 0 ? "+" : "−";
         const abs  = Math.abs(uplift).toLocaleString(undefined, {maximumFractionDigits:0});
         const cls  = uplift >= 0 ? "" : "neg";
-        upliftLine = `<div class="tranche-uplift ${cls}">$${sign}${abs} above Oct low ${label}</div>`;
+        const atWhat = tr.mult ? "at the target price" : "at today's price";
+        upliftLine = `<div class="tranche-uplift ${cls}">Would add ${sign}$${abs} over last fall's low ${atWhat}</div>`;
       }
     }
 
     // Card tone: stale hits dim, fresh hits pop with a colored left
-    // border, overdue pops red, everything else neutral. Pairs with
-    // the Today's Call hero so the eye can confirm which card the
-    // hero is pointing at.
+    // border, overdue pops red.
     let cardCls = "tranche-card";
-    if (e.state === "HIT" && e.hit_stale)     cardCls += " stale-hit";
+    if (e.state === "HIT" && e.hit_stale)       cardCls += " stale-hit";
     else if (e.state === "HIT" && !e.hit_stale) cardCls += " fresh-hit";
-    else if (e.state === "OVERDUE")           cardCls += " overdue-urgent";
+    else if (e.state === "OVERDUE")             cardCls += " overdue-urgent";
 
     const handledLink = (e.state === "HIT" && e.hit_stale)
-      ? `<a class="tranche-mark-handled" onclick="handleMarkHandled('${tr.id}')">mark handled</a>`
+      ? `<a class="tranche-mark-handled" onclick="handleMarkHandled('${tr.id}')">mark as handled</a>`
       : "";
+
+    // Progress label reads as English — "3,500 of 12,615 bu sold" not "3500 / 12615".
+    const progLabel = e.skipped
+      ? "skipped"
+      : (e.done ? `${fmtBu(e.targetBu)} bu sold` :
+                  `${fmtBu(e.sold)} of ${fmtBu(e.targetBu)} bu sold`);
 
     return `
     <div class="${cardCls}">
       ${thermometer(e.score, e.done || (e.state === "HIT" && e.hit_stale))}
       <div class="tranche-body">
         <div class="tranche-title">
-          <span class="name" style="color:${cfg.color}">${tr.label}</span>
+          <span class="name">${headline}</span>
           <span class="state">${statePill(e.state, e)}</span>
         </div>
-        <div class="tranche-meta">${metaParts.join(" · ")}</div>
+        <div class="tranche-meta">
+          <span style="color:${cfg.color}; font-weight:500;">${tr.label}</span>
+          ${context ? ` · ${context}` : ""}
+        </div>
         ${upliftLine}
         <div class="tranche-progress">
           <div class="bar"><div style="width:${progPct}%; background:${cfg.color}; opacity:${e.skipped ? 0.2 : 0.75}"></div></div>
-          <div class="txt">${fmtBu(e.sold)} / ${fmtBu(e.targetBu)} bu${e.done && !e.skipped ? " ✓" : ""}${e.skipped ? " (skipped)" : ""}</div>
+          <div class="txt">${progLabel}${e.done && !e.skipped ? " ✓" : ""}</div>
         </div>
         ${handledLink}
       </div>
