@@ -921,6 +921,42 @@
       margin-bottom: 20px !important;
     }
 
+    /* ---------- Priority groups (Today / Upcoming / Done) ---------- */
+    /* Groups are the structural answer to "what is this?" — each one
+       reads as its own block with a labeled heading. Today is visually
+       strongest (accent left border, slight background tint). Upcoming
+       is neutral. Done fades. */
+    .tranche-group {
+      margin-bottom: 32px;
+    }
+    .tranche-group-head {
+      display: flex; align-items: baseline; gap: 12px;
+      margin-bottom: 8px;
+      padding-bottom: 6px;
+      border-bottom: 0.5px solid var(--line);
+    }
+    .tranche-group-title {
+      font-size: 13px; font-weight: 500; color: var(--ink);
+      letter-spacing: 0;
+    }
+    .tranche-group-count {
+      font-size: 11px; color: var(--muted); font-weight: 400;
+      background: var(--line); padding: 1px 7px; border-radius: 10px;
+    }
+    .tranche-group-caption {
+      font-size: 12px; color: var(--muted);
+    }
+    /* Explicit per-section styling (position-independent). */
+    .tranche-group-today .tranche-group-head {
+      border-bottom-color: var(--accent);
+    }
+    .tranche-group-today .tranche-group-title {
+      color: var(--accent);
+    }
+    .tranche-group-done {
+      opacity: 0.65;
+    }
+
     /* ---------- Tranche cards → clean row list ---------- */
     /* Turn the 2-col grid of therm+body cards into a vertical list
        where each row reads as a sentence, not a dashboard cell. */
@@ -2183,8 +2219,10 @@ function countdown(now, winS, winE) {
 function renderTranches(cfg, live, mountId) {
   const host = document.getElementById(mountId);
   const now = today();
-  const cards = cfg.tranches.map(tr => {
-    const e = evaluateTranche(cfg, tr, live);
+
+  // Build a row for one tranche. Pulled out so we can call it inside
+  // each priority group after sorting.
+  function rowHTML(tr, e) {
     const remaining = Math.max(0, e.targetBu - e.sold);
     const progPct = e.targetBu > 0 ? Math.min(100, (e.sold / e.targetBu) * 100) : 0;
 
@@ -2288,8 +2326,58 @@ function renderTranches(cfg, live, mountId) {
         ${handledLink}
       </div>
     </div>`;
-  }).join("");
-  host.innerHTML = `<div class="tranche-grid">${cards}</div>`;
+  } // end rowHTML
+
+  // ── Priority grouping ──────────────────────────────────────────
+  // Group tranches into "Today" (action required), "Upcoming"
+  // (waiting on window or price), and "Done" (complete or skipped).
+  // Sort WITHIN each group by how urgent / imminent it is so the eye
+  // always lands on the most pressing thing in each block.
+  const groups = { today: [], upcoming: [], done: [] };
+  for (const tr of cfg.tranches) {
+    const e = evaluateTranche(cfg, tr, live);
+    const item = { tr, e };
+    if (e.state === "HIT" || e.state === "OVERDUE") groups.today.push(item);
+    else if (e.state === "DONE")                    groups.done.push(item);
+    else                                            groups.upcoming.push(item);
+  }
+  // "Today" sort: OVERDUE first, then fresh HIT, then stale HIT.
+  const urgency = (e) =>
+    e.state === "OVERDUE" ? 0 :
+    (e.state === "HIT" && !e.hit_stale) ? 1 :
+    (e.state === "HIT" && e.hit_stale)  ? 2 : 3;
+  groups.today.sort((a, b) => urgency(a.e) - urgency(b.e));
+  // "Upcoming" sort: ACTIVE (window open) before WAIT (pre-window),
+  // then by window-start date so the nearest window is first.
+  groups.upcoming.sort((a, b) => {
+    if (a.e.state !== b.e.state) return a.e.state === "ACTIVE" ? -1 : 1;
+    return a.e.winS - b.e.winS;
+  });
+
+  // ── Render ────────────────────────────────────────────────────
+  // Only emit a section if it has items. Each section gets a plain-
+  // English header (not "HIT / WAIT" jargon) so the grouping itself
+  // answers "what's going on?" at a glance.
+  // Explicit class per section so styling isn't driven by DOM position
+  // (which would break when only one section is visible).
+  function section(slug, heading, caption, items) {
+    if (!items.length) return "";
+    const rows = items.map(({ tr, e }) => rowHTML(tr, e)).join("");
+    return `
+      <div class="tranche-group tranche-group-${slug}">
+        <div class="tranche-group-head">
+          <span class="tranche-group-title">${heading}</span>
+          <span class="tranche-group-count">${items.length}</span>
+          ${caption ? `<span class="tranche-group-caption">${caption}</span>` : ""}
+        </div>
+        <div class="tranche-grid">${rows}</div>
+      </div>`;
+  }
+
+  host.innerHTML =
+    section("today",    "Today",    "needs action now",              groups.today) +
+    section("upcoming", "Upcoming", "waiting on window or price",    groups.upcoming) +
+    section("done",     "Done",     null,                             groups.done);
 }
 
 /* Called from the "mark handled" link on stale HIT cards. Flips the
