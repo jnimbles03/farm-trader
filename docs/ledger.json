@@ -1,0 +1,34 @@
+{
+  "generated_at": "2026-04-24T13:32:00.182416+00:00",
+  "trades": [
+    {
+      "trade_id": "SOLD-CORN-2025-11",
+      "commodity": "corn",
+      "quantity": 3500,
+      "date": "2025-11",
+      "crop_year": 2025,
+      "note": "Old crop \u2014 sold Nov 2025"
+    },
+    {
+      "trade_id": "SOLD-SOY-2026",
+      "commodity": "soybean",
+      "quantity": 1250,
+      "date": "2026",
+      "crop_year": 2025,
+      "note": "Old crop \u2014 sold 2026 (month TBC). Opening 2025 bean inventory was 3,217 bu; 1,967 bu remain at Ritchie."
+    }
+  ],
+  "cash_receipts": [
+    {
+      "receipt_id": "FARM-BRIDGE-2026-03",
+      "description": "Federal Farm Bridge Assistance \u2014 offset weak grain prices",
+      "amount": 4521.0,
+      "date": "2026-03"
+    }
+  ],
+  "bushels_sold": {
+    "corn": 3500,
+    "soybean": 1250
+  },
+  "cash_total": 4521.0
+}
