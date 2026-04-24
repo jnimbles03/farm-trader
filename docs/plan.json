@@ -12,7 +12,18 @@
         { "id": "C2", "label": "T2 · Apr–May",  "win_start": [4, 1], "win_end": [5, 31], "mult": 1.11, "pct": 25, "note": "Planting premium" },
         { "id": "C3", "label": "T3 · June",     "win_start": [6, 1], "win_end": [6, 30], "mult": 1.12, "pct": 40, "note": "Weather peak" },
         { "id": "C4", "label": "T4 · by Jul 3", "win_start": [7, 1], "win_end": [7,  3], "mult": null, "pct": 10, "note": "Calendar cleanup — sell regardless of price" }
-      ]
+      ],
+      "new_crop": {
+        "_comment":        "2026 harvest projection + collar overlay. Separate from old-crop inventory above.",
+        "expected_bushels": 33000,
+        "hedge_put_strike":  4.30,
+        "hedge_call_strike": 5.00,
+        "hedge_bushels":    30000,
+        "hedge_contracts":       6,
+        "hedge_expiry":    "2026-11-20",
+        "price_min":        3.00,
+        "price_max":        6.00
+      }
     },
     "soybean": {
       "label":         "Soybeans",
@@ -24,7 +35,18 @@
         { "id": "S2", "label": "T2 · Apr–May", "win_start": [4, 1],  "win_end": [5, 31], "mult": 1.09, "pct": 15, "note": "US planting window" },
         { "id": "S3", "label": "T3 · Jun–Jul", "win_start": [6, 1],  "win_end": [7, 15], "mult": 1.10, "pct": 40, "note": "Weather peak" },
         { "id": "S4", "label": "T4 · Jul–Aug", "win_start": [7, 15], "win_end": [8, 15], "mult": 1.08, "pct": 30, "note": "Extended summer — hold above trigger" }
-      ]
+      ],
+      "new_crop": {
+        "_comment":        "2026 harvest projection + collar overlay.",
+        "expected_bushels":  6700,
+        "hedge_put_strike": 10.75,
+        "hedge_call_strike": 12.00,
+        "hedge_bushels":     5000,
+        "hedge_contracts":       1,
+        "hedge_expiry":    "2026-10-23",
+        "price_min":         8.00,
+        "price_max":        14.00
+      }
     }
   },
 

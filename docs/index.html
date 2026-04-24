@@ -3356,10 +3356,50 @@ document.addEventListener("click", e => {
     return Math.min(s.price_max, Math.max(s.price_min, +p));
   }
 
+  /* Overwrite HEDGE_S values with the shared plan.json config (oct_low,
+     collar strikes, hedged bushel count, contracts, price-axis range,
+     and tranche trigger labels). Called once on first tab activation,
+     after the main `load()` has cached the plan globally. Hardcoded
+     HEDGE_S values remain as fallbacks if the plan isn't available. */
+  function hydrateHedgeFromPlan() {
+    const plan = (typeof getPlan === "function") ? getPlan() : null;
+    if (!plan || !plan.commodities) return;
+    const map = { corn: "corn", soybean: "soy" };
+    for (const [planKey, cfg] of Object.entries(plan.commodities)) {
+      const dashKey = map[planKey] || planKey;
+      const S = HEDGE_S[dashKey];
+      if (!S) continue;
+      if (cfg.oct_low != null)  S.ref_price = cfg.oct_low;
+      if (cfg.label)            S.symbol    = `${cfg.label}, fall 2026 crop`;
+      const nc = cfg.new_crop || {};
+      if (nc.expected_bushels != null) S.total_bu     = nc.expected_bushels;
+      if (nc.hedge_bushels != null)    S.hedged_bu    = nc.hedge_bushels;
+      if (nc.hedge_contracts != null)  S.contracts    = nc.hedge_contracts;
+      if (nc.hedge_put_strike != null) S.put_strike   = nc.hedge_put_strike;
+      if (nc.hedge_call_strike != null)S.call_strike  = nc.hedge_call_strike;
+      if (nc.price_min != null)        S.price_min    = nc.price_min;
+      if (nc.price_max != null)        S.price_max    = nc.price_max;
+      // Rebuild the trigger-dot list from the shared tranche config so
+      // the hedge chart and the decision aid always show the same
+      // trigger prices — no chance of drift between the two views.
+      if (Array.isArray(cfg.tranches) && cfg.oct_low != null) {
+        S.triggers = cfg.tranches
+          .filter(t => t.mult != null)
+          .map(t => ({
+            label: (t.label || t.id).replace(/^T/, "T"),
+            price: Math.round(cfg.oct_low * t.mult * 10000) / 10000,
+          }));
+      }
+    }
+  }
+
   function initHedgeChart() {
     if (hedgeInitialized) return;
     if (!document.getElementById('hedge-chart')) return; // DOM not ready
     hedgeInitialized = true;
+
+    // Pull shared config from the cached plan BEFORE any render.
+    hydrateHedgeFromPlan();
 
     document.getElementById('hedge-priceSlider').addEventListener('input', hedgeRender);
     document.getElementById('hedge-toggle').addEventListener('click', (e) => {
@@ -3420,14 +3460,20 @@ function renderFeederCattle(p) {
    dates (oct_low, total_bushels, win_start, win_end), while the
    legacy STRATEGY uses camelCase and array shapes that the legacy
    renderers already understand. Translate at the seam only.
+
+   The fetched plan is cached in `_plan` so other modules (e.g. the
+   hedge tab IIFE) can consume the same data without a second fetch.
    ───────────────────────────────────────────────────────────── */
+let _plan = null;
+function getPlan() { return _plan; }
+
 async function hydrateStrategyFromPlan() {
   try {
     const res = await fetch("plan.json", { cache: "no-store" });
     if (!res.ok) return;
-    const plan = await res.json();
+    _plan = await res.json();
     const commodityMap = { corn: "corn", soybean: "soy", soybeans: "soy" };
-    for (const [planKey, cfg] of Object.entries(plan.commodities || {})) {
+    for (const [planKey, cfg] of Object.entries(_plan.commodities || {})) {
       const dashKey = commodityMap[planKey] || planKey;
       const S = STRATEGY[dashKey];
       if (!S) continue;
