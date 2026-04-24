@@ -793,10 +793,11 @@ const STRATEGY = {
     label: "Corn",
     color: "#1b7a3a",
     octLow: 4.10,       // placeholder — update after Oct 2026 harvest low
-    // 38,500 bu projected 2026 new-crop harvest (175 ac × 220 bu)
-    //  + 9,115 bu 2025 old-crop currently stored at Ritchie elevator
-    // = 47,615 bu of corn the farm will market this crop year.
-    totalBushels: 47615,
+    // Actual 2025 old-crop corn on hand: 12,615 bu (3,500 sold Nov '25,
+    // 9,115 still at Ritchie). NOT a projected new-crop harvest — this
+    // is real inventory the farm is marketing through the 2025/26 plan.
+    // Update this number when the 2026 crop comes in.
+    totalBushels: 12615,
     reserveFrac: 0.10,   // hold 10% unpriced for drought-spike / basis improvement
     tranches: [
       { id:"C1", pct:25, label:"T1 · Feb–Mar",  winS:[2,1],  winE:[3,31], mult:1.09, note:"Acreage rally" },
@@ -810,10 +811,10 @@ const STRATEGY = {
     label: "Soybeans",
     color: "#a8722c",
     octLow: 10.40,
-    // 5,025 bu projected 2026 new-crop harvest (75 ac × 67 bu)
-    //  + 1,967 bu 2025 old-crop beans currently stored at Ritchie
-    // = 6,992 bu of soy the farm will market this crop year.
-    totalBushels: 6992,
+    // Actual 2025 old-crop beans on hand: 3,217 bu (1,250 sold in 2026,
+    // 1,967 still at Ritchie). Real inventory, not a yield projection.
+    // Update when the 2026 crop is harvested.
+    totalBushels: 3217,
     reserveFrac: 0.10,   // hold 10% unpriced for drought-spike / basis improvement
     tranches: [
       { id:"S1", pct:15, label:"T1 · Feb–Mar", winS:[2,1],  winE:[3,31], mult:1.07, note:"Only if SA crop large" },
@@ -994,30 +995,54 @@ function markMigrationRan(id) {
   localStorage.setItem(MIGRATIONS_KEY, JSON.stringify(r));
 }
 
-function seedRitchieAppCommitments() {
-  // 2026 Ritchie Average Pricing Program — 1,500 bu corn + 500 bu soy
-  // committed to be priced as the avg of cash Apr–Jul 2026. Price is
-  // null because the average won't settle until late July. Bushels
-  // count toward commodity total so "remaining" drops immediately.
-  if (ranMigration("ritchie_app_2026_v1")) return;
-  // Guard against double-seeding if the user already added them by hand.
-  const existing = loadSales().some(s => (s.note || "").startsWith("Ritchie APP"));
-  if (!existing) {
-    const now = new Date().toISOString();
+/* Earlier migration seeded APP forward-commitments into the sales log.
+   That was wrong — APP is a commitment against 2026 NEW-crop delivery,
+   not an old-crop sale, and conflating the two distorted the
+   "remaining to sell" math. This cleanup pulls those entries out of
+   any browser that ran the v1 migration. */
+function cleanupBadAppSeed() {
+  if (ranMigration("cleanup_app_seed_v2")) return;
+  const before = loadSales();
+  const cleaned = before.filter(s =>
+    !(s.id === "seed-ritchie-app-corn-2026" ||
+      s.id === "seed-ritchie-app-soy-2026"  ||
+      (s.note || "").startsWith("Ritchie APP"))
+  );
+  if (cleaned.length !== before.length) saveSales(cleaned);
+  markMigrationRan("cleanup_app_seed_v2");
+}
+
+/* Seed the already-closed 2025 old-crop sales: 3,500 bu corn Nov '25
+   and 1,250 bu beans sold in 2026. These are real completed trades
+   that existed before this dashboard was tracking them — so "% sold"
+   on the Sales Log reflects reality from the moment the page loads.
+   Price is null because we don't have the exact strike in hand;
+   weightedAvg skips null-price rows, so the weighted-average display
+   stays accurate for trades where price IS recorded. */
+function seedOldCrop2025Sales() {
+  if (ranMigration("seed_old_crop_2025_sales_v1")) return;
+  const existing = loadSales();
+  const hasCorn = existing.some(s => s.id === "seed-old-corn-2025-11");
+  const hasSoy  = existing.some(s => s.id === "seed-old-soy-2026");
+  if (!hasCorn) {
     addSale({
-      id: "seed-ritchie-app-corn-2026",
-      ts: now, commodity: "corn", bushels: 1500, price: null,
+      id: "seed-old-corn-2025-11",
+      ts: "2025-11-15T00:00:00.000Z",
+      commodity: "corn", bushels: 3500, price: null,
       tranche: null,
-      note: "Ritchie APP — priced as avg cash Apr–Jul 2026 (seeded)",
-    });
-    addSale({
-      id: "seed-ritchie-app-soy-2026",
-      ts: now, commodity: "soy",  bushels: 500, price: null,
-      tranche: null,
-      note: "Ritchie APP — priced as avg cash Apr–Jul 2026 (seeded)",
+      note: "Old crop 2025 — sold Nov 2025 (seeded)",
     });
   }
-  markMigrationRan("ritchie_app_2026_v1");
+  if (!hasSoy) {
+    addSale({
+      id: "seed-old-soy-2026",
+      ts: "2026-02-15T00:00:00.000Z",
+      commodity: "soy", bushels: 1250, price: null,
+      tranche: null,
+      note: "Old crop 2025 — sold in 2026 (seeded)",
+    });
+  }
+  markMigrationRan("seed_old_crop_2025_sales_v1");
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -1732,9 +1757,12 @@ function rerender() {
 }
 
 async function load() {
-  // One-time seed of pre-existing commitments. Safe to call every load —
-  // internally guarded by a migration flag so it only writes once.
-  seedRitchieAppCommitments();
+  // One-time migrations. Each is guarded by a flag so reloads don't
+  // re-run them. Order matters: cleanup the wrong APP seed BEFORE
+  // seeding the correct old-crop sales so the two don't briefly
+  // coexist in storage.
+  cleanupBadAppSeed();
+  seedOldCrop2025Sales();
 
   // positions.json is emitted by the updated evaluate.py alongside the
   // legacy signals.json. We fetch both so the dashboard works during
