@@ -1,42 +1,46 @@
 [
   {
-    "contract_id":   "HTA-001",
+    "contract_id":   "APP-CORN-2026",
     "commodity":     "corn",
-    "contract_type": "HTA",
-    "futures_year":  2026,
-    "futures_month": 12,
-    "futures_price": 4.65,
-    "basis_cost":    null,
-    "quantity":      10000
-  },
-  {
-    "contract_id":   "HTA-002",
-    "commodity":     "corn",
-    "contract_type": "HTA",
-    "futures_year":  2027,
-    "futures_month": 3,
-    "futures_price": 4.82,
-    "basis_cost":    null,
-    "quantity":      5000
-  },
-  {
-    "contract_id":   "BAS-007",
-    "commodity":     "soybean",
-    "contract_type": "BASIS",
-    "futures_year":  2027,
-    "futures_month": 1,
-    "futures_price": null,
-    "basis_cost":    -0.35,
-    "quantity":      12000
-  },
-  {
-    "contract_id":   "CSH-012",
-    "commodity":     "wheat",
-    "contract_type": "CASH",
+    "contract_type": "APP",
     "futures_year":  2026,
     "futures_month": 7,
-    "futures_price": 5.40,
-    "basis_cost":    0.10,
-    "quantity":      3000
+    "futures_price": null,
+    "basis_cost":    null,
+    "quantity":      1500,
+    "note":          "Ritchie Avg Pricing Program — 2026 crop delivery, priced as avg cash Apr–Jul 2026"
+  },
+  {
+    "contract_id":   "APP-SOY-2026",
+    "commodity":     "soybean",
+    "contract_type": "APP",
+    "futures_year":  2026,
+    "futures_month": 7,
+    "futures_price": null,
+    "basis_cost":    null,
+    "quantity":      500,
+    "note":          "Ritchie Avg Pricing Program — 2026 crop delivery, priced as avg cash Apr–Jul 2026"
+  },
+  {
+    "contract_id":   "INV-CORN-RITCHIE",
+    "commodity":     "corn",
+    "contract_type": "INVENTORY",
+    "futures_year":  2026,
+    "futures_month": 7,
+    "futures_price": null,
+    "basis_cost":    null,
+    "quantity":      9115,
+    "note":          "Unsold 2025 crop stored at Ritchie — available to sell"
+  },
+  {
+    "contract_id":   "INV-SOY-RITCHIE",
+    "commodity":     "soybean",
+    "contract_type": "INVENTORY",
+    "futures_year":  2026,
+    "futures_month": 7,
+    "futures_price": null,
+    "basis_cost":    null,
+    "quantity":      1967,
+    "note":          "Unsold 2025 crop stored at Ritchie — available to sell"
   }
 ]

@@ -95,6 +95,17 @@
     /* Tranche + signal states */
     .pill-hit      { background: #0f5a28; color: #fff; border-color: #063818; }
     .pill-hit::before { content: "\2713"; }                 /* ✓ */
+    /* A hit that's been sitting un-acted-on for 24h+ — desaturated so
+       fresh hits stand out. Same green family, but a muted olive so the
+       action-now hits pop relative to the "yeah I know" ones. */
+    .pill-hit.stale { background: #6a7a4a; color: #f2efe6; border-color: #4a5635; }
+    .pill-hit.stale::before { content: "\2713"; opacity: .7; }
+    /* Freshness tag appended to the pill — "TODAY" / "2D" / "1W" etc. */
+    .pill-hit .since {
+      margin-left: 4px; padding: 0 4px; border-radius: 2px;
+      background: rgba(255,255,255,.22); font-size: 9px; font-weight: 800; letter-spacing: .06em;
+    }
+    .pill-hit.stale .since { background: rgba(0,0,0,.22); color: #f2efe6; }
     .pill-active   { background: #1e4a7a; color: #fff; border-color: #112a48; }
     .pill-active::before { content: "\25CF"; font-size: 9px; } /* ● */
     .pill-overdue  { background: #8a1a1a; color: #fff; border-color: #5a0d0d; }
@@ -202,8 +213,18 @@
     .tranche-card {
       background: #fff; border: 1px solid var(--line); border-radius: 8px;
       padding: 8px 10px; display: grid; grid-template-columns: 28px 1fr; gap: 8px;
-      min-width: 0;
+      min-width: 0; transition: opacity .2s ease, filter .2s ease;
     }
+    /* Card-level de-emphasis for stale hits. The thermometer dims, card
+       fades slightly, and a "mark handled?" link becomes available. Goal:
+       fresh alerts look urgent, old ones look archival. */
+    .tranche-card.stale-hit { filter: saturate(.6); opacity: .85; }
+    .tranche-card.stale-hit .therm { filter: grayscale(.4) brightness(1.05); }
+    .tranche-mark-handled {
+      display: inline-block; font-size: 10px; color: var(--muted);
+      text-decoration: underline dotted; cursor: pointer; margin-top: 3px;
+    }
+    .tranche-mark-handled:hover { color: var(--ink); }
     .therm { width: 28px; height: 66px; display: block; align-self: center; }
     /* viewBox 22:52 ≈ 0.423 — matches 28:66 = 0.424 so SVG fills with no whitespace */
     .tranche-body { min-width: 0; }
@@ -779,6 +800,58 @@ function removeSale(id) { saveSales(loadSales().filter(s => s.id !== id)); }
 
 function commoditySold(c)  { return loadSales().filter(s => s.commodity === c).reduce((a,s)=>a+s.bushels,0); }
 function trancheSold(tId)  { return loadSales().filter(s => s.tranche === tId).reduce((a,s)=>a+s.bushels,0); }
+
+/* ─────────────────────────────────────────────────────────────
+   HIT LOG (localStorage) — tracks when each tranche first entered HIT
+   so we can show freshness ("today" / "3d ago") and visually
+   de-emphasize stale hits the user has presumably already seen.
+   Shape: { trancheId: "2026-04-21T14:03:10.000Z", ... }
+   Also supports `handled:trancheId` keys for manual dismiss.
+   ───────────────────────────────────────────────────────────── */
+const HITLOG_KEY = "freis.hitlog.v1";
+function loadHitLog() {
+  try { return JSON.parse(localStorage.getItem(HITLOG_KEY) || "{}"); }
+  catch { return {}; }
+}
+function saveHitLog(l) { localStorage.setItem(HITLOG_KEY, JSON.stringify(l)); }
+/* Record a fresh hit only if we don't already have one for this tranche. */
+function recordHit(tId) {
+  const l = loadHitLog();
+  if (!l[tId]) { l[tId] = new Date().toISOString(); saveHitLog(l); }
+}
+/* Clear when a tranche leaves HIT (price dropped below target, or the
+   tranche got filled). Also clears any "handled" mark so the next hit
+   starts clean. */
+function clearHit(tId) {
+  const l = loadHitLog();
+  if (l[tId] || l["handled:"+tId]) {
+    delete l[tId]; delete l["handled:"+tId]; saveHitLog(l);
+  }
+}
+/* Manual dismiss — user tells us they've acted on this hit without
+   logging an exact sale. Treats the tranche as handled until the next
+   fresh hit. */
+function markHitHandled(tId) {
+  const l = loadHitLog();
+  l["handled:"+tId] = new Date().toISOString();
+  saveHitLog(l);
+}
+function isHitHandled(tId) { return !!loadHitLog()["handled:"+tId]; }
+function hitSince(tId)     { return loadHitLog()[tId] || null; }
+
+/* Human-friendly freshness label. "TODAY" under 24h, "2D" / "3D" /
+   "1W" etc. after. Returns the label + a staleness boolean (>=24h). */
+function freshnessLabel(iso) {
+  if (!iso) return { label: "", stale: false, hours: 0 };
+  const hours = (Date.now() - new Date(iso).getTime()) / 3600000;
+  const stale = hours >= 24;
+  let label;
+  if (hours < 1)       label = "NEW";
+  else if (hours < 24) label = `${Math.round(hours)}H`;
+  else if (hours < 168) label = `${Math.round(hours/24)}D`;
+  else                 label = `${Math.round(hours/168)}W`;
+  return { label, stale, hours };
+}
 function weightedAvg(c) {
   const rows = loadSales().filter(s => s.commodity === c);
   const bu = rows.reduce((a,s)=>a+s.bushels,0);
@@ -840,7 +913,35 @@ function evaluateTranche(cfg, tr, live) {
   else if (now >= winS && now <= winE)        state = "ACTIVE";
   else if (now > winE)                        state = "OVERDUE";
 
-  return { target, priceR, timeR, score, state, targetBu, sold, done, skipped, winS, winE };
+  // ── Hit freshness ────────────────────────────────────────────────
+  // Record / clear first-hit timestamp. "handled" is a manual override
+  // the user can set on stale hits they've already acted on but haven't
+  // logged a specific sale for — we treat it as DONE for display and
+  // prioritization purposes without pretending bushels were sold.
+  if (state === "HIT") {
+    recordHit(tr.id);
+    if (isHitHandled(tr.id)) {
+      state = "DONE";
+      score = 0;
+    }
+  } else if (state === "DONE") {
+    // Only wipe the hit log when the tranche is actually filled —
+    // intraday dips below target shouldn't reset a "hit 2d ago" label
+    // back to "NEW" when price pops back up an hour later.
+    clearHit(tr.id);
+  }
+  const fresh = freshnessLabel(hitSince(tr.id));
+  // Deprioritize stale hits in "Today's Call" so an older unacted-on
+  // hit doesn't dominate over a fresh ACTIVE/OVERDUE with real urgency.
+  // We scale the score down with age; a 24h hit drops to ~80%, a week
+  // to ~40%.
+  if (state === "HIT" && fresh.stale) {
+    const decay = Math.max(0.4, 1 - (fresh.hours - 24) / 120);
+    score = score * decay;
+  }
+
+  return { target, priceR, timeR, score, state, targetBu, sold, done, skipped, winS, winE,
+           hit_since: hitSince(tr.id), hit_label: fresh.label, hit_stale: fresh.stale };
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -921,7 +1022,7 @@ function renderTile({ label, value, detail }) {
   );
 }
 
-function statePill(state) {
+function statePill(state, e) {
   const map = {
     HIT:     ["pill-hit",     "Hit"],
     ACTIVE:  ["pill-active",  "Active"],
@@ -930,6 +1031,12 @@ function statePill(state) {
     WAIT:    ["pill-wait",    "Wait"]
   };
   const [cls, txt] = map[state] || ["pill-wait", state];
+  // On HIT pills, suffix the freshness label ("NEW" / "3H" / "2D" / "1W")
+  // and add `.stale` when the hit is >24h old so the color mutes.
+  if (state === "HIT" && e && e.hit_label) {
+    const stale = e.hit_stale ? " stale" : "";
+    return `<span class="pill ${cls}${stale}">${txt}<span class="since">${e.hit_label}</span></span>`;
+  }
   return `<span class="pill ${cls}">${txt}</span>`;
 }
 
@@ -992,13 +1099,21 @@ function renderTranches(cfg, live, mountId) {
       }
     }
 
+    // Stale-hit class dims the whole card and surfaces a "mark handled"
+    // link — the user's way of saying "I acted on this, stop nagging"
+    // without having to log exact bushels sold.
+    const cardCls = (e.state === "HIT" && e.hit_stale) ? "tranche-card stale-hit" : "tranche-card";
+    const handledLink = (e.state === "HIT" && e.hit_stale)
+      ? `<a class="tranche-mark-handled" onclick="handleMarkHandled('${tr.id}')">mark handled</a>`
+      : "";
+
     return `
-    <div class="tranche-card">
-      ${thermometer(e.score, e.done)}
+    <div class="${cardCls}">
+      ${thermometer(e.score, e.done || (e.state === "HIT" && e.hit_stale))}
       <div class="tranche-body">
         <div class="tranche-title">
           <span class="name" style="color:${cfg.color}">${tr.label}</span>
-          <span class="state">${statePill(e.state)}</span>
+          <span class="state">${statePill(e.state, e)}</span>
         </div>
         <div class="tranche-meta">${metaParts.join(" · ")}</div>
         ${upliftLine}
@@ -1006,10 +1121,19 @@ function renderTranches(cfg, live, mountId) {
           <div class="bar"><div style="width:${progPct}%; background:${cfg.color}; opacity:${e.skipped ? 0.2 : 0.75}"></div></div>
           <div class="txt">${fmtBu(e.sold)} / ${fmtBu(e.targetBu)} bu${e.done && !e.skipped ? " ✓" : ""}${e.skipped ? " (skipped)" : ""}</div>
         </div>
+        ${handledLink}
       </div>
     </div>`;
   }).join("");
   host.innerHTML = `<div class="tranche-grid">${cards}</div>`;
+}
+
+/* Called from the "mark handled" link on stale HIT cards. Flips the
+   tranche into a handled state in localStorage and re-renders so the
+   card drops out of the attention zone immediately. */
+function handleMarkHandled(tId) {
+  markHitHandled(tId);
+  if (typeof rerender === "function") rerender();
 }
 
 function todaysCall(p) {
@@ -1031,17 +1155,32 @@ function todaysCall(p) {
   const tr = top.tr, e = top.e, cfg = top.cfg, live = top.live;
 
   // Color + glyph + action verb tied to state (redundant signal: color AND icon AND word)
-  const stateVis = {
+  let stateVis = {
     HIT:     { dot:"#0f5a28", icon:"\u2713", label:"SELL" },
     OVERDUE: { dot:"#8a1a1a", icon:"!",       label:"CATCH UP" },
     ACTIVE:  { dot:"#1e4a7a", icon:"\u25CF", label:"WATCH" },
     WAIT:    { dot:"#6a6a6a", icon:"\u25CB", label:"HOLD" }
   }[e.state] || { dot:"#6a6a6a", icon:"\u25CB", label:"HOLD" };
+  // Stale hit overrides: muted olive, different verb. The green "SELL"
+  // gets reserved for fresh hits so the user can tell "act now" from
+  // "been hit for a while — decide."
+  if (e.state === "HIT" && e.hit_stale) {
+    stateVis = { dot:"#6a7a4a", icon:"\u2713", label:"REVIEW" };
+  }
 
   let msg = "", sub = "";
   if (e.state === "HIT") {
-    msg = `${stateVis.label} ${cfg.label} ${tr.label}: price $${fmt2(live)} is above $${fmt2(e.target)}.`;
-    sub = `Lock ${fmtBu(Math.max(0, e.targetBu - e.sold))} bu. Sold so far: ${fmtBu(e.sold)} / ${fmtBu(e.targetBu)}.`;
+    // Freshness completely changes the meaning of a hit. "NEW hit, act
+    // today" vs "been sitting above target for a week — you probably
+    // already handled this or chose not to". Reflect that in the copy.
+    const freshTag = e.hit_label ? ` (hit ${e.hit_label.toLowerCase()})` : "";
+    if (e.hit_stale) {
+      msg = `REVIEW ${cfg.label} ${tr.label}: still above $${fmt2(e.target)} at $${fmt2(live)}${freshTag}.`;
+      sub = `Been hit ${e.hit_label.toLowerCase()}. If you've already sold, click "mark handled" on the tranche card. Otherwise: ${fmtBu(Math.max(0, e.targetBu - e.sold))} bu still open.`;
+    } else {
+      msg = `${stateVis.label} ${cfg.label} ${tr.label}: price $${fmt2(live)} is above $${fmt2(e.target)}${freshTag}.`;
+      sub = `Lock ${fmtBu(Math.max(0, e.targetBu - e.sold))} bu. Sold so far: ${fmtBu(e.sold)} / ${fmtBu(e.targetBu)}.`;
+    }
   } else if (e.state === "OVERDUE") {
     msg = `${stateVis.label} on ${cfg.label} ${tr.label} — window has closed.`;
     sub = `Price ${live == null ? "—" : "$"+fmt2(live)} · target $${e.target ? fmt2(e.target) : "—"}. Sell the shortfall regardless.`;

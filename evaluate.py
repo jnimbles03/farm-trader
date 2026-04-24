@@ -49,6 +49,7 @@ import httpx
 
 ROOT               = Path(__file__).resolve().parent
 CONTRACTS          = ROOT / "contracts.json"
+LEDGER             = ROOT / "sales_ledger.json"
 DOCS_DIR           = ROOT / "docs"
 STATE_DIR          = ROOT / "state"
 STATE_FILE         = STATE_DIR / "alerts_state.json"
@@ -56,6 +57,8 @@ HISTORY_FILE       = STATE_DIR / "price_history.json"
 CONFIRMATIONS_FILE = STATE_DIR / "confirmations.json"
 PRICES_FILE        = DOCS_DIR / "prices.json"
 SIGNALS_FILE       = DOCS_DIR / "signals.json"
+POSITIONS_FILE     = DOCS_DIR / "positions.json"
+LEDGER_FILE        = DOCS_DIR / "ledger.json"
 LASTRUN_FILE       = DOCS_DIR / "last_run.json"
 PUBLIC_CONF_FILE   = DOCS_DIR / "confirmations.json"
 
@@ -298,6 +301,7 @@ class Contract:
     futures_price: float | None
     basis_cost: float | None
     quantity: float
+    note: str = ""                   # free-text context shown on dashboards
 
 
 @dataclass
@@ -543,6 +547,87 @@ def build_prices_snapshot() -> dict[str, Any]:
     }
 
 
+def build_positions_snapshot() -> dict[str, Any]:
+    """
+    Open-position view over contracts.json. Pulls a live price for each
+    contract's futures month, computes MTM where the locked futures_price
+    is known (HTA / CASH), and leaves mtm null for unpriced commitments
+    (APP, INVENTORY, BASIS). Shape is dashboard-friendly — the React site
+    can read this directly without re-running the model.
+    """
+    contracts = load_contracts()
+    out: list[dict[str, Any]] = []
+    totals = {"corn": 0.0, "soybean": 0.0, "wheat": 0.0}
+
+    for c in contracts:
+        live = get_price(c.commodity, c.futures_year, c.futures_month)
+        mtm_per_bu = None
+        total_mtm = None
+        if live is not None and c.futures_price is not None:
+            mtm_per_bu = round(live - c.futures_price, 4)
+            total_mtm = round(mtm_per_bu * c.quantity, 2)
+
+        out.append({
+            "contract_id":   c.contract_id,
+            "commodity":     c.commodity,
+            "contract_type": c.contract_type,
+            "futures_year":  c.futures_year,
+            "futures_month": c.futures_month,
+            "futures_price": c.futures_price,
+            "basis_cost":    c.basis_cost,
+            "quantity":      c.quantity,
+            "note":          c.note,
+            "live":          round(live, 4) if live is not None else None,
+            "mtm_per_bu":    mtm_per_bu,
+            "total_mtm":     total_mtm,
+        })
+
+        key = "soybean" if c.commodity in ("soybean", "soybeans") else c.commodity
+        if key in totals:
+            totals[key] += float(c.quantity)
+
+    return {
+        "generated_at":  datetime.now(timezone.utc).isoformat(),
+        "positions":     out,
+        "open_bushels":  {k: round(v) for k, v in totals.items()},
+    }
+
+
+def build_ledger_snapshot() -> dict[str, Any]:
+    """
+    Pass-through of sales_ledger.json with lightweight derived totals:
+    YTD bushels sold per commodity and total cash receipts. Missing
+    file returns an empty-but-valid structure so the dashboard doesn't
+    have to special-case first-run.
+    """
+    if not LEDGER.exists():
+        return {
+            "generated_at":   datetime.now(timezone.utc).isoformat(),
+            "trades":         [],
+            "cash_receipts":  [],
+            "bushels_sold":   {},
+            "cash_total":     0.0,
+        }
+
+    raw = json.loads(LEDGER.read_text())
+    trades = raw.get("trades", [])
+    cash   = raw.get("cash_receipts", [])
+
+    sold: dict[str, float] = {}
+    for t in trades:
+        c = t.get("commodity", "")
+        key = "soybean" if c in ("soybean", "soybeans") else c
+        sold[key] = sold.get(key, 0.0) + float(t.get("quantity", 0))
+
+    return {
+        "generated_at":   datetime.now(timezone.utc).isoformat(),
+        "trades":         trades,
+        "cash_receipts":  cash,
+        "bushels_sold":   {k: round(v) for k, v in sold.items()},
+        "cash_total":     round(sum(float(r.get("amount", 0)) for r in cash), 2),
+    }
+
+
 def evaluate_signals(state: dict[str, dict[str, Any]]) -> tuple[list[dict[str, Any]], int]:
     """
     Walk the signals, compare live vs target, mutate `state` in place,
@@ -697,6 +782,21 @@ def main() -> int:
     }
     SIGNALS_FILE.write_text(json.dumps(signals_payload, indent=2) + "\n")
     log.info("wrote %s — %s signals, %s SMS fired", SIGNALS_FILE, len(rows), fired)
+
+    # Positions snapshot: every open contract with live price + MTM where
+    # we have a locked futures_price. Covers HTA, APP, INVENTORY, BASIS,
+    # CASH. The React dashboard reads this to render open positions even
+    # when there are no active signals firing.
+    positions = build_positions_snapshot()
+    POSITIONS_FILE.write_text(json.dumps(positions, indent=2) + "\n")
+    log.info("wrote %s — %s positions", POSITIONS_FILE, len(positions["positions"]))
+
+    # Ledger: closed trades and cash receipts (Farm Bridge, etc).
+    # Read-through from sales_ledger.json so the dashboard can show
+    # YTD bushels sold + payments received without hardcoded values.
+    ledger = build_ledger_snapshot()
+    LEDGER_FILE.write_text(json.dumps(ledger, indent=2) + "\n")
+    log.info("wrote %s", LEDGER_FILE)
 
     save_state(state)
     log.info("wrote %s", STATE_FILE)
