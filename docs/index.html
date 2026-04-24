@@ -1378,6 +1378,91 @@
       .tranche-card { grid-template-columns: 1fr !important; gap: 8px !important; }
       .remain { grid-template-columns: 1fr !important; gap: 28px !important; }
     }
+
+    /* ---------- Collapsible sections ---------- */
+    /* Every <h2> on the page is wrapped at load time in a native
+       <details>/<summary>. This gives each section a strong horizontal
+       break (border-top on the details), a click-to-collapse header,
+       and persists open/closed state in localStorage. Sections open
+       by default are listed in SECTIONS_OPEN_BY_DEFAULT in the JS. */
+    details.section {
+      border-top: 1px solid var(--line-strong);
+      margin: 0;
+      padding: 32px 0 0;
+    }
+    /* Keep the tab-panel and the first section flush with the tab bar. */
+    .tab-panel > details.section:first-of-type {
+      border-top: none;
+      padding-top: 12px;
+    }
+    details.section[open] {
+      padding-bottom: 28px;
+    }
+    details.section:not([open]) {
+      padding-bottom: 12px;
+    }
+    details.section summary.section-summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 2px 0;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      user-select: none;
+    }
+    details.section summary.section-summary::-webkit-details-marker { display: none; }
+    details.section summary.section-summary::marker { content: ""; }
+
+    details.section summary.section-summary .section-title {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--ink);
+      letter-spacing: -0.005em;
+    }
+    /* Decision-aid commodity sections keep their uppercase label style. */
+    details.section summary.section-summary.sec-corn .section-title,
+    details.section summary.section-summary.sec-soy  .section-title {
+      font-size: 11px !important;
+      font-weight: 500 !important;
+      letter-spacing: 0.12em !important;
+      text-transform: uppercase !important;
+    }
+    details.section summary.section-summary.sec-corn .section-title { color: var(--corn) !important; }
+    details.section summary.section-summary.sec-soy  .section-title { color: var(--soy)  !important; }
+
+    details.section summary.section-summary .section-chevron {
+      color: var(--muted);
+      font-size: 20px;
+      line-height: 1;
+      transition: transform 0.18s ease;
+      display: inline-block;
+      transform-origin: center;
+    }
+    details.section[open] summary.section-summary .section-chevron {
+      transform: rotate(90deg);
+    }
+    details.section summary.section-summary:hover .section-title {
+      color: var(--accent);
+    }
+    details.section summary.section-summary:hover.sec-corn .section-title { color: var(--accent) !important; }
+    details.section summary.section-summary:hover.sec-soy  .section-title { color: var(--accent) !important; }
+
+    /* Reset the margin that the old .sec-corn/.sec-soy rule puts on h2
+       so it doesn't leak onto the summary variant. */
+    details.section summary.section-summary.sec-corn,
+    details.section summary.section-summary.sec-soy {
+      margin: 0 !important;
+    }
+    /* Give the first element after the summary a little top breathing
+       room so open sections don't crash into the heading. */
+    details.section > *:not(summary) { margin-top: 10px; }
+    details.section > *:not(summary):first-of-type { margin-top: 14px; }
+
+    /* Make sure the existing sub-headings inside a section (like the
+       "Grain on hand" h2 inside the Hedge tab) stay readable even
+       nested inside a details. */
+    details.section h2 { margin-top: 24px; margin-bottom: 8px; }
   </style>
 </head>
 <body>
@@ -3450,6 +3535,93 @@ function renderFeederCattle(p) {
 }
 
 /* ─────────────────────────────────────────────────────────────
+   COLLAPSIBLE SECTIONS — wrap every <h2> plus its following
+   content in a native <details> element so each section is
+   click-to-collapse and carries a strong horizontal break at
+   the top. Open/closed state persists in localStorage so the
+   user's preferences survive reloads.
+   ───────────────────────────────────────────────────────────── */
+const SECTION_STATE_KEY = "freis.sections.v1";
+
+function loadSectionState() {
+  try { return JSON.parse(localStorage.getItem(SECTION_STATE_KEY) || "{}"); }
+  catch { return {}; }
+}
+function saveSectionState(state) {
+  localStorage.setItem(SECTION_STATE_KEY, JSON.stringify(state));
+}
+
+// Sections that should open by default on a fresh visit (no saved
+// state). All others collapse until the user expands them. Matched
+// against the h2 text (exact, trimmed).
+const SECTIONS_OPEN_BY_DEFAULT = new Set([
+  "Corn — Decision Aid",
+  "Soybeans — Decision Aid",
+  "Grain on hand & active alerts",
+  "Price safety net",
+  "Feeder cattle",
+  "Hay operations",
+]);
+
+function wrapSectionsAsCollapsibles() {
+  const wrap = document.querySelector(".wrap");
+  if (!wrap) return;
+  const saved = loadSectionState();
+
+  // Snapshot the list first — we're about to mutate the DOM and we
+  // don't want to re-enter our own newly-created <details> headings.
+  const h2s = Array.from(wrap.querySelectorAll("h2"))
+    .filter(h => !h.closest("details.section"));
+
+  for (const h2 of h2s) {
+    const title = h2.textContent.trim();
+    const parent = h2.parentNode;
+
+    // Collect the h2 plus every following sibling up to (but not
+    // including) the next h2. That becomes the collapsible section.
+    // Text nodes (whitespace) are swept in too so layout doesn't shift.
+    const members = [h2];
+    let cursor = h2.nextSibling;
+    while (cursor) {
+      if (cursor.nodeType === 1 && cursor.tagName === "H2") break;
+      members.push(cursor);
+      cursor = cursor.nextSibling;
+    }
+
+    const details = document.createElement("details");
+    details.className = "section";
+    details.dataset.title = title;
+    details.open = (title in saved) ? saved[title] : SECTIONS_OPEN_BY_DEFAULT.has(title);
+
+    // Summary carries the h2's classes so commodity coloring
+    // (sec-corn / sec-soy) is preserved at the heading.
+    const summary = document.createElement("summary");
+    summary.className = "section-summary";
+    if (h2.classList.length) summary.classList.add(...h2.classList);
+    summary.innerHTML =
+      `<span class="section-title">${title}</span>` +
+      `<span class="section-chevron" aria-hidden="true">›</span>`;
+
+    // Put details in h2's old spot, then move everything we collected
+    // into the details. h2 is discarded — its title now lives in the
+    // summary.
+    parent.insertBefore(details, h2);
+    details.appendChild(summary);
+    for (const n of members) {
+      if (n === h2) continue;   // skip the original heading
+      details.appendChild(n);
+    }
+    h2.remove();
+
+    details.addEventListener("toggle", () => {
+      const s = loadSectionState();
+      s[title] = details.open;
+      saveSectionState(s);
+    });
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
    PLAN HYDRATION — read docs/plan.json and overwrite the relevant
    STRATEGY values so both the dashboard and the Python pipeline
    consume the same source of truth. Hardcoded defaults in STRATEGY
@@ -3555,6 +3727,14 @@ async function load() {
   // coexist in storage.
   cleanupBadAppSeed();
   seedOldCrop2025Sales();
+
+  // Wrap each major section (every <h2> plus its following content)
+  // in a native <details> so the whole page is a stack of collapsible
+  // blocks. The horizontal border-top on each details draws the
+  // section break the user asked for. Must run before renderers —
+  // otherwise mount points like #corn-tranches would be re-parented
+  // between render and render and content could get orphaned.
+  wrapSectionsAsCollapsibles();
 
   // Hydrate shared plan config BEFORE anything else so renderers that
   // read STRATEGY (renderTranches, todaysCall, etc.) see the
