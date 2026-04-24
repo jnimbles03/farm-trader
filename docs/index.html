@@ -1169,6 +1169,122 @@
       transform: translateY(-1px);
     }
 
+    /* ---------- Decision aid (timeline + checklist) ---------- */
+    /* Replaces the old card grid and the intermediate group-stack layout.
+       Structure: header · timeline svg · row list · footer summary.
+       Each row reads the same shape so the eye learns it once. */
+    .decision-aid {
+      margin-bottom: 32px;
+    }
+    .decision-aid-head {
+      display: flex; align-items: baseline; justify-content: space-between;
+      flex-wrap: wrap; gap: 8px; margin-bottom: 16px;
+    }
+    .decision-aid-title {
+      font-size: 20px; font-weight: 400; letter-spacing: -0.01em;
+      color: var(--ink);
+    }
+    .decision-aid-progress {
+      font-size: 13px; color: var(--muted);
+    }
+    .decision-aid-progress .sold {
+      color: var(--accent); font-weight: 500;
+    }
+    .decision-timeline {
+      width: 100%; height: auto; display: block;
+      color: var(--ink);
+      margin-bottom: 20px;
+    }
+    .decision-aid-rows {
+      border-top: 0.5px solid var(--line);
+    }
+    .decision-row {
+      display: grid;
+      grid-template-columns: 22px minmax(160px, 200px) 1fr auto;
+      gap: 16px;
+      padding: 14px 0;
+      border-bottom: 0.5px solid var(--line);
+      align-items: baseline;
+    }
+    /* A subtle accent border top on action rows so the Today group still
+       reads as "act now" even without being grouped separately. Since
+       rows are in tranche order, this draws the eye to whichever tranche
+       fired rather than forcing a reorder. */
+    .decision-row.act {
+      border-top: 1px solid var(--accent);
+      margin-top: -0.5px;
+      background: rgba(42, 90, 58, 0.02);
+    }
+    .decision-row.overdue {
+      border-top: 1px solid var(--overdue);
+      margin-top: -0.5px;
+    }
+    .decision-row.done, .decision-row.stale {
+      opacity: 0.7;
+    }
+    .decision-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      align-self: center;
+      background: transparent;
+      border: 1px solid var(--muted);
+    }
+    .decision-dot.act      { background: var(--accent); border-color: var(--accent); }
+    .decision-dot.overdue  { background: var(--overdue); border-color: var(--overdue); }
+    .decision-dot.done     { background: var(--muted); border-color: var(--muted); }
+    .decision-dot.waiting  { background: transparent; border-color: var(--muted); }
+    .decision-col-label {
+      min-width: 0;
+    }
+    .decision-headline {
+      font-size: 15px; font-weight: 500; color: var(--ink);
+      line-height: 1.3;
+    }
+    .decision-context {
+      font-size: 12px; color: var(--muted);
+      margin-top: 2px;
+    }
+    .decision-handled {
+      display: inline-block; font-size: 11px; color: var(--muted);
+      text-decoration: underline; text-underline-offset: 0.18em;
+      margin-top: 4px; cursor: pointer;
+    }
+    .decision-handled:hover { color: var(--ink); }
+    .decision-explain {
+      font-size: 13px; color: var(--muted);
+      line-height: 1.55;
+    }
+    .decision-pill {
+      font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
+      padding: 5px 10px; border-radius: 2px; font-weight: 500;
+      white-space: nowrap;
+      border: 0.5px solid transparent;
+    }
+    .decision-pill.act      { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .decision-pill.overdue  { background: var(--overdue); color: #fff; border-color: var(--overdue); }
+    .decision-pill.waiting  { background: transparent; color: var(--muted); border-color: var(--line-strong); }
+    .decision-pill.done     { background: transparent; color: var(--muted); border-color: var(--line-strong); }
+    .decision-aid-foot {
+      margin-top: 14px; padding-top: 12px;
+      border-top: 0.5px solid var(--line);
+      font-size: 12px; color: var(--muted);
+      display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+    }
+
+    @media (max-width: 620px) {
+      .decision-row {
+        grid-template-columns: 18px 1fr auto;
+        gap: 10px 10px;
+      }
+      .decision-explain {
+        grid-column: 2 / -1;
+        margin-top: 4px;
+        font-size: 12px;
+      }
+      .decision-pill {
+        grid-row: 1;
+      }
+    }
+
     /* Mobile: slightly tighter spacing */
     @media (max-width: 560px) {
       .strip { gap: 24px !important; flex-wrap: wrap !important; }
@@ -2219,165 +2335,203 @@ function countdown(now, winS, winE) {
 function renderTranches(cfg, live, mountId) {
   const host = document.getElementById(mountId);
   const now = today();
+  const evalList = cfg.tranches.map(tr => ({ tr, e: evaluateTranche(cfg, tr, live) }));
 
-  // Build a row for one tranche. Pulled out so we can call it inside
-  // each priority group after sorting.
-  function rowHTML(tr, e) {
-    const remaining = Math.max(0, e.targetBu - e.sold);
-    const progPct = e.targetBu > 0 ? Math.min(100, (e.sold / e.targetBu) * 100) : 0;
+  // Header numbers
+  const total = cfg.totalBushels;
+  const sold  = commoditySold(cfg.key);
+  const pctSold = total > 0 ? Math.round((sold / total) * 100) : 0;
+  const remaining = Math.max(0, total - sold);
 
-    // Primary line: a plain-English sentence telling the farmer what to
-    // do with this tranche TODAY. Leads with the verb + bushel count
-    // so eye lands on action, not tranche number.
+  // Footer uplift — how much value the plan has captured / could capture.
+  // Captured: sum of (price - octLow) × bushels for all logged sales with price.
+  // Potential: sum of (trigger - octLow) × targetBu for every unsold trigger-based tranche.
+  let captured = 0;
+  for (const s of loadSales()) {
+    if (s.commodity === cfg.key && s.price != null) {
+      captured += (s.price - cfg.octLow) * s.bushels;
+    }
+  }
+  let potential = 0;
+  for (const { tr, e } of evalList) {
+    if (e.skipped || e.state === "DONE") continue;
+    if (tr.mult && e.targetBu > 0) {
+      potential += (cfg.octLow * tr.mult - cfg.octLow) * e.targetBu;
+    } else if (live != null && e.targetBu > 0) {
+      potential += (live - cfg.octLow) * e.targetBu;
+    }
+  }
+
+  // ── Timeline SVG ────────────────────────────────────────────────
+  // Horizontal arc from Jan 1 to Aug 31 with tranche windows as bars
+  // and a "today" vertical line. Colors come from the tranche state
+  // so a glance reads: green = action, grey = waiting, muted = done.
+  function buildTimeline() {
+    const svgW = 620, svgH = 110;
+    const x0 = 30, x1 = 590;
+    const yLine = 70;
+
+    // Jan–Aug — 8 months. Table of days per month for date-to-X math.
+    const DIM = [31,28,31,30,31,30,31,31];
+    const totalDays = DIM.reduce((a,b)=>a+b, 0);
+    const daysBeforeMonth = [0];
+    for (let i = 1; i < DIM.length; i++) daysBeforeMonth[i] = daysBeforeMonth[i-1] + DIM[i-1];
+    function dayX(month, day) {
+      const m = Math.max(1, Math.min(8, month));
+      const d = Math.max(1, Math.min(DIM[m-1], day));
+      const totalDay = daysBeforeMonth[m-1] + (d - 1);
+      return x0 + (totalDay / (totalDays - 1)) * (x1 - x0);
+    }
+
+    const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug"];
+    let out = `<svg class="decision-timeline" viewBox="0 0 ${svgW} ${svgH}" preserveAspectRatio="xMidYMid meet" aria-label="${cfg.label} sale timeline">`;
+    // Baseline
+    out += `<line x1="${x0}" y1="${yLine}" x2="${x1}" y2="${yLine}" stroke="currentColor" stroke-width="0.5" opacity="0.3"/>`;
+
+    // Month labels
+    for (let m = 0; m < 8; m++) {
+      const x = dayX(m + 1, Math.floor(DIM[m] / 2));
+      out += `<text x="${x}" y="${yLine + 22}" text-anchor="middle" font-size="10" fill="currentColor" opacity="0.7">${MONTHS[m]}</text>`;
+    }
+
+    // Tranche bars
+    for (const { tr, e } of evalList) {
+      const xs = dayX(tr.winS[0], tr.winS[1]);
+      const xe = dayX(tr.winE[0], tr.winE[1]);
+      const width = Math.max(4, xe - xs);
+      const isAct = (e.state === "HIT" && !e.hit_stale) || e.state === "OVERDUE";
+      const isStaleHit = (e.state === "HIT" && e.hit_stale);
+      const isDone = e.state === "DONE";
+      const isActive = e.state === "ACTIVE";
+      const fill = isAct ? "#1e4a2a" :
+                   isStaleHit ? "#6a7a4a" :
+                   isDone ? "#888" :
+                   isActive ? "#1a1a1a" :
+                   "#888";
+      const opacity = isAct ? 0.85 :
+                      isStaleHit ? 0.7 :
+                      isDone ? 0.4 :
+                      isActive ? 0.6 :
+                      0.25;
+      out += `<rect x="${xs}" y="${yLine - 5}" width="${width}" height="6" fill="${fill}" opacity="${opacity}" rx="1"/>`;
+      // Tranche label above the bar
+      const labelX = xs + width / 2;
+      const trLabel = tr.label.split("·")[0].trim();  // "T1", "T2", etc.
+      out += `<text x="${labelX}" y="${yLine - 10}" text-anchor="middle" font-size="10" fill="${fill}" font-weight="500">${trLabel}</text>`;
+    }
+
+    // "Today" marker — vertical line with date label
+    const todayX = dayX(now.getMonth() + 1, now.getDate());
+    out += `<line x1="${todayX}" y1="${yLine - 36}" x2="${todayX}" y2="${yLine + 8}" stroke="currentColor" stroke-width="1"/>`;
+    const todayMonth = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][now.getMonth()];
+    out += `<text x="${todayX}" y="${yLine - 42}" text-anchor="middle" font-size="10" fill="currentColor" font-weight="500">Today · ${todayMonth} ${now.getDate()}</text>`;
+
+    out += `</svg>`;
+    return out;
+  }
+
+  // ── Row HTML (one per tranche, in tranche order) ────────────────
+  // Each row reads the same way: dot | headline + label | explanation | pill.
+  // Dot is filled when action is needed, hollow when waiting.
+  function buildRow(tr, e) {
+    const rem = Math.max(0, e.targetBu - e.sold);
+    const trLabel = tr.label;  // e.g. "T1 · Feb–Mar"
+
+    let rowCls   = "decision-row";
+    let dotCls   = "";
+    let pillCls  = "";
+    let pillTxt  = "";
     let headline = "";
-    let context  = "";
+    let explain  = "";
+
     if (e.skipped) {
+      rowCls += " done";
+      dotCls = "done"; pillCls = "done"; pillTxt = "Skipped";
       headline = "Skipped for this season";
-      context  = skipReason(cfg, tr) || "Volume rolled into other tranches.";
+      explain  = skipReason(cfg, tr) || "Volume rolled into other tranches.";
     } else if (e.state === "DONE") {
-      headline = `Done — ${fmtBu(e.targetBu)} bu sold`;
-      context  = "";
+      rowCls += " done";
+      dotCls = "done"; pillCls = "done"; pillTxt = "Done";
+      headline = `Sold ${fmtBu(e.sold)} of ${fmtBu(e.targetBu)} bu`;
+      explain  = "Tranche complete.";
     } else if (e.state === "HIT" && !e.hit_stale) {
-      headline = `Sell ${fmtBu(remaining)} bu now`;
-      const cdNow = (now > e.winE)
-        ? `Window closed ${daysBetween(e.winE, now)} days ago — price still above target $${fmt2(e.target)}.`
-        : `Price hit target $${fmt2(e.target)}.`;
-      const fresh = e.hit_label === "NEW" ? "Just crossed." : `Crossed ${e.hit_label.toLowerCase()} ago.`;
-      context = `${cdNow} ${fresh}`;
+      rowCls += " act";
+      dotCls = "act"; pillCls = "act"; pillTxt = "Sell now";
+      headline = `Sell ${fmtBu(rem)} bu now`;
+      const freshBit = e.hit_label === "NEW"
+        ? "just crossed"
+        : `crossed ${e.hit_label.toLowerCase()} ago`;
+      explain = (now > e.winE)
+        ? `Price hit $${fmt2(e.target)} — ${freshBit}. Window closed ${daysBetween(e.winE, now)} days ago but price is still above target.`
+        : `Price hit $${fmt2(e.target)} — ${freshBit}. ${countdown(now, e.winS, e.winE).charAt(0).toUpperCase() + countdown(now, e.winS, e.winE).slice(1)}.`;
     } else if (e.state === "HIT" && e.hit_stale) {
-      headline = `Still above target — ${fmtBu(remaining)} bu open`;
-      context  = `Price has been above $${fmt2(e.target)} for ${e.hit_label.toLowerCase()}. If you've already sold, mark it handled.`;
+      rowCls += " stale";
+      dotCls = "done"; pillCls = "done"; pillTxt = "Review";
+      headline = `${fmtBu(rem)} bu still above target`;
+      explain  = `Price has been above $${fmt2(e.target)} for ${e.hit_label.toLowerCase()}. If you already sold, mark as handled.`;
     } else if (e.state === "OVERDUE") {
-      headline = `Sell ${fmtBu(remaining)} bu anyway`;
-      context  = `Window closed ${daysBetween(e.winE, now)} days ago at price $${fmt2(live ?? 0)} — below target $${tr.mult ? fmt2(e.target) : "—"}. Don't carry into the next tranche.`;
+      rowCls += " overdue";
+      dotCls = "overdue"; pillCls = "overdue"; pillTxt = "Sell anyway";
+      headline = `Sell ${fmtBu(rem)} bu anyway`;
+      explain  = `Window closed ${daysBetween(e.winE, now)} days ago. Don't carry into the next tranche.`;
     } else if (e.state === "ACTIVE") {
-      const gap = e.target ? (((e.target - live) / live) * 100) : null;
-      headline = `Waiting — ${fmtBu(e.targetBu)} bu pending`;
-      const cdStr = countdown(now, e.winS, e.winE);
-      if (e.target) {
-        context = `Sell when price reaches $${fmt2(e.target)} (today $${fmt2(live ?? 0)}, needs +${gap != null ? gap.toFixed(1) : "—"}%). ${cdStr}.`;
-      } else {
-        context = `Calendar-only — sell regardless before the window closes. ${cdStr}.`;
-      }
+      dotCls = "waiting"; pillCls = "waiting"; pillTxt = "Waiting";
+      headline = `Wait`;
+      const gap = e.target && live ? (((e.target - live) / live) * 100) : null;
+      explain = e.target
+        ? `${fmtBu(e.targetBu)} bu pending. Sell when price reaches $${fmt2(e.target)} (today $${fmt2(live ?? 0)} · needs +${gap != null ? gap.toFixed(1) : "?"}%). ${countdown(now, e.winS, e.winE)}.`
+        : `${fmtBu(e.targetBu)} bu pending. Calendar-only — sell before window closes. ${countdown(now, e.winS, e.winE)}.`;
     } else {
-      // WAIT — pre-window
-      headline = `Waiting — ${fmtBu(e.targetBu)} bu pending`;
-      if (e.target) {
-        context = `Window ${countdown(now, e.winS, e.winE)}. Target sell price $${fmt2(e.target)}.`;
-      } else {
-        context = `Window ${countdown(now, e.winS, e.winE)}. Calendar-only sale.`;
-      }
+      // WAIT (pre-window)
+      dotCls = "waiting"; pillCls = "waiting"; pillTxt = "Waiting";
+      headline = `Wait`;
+      explain = e.target
+        ? `${fmtBu(e.targetBu)} bu pending. Sell when price reaches $${fmt2(e.target)}. ${countdown(now, e.winS, e.winE)}.`
+        : `${fmtBu(e.targetBu)} bu pending. Calendar-only. ${countdown(now, e.winS, e.winE)}.`;
     }
-
-    // $ uplift — simple "+$X more than last fall" phrasing. Only shown
-    // for active/waiting tranches where it's informative. Hidden on
-    // already-done rows (not useful) and overdue (distracting).
-    let upliftLine = "";
-    if (!e.skipped && e.state !== "DONE" && e.targetBu > 0) {
-      let uplift = null;
-      if (tr.mult) {
-        uplift = (cfg.octLow * tr.mult - cfg.octLow) * e.targetBu;
-      } else if (live != null) {
-        uplift = (live - cfg.octLow) * e.targetBu;
-      }
-      if (uplift != null) {
-        const sign = uplift >= 0 ? "+" : "−";
-        const abs  = Math.abs(uplift).toLocaleString(undefined, {maximumFractionDigits:0});
-        const cls  = uplift >= 0 ? "" : "neg";
-        const atWhat = tr.mult ? "at the target price" : "at today's price";
-        upliftLine = `<div class="tranche-uplift ${cls}">Would add ${sign}$${abs} over last fall's low ${atWhat}</div>`;
-      }
-    }
-
-    // Card tone: stale hits dim, fresh hits pop with a colored left
-    // border, overdue pops red.
-    let cardCls = "tranche-card";
-    if (e.state === "HIT" && e.hit_stale)       cardCls += " stale-hit";
-    else if (e.state === "HIT" && !e.hit_stale) cardCls += " fresh-hit";
-    else if (e.state === "OVERDUE")             cardCls += " overdue-urgent";
 
     const handledLink = (e.state === "HIT" && e.hit_stale)
-      ? `<a class="tranche-mark-handled" onclick="handleMarkHandled('${tr.id}')">mark as handled</a>`
+      ? `<a class="decision-handled" onclick="handleMarkHandled('${tr.id}')">mark handled</a>`
       : "";
 
-    // Progress label reads as English — "3,500 of 12,615 bu sold" not "3500 / 12615".
-    const progLabel = e.skipped
-      ? "skipped"
-      : (e.done ? `${fmtBu(e.targetBu)} bu sold` :
-                  `${fmtBu(e.sold)} of ${fmtBu(e.targetBu)} bu sold`);
-
     return `
-    <div class="${cardCls}">
-      ${thermometer(e.score, e.done || (e.state === "HIT" && e.hit_stale))}
-      <div class="tranche-body">
-        <div class="tranche-title">
-          <span class="name">${headline}</span>
-          <span class="state">${statePill(e.state, e)}</span>
+      <div class="${rowCls}">
+        <div class="decision-dot ${dotCls}"></div>
+        <div class="decision-col-label">
+          <div class="decision-headline">${headline}</div>
+          <div class="decision-context">${trLabel}</div>
+          ${handledLink}
         </div>
-        <div class="tranche-meta">
-          <span style="color:${cfg.color}; font-weight:500;">${tr.label}</span>
-          ${context ? ` · ${context}` : ""}
-        </div>
-        ${upliftLine}
-        <div class="tranche-progress">
-          <div class="bar"><div style="width:${progPct}%; background:${cfg.color}; opacity:${e.skipped ? 0.2 : 0.75}"></div></div>
-          <div class="txt">${progLabel}${e.done && !e.skipped ? " ✓" : ""}</div>
-        </div>
-        ${handledLink}
-      </div>
-    </div>`;
-  } // end rowHTML
-
-  // ── Priority grouping ──────────────────────────────────────────
-  // Group tranches into "Today" (action required), "Upcoming"
-  // (waiting on window or price), and "Done" (complete or skipped).
-  // Sort WITHIN each group by how urgent / imminent it is so the eye
-  // always lands on the most pressing thing in each block.
-  const groups = { today: [], upcoming: [], done: [] };
-  for (const tr of cfg.tranches) {
-    const e = evaluateTranche(cfg, tr, live);
-    const item = { tr, e };
-    if (e.state === "HIT" || e.state === "OVERDUE") groups.today.push(item);
-    else if (e.state === "DONE")                    groups.done.push(item);
-    else                                            groups.upcoming.push(item);
-  }
-  // "Today" sort: OVERDUE first, then fresh HIT, then stale HIT.
-  const urgency = (e) =>
-    e.state === "OVERDUE" ? 0 :
-    (e.state === "HIT" && !e.hit_stale) ? 1 :
-    (e.state === "HIT" && e.hit_stale)  ? 2 : 3;
-  groups.today.sort((a, b) => urgency(a.e) - urgency(b.e));
-  // "Upcoming" sort: ACTIVE (window open) before WAIT (pre-window),
-  // then by window-start date so the nearest window is first.
-  groups.upcoming.sort((a, b) => {
-    if (a.e.state !== b.e.state) return a.e.state === "ACTIVE" ? -1 : 1;
-    return a.e.winS - b.e.winS;
-  });
-
-  // ── Render ────────────────────────────────────────────────────
-  // Only emit a section if it has items. Each section gets a plain-
-  // English header (not "HIT / WAIT" jargon) so the grouping itself
-  // answers "what's going on?" at a glance.
-  // Explicit class per section so styling isn't driven by DOM position
-  // (which would break when only one section is visible).
-  function section(slug, heading, caption, items) {
-    if (!items.length) return "";
-    const rows = items.map(({ tr, e }) => rowHTML(tr, e)).join("");
-    return `
-      <div class="tranche-group tranche-group-${slug}">
-        <div class="tranche-group-head">
-          <span class="tranche-group-title">${heading}</span>
-          <span class="tranche-group-count">${items.length}</span>
-          ${caption ? `<span class="tranche-group-caption">${caption}</span>` : ""}
-        </div>
-        <div class="tranche-grid">${rows}</div>
+        <div class="decision-explain">${explain}</div>
+        <div class="decision-pill ${pillCls}">${pillTxt}</div>
       </div>`;
   }
 
-  host.innerHTML =
-    section("today",    "Today",    "needs action now",              groups.today) +
-    section("upcoming", "Upcoming", "waiting on window or price",    groups.upcoming) +
-    section("done",     "Done",     null,                             groups.done);
+  const rows = evalList.map(({ tr, e }) => buildRow(tr, e)).join("");
+
+  // ── Footer summary ──────────────────────────────────────────────
+  const cSign = captured >= 0 ? "+" : "−";
+  const cAbs  = Math.abs(captured).toLocaleString(undefined, { maximumFractionDigits: 0 });
+  const pSign = potential >= 0 ? "+" : "−";
+  const pAbs  = Math.abs(potential).toLocaleString(undefined, { maximumFractionDigits: 0 });
+
+  host.innerHTML = `
+    <div class="decision-aid">
+      <div class="decision-aid-head">
+        <div>
+          <div class="decision-aid-title">${fmtBu(total)} bu · 2025 crop</div>
+        </div>
+        <div class="decision-aid-progress">
+          <span class="sold">${pctSold}% sold</span> · ${fmtBu(remaining)} to go
+        </div>
+      </div>
+      ${buildTimeline()}
+      <div class="decision-aid-rows">${rows}</div>
+      <div class="decision-aid-foot">
+        <span>${fmtBu(sold)} bu sold · $${cSign}${cAbs} captured</span>
+        <span>Plan worth $${pSign}${pAbs} more if every trigger hits</span>
+      </div>
+    </div>`;
 }
 
 /* Called from the "mark handled" link on stale HIT cards. Flips the
