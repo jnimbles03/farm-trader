@@ -672,7 +672,46 @@
       }
     }
     .header-title h1 { margin: 0 0 6px; }
-    .header-title .sub { margin-bottom: 0; }
+    .header-title .sub { margin-bottom: 0; margin-top: 10px; }
+
+    /* ---------- Brand plate ---------- */
+    /* Replaces the old h1 text. Circular seal mark + serif wordmark +
+       small uppercase location label, all on one horizontal baseline.
+       Link-wrapped so the whole plate is a clickable way back to the
+       dashboard home. */
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      color: inherit;
+    }
+    .brand:hover { text-decoration: none; color: inherit; }
+    .brand-mark {
+      width: 52px; height: 52px;
+      flex-shrink: 0;
+      display: block;
+    }
+    .brand-text { line-height: 1.1; }
+    .brand-name {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(22px, 2.4vw, 28px);
+      font-weight: 500;
+      color: var(--corn);
+      letter-spacing: -0.015em;
+    }
+    .brand-sub {
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 4px;
+      font-weight: 500;
+    }
+    @media (max-width: 560px) {
+      .brand-mark { width: 44px; height: 44px; }
+      .brand-name { font-size: 20px; }
+    }
 
     /* News panel — sits to the right of the header title on desktop,
        stacks below on narrow viewports. Deliberately roomy: 4 items
@@ -1477,12 +1516,20 @@
 </head>
 <body>
 <div class="wrap">
-  <!-- Header row: title+subtitle on the left, market-news feed on the
-       right. News pulls from docs/news.json — items rated S/M/L/XL
-       for impact on corn or soy. Mobile stacks under the title. -->
+  <!-- Header row: brand mark + title on the left, market-news feed on
+       the right. News pulls from docs/news.json — items rated S/M/L/XL
+       for impact on corn or soy. Mobile stacks under the title.
+       The brand block is a horizontal plate: circular seal mark +
+       serif wordmark + small uppercase location sub-label. -->
   <div class="header-row">
     <div class="header-title">
-      <h1>Freis Farm | The Grain Board</h1>
+      <a class="brand" href="./" aria-label="Freis Farm home">
+        <img class="brand-mark" src="logo.svg" alt="" aria-hidden="true"/>
+        <div class="brand-text">
+          <div class="brand-name">Freis Farm</div>
+          <div class="brand-sub">Wilmington · Illinois</div>
+        </div>
+      </a>
       <div class="sub" id="sub">loading…</div>
     </div>
     <aside class="news-feed" id="news-feed" aria-label="Market news">
