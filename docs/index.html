@@ -752,6 +752,11 @@
        see them in the "On hand" / positions list. */
     .strip .tile:nth-child(n+4) { display: none; }
 
+    /* Decision aid is the main view now. Today's Call is redundant
+       (the decision aid's action rows already say "Sell X bu now").
+       Hidden by default; remove this rule to restore. */
+    #call { display: none !important; }
+
     /* ---------- Today's Call: hero typography, one sentence, no box ---------- */
     .call {
       background: none !important; border: none !important;
@@ -1312,13 +1317,29 @@
   <section class="tab-panel active" id="tab-grain" role="tabpanel">
 
   <!-- Only unhides when there's a fresh HIT or OVERDUE — first thing
-       the eye catches above the price strip. -->
+       the eye catches above everything. -->
   <div class="action-ribbon" id="action-ribbon"></div>
 
+  <!-- ───────── DECISION AID — Corn (primary hero) ─────────
+       The decision aid is the main view now. Timeline + checklist
+       for each commodity leads the page. Everything below is
+       supporting context: current prices, planning toggles,
+       sales history, positions, reference material. -->
+  <h2 class="sec-corn">Corn — Decision Aid</h2>
+  <div id="corn-tranches"></div>
+
+  <!-- ───────── DECISION AID — Soy ───────── -->
+  <h2 class="sec-soy">Soybeans — Decision Aid</h2>
+  <div id="soy-tranches"></div>
+
+  <!-- ───────── PRICE STRIP — supporting context ───────── -->
   <div class="strip" id="strip"></div>
 
-  <!-- ───────── TODAY'S CALL ───────── -->
-  <div class="call" id="call">
+  <!-- ───────── TODAY'S CALL (hidden — redundant with decision aid)
+       The div stays in DOM so renderCall() can still update it without
+       null checks; the refine-layer CSS hides it. Un-hide in that
+       stylesheet to restore. -->
+  <div class="call" id="call" hidden>
     <div class="call-head">Today's Call</div>
     <div class="call-msg"><span class="call-dot" style="background:#ccc"></span>calculating…</div>
   </div>
@@ -1342,14 +1363,6 @@
       <span class="plan-hint" id="plan-sa-hint">—</span>
     </div>
   </div>
-
-  <!-- ───────── DECISION AID — Corn ───────── -->
-  <h2 class="sec-corn">Corn — Decision Aid</h2>
-  <div id="corn-tranches"></div>
-
-  <!-- ───────── DECISION AID — Soy ───────── -->
-  <h2 class="sec-soy">Soybeans — Decision Aid</h2>
-  <div id="soy-tranches"></div>
 
   <!-- ───────── SALES LOG ───────── -->
   <h2>Sales Log</h2>
