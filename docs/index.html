@@ -2414,6 +2414,20 @@ document.addEventListener("click", e => {
     updateAssumptions(s);
   }
 
+  // Pull the current market price for whichever commodity is active.
+  // Falls back to the reference price if _prices isn't populated yet
+  // (e.g., prices.json fetch failed or hasn't completed on fresh load).
+  // Clamped to the slider's min/max so an outlier live price doesn't
+  // push the slider off-scale.
+  // Note: _prices is declared with `let` at script top-level so it's
+  // module-scoped — accessible by name via closure but NOT on window.
+  function liveOrRefPrice(s, key) {
+    const src = (typeof _prices !== "undefined") ? _prices : null;
+    const p = src && src[key];
+    if (p == null || isNaN(p)) return s.ref_price;
+    return Math.min(s.price_max, Math.max(s.price_min, +p));
+  }
+
   function initHedgeChart() {
     if (hedgeInitialized) return;
     if (!document.getElementById('hedge-chart')) return; // DOM not ready
@@ -2427,14 +2441,17 @@ document.addEventListener("click", e => {
       document.querySelectorAll('#hedge-toggle button').forEach(b =>
         b.classList.toggle('active', b === btn));
       const s = HEDGE_S[hedgeCurrent];
-      document.getElementById('hedge-priceSlider').value = priceToSlider(s.ref_price, s);
+      const startPrice = liveOrRefPrice(s, hedgeCurrent);
+      document.getElementById('hedge-priceSlider').value = priceToSlider(startPrice, s);
       hedgeRender();
     });
 
-    // Init at the harvest-low reference price so the chart opens at
-    // a meaningful "zero-gain" state.
+    // Init at the LIVE market price (not the reference), so the tiles
+    // show real dollar figures immediately. At the reference price
+    // every number is $0 by definition — confusing on first open.
     const s = HEDGE_S[hedgeCurrent];
-    document.getElementById('hedge-priceSlider').value = priceToSlider(s.ref_price, s);
+    const startPrice = liveOrRefPrice(s, hedgeCurrent);
+    document.getElementById('hedge-priceSlider').value = priceToSlider(startPrice, s);
     hedgeRender();
   }
 
