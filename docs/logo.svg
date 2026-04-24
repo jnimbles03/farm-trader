@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="Freis Farm Board of Trade">
-  <!-- Flat-top regular octagon, blue fill. The backdrop for the globe
-       mark. Color is a trade-blue — saturated and confident but not
-       neon — so it reads as a serious mark, not decorative. -->
+  <!-- Flat-top regular octagon, farm-green fill. Same green as the
+       corn commodity color elsewhere in the dashboard (#1e4a2a) so
+       the mark lives in the existing palette rather than introducing
+       a new color. -->
   <polygon points="70,20 130,20 180,70 180,130 130,180 70,180 20,130 20,70"
-           fill="#2377b8"/>
+           fill="#1e4a2a"/>
 
   <!-- Globe outline and the two center lines: the equator (horizontal)
        and the prime meridian (vertical). White on blue for maximum
