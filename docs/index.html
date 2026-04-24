@@ -688,38 +688,44 @@
     }
     .brand:hover { text-decoration: none; color: inherit; }
     .brand-mark {
-      width: 52px; height: 52px;
+      width: 64px; height: 64px;
       flex-shrink: 0;
       display: block;
     }
-    .brand-text { line-height: 1.1; }
+    .brand-text { line-height: 1.05; }
+    /* CBOT-inspired wordmark treatment: bold black sans, all caps,
+       stacked. Reads as "FREIS FARM / BOARD OF TRADE" next to the
+       red octagonal mark — utilitarian, trader-coded, not decorative. */
     .brand-name {
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: clamp(22px, 2.4vw, 28px);
-      font-weight: 500;
-      color: var(--corn);
-      letter-spacing: -0.015em;
+      font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+      font-size: clamp(20px, 2.2vw, 26px);
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: -0.01em;
+      text-transform: uppercase;
     }
     .brand-tagline {
-      font-family: Georgia, "Times New Roman", serif;
-      font-style: italic;
-      font-size: 16px;
+      font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+      font-style: normal;
+      font-size: clamp(16px, 1.8vw, 20px);
       color: var(--ink);
-      margin-top: 3px;
-      font-weight: 400;
-      letter-spacing: 0;
+      margin-top: 2px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      text-transform: uppercase;
     }
     .brand-sub {
       font-size: 11px;
       letter-spacing: 0.14em;
       text-transform: uppercase;
       color: var(--muted);
-      margin-top: 4px;
+      margin-top: 6px;
       font-weight: 500;
     }
     @media (max-width: 560px) {
-      .brand-mark { width: 44px; height: 44px; }
-      .brand-name { font-size: 20px; }
+      .brand-mark { width: 52px; height: 52px; }
+      .brand-name { font-size: 18px; }
+      .brand-tagline { font-size: 14px; }
     }
 
     /* News panel — sits to the right of the header title on desktop,
