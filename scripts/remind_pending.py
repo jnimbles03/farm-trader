@@ -154,16 +154,21 @@ def _due(now: datetime, sent_at: datetime,
 
 
 def _reminder_message(entry: dict) -> str:
-    """Short, context-carrying reminder text.
+    """Context-carrying reminder text.
 
     The original alert already explained the what; the reminder just
-    points at it and asks for a vote. We include a short prefix of the
-    original message so the recipient doesn't have to scroll up.
+    points at it and asks for a vote. We keep the full first line of
+    the original so the trade details (contract, prices, bushels,
+    tranche) survive — truncating mid-"Tranche" would be worse than
+    letting the SMS run to 2 segments.
+
+    Cap at 300 chars as a guardrail against a pathologically long
+    original. Real alerts are ~115 chars; reminder wrapper adds ~38.
     """
     original = entry.get("message", "")
     snippet = original.strip().splitlines()[0] if original else ""
-    if len(snippet) > 90:
-        snippet = snippet[:87].rstrip() + "..."
+    if len(snippet) > 300:
+        snippet = snippet[:297].rstrip() + "..."
     if snippet:
         return f"FREIS FARM reminder — still need Y/N: {snippet}"
     sig_key = entry.get("signal_key", "")
