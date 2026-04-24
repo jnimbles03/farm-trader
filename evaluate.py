@@ -36,8 +36,10 @@ import logging
 import os
 import re
 import sys
+import xml.etree.ElementTree as ET
 from dataclasses import dataclass, asdict
 from datetime import datetime, timedelta, timezone
+from email.utils import parsedate_to_datetime
 from pathlib import Path
 from typing import Any
 
@@ -753,10 +755,199 @@ def usda_news_for_today() -> list[dict[str, Any]]:
     return out
 
 
+def policy_calendar_news_for_today() -> list[dict[str, Any]]:
+    """Emit a news item for any curated policy/geopolitical event scheduled
+    for today. Calendar comes from plan.json -> policy_calendar: FOMC
+    decisions, EPA RFS deadlines, Brazil/Argentina harvest windows, trade
+    policy events, etc.
+
+    Distinct from usda_news_for_today(): those are statutory USDA reports;
+    these are the non-USDA market movers the farm operator wants on the
+    blotter as they land. Items have a `category` field (policy /
+    geopolitical / report) for downstream styling if we want it.
+
+    Year is optional on each entry: omit for events that recur yearly on
+    the same (month, day) such as Brazil harvest window; include for
+    one-off dates like a specific FOMC meeting."""
+    now = datetime.now(timezone.utc)
+    calendar = load_plan().get("policy_calendar") or []
+    out = []
+    for evt in calendar:
+        year = evt.get("year")
+        if year and year != now.year:
+            continue
+        if evt.get("month") == now.month and evt.get("day") == now.day:
+            label = evt.get("label", "Policy event")
+            category = evt.get("category", "policy")
+            # id includes the category prefix so USDA / policy / rss items
+            # never collide in the dedup set.
+            safe = re.sub(r"[^a-z0-9]+", "_", label.lower())[:28].strip("_")
+            out.append({
+                "id":       f"{category}-{now.year}-{now.month:02d}-{now.day:02d}-{safe}",
+                "date":     now.strftime("%Y-%m-%d"),
+                "title":    label,
+                "impact":   evt.get("size", "M"),
+                "affects":  evt.get("affects", "both"),
+                "source":   evt.get("source", category.capitalize()),
+                "category": category,
+            })
+    return out
+
+
+def rss_news_today() -> list[dict[str, Any]]:
+    """Fetch configured RSS feeds and return recent ag-relevant items.
+
+    Config comes from plan.json:
+      news_feeds:    [{ url, source, max_age_hours }, ...]
+      news_keywords: { topic: [...], xl: [...], l: [...], m: [...] }
+
+    Behavior:
+      - Fetch each feed with httpx (5s connect / 10s read timeout).
+      - Parse as RSS 2.0 <item> first, fall back to Atom <entry>.
+      - Item must be younger than feed.max_age_hours.
+      - Item must match at least one `topic` keyword (case-insensitive
+        substring on title+summary) or it's ignored entirely — we don't
+        want generic USDA press releases about school lunches.
+      - Impact is the highest tier (xl > l > m > s) whose keyword list
+        contains a match. Tiered first-match-wins.
+      - `affects` is derived from commodity keywords in the text:
+        corn-only, soy-only, both, or both if neither mentioned.
+      - Id is `rss-<source>-<sha1(title|date)[:10]>` so `append_news()`
+        dedups across runs even if pubDate drifts a bit.
+      - Any network or parse failure is logged and skipped: one dead
+        feed cannot kill the evaluate run."""
+    plan = load_plan()
+    feeds = plan.get("news_feeds") or []
+    kw    = plan.get("news_keywords") or {}
+    topic_terms = [t.lower() for t in kw.get("topic", [])]
+    xl_terms    = [t.lower() for t in kw.get("xl", [])]
+    l_terms     = [t.lower() for t in kw.get("l", [])]
+    m_terms     = [t.lower() for t in kw.get("m", [])]
+
+    out: list[dict[str, Any]] = []
+    now = datetime.now(timezone.utc)
+
+    for feed_cfg in feeds:
+        url = feed_cfg.get("url")
+        if not url:
+            continue
+        source = feed_cfg.get("source", "RSS")
+        max_age_hours = int(feed_cfg.get("max_age_hours", 48))
+
+        try:
+            resp = httpx.get(url, timeout=httpx.Timeout(10.0, connect=5.0),
+                             headers={"User-Agent": "freis-farm-blotter/1.0"})
+            resp.raise_for_status()
+            xml_bytes = resp.content
+        except Exception as e:
+            log.warning("news rss: fetch failed for %s (%s): %s", source, url, e)
+            continue
+
+        try:
+            root = ET.fromstring(xml_bytes)
+        except ET.ParseError as e:
+            log.warning("news rss: parse failed for %s: %s", source, e)
+            continue
+
+        # RSS 2.0: <rss><channel><item>. Atom: <feed><entry>. Namespace
+        # varies on Atom; strip it by searching with local-name.
+        items = root.findall(".//item")
+        atom_ns = "{http://www.w3.org/2005/Atom}"
+        if not items:
+            items = root.findall(f".//{atom_ns}entry")
+
+        for it in items:
+            title = (
+                it.findtext("title")
+                or it.findtext(f"{atom_ns}title")
+                or ""
+            ).strip()
+            if not title:
+                continue
+
+            summary = (
+                it.findtext("description")
+                or it.findtext(f"{atom_ns}summary")
+                or ""
+            ).strip()
+
+            pub = (
+                it.findtext("pubDate")
+                or it.findtext(f"{atom_ns}updated")
+                or it.findtext(f"{atom_ns}published")
+                or ""
+            ).strip()
+            try:
+                pub_dt = parsedate_to_datetime(pub) if pub else now
+                if pub_dt.tzinfo is None:
+                    pub_dt = pub_dt.replace(tzinfo=timezone.utc)
+            except Exception:
+                # ISO 8601 fallback (Atom feeds)
+                try:
+                    pub_dt = datetime.fromisoformat(pub.replace("Z", "+00:00"))
+                    if pub_dt.tzinfo is None:
+                        pub_dt = pub_dt.replace(tzinfo=timezone.utc)
+                except Exception:
+                    pub_dt = now
+            age_hours = (now - pub_dt).total_seconds() / 3600.0
+            if age_hours > max_age_hours:
+                continue
+
+            text = (title + " " + summary).lower()
+
+            # Topic filter: skip if no ag-relevant word appears
+            if topic_terms and not any(t in text for t in topic_terms):
+                continue
+
+            # Tiered impact scoring
+            if any(t in text for t in xl_terms):
+                impact = "XL"
+            elif any(t in text for t in l_terms):
+                impact = "L"
+            elif any(t in text for t in m_terms):
+                impact = "M"
+            else:
+                impact = "S"
+
+            # Commodity attribution from keywords
+            has_corn = "corn" in text
+            has_soy  = ("soy" in text) or ("soybean" in text)
+            if has_corn and has_soy:
+                affects = "both"
+            elif has_corn:
+                affects = "corn"
+            elif has_soy:
+                affects = "soy"
+            else:
+                affects = "both"  # generic ag news applies to both
+
+            # Stable dedup id
+            source_slug = re.sub(r"[^a-z0-9]+", "_", source.lower()).strip("_")
+            h = hashlib.sha1(f"{title}|{pub_dt.strftime('%Y-%m-%d')}".encode("utf-8")).hexdigest()[:10]
+            out.append({
+                "id":       f"rss-{source_slug}-{h}",
+                "date":     pub_dt.strftime("%Y-%m-%d"),
+                "title":    title[:180],
+                "impact":   impact,
+                "affects":  affects,
+                "source":   source,
+                "category": "rss",
+            })
+
+    return out
+
+
 def seasonal_trigger_news_for(commodity: str, live: float | None) -> list[dict[str, Any]]:
-    """Check each seasonal tranche trigger for `commodity`. Emit a news
+    """DEPRECATED as a news source — kept for reference.
+
+    Check each seasonal tranche trigger for `commodity`. Emit a news
     item for any tranche whose trigger price has been crossed today but
     whose corresponding news item isn't already in the feed.
+
+    Removed from news_events assembly on 2026-04-24: tranche hits
+    already render as SELL-NOW pills in the Decision Aid, so duplicating
+    them on the blotter was noise. Kept here in case we want to revive
+    it later as a different channel (e.g. SMS-only).
 
     Commodity config and tranche multipliers come from plan.json.
     ID scheme: `trigger-<commodity>-<tranche_id>-<crop_year>`. The crop
@@ -1246,18 +1437,29 @@ def main() -> int:
     LEDGER_FILE.write_text(json.dumps(ledger, indent=2) + "\n")
     log.info("wrote %s", LEDGER_FILE)
 
-    # Auto-news: collect events from three sources. append_news() handles
-    # de-duplication (by id) and retention-based pruning so the file
-    # stays tidy across many runs. Hand-entered items (no id) are left
-    # alone forever.
+    # Auto-news: the blotter is report announcements, policy events, and
+    # geopolitical news — NOT price prints. Price-trigger hits already
+    # show as SELL-NOW pills in the Decision Aid and big daily moves
+    # show as ▲/▼ on the price strip; duplicating them on the blotter
+    # was noise.
+    #
+    # Three sources:
+    #   1. USDA statutory calendar          (plan.json -> usda_calendar)
+    #   2. Curated policy/geopolitical cal  (plan.json -> policy_calendar)
+    #   3. Live RSS feeds                   (plan.json -> news_feeds)
+    #
+    # append_news() de-duplicates by id and prunes by retention days.
+    # Hand-entered items (no id) are preserved forever.
     news_events = []
     news_events.extend(usda_news_for_today())
-    for commodity in ("corn", "soybean"):
-        live = prices.get("corn") if commodity == "corn" else prices.get("soy")
-        news_events.extend(seasonal_trigger_news_for(commodity, live))
-    detail = prices.get("detail", {}) or {}
-    news_events.extend(big_move_news_for("corn", detail.get("corn")))
-    news_events.extend(big_move_news_for("soy",  detail.get("soy")))
+    news_events.extend(policy_calendar_news_for_today())
+    try:
+        news_events.extend(rss_news_today())
+    except Exception as e:
+        # Belt-and-suspenders: rss_news_today() swallows per-feed errors,
+        # but if something unexpected raises at the call-site we still
+        # don't want to abort the whole evaluate run.
+        log.warning("news rss: unexpected error, skipping this run: %s", e)
     added = append_news(news_events)
     log.info("news.json: %d event(s) emitted, %d added after de-dup", len(news_events), added)
 

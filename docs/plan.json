@@ -68,6 +68,39 @@
     { "month": 12, "day": 10, "label": "Monthly WASDE",                            "size": "S",  "affects": "both" }
   ],
 
+  "_policy_calendar_doc": "Curated non-USDA market-movers: FOMC dates, EPA RFS deadlines, Brazil/Argentina harvest windows, trade policy events. Edit freely — `category` is one of policy|geopolitical|report and ends up in the news-item payload. `year` is optional; omit for events that recur yearly on the same date.",
+  "policy_calendar": [
+    { "month":  1, "day": 29, "year": 2026, "label": "FOMC rate decision",                          "size": "M",  "affects": "both", "category": "policy",       "source": "Fed" },
+    { "month":  3, "day": 19, "year": 2026, "label": "FOMC rate decision + SEP",                    "size": "L",  "affects": "both", "category": "policy",       "source": "Fed" },
+    { "month":  5, "day":  7, "year": 2026, "label": "FOMC rate decision",                          "size": "M",  "affects": "both", "category": "policy",       "source": "Fed" },
+    { "month":  6, "day": 18, "year": 2026, "label": "FOMC rate decision + SEP",                    "size": "L",  "affects": "both", "category": "policy",       "source": "Fed" },
+    { "month":  7, "day": 30, "year": 2026, "label": "FOMC rate decision",                          "size": "M",  "affects": "both", "category": "policy",       "source": "Fed" },
+    { "month":  9, "day": 17, "year": 2026, "label": "FOMC rate decision + SEP",                    "size": "L",  "affects": "both", "category": "policy",       "source": "Fed" },
+    { "month": 11, "day":  5, "year": 2026, "label": "FOMC rate decision",                          "size": "M",  "affects": "both", "category": "policy",       "source": "Fed" },
+    { "month": 12, "day": 17, "year": 2026, "label": "FOMC rate decision + SEP",                    "size": "L",  "affects": "both", "category": "policy",       "source": "Fed" },
+    { "month":  2, "day": 15,                "label": "Brazil soybean harvest peak window",          "size": "L",  "affects": "soy",  "category": "geopolitical", "source": "Global supply" },
+    { "month":  3, "day":  1,                "label": "Argentina soy harvest begins",                "size": "M",  "affects": "soy",  "category": "geopolitical", "source": "Global supply" },
+    { "month":  4, "day":  1,                "label": "Argentina corn harvest begins",               "size": "M",  "affects": "corn", "category": "geopolitical", "source": "Global supply" },
+    { "month":  6, "day":  1,                "label": "Southern-hemisphere export window opens",     "size": "S",  "affects": "both", "category": "geopolitical", "source": "Global supply" },
+    { "month":  7, "day": 31,                "label": "EPA annual RFS volume target (statutory)",    "size": "L",  "affects": "corn", "category": "policy",       "source": "EPA" },
+    { "month":  9, "day":  1,                "label": "US new-crop export window opens",             "size": "M",  "affects": "both", "category": "policy",       "source": "Export calendar" },
+    { "month": 12, "day": 31,                "label": "Calendar-year US export-sales cutoff",        "size": "S",  "affects": "both", "category": "policy",       "source": "Export calendar" }
+  ],
+
+  "_news_feeds_doc": "RSS feeds pulled on every evaluate run (15 min). Items must be younger than max_age_hours AND match at least one topic keyword before scoring. Empty list or a network failure silently skips that feed — one bad feed can't break the pipeline.",
+  "news_feeds": [
+    { "url": "https://www.usda.gov/sites/default/files/rss/latest-releases.xml", "source": "USDA", "max_age_hours": 48 },
+    { "url": "https://www.fas.usda.gov/feeds/commodity-intelligence-reports-releases.rss", "source": "USDA FAS", "max_age_hours": 72 }
+  ],
+
+  "_news_keywords_doc": "Keyword tiers drive impact scoring for RSS items. `topic` is the filter: items without a topic word are ignored entirely. `xl|l|m` set the impact score (first tier to match wins). Lowercase-compare; edit freely.",
+  "news_keywords": {
+    "topic": ["corn", "soy", "soybean", "grain", "wheat", "biofuel", "ethanol", "crop", "farm"],
+    "xl":    ["embargo", "export ban", "invasion", "sanction", "war declared", "tariff imposed"],
+    "l":     ["tariff", "duty", "rfs", "biofuel mandate", "trade deal", "drought declared", "fomc", "rate decision", "wasde", "plantings", "stocks report", "flood", "freeze", "frost damage", "opec"],
+    "m":     ["export", "import", "crop progress", "harvest", "yield", "weather", "forecast", "brazil", "argentina", "china buy", "russia", "ukraine", "drought", "rain"]
+  },
+
   "big_move_pct": 3.0,
   "news_retention_days": 30
 }
