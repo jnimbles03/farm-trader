@@ -578,17 +578,21 @@
     </table>
   </div>
 
-  <!-- ───────── SIGNALS ───────── -->
-  <h2>Signals</h2>
+  <!-- ───────── OPEN POSITIONS + ACTIVE ALERTS ───────── -->
+  <!-- Replaces the old jargon-heavy "Signals" table. Plain-English
+       view of any active sell alerts plus every open position
+       (inventory at the elevator, APP commitments, HTAs). -->
+  <h2>Grain on hand &amp; active alerts</h2>
   <div class="tbl-wrap">
     <table id="sigs">
       <thead><tr>
-        <th>Contract</th><th>Crop</th><th>Mo</th>
-        <th style="text-align:right">Live</th>
-        <th style="text-align:right">Target</th>
-        <th>Status</th><th>Note</th>
+        <th>What</th>
+        <th style="text-align:right">Current price</th>
+        <th style="text-align:right">Locked / target</th>
+        <th>Type</th>
+        <th></th>
       </tr></thead>
-      <tbody><tr><td colspan="7" style="color:var(--muted)">loading…</td></tr></tbody>
+      <tbody><tr><td colspan="5" style="color:var(--muted)">loading…</td></tr></tbody>
     </table>
   </div>
 
@@ -789,7 +793,10 @@ const STRATEGY = {
     label: "Corn",
     color: "#1b7a3a",
     octLow: 4.10,       // placeholder — update after Oct 2026 harvest low
-    totalBushels: 38500, // 175 ac × 220 bu
+    // 38,500 bu projected 2026 new-crop harvest (175 ac × 220 bu)
+    //  + 9,115 bu 2025 old-crop currently stored at Ritchie elevator
+    // = 47,615 bu of corn the farm will market this crop year.
+    totalBushels: 47615,
     reserveFrac: 0.10,   // hold 10% unpriced for drought-spike / basis improvement
     tranches: [
       { id:"C1", pct:25, label:"T1 · Feb–Mar",  winS:[2,1],  winE:[3,31], mult:1.09, note:"Acreage rally" },
@@ -803,7 +810,10 @@ const STRATEGY = {
     label: "Soybeans",
     color: "#a8722c",
     octLow: 10.40,
-    totalBushels: 5025,  // 75 ac × 67 bu
+    // 5,025 bu projected 2026 new-crop harvest (75 ac × 67 bu)
+    //  + 1,967 bu 2025 old-crop beans currently stored at Ritchie
+    // = 6,992 bu of soy the farm will market this crop year.
+    totalBushels: 6992,
     reserveFrac: 0.10,   // hold 10% unpriced for drought-spike / basis improvement
     tranches: [
       { id:"S1", pct:15, label:"T1 · Feb–Mar", winS:[2,1],  winE:[3,31], mult:1.07, note:"Only if SA crop large" },
@@ -958,10 +968,56 @@ function freshnessLabel(iso) {
   return { label, stale, hours };
 }
 function weightedAvg(c) {
-  const rows = loadSales().filter(s => s.commodity === c);
+  // Skip rows without a settled price (e.g. APP-program commitments
+  // priced as the Apr–Jul 2026 cash average — unknown until settle).
+  // Those rows count toward bushels-sold but aren't part of the $/bu avg.
+  const rows = loadSales().filter(s => s.commodity === c && s.price != null);
   const bu = rows.reduce((a,s)=>a+s.bushels,0);
   if (!bu) return null;
   return rows.reduce((a,s)=>a+s.bushels*s.price,0) / bu;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   ONE-TIME MIGRATIONS — seed the sales log with commitments that
+   existed before this dashboard tracked them. Guarded by a flag
+   so reloads don't duplicate entries.
+   ───────────────────────────────────────────────────────────── */
+const MIGRATIONS_KEY = "freis.migrations.v1";
+function ranMigration(id) {
+  try { return !!JSON.parse(localStorage.getItem(MIGRATIONS_KEY) || "{}")[id]; }
+  catch { return false; }
+}
+function markMigrationRan(id) {
+  let r = {};
+  try { r = JSON.parse(localStorage.getItem(MIGRATIONS_KEY) || "{}"); } catch {}
+  r[id] = new Date().toISOString();
+  localStorage.setItem(MIGRATIONS_KEY, JSON.stringify(r));
+}
+
+function seedRitchieAppCommitments() {
+  // 2026 Ritchie Average Pricing Program — 1,500 bu corn + 500 bu soy
+  // committed to be priced as the avg of cash Apr–Jul 2026. Price is
+  // null because the average won't settle until late July. Bushels
+  // count toward commodity total so "remaining" drops immediately.
+  if (ranMigration("ritchie_app_2026_v1")) return;
+  // Guard against double-seeding if the user already added them by hand.
+  const existing = loadSales().some(s => (s.note || "").startsWith("Ritchie APP"));
+  if (!existing) {
+    const now = new Date().toISOString();
+    addSale({
+      id: "seed-ritchie-app-corn-2026",
+      ts: now, commodity: "corn", bushels: 1500, price: null,
+      tranche: null,
+      note: "Ritchie APP — priced as avg cash Apr–Jul 2026 (seeded)",
+    });
+    addSale({
+      id: "seed-ritchie-app-soy-2026",
+      ts: now, commodity: "soy",  bushels: 500, price: null,
+      tranche: null,
+      note: "Ritchie APP — priced as avg cash Apr–Jul 2026 (seeded)",
+    });
+  }
+  markMigrationRan("ritchie_app_2026_v1");
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -1676,48 +1732,144 @@ function rerender() {
 }
 
 async function load() {
-  const [pRes, sRes, lRes] = await Promise.all([
-    fetch("prices.json",   {cache: "no-store"}),
-    fetch("signals.json",  {cache: "no-store"}),
-    fetch("last_run.json", {cache: "no-store"}),
+  // One-time seed of pre-existing commitments. Safe to call every load —
+  // internally guarded by a migration flag so it only writes once.
+  seedRitchieAppCommitments();
+
+  // positions.json is emitted by the updated evaluate.py alongside the
+  // legacy signals.json. We fetch both so the dashboard works during
+  // the window where the Actions workflow hasn't run yet (positions.json
+  // absent). Any fetch that 404s resolves to a null and we render an
+  // empty state.
+  const safeFetch = async (url) => {
+    try { const r = await fetch(url, {cache: "no-store"}); return r.ok ? r.json() : null; }
+    catch { return null; }
+  };
+
+  const [p, s, l, pos] = await Promise.all([
+    safeFetch("prices.json"),
+    safeFetch("signals.json"),
+    safeFetch("last_run.json"),
+    safeFetch("positions.json"),
   ]);
-  const p = await pRes.json();
-  const s = await sRes.json();
-  const l = await lRes.json();
 
-  _prices = p;
+  _prices = p || { corn: null, soy: null, wheat: null };
+  const signals = (s && s.signals) || [];
+  const positions = (pos && pos.positions) || [];
 
-  document.getElementById("sub").textContent =
-    `As of ${new Date(l.ran_at).toLocaleString()} — ${s.signals.length} signal(s) tracked` +
-    (l.sms_fired ? ` · ${l.sms_fired} SMS fired this run` : "");
+  document.getElementById("sub").textContent = l
+    ? `As of ${new Date(l.ran_at).toLocaleString()} — ${signals.length} active alert(s)` +
+      (l.sms_fired ? ` · ${l.sms_fired} SMS fired this run` : "")
+    : "loading…";
 
   const strip = document.getElementById("strip");
-  const detail = p.detail || {};
+  const detail = _prices.detail || {};
   const tiles = [
-    { label: "Corn",      value: p.corn,      detail: detail.corn  },
-    { label: "Soy",       value: p.soy,       detail: detail.soy   },
-    { label: "Wheat",     value: p.wheat,     detail: detail.wheat },
-    { label: "Corn Dec",  value: p.corn_dec,  detail: detail.corn  },
-    { label: "Soy Nov",   value: p.soy_nov,   detail: detail.soy   },
-    { label: "Wheat Jul", value: p.wheat_jul, detail: detail.wheat },
+    { label: "Corn",      value: _prices.corn,      detail: detail.corn  },
+    { label: "Soy",       value: _prices.soy,       detail: detail.soy   },
+    { label: "Wheat",     value: _prices.wheat,     detail: detail.wheat },
+    { label: "Corn Dec",  value: _prices.corn_dec,  detail: detail.corn  },
+    { label: "Soy Nov",   value: _prices.soy_nov,   detail: detail.soy   },
+    { label: "Wheat Jul", value: _prices.wheat_jul, detail: detail.wheat },
   ];
   strip.innerHTML = tiles.map(renderTile).join("");
 
-  const tbody = document.querySelector("#sigs tbody");
-  tbody.innerHTML = s.signals.length
-    ? s.signals.map(r => `
-      <tr>
-        <td>${r.contract_id}</td>
-        <td>${r.commodity}</td>
-        <td>${String(r.futures_year).slice(2)}-${String(r.futures_month).padStart(2,"0")}</td>
-        <td style="text-align:right">${fmt(r.live)}</td>
-        <td style="text-align:right">${fmt(r.target_price)}</td>
-        <td class="status-${r.status}">${r.status}</td>
-        <td>${r.note || ""}</td>
-      </tr>`).join("")
-    : `<tr><td colspan="7" style="color:var(--muted)">no signals</td></tr>`;
+  renderSignalsAndPositions(signals, positions);
 
   rerender();
+}
+
+/* ─────────────────────────────────────────────────────────────
+   SIGNALS + POSITIONS render — plain English, no jargon.
+   Structure: top block = active sell alerts (if any), bottom
+   block = current grain on hand & commitments. Both hide when
+   empty so the section doesn't look like a dead table.
+   ───────────────────────────────────────────────────────────── */
+const MONTH_ABBR = ["", "Jan","Feb","Mar","Apr","May","Jun",
+                        "Jul","Aug","Sep","Oct","Nov","Dec"];
+
+function contractHuman(commodity, year, month) {
+  const cm = commodity === "soybean" || commodity === "soy" ? "Soybeans" :
+             commodity === "corn"    ? "Corn" :
+             commodity === "wheat"   ? "Wheat" :
+             commodity.charAt(0).toUpperCase() + commodity.slice(1);
+  const mo = MONTH_ABBR[month] || "";
+  return `${cm} — ${mo} ${year}`;
+}
+
+function contractTypeHuman(t) {
+  return {
+    "HTA":       "Hedge-to-arrive (locked futures)",
+    "BASIS":     "Basis contract (locked basis)",
+    "CASH":      "Cash forward sale",
+    "DP":        "Delayed price",
+    "APP":       "Average price program",
+    "INVENTORY": "In storage — unsold",
+  }[t] || t;
+}
+
+function renderSignalsAndPositions(signals, positions) {
+  const tbody = document.querySelector("#sigs tbody");
+  if (!tbody) return;
+
+  const rows = [];
+
+  // === Active sell alerts ===
+  // Only surface signals that are actually HIT or close to target.
+  // Old HTA demo data will appear here until the next cron wipes
+  // signals.json; render in plain English so it's readable anyway.
+  const active = signals.filter(r => r.status === "HIT" || r.status === "WAIT");
+  if (active.length) {
+    rows.push(`<tr><td colspan="5" style="background:#f1ede6; font-weight:700; font-size:11px; letter-spacing:.04em; text-transform:uppercase; color:var(--muted);">Active sell alerts</td></tr>`);
+    for (const r of active) {
+      const what = contractHuman(r.commodity, r.futures_year, r.futures_month);
+      const live = r.live != null ? `$${(+r.live).toFixed(2)}` : "—";
+      const target = r.target_price != null ? `$${(+r.target_price).toFixed(2)}` : "—";
+      const statusTxt = r.status === "HIT" ? "Sell now — price hit target" : "Waiting for target";
+      const pill = `<span class="pill ${r.status === "HIT" ? "pill-hit" : "pill-wait"}">${r.status === "HIT" ? "SELL" : "Waiting"}</span>`;
+      rows.push(`<tr>
+        <td>${what}</td>
+        <td style="text-align:right">${live}</td>
+        <td style="text-align:right">${target}</td>
+        <td>${pill}</td>
+        <td style="color:var(--muted); font-size:12px">${statusTxt}</td>
+      </tr>`);
+    }
+  }
+
+  // === Open positions ===
+  // From positions.json. Shows every contract + bushels + live price
+  // + status in plain terms. When positions.json isn't available yet,
+  // this block is skipped.
+  if (positions.length) {
+    rows.push(`<tr><td colspan="5" style="background:#f1ede6; font-weight:700; font-size:11px; letter-spacing:.04em; text-transform:uppercase; color:var(--muted);">Grain on hand &amp; commitments</td></tr>`);
+    for (const r of positions) {
+      const what = contractHuman(r.commodity, r.futures_year, r.futures_month);
+      const live = r.live != null ? `$${(+r.live).toFixed(2)}` : "—";
+      const locked = r.futures_price != null ? `$${(+r.futures_price).toFixed(2)}` : "—";
+      const qty = r.quantity != null ? `${(+r.quantity).toLocaleString()} bu` : "—";
+      const kind = contractTypeHuman(r.contract_type);
+      const note = r.note || "";
+      const cls =
+        r.contract_type === "INVENTORY" ? "pill-store" :
+        r.contract_type === "APP"       ? "pill-warm"  :
+        r.contract_type === "HTA"       ? "pill-active" :
+                                          "pill-wait";
+      const pill = `<span class="pill ${cls}">${kind}</span>`;
+      rows.push(`<tr>
+        <td><div style="font-weight:600">${what}</div>
+            <div style="font-size:11px; color:var(--muted)">${qty}${note ? " · " + note : ""}</div></td>
+        <td style="text-align:right">${live}</td>
+        <td style="text-align:right">${locked}</td>
+        <td>${pill}</td>
+        <td style="color:var(--muted); font-size:12px"></td>
+      </tr>`);
+    }
+  }
+
+  tbody.innerHTML = rows.length
+    ? rows.join("")
+    : `<tr><td colspan="5" style="color:var(--muted)">No active alerts or open positions. Use the tranche grid above to plan sales.</td></tr>`;
 }
 
 /* ─────────────────────────────────────────────────────────────
