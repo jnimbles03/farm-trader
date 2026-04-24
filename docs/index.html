@@ -604,6 +604,537 @@
     .pillar-num { font-size: 10px; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
     .pillar-title { font-size: 14px; font-weight: 700; margin-top: 2px; }
   </style>
+
+  <!-- ════════════════════════════════════════════════════════════════
+       REFINE LAYER — Gebbia-style visual refresh.
+
+       Target audience: next-gen farm operators (30–40) who aren't
+       traders. Design job: lead the user to the one decision that
+       matters and get out of their way. Calm over dense, type over
+       chrome, whitespace over boxes, one accent over a palette.
+
+       This layer is purely visual. All existing structure, IDs,
+       JavaScript, and data flow are preserved. Remove this <style>
+       block to revert to the prior look.
+       ════════════════════════════════════════════════════════════════ -->
+  <style id="refine-layer">
+    /* ---------- Refined tokens ---------- */
+    :root {
+      --bg:           #fafaf8;
+      --surface:      #ffffff;
+      --ink:          #1a1a1a;
+      --muted:        #888888;
+      --tertiary:     #aaaaaa;
+      --line:         #e8e6e0;
+      --line-strong:  #d0cec8;
+
+      --accent:       #2a5a3a;
+      --accent-sub:   #eef2ec;
+
+      /* Commodity accents — quieter, used sparingly for identity not decoration */
+      --corn:         #2a5a3a;
+      --soy:          #8a4a18;
+
+      /* States — reserved, not decorative */
+      --hit:          #2a5a3a;
+      --wait:         #888888;
+      --overdue:      #8a1a1a;
+    }
+
+    /* ---------- Page chrome ---------- */
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      padding: clamp(20px, 3vw, 40px) clamp(16px, 3vw, 32px);
+    }
+    .wrap { max-width: 980px; }
+
+    ::selection { background: var(--accent); color: #fff; }
+    a { color: var(--ink); text-decoration: underline; text-underline-offset: 0.2em; }
+    a:hover { color: var(--accent); }
+
+    /* ---------- Type ---------- */
+    h1 {
+      font-size: clamp(22px, 2.4vw, 28px);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      line-height: 1.2;
+      margin: 0 0 6px;
+    }
+    h2 {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 40px 0 12px;
+    }
+    .sub {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    /* ---------- Tabs — quieter, underline-on-active ---------- */
+    .tabs {
+      display: flex; gap: 28px; margin: 24px 0 36px;
+      border-bottom: 0.5px solid var(--line);
+    }
+    .tabs .tab {
+      background: none; border: 0; padding: 10px 0;
+      font-size: 14px; font-weight: 400; color: var(--muted); cursor: pointer;
+      border-bottom: 1px solid transparent; margin-bottom: -0.5px;
+      transition: color 0.18s ease, border-color 0.18s ease;
+    }
+    .tabs .tab:hover { color: var(--ink); }
+    .tabs .tab.active {
+      color: var(--ink);
+      border-bottom-color: var(--ink);
+    }
+
+    /* ---------- Action ribbon — retains urgency without shouting ---------- */
+    .action-ribbon {
+      margin: 0 0 24px;
+      padding: 10px 14px; border-radius: 4px;
+      font-size: 13px; font-weight: 500; letter-spacing: 0;
+      box-shadow: none;
+      border: none;
+    }
+    .action-ribbon.sell { background: var(--accent); color: #fff; }
+    .action-ribbon.catchup { background: #8a1a1a; color: #fff; }
+    .action-ribbon .ribbon-icon {
+      background: rgba(255,255,255,.22);
+      width: 18px; height: 18px; font-size: 11px; border-radius: 2px;
+    }
+    .action-ribbon a {
+      color: #fff; opacity: 0.85; font-size: 12px; font-weight: 400;
+    }
+    .action-ribbon a:hover { opacity: 1; }
+
+    /* ---------- Price strip: from 6 boxed tiles to 3 quiet numbers ---------- */
+    .strip {
+      display: flex !important; gap: 40px !important;
+      padding: 12px 0 28px;
+      border-bottom: 0.5px solid var(--line);
+      margin-bottom: 40px;
+      grid-template-columns: none !important;
+    }
+    .tile {
+      background: none !important; border: none !important;
+      border-radius: 0 !important; padding: 0 !important;
+    }
+    .tile .label {
+      font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--muted); margin-bottom: 4px;
+    }
+    .tile .val {
+      font-size: 22px !important; font-weight: 400;
+      letter-spacing: -0.01em;
+      font-variant-numeric: tabular-nums;
+    }
+    .tile .tile-chg { font-size: 11px; font-weight: 500; }
+    .tile .tile-chg.up { color: var(--hit); }
+    .tile .tile-chg.down { color: var(--overdue); }
+    .tile .tile-sub { color: var(--tertiary); font-size: 10px; }
+    .tile .tile-bar { display: none; }
+    /* Hide the secondary contract-month tiles so the strip shows just
+       corn / soy / wheat front-month — the three prices that matter
+       for a glance. Users who want specific-month prices can still
+       see them in the "On hand" / positions list. */
+    .strip .tile:nth-child(n+4) { display: none; }
+
+    /* ---------- Today's Call: hero typography, one sentence, no box ---------- */
+    .call {
+      background: none !important; border: none !important;
+      border-radius: 0 !important;
+      padding: 8px 0 !important;
+      margin-bottom: 48px !important;
+      box-shadow: none !important;
+    }
+    .call-head {
+      font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--muted); font-weight: 500;
+    }
+    .call-msg {
+      font-size: clamp(22px, 3vw, 30px) !important;
+      font-weight: 400 !important;
+      letter-spacing: -0.02em !important;
+      line-height: 1.25 !important;
+      margin-top: 10px !important;
+      color: var(--ink) !important;
+    }
+    .call-dot {
+      width: 10px !important; height: 10px !important; border-radius: 50% !important;
+      margin-right: 8px !important; border: none !important;
+      font-size: 0 !important;
+      vertical-align: middle !important;
+      position: relative; top: -2px;
+    }
+    .call-sub {
+      font-size: 14px !important; color: var(--muted) !important;
+      margin-top: 8px !important; line-height: 1.6;
+      max-width: 60ch;
+    }
+    .call-uplift {
+      margin-top: 20px; padding-top: 12px;
+      border-top: 0.5px solid var(--line);
+      font-size: 12px; color: var(--muted);
+      display: flex; gap: 40px; flex-wrap: wrap;
+    }
+    .call-uplift .captured { color: var(--hit); font-weight: 500; }
+    .call-uplift .potential { color: var(--ink); font-weight: 500; }
+
+    /* Hero mode (fresh SELL / CATCH UP) — still dominant but flat, not glossy */
+    .call.hero {
+      padding: 28px 28px 32px !important;
+      border: 0.5px solid rgba(255,255,255,0.2) !important;
+      border-radius: 6px !important;
+      box-shadow: none !important;
+    }
+    .call.hero.hero-sell { background: var(--accent) !important; }
+    .call.hero.hero-catchup { background: #8a1a1a !important; }
+    .call.hero .call-head {
+      color: rgba(255,255,255,0.75) !important; font-weight: 500 !important;
+    }
+    .call.hero .call-verb {
+      font-size: clamp(32px, 4vw, 44px) !important;
+      font-weight: 400 !important;
+      letter-spacing: -0.02em !important;
+      line-height: 1 !important;
+    }
+    .call.hero .call-contract {
+      color: rgba(255,255,255,0.85) !important;
+      font-size: 14px !important; font-weight: 400 !important;
+    }
+    .call.hero .call-bushels .num {
+      font-size: clamp(28px, 3.5vw, 36px) !important;
+      font-weight: 400 !important;
+    }
+    .call.hero .call-bushels .unit {
+      color: rgba(255,255,255,0.75) !important; font-size: 10px !important;
+    }
+    .call.hero .call-sub, .call.hero .call-uplift {
+      color: rgba(255,255,255,0.8) !important;
+      border-color: rgba(255,255,255,0.2) !important;
+    }
+
+    /* ---------- Plan controls — shrunk to a quiet footer strip ---------- */
+    .plan-controls {
+      background: none !important; border: none !important;
+      border-top: 0.5px solid var(--line) !important;
+      border-radius: 0 !important;
+      padding: 16px 0 !important;
+      margin: 32px 0 !important;
+      grid-template-columns: 1fr !important;
+    }
+    @media (min-width: 720px) {
+      .plan-controls { grid-template-columns: 1fr 1fr !important; gap: 32px !important; }
+    }
+    .plan-row { font-size: 12px; }
+    .plan-row .plan-label { font-weight: 500; }
+    .plan-toggle input { accent-color: var(--accent); }
+    .segmented { background: none; border: 0.5px solid var(--line); border-radius: 3px; }
+    .segmented button { font-size: 11px; font-weight: 500; color: var(--muted); }
+    .segmented button.active { background: var(--ink); color: #fff; }
+
+    /* ---------- Remaining (Sales Log): unframed editorial with hairline bars ---------- */
+    .remain {
+      grid-template-columns: 1fr 1fr !important;
+      gap: 40px !important; margin-bottom: 40px !important;
+    }
+    .remain .box {
+      background: none !important; border: none !important;
+      border-radius: 0 !important; padding: 0 !important;
+    }
+    .remain .box .label {
+      font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+    .remain .box .big {
+      font-size: clamp(26px, 3vw, 32px) !important;
+      font-weight: 400 !important; letter-spacing: -0.02em !important;
+      margin-top: 6px !important;
+    }
+    .remain .box .hint {
+      font-size: 12px !important; color: var(--muted) !important;
+      margin-top: 4px !important;
+    }
+    .remain .corn .big { color: var(--corn) !important; }
+    .remain .soy .big  { color: var(--soy) !important; }
+    .remain-bar {
+      height: 1px !important; background: var(--line) !important;
+      border-radius: 0 !important; margin-top: 16px !important;
+    }
+    .remain-bar > div { height: 1px !important; }
+
+    /* ---------- Sales log form — trimmed to essentials ---------- */
+    .log-form {
+      background: none !important; border: 0.5px dashed var(--line) !important;
+      border-radius: 3px !important; padding: 20px !important;
+      margin-bottom: 24px !important;
+    }
+    .log-form label {
+      font-size: 10px !important; letter-spacing: 0.08em !important;
+      color: var(--tertiary) !important;
+    }
+    .log-form input, .log-form select {
+      border: 0.5px solid var(--line) !important; border-radius: 3px !important;
+      padding: 8px 10px !important; background: #fff !important;
+    }
+    .log-form input:focus, .log-form select:focus {
+      outline: none; border-color: var(--accent) !important;
+    }
+    .log-form button {
+      background: var(--ink) !important; color: #fff !important;
+      border-radius: 3px !important; padding: 10px 16px !important;
+      font-weight: 500 !important; font-size: 13px !important;
+      transition: background 0.15s ease;
+    }
+    .log-form button:hover { background: var(--accent) !important; }
+
+    /* ---------- Live log preview — editorial, not boxy ---------- */
+    .log-preview {
+      background: none !important; border: none !important;
+      border-top: 0.5px solid var(--line) !important;
+      border-bottom: 0.5px solid var(--line) !important;
+      border-radius: 0 !important;
+      padding: 20px 0 !important; margin-bottom: 24px !important;
+    }
+    .log-preview .row .k {
+      font-size: 10px !important; letter-spacing: 0.08em !important; color: var(--muted) !important;
+    }
+    .log-preview .big { font-weight: 500 !important; }
+
+    /* ---------- Panels (tranche grid wrapper, etc.) — no chrome ---------- */
+    .panel {
+      background: none !important; border: none !important;
+      border-radius: 0 !important; padding: 0 !important;
+      margin-bottom: 20px !important;
+    }
+
+    /* ---------- Tranche cards → clean row list ---------- */
+    /* Turn the 2-col grid of therm+body cards into a vertical list
+       where each row reads as a sentence, not a dashboard cell. */
+    .tranche-grid {
+      display: block !important;
+      grid-template-columns: none !important;
+    }
+    .tranche-card {
+      background: none !important;
+      border: none !important;
+      border-top: 0.5px solid var(--line) !important;
+      border-radius: 0 !important;
+      padding: 14px 0 !important;
+      display: grid !important;
+      grid-template-columns: 180px 1fr auto !important;
+      gap: 16px !important;
+      align-items: baseline !important;
+      box-shadow: none !important;
+      filter: none !important;
+      opacity: 1 !important;
+    }
+    .tranche-card:last-child { border-bottom: 0.5px solid var(--line); }
+    /* Thermometer → tiny urgency dot on the left */
+    .tranche-card .therm {
+      width: 8px !important; height: 8px !important;
+      border-radius: 50% !important;
+      align-self: center !important;
+      display: inline-block !important;
+    }
+    .tranche-card .therm * { display: none !important; }
+    /* Use the background color of a small pseudo via outline instead —
+       since we can't easily style inside SVG, wrap with a background on
+       the thermometer container that reflects the state. */
+    .tranche-card.fresh-hit .therm,
+    .tranche-card.overdue-urgent .therm { background: transparent !important; }
+    .tranche-card .tranche-title {
+      font-size: 14px; font-weight: 500; margin-bottom: 0 !important;
+    }
+    .tranche-card .tranche-title .name { font-size: 14px !important; font-weight: 500 !important; }
+    .tranche-card .tranche-title .state { font-size: 9px !important; }
+    .tranche-card .tranche-meta {
+      font-size: 12px !important; color: var(--muted) !important;
+      line-height: 1.5 !important; margin-bottom: 0 !important;
+    }
+    .tranche-card .tranche-progress {
+      min-width: 120px; font-size: 11px; color: var(--muted);
+    }
+    .tranche-card .tranche-progress .bar {
+      height: 1px !important; background: var(--line) !important;
+    }
+    .tranche-uplift { font-size: 10px !important; font-weight: 500 !important; letter-spacing: 0; }
+    /* Fresh-hit left border — quieter */
+    .tranche-card.fresh-hit {
+      padding-left: 12px !important;
+      border-left: 2px solid var(--hit) !important;
+      background: none !important;
+    }
+    .tranche-card.overdue-urgent {
+      padding-left: 12px !important;
+      border-left: 2px solid var(--overdue) !important;
+      background: none !important;
+    }
+    .tranche-card.stale-hit { filter: none !important; opacity: 0.6 !important; }
+    .tranche-mark-handled {
+      font-size: 11px !important; color: var(--muted) !important;
+      text-decoration: underline; text-underline-offset: 0.2em;
+    }
+
+    /* ---------- Pills — flat, muted, icon-less by default ---------- */
+    .pill {
+      background: none !important; border: 0.5px solid var(--line) !important;
+      color: var(--ink) !important; border-radius: 2px !important;
+      padding: 2px 6px !important;
+      font-size: 10px !important; font-weight: 500 !important;
+      text-transform: uppercase !important; letter-spacing: 0.05em !important;
+    }
+    .pill::before { display: none !important; }
+    .pill-hit { background: var(--accent) !important; color: #fff !important; border-color: var(--accent) !important; }
+    .pill-hit.stale {
+      background: none !important; color: var(--muted) !important;
+      border-color: var(--line) !important;
+    }
+    .pill-overdue { background: var(--overdue) !important; color: #fff !important; border-color: var(--overdue) !important; }
+    .pill-active { background: none !important; color: var(--ink) !important; border-color: var(--line-strong) !important; }
+    .pill-done   { background: none !important; color: var(--muted) !important; }
+    .pill-wait   { color: var(--muted) !important; }
+    .pill-hit .since {
+      background: rgba(255,255,255,0.25) !important; font-size: 9px !important;
+    }
+
+    /* ---------- Section headings (uppercase labels above each block) ---------- */
+    /* Soften h2 everywhere so they read as labels, not headlines. */
+    .sec-corn, .sec-soy {
+      font-size: 11px !important; letter-spacing: 0.12em !important;
+      text-transform: uppercase !important;
+      color: var(--corn) !important; font-weight: 500 !important;
+      margin: 32px 0 14px !important;
+    }
+    .sec-soy { color: var(--soy) !important; }
+
+    /* ---------- Sales history + positions/signals table: unframed, editorial ---------- */
+    .tbl-wrap {
+      background: none !important; border: none !important;
+      border-top: 0.5px solid var(--line) !important;
+      border-bottom: 0.5px solid var(--line) !important;
+      border-radius: 0 !important;
+    }
+    table { min-width: 0 !important; }
+    th {
+      background: none !important;
+      color: var(--muted) !important;
+      font-size: 10px !important; letter-spacing: 0.08em !important;
+      border-bottom: 0.5px solid var(--line) !important;
+      padding: 12px 12px !important;
+    }
+    td {
+      border-bottom: 0.5px dashed var(--line) !important;
+      padding: 12px !important; font-size: 13px !important;
+    }
+    tr:last-child td { border-bottom: none !important; }
+    .status-HIT, .status-WAIT, .status-NO_DATA {
+      font-size: 10px !important; padding: 2px 6px !important;
+      background: none !important; border: 0.5px solid var(--line) !important;
+      color: var(--ink) !important;
+      letter-spacing: 0.05em !important;
+    }
+    .status-HIT { background: var(--accent) !important; color: #fff !important; border-color: var(--accent) !important; }
+    .status-HIT::before, .status-WAIT::before, .status-NO_DATA::before { display: none !important; }
+
+    /* ---------- Meta footer — tertiary color, quiet ---------- */
+    .meta {
+      border-top: 0.5px solid var(--line) !important;
+      color: var(--tertiary) !important;
+      font-size: 11px !important; margin-top: 48px !important; padding-top: 20px !important;
+      line-height: 1.7;
+    }
+
+    /* ---------- Cattle & Hay cards — unframed ---------- */
+    .cattle-card {
+      background: none !important; border: none !important;
+      border-top: 0.5px solid var(--line) !important;
+      border-radius: 0 !important;
+      padding: 16px 0 !important;
+    }
+    .cattle-card .label {
+      font-size: 10px !important; letter-spacing: 0.08em !important;
+      color: var(--muted) !important;
+    }
+    .cattle-card .big {
+      font-size: 26px !important; font-weight: 400 !important;
+      letter-spacing: -0.01em !important; margin-top: 6px !important;
+    }
+    .cattle-card .sub { font-size: 13px !important; color: var(--muted) !important; }
+    .cattle-card .thesis { border-top: 0.5px dashed var(--line) !important; }
+
+    /* ---------- Hedge tab refinements — align with main token system ---------- */
+    #tab-hedge {
+      --hedge-accent:   var(--accent);
+      --hedge-accent-2: var(--soy);
+      --hedge-floor:    var(--hit);
+      --hedge-cap:      var(--overdue);
+    }
+    #tab-hedge .hedge-panel {
+      background: none !important; border: none !important;
+      border-top: 0.5px solid var(--line) !important;
+      border-radius: 0 !important;
+      padding: 24px 0 !important;
+      margin-bottom: 0 !important;
+    }
+    #tab-hedge .hedge-panel:first-of-type { border-top: none !important; }
+    #tab-hedge .hedge-toggle {
+      border: none !important; border-bottom: 0.5px solid var(--line) !important;
+      border-radius: 0 !important;
+    }
+    #tab-hedge .hedge-toggle button {
+      padding: 8px 0 !important; margin-right: 24px !important;
+      border-right: none !important;
+      border-bottom: 1px solid transparent !important; margin-bottom: -0.5px !important;
+      color: var(--muted) !important;
+    }
+    #tab-hedge .hedge-toggle button.active {
+      background: none !important; color: var(--ink) !important;
+      border-bottom-color: var(--ink) !important;
+    }
+    #tab-hedge .hedge-stat {
+      background: none !important; border: none !important;
+      border-right: 0.5px solid var(--line) !important;
+      border-radius: 0 !important;
+      padding: 0 24px !important;
+    }
+    #tab-hedge .hedge-stat:first-child { padding-left: 0; }
+    #tab-hedge .hedge-stat:last-child { border-right: none; padding-right: 0; }
+    #tab-hedge .hedge-stat .label {
+      font-size: 10px !important; letter-spacing: 0.08em !important; color: var(--muted) !important;
+    }
+    #tab-hedge .hedge-stat .value {
+      font-size: clamp(26px, 3vw, 32px) !important;
+      font-weight: 400 !important; letter-spacing: -0.02em !important;
+      margin-top: 6px !important;
+    }
+    #tab-hedge .hedge-stats {
+      gap: 0 !important;
+    }
+
+    /* Button hover lift (only on CTAs) */
+    button:not(.tab):not(.hedge-toggle button):not(.segmented button) {
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+    }
+    button:not(.tab):not(.hedge-toggle button):not(.segmented button):hover {
+      transform: translateY(-1px);
+    }
+
+    /* Mobile: slightly tighter spacing */
+    @media (max-width: 560px) {
+      .strip { gap: 24px !important; flex-wrap: wrap !important; }
+      .tranche-card { grid-template-columns: 1fr !important; gap: 8px !important; }
+      .remain { grid-template-columns: 1fr !important; gap: 28px !important; }
+    }
+  </style>
 </head>
 <body>
 <div class="wrap">
