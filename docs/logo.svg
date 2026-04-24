@@ -1,17 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="Freis Farm Board of Trade">
-  <!-- Outer octagon: red outline, thick stroke. CBOT-inspired —
-       trading-pit iconography translated to the farm context. -->
-  <polygon points="100,20 157,43 180,100 157,157 100,180 43,157 20,100 43,43"
-           fill="none" stroke="#d62828" stroke-width="14" stroke-linejoin="miter"/>
+  <!-- Flat-top regular octagon, blue fill. The backdrop for the globe
+       mark. Color is a trade-blue — saturated and confident but not
+       neon — so it reads as a serious mark, not decorative. -->
+  <polygon points="70,20 130,20 180,70 180,130 130,180 70,180 20,130 20,70"
+           fill="#2377b8"/>
 
-  <!-- Inner octagon forming the bullseye target ring. -->
-  <polygon points="100,60 128,72 140,100 128,128 100,140 72,128 60,100 72,72"
-           fill="none" stroke="#d62828" stroke-width="7" stroke-linejoin="miter"/>
+  <!-- Globe outline and the two center lines: the equator (horizontal)
+       and the prime meridian (vertical). White on blue for maximum
+       contrast at small sizes. -->
+  <g fill="none" stroke="#ffffff" stroke-width="3.5" stroke-linecap="butt">
+    <circle cx="100" cy="100" r="62"/>
+    <line x1="38" y1="100" x2="162" y2="100"/>
+    <line x1="100" y1="38" x2="100" y2="162"/>
+  </g>
 
-  <!-- Center dot — the target's bullseye. -->
-  <circle cx="100" cy="100" r="10" fill="#d62828"/>
-
-  <!-- Corner accent square on the top-right of the outer octagon. -->
-  <rect x="150" y="22" width="22" height="22" fill="#d62828" rx="1"/>
+  <!-- Latitude and longitude curves — ellipses whose minor axes flip
+       between rx and ry to fake the 3D curvature of a globe. Two rings
+       in each direction gives enough depth without cluttering the
+       mark at 44px. -->
+  <g fill="none" stroke="#ffffff" stroke-width="2">
+    <ellipse cx="100" cy="100" rx="62" ry="22"/>
+    <ellipse cx="100" cy="100" rx="62" ry="42"/>
+    <ellipse cx="100" cy="100" rx="22" ry="62"/>
+    <ellipse cx="100" cy="100" rx="42" ry="62"/>
+  </g>
 </svg>
