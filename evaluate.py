@@ -34,6 +34,7 @@ import hashlib
 import json
 import logging
 import os
+import re
 import sys
 from dataclasses import dataclass, asdict
 from datetime import datetime, timedelta, timezone
@@ -55,6 +56,10 @@ STATE_DIR          = ROOT / "state"
 STATE_FILE         = STATE_DIR / "alerts_state.json"
 HISTORY_FILE       = STATE_DIR / "price_history.json"
 CONFIRMATIONS_FILE = STATE_DIR / "confirmations.json"
+# Dedupe store for news-impact SMS. Records the `id` of every L/XL
+# news item we've already texted so the scheduled 15-min run doesn't
+# re-alert the same item after each append_news() call.
+NEWS_ALERTS_FILE   = STATE_DIR / "news_alerts_sent.json"
 PRICES_FILE        = DOCS_DIR / "prices.json"
 SIGNALS_FILE       = DOCS_DIR / "signals.json"
 POSITIONS_FILE     = DOCS_DIR / "positions.json"
@@ -513,6 +518,219 @@ def append_news(new_items: list[dict[str, Any]]) -> int:
     data["items"] = kept
     _save_news(data)
     return added
+
+
+# ---------------------------------------------------------------------------
+# News-impact SMS — text out when a news item rated L or XL lands
+# ---------------------------------------------------------------------------
+
+def _load_news_alerts_sent() -> dict[str, Any]:
+    """Track which news ids we've already texted to avoid re-alerting.
+
+    Shape: {"sent_ids": ["usda-2026-04-15-...", ...],
+            "last_sent_at": "2026-04-24T18:30:00Z"}
+
+    Missing or malformed file returns an empty, safe default so a scheduled
+    run never crashes on corrupt state.
+    """
+    if not NEWS_ALERTS_FILE.exists():
+        return {"sent_ids": [], "last_sent_at": None}
+    try:
+        data = json.loads(NEWS_ALERTS_FILE.read_text())
+        if not isinstance(data, dict) or "sent_ids" not in data:
+            return {"sent_ids": [], "last_sent_at": None}
+        return data
+    except json.JSONDecodeError as e:
+        log.warning("news_alerts_sent.json corrupt, resetting: %s", e)
+        return {"sent_ids": [], "last_sent_at": None}
+
+
+def _save_news_alerts_sent(data: dict[str, Any]) -> None:
+    NEWS_ALERTS_FILE.write_text(json.dumps(data, indent=2, sort_keys=True) + "\n")
+
+
+def _layman_headline(item: dict[str, Any]) -> str:
+    """Rewrite the trader-shaped `title` into plain English for SMS.
+
+    The dashboard audience is Jimmy, who reads tranche/front-month/WASDE
+    fluently. The SMS audience is broader — spouse, family, ranch hand —
+    non-traders in their 30s–40s who just want to know "what happened
+    and does it matter?" This translator handles our three auto-news
+    sources (Market signal / Market move / USDA) and falls back to the
+    original title for hand-entered items.
+    """
+    title   = (item.get("title") or "").strip()
+    source  = (item.get("source") or "").lower()
+    affects = item.get("affects") or ""
+
+    commodity_lower = {
+        "corn": "corn",
+        "soy":  "soybeans",
+        "both": "corn and soybeans",
+    }.get(affects, "")
+    commodity_title = commodity_lower[:1].upper() + commodity_lower[1:] if commodity_lower else "Grain"
+
+    # Seasonal tranche trigger — title looks like
+    #   "Corn Tranche 1 trigger hit — front-month at $4.85 (target $4.80)"
+    if source == "market signal":
+        prices = re.findall(r"\$(\d+\.\d+)", title)
+        if len(prices) >= 2:
+            current, target = prices[0], prices[1]
+            return (f"{commodity_title} hit ${current} today — that's above the "
+                    f"${target} we planned to sell some at.")
+        if prices:
+            return (f"{commodity_title} hit ${prices[0]} today — that's one of "
+                    f"the prices we planned to sell some at.")
+        return f"{commodity_title} crossed one of our planned sell prices today."
+
+    # Big daily move — title already readable, just normalize
+    if source == "market move":
+        return title.rstrip(".")
+
+    # USDA calendar report — drop the "USDA:" prefix, translate the
+    # cryptic acronyms, add the "this matters because" tail.
+    if source == "usda":
+        label = title.split(":", 1)[-1].strip() if ":" in title else title
+        label = label or "market"
+        # Rewrite the few report names that are opaque to non-traders.
+        label_map = {
+            "wasde": "monthly supply-and-demand (WASDE)",
+        }
+        label = label_map.get(label.lower(), label)
+        target = commodity_lower or "grain"
+        return f"USDA just released its {label} report — it can move {target} prices."
+
+    # Hand-entered or unknown source — pass through
+    return title
+
+
+def _direction_hint(item: dict[str, Any]) -> str:
+    """One plain-language sentence telling a non-trader which way this
+    is pushing prices and whether it's friendly to selling grain. This
+    is the single most useful piece of info for a family-member SMS —
+    "should I be happy or not?" — so we bolt it on as a second sentence.
+
+    Rules:
+      - Market signal (tranche trigger hit): price crossed UP into our
+        planned sell zone — unambiguously good for selling.
+      - Market move: direction is in the title ("up" / "down"); frame
+        as friendly or rough for selling.
+      - USDA: direction is unknown pre-release; flag volatility.
+    """
+    source = (item.get("source") or "").lower()
+    title  = (item.get("title") or "").lower()
+
+    if source == "market signal":
+        return "Prices are up — this is a planned selling window."
+
+    if source == "market move":
+        if re.search(r"\bup\b|rallie|rally|jump|surge|gain", title):
+            return "Prices up — friendly day for selling."
+        if re.search(r"\bdown\b|drop|fell|fall|loss|weak|tumble|slump|slide", title):
+            return "Prices down — tough day for selling."
+
+    if source == "usda":
+        return "Could swing prices hard in either direction — watch the close."
+
+    return ""
+
+
+def _news_alert_message(item: dict[str, Any]) -> str:
+    """Build the SMS body for one news item in plain English, aimed at
+    a non-trader audience. Impact tier decides the intro ("big news" vs
+    "heads up"); _layman_headline scrubs jargon like tranche / front-month
+    / WASDE from the title; _direction_hint adds a short second sentence
+    so the recipient knows which way prices are moving and what it means
+    for selling. Full context over segment cost — 2 SMS segments is fine."""
+    impact = (item.get("impact") or "").upper()
+    date   = item.get("date") or ""
+
+    intro = {
+        "XL": "Freis Farm — big market news: ",
+        "L":  "Freis Farm — heads up: ",
+    }.get(impact, "Freis Farm — market news: ")
+
+    headline = _layman_headline(item).rstrip(".")
+
+    date_str = ""
+    if date:
+        try:
+            d = datetime.strptime(date, "%Y-%m-%d")
+            date_str = f" ({d.strftime('%b %-d')})"
+        except ValueError:
+            date_str = f" ({date})"
+
+    hint = _direction_hint(item)
+    hint_str = f" {hint}" if hint else ""
+
+    return intro + headline + date_str + "." + hint_str
+
+
+def send_news_alerts(candidates: list[dict[str, Any]]) -> int:
+    """SMS out every L/XL item in `candidates` that we haven't already
+    texted. Dedup is by news `id`; items without an id (hand-entered)
+    are skipped — we can't safely match them across runs.
+
+    On first run (no state file yet), we seed `sent_ids` from the current
+    `news.json` so deploying this feature doesn't retroactively blast
+    the past 30 days of L/XL items.
+
+    Returns count of items actually dispatched.
+    """
+    if not candidates:
+        return 0
+    if not (ALERT_PHONE and TEXTBELT_KEY):
+        log.info("news alerts skipped — ALERT_PHONE or TEXTBELT_KEY not set")
+        return 0
+
+    state = _load_news_alerts_sent()
+    first_run = not NEWS_ALERTS_FILE.exists()
+    sent_ids: set[str] = set(state.get("sent_ids", []))
+
+    # First-run seed: treat every L/XL id currently in news.json as
+    # already-alerted. Otherwise the first scheduled run after deploy
+    # would text the entire backlog.
+    if first_run:
+        existing = _load_news().get("items", []) or []
+        for it in existing:
+            if it.get("id") and (it.get("impact") or "").upper() in ("L", "XL"):
+                sent_ids.add(it["id"])
+        log.info("news alerts: first-run seed — marked %d existing L/XL items as sent",
+                 len(sent_ids))
+
+    fired = 0
+    for item in candidates:
+        impact = (item.get("impact") or "").upper()
+        if impact not in ("L", "XL"):
+            continue
+        nid = item.get("id")
+        if not nid:
+            # Hand-entered items have no id — we'd re-alert on every run.
+            continue
+        if nid in sent_ids:
+            continue
+
+        msg = _news_alert_message(item)
+        if send_sms(msg):
+            sent_ids.add(nid)
+            fired += 1
+            log.info("news alert fired: %s (%s)", nid, impact)
+        else:
+            log.warning("news alert SMS failed for %s — will retry next run", nid)
+
+    # Keep the sent list from growing unbounded: cap at roughly 2x the
+    # news retention window so rotated-out items drop out eventually.
+    retention = int(load_plan().get("news_retention_days", DEFAULT_NEWS_RETENTION_DAYS))
+    cap = max(200, retention * 4)
+    sent_list = list(sent_ids)
+    if len(sent_list) > cap:
+        sent_list = sent_list[-cap:]
+
+    _save_news_alerts_sent({
+        "sent_ids":     sorted(sent_list),
+        "last_sent_at": datetime.now(timezone.utc).isoformat() if fired else state.get("last_sent_at"),
+    })
+    return fired
 
 
 def usda_news_for_today() -> list[dict[str, Any]]:
@@ -1042,6 +1260,14 @@ def main() -> int:
     news_events.extend(big_move_news_for("soy",  detail.get("soy")))
     added = append_news(news_events)
     log.info("news.json: %d event(s) emitted, %d added after de-dup", len(news_events), added)
+
+    # Auto-SMS any news item rated L or XL. Dedup state in
+    # state/news_alerts_sent.json so a given item only texts once,
+    # even though evaluate.py re-emits trigger/big-move news on every
+    # 15-min run while conditions persist.
+    news_sms_fired = send_news_alerts(news_events)
+    if news_sms_fired:
+        log.info("news.json: dispatched %d L/XL news alert(s)", news_sms_fired)
 
     save_state(state)
     log.info("wrote %s", STATE_FILE)

@@ -752,7 +752,22 @@
     }
     .news-list {
       display: flex; flex-direction: column; gap: 14px;
+      /* Cap the news column so a long feed doesn't push the header
+         aside taller than the brand plate next to it. Scroll inside
+         instead of expanding the layout. */
+      max-height: 180px;
+      overflow-y: auto;
+      /* Subtle inset so the scrollbar doesn't crowd the last item */
+      padding-right: 4px;
+      /* Hairline scrollbar treatment, matches the restrained palette */
+      scrollbar-width: thin;
+      scrollbar-color: var(--line-strong) transparent;
     }
+    .news-list::-webkit-scrollbar { width: 6px; }
+    .news-list::-webkit-scrollbar-thumb {
+      background: var(--line-strong); border-radius: 3px;
+    }
+    .news-list::-webkit-scrollbar-track { background: transparent; }
     .news-item {
       display: grid;
       grid-template-columns: 28px 1fr;
@@ -3412,11 +3427,20 @@ document.addEventListener("click", e => {
     vline(s.put_strike,  '#2e7d32', 'Floor ' + hPrice(s.put_strike),                32);
     vline(s.call_strike, '#b71c1c', 'Ceiling ' + hPrice(s.call_strike),             32);
 
-    // Tranche markers (dots on x-axis)
-    s.triggers.forEach((t) => {
+    // Tranche markers (dots on x-axis). When triggers cluster close
+    // together (e.g. corn T1/T2/T3 within 12¢ of each other at current
+    // strikes), a full label like "T1 Feb-Mar" overruns its neighbor.
+    // Two mitigations:
+    //   1. Use the short ID only ("T1", "T2"...)
+    //   2. Stagger labels up/down in alternating pattern so adjacent
+    //      dots never collide vertically
+    s.triggers.forEach((t, i) => {
       const x = xScale(t.price);
+      const short = (t.label || "").split(/\s+/)[0];     // "T1", "T2", …
       svg.appendChild(el('circle', { cx: x, cy: margin.top + ph, r: 5, fill: '#8e6b3a', stroke: '#fff', 'stroke-width': 1.5 }));
-      svg.appendChild(el('text', { x: x, y: margin.top + ph - 10, 'text-anchor': 'middle', 'font-size': 10, fill: '#8e6b3a', 'font-weight': 600 }, t.label));
+      // Alternate: even index labels above the dot, odd index further above.
+      const labelY = margin.top + ph - (i % 2 === 0 ? 10 : 22);
+      svg.appendChild(el('text', { x: x, y: labelY, 'text-anchor': 'middle', 'font-size': 10, fill: '#8e6b3a', 'font-weight': 600 }, short));
     });
 
     // Lines
@@ -3426,15 +3450,47 @@ document.addEventListener("click", e => {
     svg.appendChild(el('path', { d: pathFrom(xs, unhedgedPnL), fill: 'none', stroke: '#1565c0', 'stroke-width': 2, 'stroke-dasharray': '6,4' }));
     svg.appendChild(el('path', { d: pathFrom(xs, hedgedPnL),   fill: 'none', stroke: '#3a5a40', 'stroke-width': 2.5 }));
 
-    // Current price marker
+    // Current price marker.
     const curX = xScale(curPrice);
     const curUH = unhedgedPnL(curPrice, s);
     const curHD = hedgedPnL(curPrice, s);
     svg.appendChild(el('line', { x1: curX, y1: margin.top, x2: curX, y2: margin.top + ph, stroke: '#1a1a1a', 'stroke-width': 1.5, opacity: 0.4 }));
     svg.appendChild(el('circle', { cx: curX, cy: yScale(curUH), r: 5, fill: '#1565c0', stroke: '#fff', 'stroke-width': 2 }));
     svg.appendChild(el('circle', { cx: curX, cy: yScale(curHD), r: 6, fill: '#3a5a40', stroke: '#fff', 'stroke-width': 2 }));
-    svg.appendChild(el('text', { x: curX + 10, y: yScale(curUH) + 4, 'font-size': 11, fill: '#1565c0', 'font-weight': 600 }, hUSD(curUH) + ' without net'));
-    svg.appendChild(el('text', { x: curX + 10, y: yScale(curHD) + 4, 'font-size': 11, fill: '#3a5a40', 'font-weight': 600 }, hUSD(curHD) + ' with net'));
+
+    // Label handling: when the market is in the middle zone (most days),
+    // curUH and curHD are identical and their labels stack on top of
+    // each other. Detect that case and render ONE combined label.
+    // Otherwise stagger: "without net" above its dot, "with net" below
+    // its dot, so they don't collide regardless of which is higher.
+    //
+    // Labels also anchor-left of the vertical line when the cursor is
+    // past the midpoint of the plot, so long numbers don't run off the
+    // right edge.
+    const labelOnLeft = curX > (margin.left + pw * 0.65);
+    const tx = labelOnLeft ? curX - 10 : curX + 10;
+    const anchor = labelOnLeft ? "end" : "start";
+
+    if (Math.abs(curUH - curHD) < 1) {
+      // Identical → one label, placed above the dot.
+      svg.appendChild(el('text', {
+        x: tx, y: yScale(curHD) - 10,
+        'text-anchor': anchor,
+        'font-size': 11, fill: '#1a1a1a', 'font-weight': 600,
+      }, hUSD(curHD) + ' at this price'));
+    } else {
+      // Different → stagger to avoid overlap.
+      svg.appendChild(el('text', {
+        x: tx, y: yScale(curUH) - 8,
+        'text-anchor': anchor,
+        'font-size': 11, fill: '#1565c0', 'font-weight': 600,
+      }, hUSD(curUH) + ' without net'));
+      svg.appendChild(el('text', {
+        x: tx, y: yScale(curHD) + 16,
+        'text-anchor': anchor,
+        'font-size': 11, fill: '#3a5a40', 'font-weight': 600,
+      }, hUSD(curHD) + ' with net'));
+    }
   }
 
   function updateStats(s, price) {
@@ -3744,9 +3800,11 @@ async function hydrateStrategyFromPlan() {
 
 /* ─────────────────────────────────────────────────────────────
    NEWS FEED — renders docs/news.json into the header aside.
-   Items are rated S / M / L / XL by market-impact. The feed
-   shows up to 4 items, sorted by impact descending then date
-   descending, so the most consequential news is first.
+   Items are rated S / M / L / XL by market-impact, sorted by
+   impact descending then date descending so the most consequential
+   news is on top. The list is height-capped in CSS and scrolls
+   internally, so the full ranked feed is rendered without
+   expanding the header column.
    ───────────────────────────────────────────────────────────── */
 function renderNewsFeed(news) {
   const mount = document.getElementById("news-list");
@@ -3767,7 +3825,9 @@ function renderNewsFeed(news) {
     return (b.date || "").localeCompare(a.date || "");
   });
 
-  const top = items.slice(0, 4);
+  // Show the full ranked list — the list itself is height-capped and
+  // scrolls, so we no longer truncate to 4 with a "+N more" label.
+  const top = items;
   const fmtDate = (iso) => {
     if (!iso) return "";
     const d = new Date(iso + "T00:00:00");
@@ -3789,8 +3849,7 @@ function renderNewsFeed(news) {
         <div class="news-headline">${it.title || ""}</div>
         <div class="news-meta">${fmtDate(it.date)} · ${commodityLabel(it.affects)}${it.source ? " · " + it.source : ""}</div>
       </div>
-    </div>`).join("") +
-    (items.length > 4 ? `<div class="news-more">+${items.length - 4} more</div>` : "");
+    </div>`).join("");
 }
 
 async function load() {
