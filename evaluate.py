@@ -100,6 +100,10 @@ GRAIN_ROOT = {
     "soybean_meal": "zm",
     "soybean_oil":  "zl",
     "oats":         "zo",
+    # CME feeder cattle futures — quoted in ¢/lb on the exchange.
+    # Stooq continuous symbol: gf.c. Used by the Cattle tab on the
+    # dashboard to show the selling-context for calf sales.
+    "feeder_cattle": "gf",
 }
 
 # For SMS readability — "Dec '26" beats "2026-12" at 6am.
@@ -119,6 +123,12 @@ GRAIN_SCALE = {
     "oats":         0.01,
     "soybean_oil":  0.01,
     "soybean_meal": 1.0,
+    # Feeder cattle: Stooq returns cents/lb; standard presentation in
+    # ag media is $/cwt (× 100 lbs). cents/lb × 1.0 = cents/lb; to get
+    # $/cwt we'd need × 100 / 100 = identity — so scale stays 1.0 and
+    # the dashboard treats the raw value as $/cwt. If Stooq ever returns
+    # $/lb instead of cents/lb for this symbol the caller should revisit.
+    "feeder_cattle": 1.0,
 }
 
 
@@ -518,32 +528,40 @@ def build_prices_snapshot() -> dict[str, Any]:
     soy_nov     = get_price("soybean", 2026, 11)
     wheat_jul   = get_price("wheat",   2026,  7)
 
+    # Feeder cattle — CME front-month, used by the Cattle tab on the
+    # dashboard for calf-sale timing context. Fails quietly if Stooq
+    # doesn't carry the symbol; the tile degrades gracefully in that case.
+    fc_front, fc_date = get_price_with_date("feeder_cattle")
+
     # Accumulate history and persist
     hist = load_history()
     if corn_front  is not None: _append_history(hist, "corn",  corn_date,  corn_front)
     if soy_front   is not None: _append_history(hist, "soy",   soy_date,   soy_front)
     if wheat_front is not None: _append_history(hist, "wheat", wheat_date, wheat_front)
+    if fc_front    is not None: _append_history(hist, "feeder_cattle", fc_date, fc_front)
     save_history(hist)
 
     def r(v): return round(v, 4) if v is not None else None
 
     return {
-        "corn":          r(corn_front),
-        "soy":           r(soy_front),
-        "wheat":         r(wheat_front),
-        "corn_dec":      r(corn_dec),
-        "soy_nov":       r(soy_nov),
-        "wheat_jul":     r(wheat_jul),
-        "corn_basis_il": None,   # Yahoo doesn't carry IL cash basis
-        "soy_basis_il":  None,
+        "corn":           r(corn_front),
+        "soy":            r(soy_front),
+        "wheat":          r(wheat_front),
+        "corn_dec":       r(corn_dec),
+        "soy_nov":        r(soy_nov),
+        "wheat_jul":      r(wheat_jul),
+        "corn_basis_il":  None,   # Yahoo doesn't carry IL cash basis
+        "soy_basis_il":   None,
+        "feeder_cattle":  r(fc_front),    # $/cwt — CME front-month
         "detail": {
-            "corn":  _price_detail("corn",  hist, corn_front,  corn_date),
-            "soy":   _price_detail("soy",   hist, soy_front,   soy_date),
-            "wheat": _price_detail("wheat", hist, wheat_front, wheat_date),
+            "corn":          _price_detail("corn",          hist, corn_front,  corn_date),
+            "soy":           _price_detail("soy",           hist, soy_front,   soy_date),
+            "wheat":         _price_detail("wheat",         hist, wheat_front, wheat_date),
+            "feeder_cattle": _price_detail("feeder_cattle", hist, fc_front,    fc_date),
         },
-        "date":          datetime.now(timezone.utc).strftime("%Y-%m-%d"),
-        "source":        "stooq (end-of-day close)",
-        "generated_at":  datetime.now(timezone.utc).isoformat(),
+        "date":           datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+        "source":         "stooq (end-of-day close)",
+        "generated_at":   datetime.now(timezone.utc).isoformat(),
     }
 
 

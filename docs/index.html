@@ -13,7 +13,11 @@
       --hit:  #1b7a3a;
       --wait: #8a6d00;
       --corn: #1b7a3a;
-      --soy:  #a8722c;
+      /* Rebalanced: the prior #a8722c read muted next to the corn
+         green on the cream background. This deeper rust has comparable
+         saturation and contrast, so the two commodities carry equal
+         visual weight. */
+      --soy:  #8a4a18;
       --accent: #8a3324;
       --cool: #3d7cba;
       --warm: #c9a328;
@@ -77,6 +81,50 @@
     .status-NO_DATA::before { content: "\2014"; }             /* — */
 
     .meta { color: var(--muted); font-size: 12px; margin-top: 28px; border-top: 1px solid var(--line); padding-top: 14px; }
+
+    /* ────── Tab navigation ────── */
+    /* Grain / Cattle / Hay — single page, JS-driven tab switching.
+       Each tab-panel hides via display:none; the active one shows. */
+    .tabs {
+      display: flex; gap: 4px; margin: 14px 0 18px;
+      border-bottom: 1px solid var(--line);
+    }
+    .tabs .tab {
+      background: transparent; border: 0; padding: 9px 16px;
+      font: inherit; font-size: 14px; font-weight: 600;
+      color: var(--muted); cursor: pointer;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -1px;
+      transition: color .15s ease, border-color .15s ease;
+    }
+    .tabs .tab:hover { color: var(--ink); }
+    .tabs .tab.active {
+      color: var(--ink);
+      border-bottom-color: var(--accent);
+    }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ────── Cattle tile ────── */
+    .cattle-grid {
+      display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 16px;
+    }
+    @media (min-width: 640px) { .cattle-grid { grid-template-columns: 1fr 1fr; } }
+    .cattle-card {
+      background: #fff; border: 1px solid var(--line); border-radius: 10px;
+      padding: 14px 16px;
+    }
+    .cattle-card .label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+    .cattle-card .big { font-size: 26px; font-weight: 700; margin-top: 4px; font-variant-numeric: tabular-nums; }
+    .cattle-card .sub { font-size: 13px; color: var(--muted); margin-top: 4px; }
+    .cattle-card .thesis {
+      margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line);
+      font-size: 13px;
+    }
+    .cattle-card .thesis.favorable { color: #0f5a28; font-weight: 600; }
+    .cattle-card .yoy.up   { color: #0f5a28; font-weight: 700; }
+    .cattle-card .yoy.down { color: #8a1a1a; font-weight: 700; }
+    .cattle-card .yoy.flat { color: var(--muted); font-weight: 700; }
     code { background: #eee9df; padding: 1px 5px; border-radius: 4px; font-size: 12px; }
     a { color: var(--accent); }
 
@@ -458,6 +506,18 @@
   <h1>Freis Farm | The Grain Board</h1>
   <div class="sub" id="sub">loading…</div>
 
+  <!-- Tab bar. Switches between Grain (original board), Cattle (feeder
+       price + sale calendar), and Hay (ops notes). Each tab-panel is
+       a full section; only one is visible at a time. -->
+  <div class="tabs" role="tablist">
+    <button class="tab active" data-tab="grain" role="tab">Grain</button>
+    <button class="tab" data-tab="cattle" role="tab">Cattle</button>
+    <button class="tab" data-tab="hay" role="tab">Hay</button>
+  </div>
+
+  <!-- ═══════════════════════ GRAIN TAB ═══════════════════════ -->
+  <section class="tab-panel active" id="tab-grain" role="tabpanel">
+
   <!-- Only unhides when there's a fresh HIT or OVERDUE — first thing
        the eye catches above the price strip. -->
   <div class="action-ribbon" id="action-ribbon"></div>
@@ -771,6 +831,132 @@
       <strong>5-yr cumulative: +$95,000</strong>
     </div>
   </div>
+
+  </section><!-- /tab-grain -->
+
+  <!-- ═══════════════════════ CATTLE TAB ═══════════════════════ -->
+  <section class="tab-panel" id="tab-cattle" role="tabpanel">
+    <h2 style="margin-top:6px">Feeder cattle</h2>
+    <div class="sub" style="margin-bottom:12px">
+      CME feeder cattle futures · front-month · the market context behind calf-sale timing
+    </div>
+
+    <div class="cattle-grid">
+      <!-- Live feeder cattle futures — current price + day change. -->
+      <div class="cattle-card" id="cattle-price">
+        <div class="label">Feeder cattle futures</div>
+        <div class="big">—</div>
+        <div class="sub">loading…</div>
+      </div>
+
+      <!-- YoY context — currently a hard-coded +25% per conversation
+           notes; once price_history.json has a year of feeder data,
+           this computes live. -->
+      <div class="cattle-card" id="cattle-yoy">
+        <div class="label">Year-over-year</div>
+        <div class="big"><span class="yoy up">+25%</span></div>
+        <div class="sub">vs. spring 2025 · expected to hold through 2026</div>
+        <div class="thesis favorable">
+          Favorable window to sell. Fall calves (6 head) scheduled for
+          Milford sale barn in Sept–Oct 2026. Spring calves (5 head)
+          sell Spring 2027.
+        </div>
+      </div>
+    </div>
+
+    <h2>Upcoming sales</h2>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr>
+          <th>When</th>
+          <th>What</th>
+          <th>Where</th>
+          <th style="text-align:right">Head</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td>Spring 2026</td>
+            <td>18-month bull</td>
+            <td>(no replacement needed)</td>
+            <td style="text-align:right">1</td>
+          </tr>
+          <tr>
+            <td>Sept–Oct 2026</td>
+            <td>Fall calves (born Fall 2025)</td>
+            <td>Milford sale barn</td>
+            <td style="text-align:right">6</td>
+          </tr>
+          <tr>
+            <td>Spring 2027</td>
+            <td>Spring calves (born Spring 2026)</td>
+            <td>Milford sale barn</td>
+            <td style="text-align:right">5</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Herd at a glance</h2>
+    <div class="cattle-grid">
+      <div class="cattle-card">
+        <div class="label">Mom cows</div>
+        <div class="big">11</div>
+        <div class="sub">11-for-11 calving year · 2 old cows still to replace</div>
+      </div>
+      <div class="cattle-card">
+        <div class="label">Bulls</div>
+        <div class="big">2</div>
+        <div class="sub">Old bull (to replace) · 18-mo bull (selling Spring 2026)</div>
+      </div>
+    </div>
+  </section><!-- /tab-cattle -->
+
+  <!-- ═══════════════════════ HAY TAB ═══════════════════════ -->
+  <section class="tab-panel" id="tab-hay" role="tabpanel">
+    <h2 style="margin-top:6px">Hay operations</h2>
+    <div class="sub" style="margin-bottom:12px">
+      Cuttings, fields, and the Kevin Quigley partnership
+    </div>
+
+    <div class="cattle-grid">
+      <div class="cattle-card">
+        <div class="label">2025 production</div>
+        <div class="big">3 cuttings</div>
+        <div class="sub">More than enough to winter the cattle · surplus sold through Kevin Quigley in Fall 2025</div>
+      </div>
+      <div class="cattle-card">
+        <div class="label">Kevin Quigley's haul (all fields)</div>
+        <div class="big">~4,000 bales</div>
+        <div class="sub">Avg $5/bale · bought larger hay rack + barn elevator in 2025</div>
+      </div>
+    </div>
+
+    <h2>Fields</h2>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr>
+          <th>Field</th>
+          <th>Acres</th>
+          <th>Status</th>
+          <th>Notes</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td>Old hay field</td>
+            <td>8</td>
+            <td>In use through 2026</td>
+            <td>Will retire after 2026 season</td>
+          </tr>
+          <tr>
+            <td>New hay field</td>
+            <td>10</td>
+            <td>Planted Spring 2026</td>
+            <td>Ready for first cutting 2027</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section><!-- /tab-hay -->
 
   <div class="meta">
     Prices via Stooq (end-of-day close). Signals evaluated every 15 min during CBOT grain day session.<br/>
@@ -1756,6 +1942,45 @@ function rerender() {
   renderLogPreview();
 }
 
+/* ─────────────────────────────────────────────────────────────
+   TAB SWITCHING — Grain / Cattle / Hay. Simple class toggle;
+   no URL routing (yet). Click handlers bound after DOM ready.
+   ───────────────────────────────────────────────────────────── */
+function activateTab(name) {
+  document.querySelectorAll(".tab").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.tab === name);
+  });
+  document.querySelectorAll(".tab-panel").forEach(panel => {
+    panel.classList.toggle("active", panel.id === `tab-${name}`);
+  });
+}
+document.addEventListener("click", e => {
+  const t = e.target.closest(".tab");
+  if (t) activateTab(t.dataset.tab);
+});
+
+/* Feeder cattle render — lives in the Cattle tab. Reads from
+   prices.json's feeder_cattle field (populated by evaluate.py).
+   Degrades gracefully when the field is missing. */
+function renderFeederCattle(p) {
+  const priceCard = document.getElementById("cattle-price");
+  if (!priceCard) return;
+  const fc = (p && p.feeder_cattle) || null;
+  const detail = p && p.detail && p.detail.feeder_cattle;
+  const priceStr = (fc != null) ? `$${(+fc).toFixed(2)}/cwt` : "—";
+  const chg = detail && detail.day_chg_pct;
+  const chgHtml = (chg != null && !isNaN(chg))
+    ? `<span class="yoy ${chg>0?'up':chg<0?'down':'flat'}">${chg>0?'+':''}${chg.toFixed(2)}% day</span>`
+    : "";
+  priceCard.innerHTML = `
+    <div class="label">Feeder cattle futures</div>
+    <div class="big">${priceStr}</div>
+    <div class="sub">${fc != null
+      ? `CME front-month · ~10 min delayed${chgHtml ? ' · ' + chgHtml : ''}`
+      : "Live price will appear once evaluate.py tracks feeder cattle (cron next run)."}</div>
+  `;
+}
+
 async function load() {
   // One-time migrations. Each is guarded by a flag so reloads don't
   // re-run them. Order matters: cleanup the wrong APP seed BEFORE
@@ -1803,6 +2028,7 @@ async function load() {
   strip.innerHTML = tiles.map(renderTile).join("");
 
   renderSignalsAndPositions(signals, positions);
+  renderFeederCattle(_prices);
 
   rerender();
 }
