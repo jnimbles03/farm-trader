@@ -1420,16 +1420,26 @@
       color: var(--ink);
       letter-spacing: -0.005em;
     }
-    /* Decision-aid commodity sections keep their uppercase label style. */
+    /* Decision-aid commodity sections: commodity-colored display heading
+       (not the tiny uppercase label they had before — made it impossible
+       to identify which commodity a scrolling user was looking at).
+       These are the primary wayfinding labels on the page. */
     details.section summary.section-summary.sec-corn .section-title,
     details.section summary.section-summary.sec-soy  .section-title {
-      font-size: 11px !important;
+      font-size: 22px !important;
       font-weight: 500 !important;
-      letter-spacing: 0.12em !important;
-      text-transform: uppercase !important;
+      letter-spacing: -0.01em !important;
+      text-transform: none !important;
     }
     details.section summary.section-summary.sec-corn .section-title { color: var(--corn) !important; }
     details.section summary.section-summary.sec-soy  .section-title { color: var(--soy)  !important; }
+    /* Give the decision-aid commodity sections extra vertical room so
+       they read as primary content. */
+    details.section.decision-aid-section,
+    details.section:has(> summary.sec-corn),
+    details.section:has(> summary.sec-soy) {
+      padding-top: 40px;
+    }
 
     details.section summary.section-summary .section-chevron {
       color: var(--muted);
