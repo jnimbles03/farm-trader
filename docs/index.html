@@ -618,27 +618,32 @@
        block to revert to the prior look.
        ════════════════════════════════════════════════════════════════ -->
   <style id="refine-layer">
-    /* ---------- Refined tokens ---------- */
+    /* ---------- Refined tokens ----------
+       Contrast-calibrated for outdoor / small-screen reading.
+       --ink on --bg      ≈ 16:1 (AAA)
+       --muted on --bg    ≈ 7:1  (AAA for normal text)
+       --tertiary on --bg ≈ 4.8:1 (AA for normal text — fine print only)
+       All small uppercase labels use --muted, not --tertiary. */
     :root {
-      --bg:           #fafaf8;
+      --bg:           #f8f6f0;
       --surface:      #ffffff;
       --ink:          #1a1a1a;
-      --muted:        #888888;
-      --tertiary:     #aaaaaa;
-      --line:         #e8e6e0;
-      --line-strong:  #d0cec8;
+      --muted:        #555555;   /* was #888 — too light against cream */
+      --tertiary:     #6b6b6b;   /* was #aaa — nearly invisible */
+      --line:         #d0cec8;   /* was #e8e6e0 — dividers need to divide */
+      --line-strong:  #b8b5ad;
 
       --accent:       #2a5a3a;
-      --accent-sub:   #eef2ec;
+      --accent-sub:   #e8efe8;
 
       /* Commodity accents — quieter, used sparingly for identity not decoration */
-      --corn:         #2a5a3a;
-      --soy:          #8a4a18;
+      --corn:         #1e4a2a;   /* darker than #2a5a3a for number readability */
+      --soy:          #703810;   /* darker for contrast */
 
       /* States — reserved, not decorative */
-      --hit:          #2a5a3a;
-      --wait:         #888888;
-      --overdue:      #8a1a1a;
+      --hit:          #1e4a2a;
+      --wait:         #555555;
+      --overdue:      #7a1010;
     }
 
     /* ---------- Page chrome ---------- */
