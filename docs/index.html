@@ -657,6 +657,88 @@
     }
     .wrap { max-width: 980px; }
 
+    /* ---------- Header two-column (title + news) ---------- */
+    .header-row {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+      align-items: start;
+      margin-bottom: 8px;
+    }
+    @media (min-width: 760px) {
+      .header-row {
+        grid-template-columns: 1fr minmax(260px, 320px);
+        gap: 40px;
+      }
+    }
+    .header-title h1 { margin: 0 0 6px; }
+    .header-title .sub { margin-bottom: 0; }
+
+    /* News panel — sits to the right of the header title on desktop,
+       stacks below on narrow viewports. Deliberately roomy: 4 items
+       max, each with a small impact badge and the headline. */
+    .news-feed {
+      background: transparent;
+      border: none;
+      padding-top: 6px;
+    }
+    .news-head {
+      display: flex; align-items: baseline; justify-content: space-between;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 0.5px solid var(--line);
+    }
+    .news-title {
+      font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--muted); font-weight: 500;
+    }
+    .news-legend {
+      font-size: 10px; letter-spacing: 0.14em; color: var(--tertiary);
+      font-weight: 500;
+    }
+    .news-list {
+      display: flex; flex-direction: column; gap: 14px;
+    }
+    .news-item {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 10px;
+      align-items: baseline;
+    }
+    .news-item .news-impact {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.05em;
+      text-align: center;
+      padding: 2px 0; border-radius: 2px;
+      border: 0.5px solid var(--line-strong);
+      color: var(--muted);
+      background: transparent;
+    }
+    .news-item .news-impact.impact-s  { color: var(--muted); }
+    .news-item .news-impact.impact-m  { color: var(--ink); border-color: var(--ink); }
+    .news-item .news-impact.impact-l  { color: #fff; background: var(--accent); border-color: var(--accent); }
+    .news-item .news-impact.impact-xl { color: #fff; background: var(--overdue); border-color: var(--overdue); }
+
+    .news-item .news-body { min-width: 0; }
+    .news-item .news-headline {
+      font-size: 13px; line-height: 1.4; color: var(--ink);
+    }
+    .news-item .news-meta {
+      font-size: 11px; color: var(--muted); margin-top: 2px;
+      letter-spacing: 0.02em;
+    }
+    .news-item .news-meta .commodity-corn { color: var(--corn); font-weight: 500; }
+    .news-item .news-meta .commodity-soy  { color: var(--soy);  font-weight: 500; }
+    .news-item .news-meta .commodity-both { color: var(--ink);  font-weight: 500; }
+
+    .news-empty {
+      font-size: 12px; color: var(--tertiary); font-style: italic;
+    }
+    .news-more {
+      margin-top: 4px;
+      font-size: 11px; color: var(--muted);
+      text-decoration: underline; text-underline-offset: 0.2em;
+    }
+
     ::selection { background: var(--accent); color: #fff; }
     a { color: var(--ink); text-decoration: underline; text-underline-offset: 0.2em; }
     a:hover { color: var(--accent); }
@@ -1300,8 +1382,24 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>Freis Farm | The Grain Board</h1>
-  <div class="sub" id="sub">loading…</div>
+  <!-- Header row: title+subtitle on the left, market-news feed on the
+       right. News pulls from docs/news.json — items rated S/M/L/XL
+       for impact on corn or soy. Mobile stacks under the title. -->
+  <div class="header-row">
+    <div class="header-title">
+      <h1>Freis Farm | The Grain Board</h1>
+      <div class="sub" id="sub">loading…</div>
+    </div>
+    <aside class="news-feed" id="news-feed" aria-label="Market news">
+      <div class="news-head">
+        <span class="news-title">Market signals</span>
+        <span class="news-legend" title="Impact on corn or soy">S · M · L · XL</span>
+      </div>
+      <div class="news-list" id="news-list">
+        <div class="news-empty">loading…</div>
+      </div>
+    </aside>
+  </div>
 
   <!-- Tab bar. Switches between Grain (original board), Cattle (feeder
        price + sale calendar), and Hay (ops notes). Each tab-panel is
@@ -3311,6 +3409,99 @@ function renderFeederCattle(p) {
   `;
 }
 
+/* ─────────────────────────────────────────────────────────────
+   PLAN HYDRATION — read docs/plan.json and overwrite the relevant
+   STRATEGY values so both the dashboard and the Python pipeline
+   consume the same source of truth. Hardcoded defaults in STRATEGY
+   remain as a safety net if the fetch fails (first-time setup,
+   offline, malformed plan.json).
+
+   Field-name translation: plan.json uses snake_case and arrays for
+   dates (oct_low, total_bushels, win_start, win_end), while the
+   legacy STRATEGY uses camelCase and array shapes that the legacy
+   renderers already understand. Translate at the seam only.
+   ───────────────────────────────────────────────────────────── */
+async function hydrateStrategyFromPlan() {
+  try {
+    const res = await fetch("plan.json", { cache: "no-store" });
+    if (!res.ok) return;
+    const plan = await res.json();
+    const commodityMap = { corn: "corn", soybean: "soy", soybeans: "soy" };
+    for (const [planKey, cfg] of Object.entries(plan.commodities || {})) {
+      const dashKey = commodityMap[planKey] || planKey;
+      const S = STRATEGY[dashKey];
+      if (!S) continue;
+      if (cfg.oct_low != null)       S.octLow = cfg.oct_low;
+      if (cfg.total_bushels != null) S.totalBushels = cfg.total_bushels;
+      if (cfg.reserve_frac != null)  S.reserveFrac = cfg.reserve_frac;
+      if (Array.isArray(cfg.tranches)) {
+        S.tranches = cfg.tranches.map(t => ({
+          id:    t.id,
+          pct:   t.pct,
+          label: t.label,
+          winS:  t.win_start,
+          winE:  t.win_end,
+          mult:  t.mult,
+          note:  t.note,
+        }));
+      }
+    }
+  } catch (e) {
+    console.warn("plan.json hydration failed, using defaults:", e);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   NEWS FEED — renders docs/news.json into the header aside.
+   Items are rated S / M / L / XL by market-impact. The feed
+   shows up to 4 items, sorted by impact descending then date
+   descending, so the most consequential news is first.
+   ───────────────────────────────────────────────────────────── */
+function renderNewsFeed(news) {
+  const mount = document.getElementById("news-list");
+  if (!mount) return;
+
+  const items = (news && Array.isArray(news.items)) ? news.items.slice() : [];
+  if (!items.length) {
+    mount.innerHTML = `<div class="news-empty">No market news today.</div>`;
+    return;
+  }
+
+  // Impact rank — higher number sorts earlier
+  const rank = { XL: 4, L: 3, M: 2, S: 1 };
+  items.sort((a, b) => {
+    const ir = (rank[b.impact] || 0) - (rank[a.impact] || 0);
+    if (ir !== 0) return ir;
+    // Within same impact tier, newest first
+    return (b.date || "").localeCompare(a.date || "");
+  });
+
+  const top = items.slice(0, 4);
+  const fmtDate = (iso) => {
+    if (!iso) return "";
+    const d = new Date(iso + "T00:00:00");
+    if (isNaN(d.getTime())) return iso;
+    const m = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][d.getMonth()];
+    return `${m} ${d.getDate()}`;
+  };
+  const commodityLabel = (a) => {
+    if (a === "corn") return '<span class="commodity-corn">corn</span>';
+    if (a === "soy" || a === "soybean" || a === "soybeans") return '<span class="commodity-soy">soy</span>';
+    if (a === "both") return '<span class="commodity-both">corn + soy</span>';
+    return a || "";
+  };
+
+  mount.innerHTML = top.map(it => `
+    <div class="news-item">
+      <div class="news-impact impact-${(it.impact || "s").toLowerCase()}">${it.impact || "S"}</div>
+      <div class="news-body">
+        <div class="news-headline">${it.title || ""}</div>
+        <div class="news-meta">${fmtDate(it.date)} · ${commodityLabel(it.affects)}${it.source ? " · " + it.source : ""}</div>
+      </div>
+    </div>`).join("") +
+    (items.length > 4 ? `<div class="news-more">+${items.length - 4} more</div>` : "");
+}
+
 async function load() {
   // One-time migrations. Each is guarded by a flag so reloads don't
   // re-run them. Order matters: cleanup the wrong APP seed BEFORE
@@ -3318,6 +3509,12 @@ async function load() {
   // coexist in storage.
   cleanupBadAppSeed();
   seedOldCrop2025Sales();
+
+  // Hydrate shared plan config BEFORE anything else so renderers that
+  // read STRATEGY (renderTranches, todaysCall, etc.) see the
+  // plan.json-sourced values. One small serial fetch; the data fetches
+  // below still run in parallel.
+  await hydrateStrategyFromPlan();
 
   // positions.json is emitted by the updated evaluate.py alongside the
   // legacy signals.json. We fetch both so the dashboard works during
@@ -3329,16 +3526,18 @@ async function load() {
     catch { return null; }
   };
 
-  const [p, s, l, pos] = await Promise.all([
+  const [p, s, l, pos, news] = await Promise.all([
     safeFetch("prices.json"),
     safeFetch("signals.json"),
     safeFetch("last_run.json"),
     safeFetch("positions.json"),
+    safeFetch("news.json"),
   ]);
 
   _prices = p || { corn: null, soy: null, wheat: null };
   const signals = (s && s.signals) || [];
   const positions = (pos && pos.positions) || [];
+  renderNewsFeed(news);
 
   document.getElementById("sub").textContent = l
     ? `As of ${new Date(l.ran_at).toLocaleString()} — ${signals.length} active alert(s)` +

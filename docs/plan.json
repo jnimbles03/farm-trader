@@ -1,0 +1,51 @@
+{
+  "_comment": "Single source of truth for the Freis Farm sale plan. Both the Python pipeline (farm-proxy/evaluate.py) and the browser dashboard (farm-proxy/docs/index.html) read from this file. Edit here, both stay in sync.",
+
+  "commodities": {
+    "corn": {
+      "label":         "Corn",
+      "oct_low":       4.10,
+      "total_bushels": 12615,
+      "reserve_frac":  0.10,
+      "tranches": [
+        { "id": "C1", "label": "T1 · Feb–Mar",  "win_start": [2, 1], "win_end": [3, 31], "mult": 1.09, "pct": 25, "note": "Acreage rally" },
+        { "id": "C2", "label": "T2 · Apr–May",  "win_start": [4, 1], "win_end": [5, 31], "mult": 1.11, "pct": 25, "note": "Planting premium" },
+        { "id": "C3", "label": "T3 · June",     "win_start": [6, 1], "win_end": [6, 30], "mult": 1.12, "pct": 40, "note": "Weather peak" },
+        { "id": "C4", "label": "T4 · by Jul 3", "win_start": [7, 1], "win_end": [7,  3], "mult": null, "pct": 10, "note": "Calendar cleanup — sell regardless of price" }
+      ]
+    },
+    "soybean": {
+      "label":         "Soybeans",
+      "oct_low":       10.40,
+      "total_bushels": 3217,
+      "reserve_frac":  0.10,
+      "tranches": [
+        { "id": "S1", "label": "T1 · Feb–Mar", "win_start": [2, 1],  "win_end": [3, 31], "mult": 1.07, "pct": 15, "note": "Only if SA crop large" },
+        { "id": "S2", "label": "T2 · Apr–May", "win_start": [4, 1],  "win_end": [5, 31], "mult": 1.09, "pct": 15, "note": "US planting window" },
+        { "id": "S3", "label": "T3 · Jun–Jul", "win_start": [6, 1],  "win_end": [7, 15], "mult": 1.10, "pct": 40, "note": "Weather peak" },
+        { "id": "S4", "label": "T4 · Jul–Aug", "win_start": [7, 15], "win_end": [8, 15], "mult": 1.08, "pct": 30, "note": "Extended summer — hold above trigger" }
+      ]
+    }
+  },
+
+  "usda_calendar": [
+    { "month":  1, "day": 12, "label": "Stocks + WASDE release",                   "size": "L",  "affects": "both" },
+    { "month":  2, "day": 10, "label": "Monthly WASDE",                            "size": "M",  "affects": "both" },
+    { "month":  3, "day": 10, "label": "Monthly WASDE",                            "size": "M",  "affects": "both" },
+    { "month":  3, "day": 31, "label": "Prospective Plantings + Grain Stocks",     "size": "XL", "affects": "corn" },
+    { "month":  4, "day": 11, "label": "Monthly WASDE (first new-crop balance)",   "size": "L",  "affects": "both" },
+    { "month":  5, "day": 10, "label": "Monthly WASDE",                            "size": "L",  "affects": "both" },
+    { "month":  6, "day": 12, "label": "Monthly WASDE",                            "size": "L",  "affects": "both" },
+    { "month":  6, "day": 30, "label": "Acreage + Grain Stocks",                   "size": "XL", "affects": "both" },
+    { "month":  7, "day": 12, "label": "Monthly WASDE",                            "size": "L",  "affects": "both" },
+    { "month":  8, "day": 12, "label": "WASDE (first full yield print)",           "size": "XL", "affects": "both" },
+    { "month":  9, "day": 12, "label": "Monthly WASDE",                            "size": "M",  "affects": "both" },
+    { "month":  9, "day": 30, "label": "Small Grains Summary + Stocks",            "size": "L",  "affects": "both" },
+    { "month": 10, "day": 10, "label": "Monthly WASDE",                            "size": "S",  "affects": "both" },
+    { "month": 11, "day": 10, "label": "Monthly WASDE",                            "size": "S",  "affects": "both" },
+    { "month": 12, "day": 10, "label": "Monthly WASDE",                            "size": "S",  "affects": "both" }
+  ],
+
+  "big_move_pct": 3.0,
+  "news_retention_days": 30
+}

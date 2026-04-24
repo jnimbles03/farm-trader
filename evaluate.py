@@ -36,7 +36,7 @@ import logging
 import os
 import sys
 from dataclasses import dataclass, asdict
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -61,6 +61,13 @@ POSITIONS_FILE     = DOCS_DIR / "positions.json"
 LEDGER_FILE        = DOCS_DIR / "ledger.json"
 LASTRUN_FILE       = DOCS_DIR / "last_run.json"
 PUBLIC_CONF_FILE   = DOCS_DIR / "confirmations.json"
+NEWS_FILE          = DOCS_DIR / "news.json"
+PLAN_FILE          = DOCS_DIR / "plan.json"
+
+# How long auto-generated news items stay in the feed before pruning.
+# Hand-entered items (no id prefix) are preserved regardless.
+# Can be overridden by plan.json "news_retention_days".
+DEFAULT_NEWS_RETENTION_DAYS = 30
 
 DOCS_DIR.mkdir(parents=True, exist_ok=True)
 STATE_DIR.mkdir(parents=True, exist_ok=True)
@@ -85,6 +92,62 @@ logging.basicConfig(
     format="%(levelname)s %(message)s",
 )
 log = logging.getLogger("evaluate")
+
+
+# ---------------------------------------------------------------------------
+# Shared plan config — single source of truth for commodity tranche plans,
+# USDA calendar dates, and market-event thresholds. Lives at docs/plan.json
+# so both this pipeline and the browser dashboard (docs/index.html) read
+# the same values. Update there, not here.
+#
+# The constants below are fallbacks used only if plan.json is missing or
+# malformed; the real values come from load_plan() at runtime. Keeping
+# fallbacks means a corrupted plan file doesn't crash a cron run.
+# ---------------------------------------------------------------------------
+
+_DEFAULT_PLAN = {
+    "commodities": {
+        "corn": {
+            "label": "Corn", "oct_low": 4.10, "total_bushels": 12615, "reserve_frac": 0.10,
+            "tranches": [
+                {"id": "C1", "label": "T1 · Feb–Mar",  "win_start": [2, 1], "win_end": [3, 31], "mult": 1.09, "pct": 25, "note": "Acreage rally"},
+                {"id": "C2", "label": "T2 · Apr–May",  "win_start": [4, 1], "win_end": [5, 31], "mult": 1.11, "pct": 25, "note": "Planting premium"},
+                {"id": "C3", "label": "T3 · June",     "win_start": [6, 1], "win_end": [6, 30], "mult": 1.12, "pct": 40, "note": "Weather peak"},
+                {"id": "C4", "label": "T4 · by Jul 3", "win_start": [7, 1], "win_end": [7,  3], "mult": None, "pct": 10, "note": "Calendar cleanup"},
+            ],
+        },
+        "soybean": {
+            "label": "Soybeans", "oct_low": 10.40, "total_bushels": 3217, "reserve_frac": 0.10,
+            "tranches": [
+                {"id": "S1", "label": "T1 · Feb–Mar", "win_start": [2, 1],  "win_end": [3, 31], "mult": 1.07, "pct": 15, "note": "SA break"},
+                {"id": "S2", "label": "T2 · Apr–May", "win_start": [4, 1],  "win_end": [5, 31], "mult": 1.09, "pct": 15, "note": "US planting"},
+                {"id": "S3", "label": "T3 · Jun–Jul", "win_start": [6, 1],  "win_end": [7, 15], "mult": 1.10, "pct": 40, "note": "Weather peak"},
+                {"id": "S4", "label": "T4 · Jul–Aug", "win_start": [7, 15], "win_end": [8, 15], "mult": 1.08, "pct": 30, "note": "Extended rally"},
+            ],
+        },
+    },
+    "usda_calendar": [],     # If missing from plan.json, skip USDA auto-news.
+    "big_move_pct": 3.0,
+    "news_retention_days": DEFAULT_NEWS_RETENTION_DAYS,
+}
+
+
+def load_plan() -> dict[str, Any]:
+    """Read docs/plan.json. Falls back to hardcoded defaults if the file
+    is absent or malformed so a bad commit to plan.json doesn't wedge
+    the pipeline. Warns loudly on parse errors so it's visible in logs."""
+    if not PLAN_FILE.exists():
+        log.warning("plan.json missing; using hardcoded defaults")
+        return _DEFAULT_PLAN
+    try:
+        data = json.loads(PLAN_FILE.read_text())
+        if not isinstance(data, dict) or "commodities" not in data:
+            log.warning("plan.json missing 'commodities' key; using defaults")
+            return _DEFAULT_PLAN
+        return data
+    except json.JSONDecodeError as e:
+        log.error("plan.json parse failed, using defaults: %s", e)
+        return _DEFAULT_PLAN
 
 
 # ---------------------------------------------------------------------------
@@ -377,6 +440,155 @@ def load_state() -> dict[str, dict[str, Any]]:
 
 def save_state(state: dict[str, dict[str, Any]]) -> None:
     STATE_FILE.write_text(json.dumps(state, indent=2, sort_keys=True) + "\n")
+
+
+# ---------------------------------------------------------------------------
+# News feed — auto-append events + merge with manual entries.
+# ---------------------------------------------------------------------------
+
+def _load_news() -> dict[str, Any]:
+    """Load docs/news.json. Tolerant of missing / malformed input so a
+    corrupt file doesn't kill a scheduled run — we just start fresh."""
+    if not NEWS_FILE.exists():
+        return {"items": []}
+    try:
+        data = json.loads(NEWS_FILE.read_text())
+        if not isinstance(data, dict) or "items" not in data:
+            return {"items": []}
+        return data
+    except json.JSONDecodeError as e:
+        log.warning("news.json is corrupt, resetting: %s", e)
+        return {"items": []}
+
+
+def _save_news(data: dict[str, Any]) -> None:
+    data["generated_at"] = datetime.now(timezone.utc).isoformat()
+    NEWS_FILE.write_text(json.dumps(data, indent=2, sort_keys=False) + "\n")
+
+
+def append_news(new_items: list[dict[str, Any]]) -> int:
+    """Merge new auto-generated items into news.json.
+
+    Dedup rule: items with the same `id` (our generated IDs) are never
+    added twice. Items without an `id` (hand-entered) are preserved
+    forever, since we can't reliably match them for de-duplication.
+
+    Pruning: auto-generated items older than the retention window are
+    dropped every run. Hand-entered items are never pruned.
+
+    Returns the count of items actually added this run.
+    """
+    data = _load_news()
+    existing = data.get("items", [])
+    existing_ids = {it.get("id") for it in existing if it.get("id")}
+
+    added = 0
+    for item in new_items:
+        if item.get("id") and item["id"] in existing_ids:
+            continue
+        existing.append(item)
+        existing_ids.add(item.get("id"))
+        added += 1
+
+    # Retention window sourced from plan.json so it's edit-in-one-place.
+    retention = int(load_plan().get("news_retention_days", DEFAULT_NEWS_RETENTION_DAYS))
+    today_iso = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    cutoff = (datetime.now(timezone.utc)
+              - timedelta(days=retention)).strftime("%Y-%m-%d")
+
+    kept = []
+    for it in existing:
+        if not it.get("id"):
+            kept.append(it)           # hand-entered — keep forever
+            continue
+        if (it.get("date") or "") >= cutoff:
+            kept.append(it)
+        # else: auto-generated + older than cutoff → drop
+
+    # Sort by (impact, date) descending so the file stays roughly ordered
+    # even though the dashboard re-sorts on render.
+    rank = {"XL": 4, "L": 3, "M": 2, "S": 1}
+    kept.sort(key=lambda it: (rank.get(it.get("impact"), 0), it.get("date", "")), reverse=True)
+
+    data["items"] = kept
+    _save_news(data)
+    return added
+
+
+def usda_news_for_today() -> list[dict[str, Any]]:
+    """Emit a news item for any USDA report whose release date is today.
+    Calendar comes from plan.json (falls back to empty list on missing)."""
+    now = datetime.now(timezone.utc)
+    calendar = load_plan().get("usda_calendar") or []
+    out = []
+    for rpt in calendar:
+        if rpt.get("month") == now.month and rpt.get("day") == now.day:
+            label = rpt.get("label", "USDA report")
+            out.append({
+                "id":      f"usda-{now.year}-{now.month:02d}-{now.day:02d}-{label[:20].replace(' ','_')}",
+                "date":    now.strftime("%Y-%m-%d"),
+                "title":   f"USDA: {label}",
+                "impact":  rpt.get("size", "M"),
+                "affects": rpt.get("affects", "both"),
+                "source":  "USDA",
+            })
+    return out
+
+
+def seasonal_trigger_news_for(commodity: str, live: float | None) -> list[dict[str, Any]]:
+    """Check each seasonal tranche trigger for `commodity`. Emit a news
+    item for any tranche whose trigger price has been crossed today but
+    whose corresponding news item isn't already in the feed.
+
+    Commodity config and tranche multipliers come from plan.json.
+    ID scheme: `trigger-<commodity>-<tranche_id>-<crop_year>`. The crop
+    year keeps the same trigger from re-firing news year after year."""
+    plan = load_plan().get("commodities", {}).get(commodity)
+    if not plan or live is None:
+        return []
+    oct_low = plan.get("oct_low")
+    if oct_low is None:
+        return []
+    crop_year = datetime.now(timezone.utc).year
+    out = []
+    for tr in plan.get("tranches", []):
+        if tr.get("mult") is None:
+            continue  # Calendar-only tranche, no trigger price.
+        target = round(oct_low * tr["mult"], 4)
+        if live >= target:
+            out.append({
+                "id":      f"trigger-{commodity}-{tr['id']}-{crop_year}",
+                "date":    datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+                "title":   f"{plan.get('label', commodity)} {tr.get('label', tr['id'])} trigger hit — front-month at ${live:.2f} (target ${target:.2f})",
+                "impact":  "L",
+                "affects": "corn" if commodity == "corn" else "soy",
+                "source":  "Market signal",
+                "note":    tr.get("note", ""),
+            })
+    return out
+
+
+def big_move_news_for(commodity: str, detail: dict[str, Any] | None) -> list[dict[str, Any]]:
+    """If a commodity moved more than the plan's big_move_pct today, emit
+    an item. Uses the day_chg_pct computed by _price_detail()."""
+    if not detail or detail.get("day_chg_pct") is None:
+        return []
+    threshold = float(load_plan().get("big_move_pct", 3.0))
+    pct = detail["day_chg_pct"]
+    if abs(pct) < threshold:
+        return []
+    today_iso = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    direction = "up" if pct > 0 else "down"
+    label = "Corn" if commodity == "corn" else ("Soybeans" if commodity == "soy" else commodity.capitalize())
+    impact = "L" if abs(pct) >= 5 else "M"
+    return [{
+        "id":      f"bigmove-{commodity}-{today_iso}-{direction}",
+        "date":    today_iso,
+        "title":   f"{label} {direction} {abs(pct):.1f}% today",
+        "impact":  impact,
+        "affects": "corn" if commodity == "corn" else "soy",
+        "source":  "Market move",
+    }]
 
 
 # ---------------------------------------------------------------------------
@@ -815,6 +1027,21 @@ def main() -> int:
     ledger = build_ledger_snapshot()
     LEDGER_FILE.write_text(json.dumps(ledger, indent=2) + "\n")
     log.info("wrote %s", LEDGER_FILE)
+
+    # Auto-news: collect events from three sources. append_news() handles
+    # de-duplication (by id) and retention-based pruning so the file
+    # stays tidy across many runs. Hand-entered items (no id) are left
+    # alone forever.
+    news_events = []
+    news_events.extend(usda_news_for_today())
+    for commodity in ("corn", "soybean"):
+        live = prices.get("corn") if commodity == "corn" else prices.get("soy")
+        news_events.extend(seasonal_trigger_news_for(commodity, live))
+    detail = prices.get("detail", {}) or {}
+    news_events.extend(big_move_news_for("corn", detail.get("corn")))
+    news_events.extend(big_move_news_for("soy",  detail.get("soy")))
+    added = append_news(news_events)
+    log.info("news.json: %d event(s) emitted, %d added after de-dup", len(news_events), added)
 
     save_state(state)
     log.info("wrote %s", STATE_FILE)
