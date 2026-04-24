@@ -1543,6 +1543,630 @@
        nested inside a details. */
     details.section h2 { margin-top: 24px; margin-bottom: 8px; }
   </style>
+
+  <!-- ════════════════════════════════════════════════════════════════
+       MOBILE-FIRST LAYER — applied last, wins over refine-layer where
+       they disagree.
+
+       Purpose: the dashboard is checked daily on a phone (375–414px).
+       The refine-layer was written desktop-first, so several rules
+       (180px tranche card column, side-by-side hedge controls, tables
+       with tight 7-column layouts, <44px tap targets, inputs that
+       trigger iOS zoom) degrade badly on a phone.
+
+       This layer targets phone as the default, then progressively
+       enhances at ≥560px (small tablet) and ≥760px (tablet/desktop).
+       No rule assumes desktop-first.
+       ════════════════════════════════════════════════════════════════ -->
+  <style id="mobile-first-layer">
+    /* ─────────── Page chrome ─────────── */
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      padding: 12px 12px 32px !important;
+    }
+    @media (min-width: 560px) {
+      body { padding: 24px 18px 48px !important; }
+    }
+    @media (min-width: 960px) {
+      body { padding: 32px 24px 56px !important; }
+    }
+    /* Prevent horizontal page scroll on phone. If something overflows,
+       it should scroll inside its own container, not the whole page. */
+    body { overflow-x: hidden; }
+    .wrap { max-width: 980px; }
+
+    /* ─────────── Header row + brand ─────────── */
+    .header-row { gap: 16px !important; margin-bottom: 4px !important; }
+    .brand { gap: 12px !important; }
+    .brand-mark { width: 44px !important; height: 44px !important; }
+    .brand-name { font-size: 17px !important; }
+    .brand-tagline { font-size: 13px !important; }
+    .brand-sub { font-size: 10px !important; margin-top: 4px !important; letter-spacing: 0.12em !important; }
+    .header-title .sub { font-size: 13px !important; margin-top: 8px !important; }
+    @media (min-width: 560px) {
+      .brand-mark { width: 56px !important; height: 56px !important; }
+      .brand-name { font-size: 20px !important; }
+      .brand-tagline { font-size: 16px !important; }
+      .brand-sub { font-size: 11px !important; }
+    }
+    @media (min-width: 760px) {
+      .brand-mark { width: 64px !important; height: 64px !important; }
+      .brand-name { font-size: clamp(20px, 2.2vw, 26px) !important; }
+      .brand-tagline { font-size: clamp(16px, 1.8vw, 20px) !important; }
+    }
+
+    /* ─────────── News feed: tight on phone ─────────── */
+    .news-feed { padding-top: 4px !important; }
+    .news-head { margin-bottom: 8px !important; padding-bottom: 6px !important; }
+    .news-title { font-size: 10px !important; }
+    .news-legend { font-size: 9px !important; }
+    .news-list { max-height: 140px !important; gap: 10px !important; }
+    .news-item { grid-template-columns: 24px 1fr !important; gap: 8px !important; }
+    .news-item .news-impact { font-size: 9px !important; padding: 2px 0 !important; }
+    .news-item .news-headline { font-size: 12px !important; line-height: 1.35 !important; }
+    .news-item .news-meta { font-size: 10px !important; margin-top: 2px !important; }
+    @media (min-width: 560px) {
+      .news-list { max-height: 180px !important; gap: 14px !important; }
+      .news-item .news-headline { font-size: 13px !important; }
+      .news-item .news-meta { font-size: 11px !important; }
+      .news-title { font-size: 11px !important; }
+    }
+
+    /* ─────────── Tabs: horizontal scroll if overflow, 44px tap targets ─────────── */
+    .tabs {
+      gap: 20px !important;
+      margin: 16px -12px 24px !important;
+      padding: 0 12px !important;
+      overflow-x: auto !important;
+      overflow-y: hidden !important;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      flex-wrap: nowrap !important;
+    }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tabs .tab {
+      white-space: nowrap !important;
+      flex-shrink: 0 !important;
+      padding: 14px 2px !important;
+      min-height: 44px !important;
+      font-size: 14px !important;
+      -webkit-tap-highlight-color: transparent;
+    }
+    @media (min-width: 560px) {
+      .tabs { gap: 28px !important; margin: 24px 0 36px !important; padding: 0 !important; }
+      .tabs .tab { padding: 10px 0 !important; }
+    }
+
+    /* ─────────── Action ribbon ─────────── */
+    .action-ribbon {
+      margin: 0 0 16px !important;
+      padding: 12px 14px !important;
+      font-size: 13px !important;
+    }
+    .action-ribbon a { font-size: 12px !important; padding: 4px 0 !important; display: inline-block; min-height: 28px; }
+    @media (min-width: 560px) {
+      .action-ribbon { margin: 0 0 24px !important; }
+    }
+
+    /* ─────────── Decision aid + tranche rows: true stacked cards on phone ─────────── */
+    .tranche-card {
+      grid-template-columns: 1fr !important;
+      gap: 6px !important;
+      padding: 14px 0 !important;
+    }
+    .tranche-card .tranche-progress { min-width: 0 !important; }
+    .tranche-card.fresh-hit, .tranche-card.overdue-urgent { padding-left: 10px !important; }
+    @media (min-width: 560px) {
+      .tranche-card {
+        grid-template-columns: 180px 1fr auto !important;
+        gap: 16px !important;
+      }
+    }
+
+    /* Decision-aid row — keep pill on the right and let headline/explain
+       wrap cleanly underneath on phone. The original refine-layer
+       @media (max-width: 620px) rule does the right thing but is
+       weakened by the broader tranche refinements — restate here. */
+    .decision-row {
+      grid-template-columns: 14px 1fr auto !important;
+      gap: 8px 10px !important;
+      padding: 14px 0 !important;
+      align-items: baseline !important;
+    }
+    .decision-row .decision-explain {
+      grid-column: 2 / -1 !important;
+      margin-top: 6px !important;
+      font-size: 12px !important;
+      line-height: 1.5 !important;
+    }
+    .decision-row .decision-pill {
+      grid-row: 1 !important;
+      font-size: 10px !important;
+      padding: 6px 9px !important;
+    }
+    .decision-headline { font-size: 14px !important; line-height: 1.35 !important; }
+    .decision-context { font-size: 12px !important; margin-top: 3px !important; }
+    .decision-aid-title { font-size: 17px !important; }
+    @media (min-width: 680px) {
+      .decision-row {
+        grid-template-columns: 22px minmax(160px, 200px) 1fr auto !important;
+        gap: 16px !important;
+      }
+      .decision-row .decision-explain {
+        grid-column: auto !important;
+        margin-top: 0 !important;
+        font-size: 13px !important;
+      }
+      .decision-aid-title { font-size: 20px !important; }
+    }
+
+    /* Tap-size the small "mark handled" link */
+    .decision-handled, .tranche-mark-handled {
+      min-height: 32px !important;
+      padding: 6px 2px 6px 0 !important;
+      display: inline-block !important;
+      font-size: 12px !important;
+    }
+
+    /* ─────────── Price strip ─────────── */
+    .strip {
+      flex-wrap: wrap !important;
+      gap: 16px 20px !important;
+      padding: 10px 0 18px !important;
+      margin-bottom: 22px !important;
+    }
+    .strip .tile {
+      flex: 1 1 calc(33.333% - 14px) !important;
+      min-width: 84px !important;
+    }
+    .tile .val { font-size: 18px !important; }
+    .tile .label { font-size: 10px !important; }
+    .tile .tile-chg { font-size: 10px !important; }
+    @media (min-width: 560px) {
+      .strip { gap: 20px 24px !important; }
+      .tile .val { font-size: 20px !important; }
+      .tile .label { font-size: 11px !important; }
+    }
+    @media (min-width: 760px) {
+      .strip { gap: 40px !important; padding: 12px 0 28px !important; margin-bottom: 40px !important; }
+      .tile .val { font-size: 22px !important; }
+    }
+
+    /* ─────────── Today's Call hero ─────────── */
+    .call.hero {
+      padding: 20px 18px !important;
+      border-radius: 8px !important;
+    }
+    .call.hero .call-verb { font-size: 28px !important; }
+    .call.hero .call-bushels .num { font-size: 24px !important; }
+    .call.hero .call-sub { font-size: 13px !important; line-height: 1.5 !important; }
+    .call.hero .call-hero-grid { grid-template-columns: 1fr !important; gap: 10px !important; }
+    .call.hero .call-bushels { text-align: left !important; }
+    @media (min-width: 560px) {
+      .call.hero { padding: 24px 22px !important; }
+      .call.hero .call-verb { font-size: 32px !important; }
+      .call.hero .call-hero-grid {
+        grid-template-columns: 1fr auto !important;
+        gap: 16px !important;
+      }
+      .call.hero .call-bushels { text-align: right !important; }
+    }
+    @media (min-width: 760px) {
+      .call.hero { padding: 28px 28px 32px !important; }
+      .call.hero .call-verb { font-size: clamp(32px, 4vw, 44px) !important; }
+    }
+
+    /* ─────────── Sales-log form: 16px fonts (no iOS zoom) + 44px tap ─────────── */
+    .log-form {
+      grid-template-columns: 1fr 1fr !important;
+      gap: 10px !important;
+      padding: 14px !important;
+    }
+    .log-form label {
+      font-size: 10px !important;
+      letter-spacing: 0.08em !important;
+    }
+    .log-form input, .log-form select {
+      padding: 11px 12px !important;
+      font-size: 16px !important;  /* iOS zoom prevention */
+      min-height: 44px !important;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    /* Restore native select chevron on appearance:none */
+    .log-form select {
+      background-image:
+        linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+        linear-gradient(135deg, var(--muted) 50%, transparent 50%) !important;
+      background-position:
+        calc(100% - 14px) calc(50% - 2px),
+        calc(100% - 9px) calc(50% - 2px) !important;
+      background-size: 5px 5px, 5px 5px !important;
+      background-repeat: no-repeat !important;
+      padding-right: 30px !important;
+    }
+    .log-form .full { grid-column: 1 / -1 !important; }
+    .log-form button {
+      padding: 13px 16px !important;
+      min-height: 44px !important;
+      font-size: 14px !important;
+      grid-column: 1 / -1 !important;
+    }
+    @media (min-width: 640px) {
+      .log-form {
+        grid-template-columns: 1fr 1fr 1fr 1fr auto !important;
+        align-items: end !important;
+      }
+      .log-form .full { grid-column: auto !important; }
+      .log-form button {
+        padding: 10px 16px !important;
+        min-height: 40px !important;
+        grid-column: auto !important;
+        width: auto !important;
+      }
+    }
+    @media (min-width: 760px) {
+      .log-form input, .log-form select {
+        font-size: 14px !important;
+      }
+    }
+
+    /* Log preview — compact 2-col label/value on phone, 3-col on tablet */
+    .log-preview {
+      grid-template-columns: 1fr !important;
+      padding: 16px 0 !important;
+      gap: 12px !important;
+    }
+    .log-preview .row {
+      grid-template-columns: 110px 1fr !important;
+      gap: 10px !important;
+      align-items: baseline !important;
+    }
+    .log-preview .big { font-size: 15px !important; }
+    @media (min-width: 640px) {
+      .log-preview { grid-template-columns: repeat(3, 1fr) !important; gap: 18px !important; }
+      .log-preview .row { grid-template-columns: 1fr !important; gap: 2px !important; }
+    }
+
+    /* ─────────── Plan controls ─────────── */
+    .plan-controls {
+      grid-template-columns: 1fr !important;
+      padding: 14px 0 !important;
+      margin: 22px 0 !important;
+      gap: 12px !important;
+    }
+    .plan-row { gap: 8px !important; }
+    .segmented button {
+      padding: 9px 12px !important;
+      min-height: 36px !important;
+      font-size: 11px !important;
+    }
+    .plan-toggle input { width: 18px !important; height: 18px !important; }
+    @media (min-width: 720px) {
+      .plan-controls { grid-template-columns: 1fr 1fr !important; gap: 32px !important; }
+    }
+
+    /* ─────────── Remaining boxes ─────────── */
+    .remain {
+      grid-template-columns: 1fr 1fr !important;
+      gap: 16px !important;
+      margin-bottom: 22px !important;
+    }
+    .remain .box .big { font-size: 22px !important; }
+    .remain .box .hint { font-size: 11px !important; }
+    @media (min-width: 560px) {
+      .remain { gap: 40px !important; margin-bottom: 40px !important; }
+      .remain .box .big { font-size: clamp(26px, 3vw, 32px) !important; }
+    }
+
+    /* ─────────── Tables ─────────── */
+    /* The refine-layer stripped min-width; that makes multi-column
+       tables unreadable on a 345px-wide phone. For the data tables
+       that really are 5–7 columns (sales log, signals), restore a
+       horizontal scroll. The momentum-scroll on .tbl-wrap is already
+       set in the base CSS. */
+    .tbl-wrap {
+      overflow-x: auto !important;
+      -webkit-overflow-scrolling: touch !important;
+    }
+    #sales-tbl, #sigs { min-width: 520px !important; }
+    @media (min-width: 680px) {
+      #sales-tbl, #sigs { min-width: 0 !important; }
+    }
+
+    /* Sales table on phone: hide the tranche column (shown in the sale
+       creation flow anyway), widen Date so it can wrap if needed. */
+    @media (max-width: 559px) {
+      .sales-tbl th:nth-child(3),
+      .sales-tbl td:nth-child(3) { display: none !important; }
+      .sales-tbl .del {
+        min-width: 40px !important;
+        min-height: 36px !important;
+        padding: 8px 4px !important;
+        font-size: 18px !important;
+      }
+    }
+
+    /* Marketing calendar: restructure as card-per-row on phone so the
+       long Corn/Soy descriptions get full width instead of 80px columns.
+       Reverts to native table ≥560px. */
+    @media (max-width: 559px) {
+      table.calendar { display: block; }
+      table.calendar thead { display: none; }
+      table.calendar tbody, table.calendar tr { display: block; }
+      table.calendar tr {
+        padding: 14px 0 !important;
+        border-bottom: 0.5px solid var(--line) !important;
+      }
+      table.calendar tr:last-child { border-bottom: none !important; }
+      table.calendar td {
+        display: block !important;
+        border: none !important;
+        padding: 3px 0 !important;
+        font-size: 13px !important;
+        width: auto !important;
+        white-space: normal !important;
+        line-height: 1.5 !important;
+      }
+      table.calendar td:first-child {
+        font-size: 11px !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.06em !important;
+        color: var(--muted) !important;
+        font-weight: 600 !important;
+        margin-bottom: 3px !important;
+      }
+      table.calendar td.action { margin-bottom: 6px !important; }
+      table.calendar td:nth-child(3)::before {
+        content: "Corn ";
+        color: var(--corn);
+        font-weight: 700;
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-right: 4px;
+      }
+      table.calendar td:nth-child(4)::before {
+        content: "Soy ";
+        color: var(--soy);
+        font-weight: 700;
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-right: 4px;
+      }
+    }
+
+    /* Fields / cattle sales / etc: compact padding on phone */
+    @media (max-width: 559px) {
+      th, td { padding: 9px 10px !important; font-size: 12px !important; }
+    }
+
+    /* ─────────── Panels (Incremental schedule, pillars, etc) ─────────── */
+    .grid { gap: 12px !important; }
+    .grid.two, .grid.three {
+      grid-template-columns: 1fr !important;
+    }
+    @media (min-width: 560px) {
+      .grid.two { grid-template-columns: 1fr 1fr !important; gap: 14px !important; }
+    }
+    @media (min-width: 760px) {
+      .grid.three { grid-template-columns: 1fr 1fr 1fr !important; gap: 18px !important; }
+      .grid.two { gap: 16px !important; }
+    }
+
+    /* Tranche row strip (inside incremental schedule panels) */
+    .tranche-row {
+      grid-template-columns: 48px 1fr !important;
+      gap: 6px 10px !important;
+      padding: 8px 0 !important;
+      font-size: 13px !important;
+    }
+    .tranche-row .pct { font-size: 14px !important; }
+    .tranche-row .when {
+      grid-column: 2 !important;
+      font-size: 11px !important;
+    }
+    .tranche-row > span:last-child {
+      grid-column: 1 / -1 !important;
+      margin-top: 2px !important;
+    }
+    @media (min-width: 560px) {
+      .tranche-row {
+        grid-template-columns: 42px 80px 1fr !important;
+        gap: 8px !important;
+      }
+      .tranche-row .when { grid-column: auto !important; }
+      .tranche-row > span:last-child { grid-column: auto !important; margin-top: 0 !important; }
+    }
+
+    /* ─────────── Cattle / hay cards ─────────── */
+    .cattle-grid { grid-template-columns: 1fr !important; gap: 0 !important; }
+    .cattle-card .big { font-size: 22px !important; }
+    @media (min-width: 560px) {
+      .cattle-grid { grid-template-columns: 1fr 1fr !important; gap: 20px !important; }
+      .cattle-card .big { font-size: 26px !important; }
+    }
+
+    /* ─────────── Hedge tab ─────────── */
+    #tab-hedge .hedge-controls {
+      flex-direction: column !important;
+      align-items: stretch !important;
+      gap: 14px !important;
+    }
+    #tab-hedge .hedge-toggle {
+      width: 100% !important;
+      display: flex !important;
+    }
+    #tab-hedge .hedge-toggle button {
+      flex: 1 1 50% !important;
+      padding: 12px 10px !important;
+      min-height: 44px !important;
+      font-size: 13px !important;
+    }
+    #tab-hedge .hedge-slider-wrap { width: 100% !important; }
+    #tab-hedge input[type="range"] {
+      height: 32px !important;
+    }
+    #tab-hedge .hedge-stats {
+      grid-template-columns: 1fr !important;
+      gap: 0 !important;
+    }
+    #tab-hedge .hedge-stat {
+      border-right: none !important;
+      border-bottom: 0.5px solid var(--line) !important;
+      padding: 14px 0 !important;
+    }
+    #tab-hedge .hedge-stat:last-child { border-bottom: none !important; }
+    #tab-hedge .hedge-stat .value { font-size: 22px !important; }
+    #tab-hedge .hedge-legend {
+      gap: 10px 16px !important;
+      font-size: 11px !important;
+    }
+    #tab-hedge .hedge-assumptions {
+      grid-template-columns: 1fr !important;
+      gap: 0 !important;
+    }
+    #tab-hedge .hedge-assumption {
+      padding: 8px 0 !important;
+      font-size: 13px !important;
+    }
+    #tab-hedge .hedge-notes {
+      font-size: 13px !important;
+      line-height: 1.55 !important;
+    }
+    @media (min-width: 560px) {
+      #tab-hedge .hedge-stats { grid-template-columns: repeat(3, 1fr) !important; }
+      #tab-hedge .hedge-stat {
+        border-right: 0.5px solid var(--line) !important;
+        border-bottom: none !important;
+        padding: 0 16px !important;
+      }
+      #tab-hedge .hedge-stat:first-child { padding-left: 0 !important; }
+      #tab-hedge .hedge-stat:last-child { padding-right: 0 !important; border-right: none !important; }
+      #tab-hedge .hedge-stat .value { font-size: clamp(24px, 3vw, 32px) !important; }
+      #tab-hedge .hedge-assumptions { grid-template-columns: repeat(2, 1fr) !important; gap: 6px 24px !important; }
+      #tab-hedge .hedge-assumption { padding: 3px 0 !important; font-size: 12px !important; }
+    }
+    @media (min-width: 680px) {
+      #tab-hedge .hedge-controls {
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 24px !important;
+      }
+      #tab-hedge .hedge-toggle { width: auto !important; }
+      #tab-hedge .hedge-toggle button {
+        flex: 0 0 auto !important;
+        padding: 8px 18px !important;
+        min-height: 0 !important;
+      }
+      #tab-hedge input[type="range"] { height: auto !important; }
+    }
+
+    /* Scale up text inside the hedge-chart SVG on phone. The chart
+       viewBox is 900×440; at ~345px phone width the native 10–11px
+       SVG-unit text renders as ~4px. Multiply font-size via CSS. */
+    #tab-hedge .hedge-chart-panel svg text { font-size: 26px; }
+    @media (min-width: 560px) {
+      #tab-hedge .hedge-chart-panel svg text { font-size: 16px; }
+    }
+    @media (min-width: 760px) {
+      #tab-hedge .hedge-chart-panel svg text { font-size: 11px; }
+    }
+
+    /* ─────────── Seasonal pattern chart ─────────── */
+    /* Same treatment — scale up label text on phone so month/peak
+       labels are readable. */
+    #seasonal-chart text { font-size: 24px; }
+    @media (min-width: 560px) {
+      #seasonal-chart text { font-size: 15px; }
+    }
+    @media (min-width: 760px) {
+      #seasonal-chart text { font-size: 11px; }
+    }
+
+    /* Decision-aid timeline SVG (viewBox 620×110). Scale text so the
+       Jan–Aug month labels stay readable on a phone. */
+    .decision-timeline text { font-size: 16px; }
+    @media (min-width: 560px) {
+      .decision-timeline text { font-size: 12px; }
+    }
+    @media (min-width: 760px) {
+      .decision-timeline text { font-size: 10px; }
+    }
+    .chart-wrap { padding: 12px 10px !important; }
+    .chart-legend {
+      gap: 8px 14px !important;
+      font-size: 10.5px !important;
+    }
+    @media (min-width: 560px) {
+      .chart-wrap { padding: 14px 12px !important; }
+      .chart-legend { gap: 12px !important; font-size: 11px !important; }
+    }
+
+    /* ─────────── Section details (<details> accordion) ─────────── */
+    details.section { padding: 24px 0 0 !important; }
+    details.section[open] { padding-bottom: 20px !important; }
+    details.section summary.section-summary {
+      padding: 8px 0 !important;
+      min-height: 44px !important;
+    }
+    details.section summary.section-summary .section-title {
+      font-size: 15px !important;
+    }
+    details.section summary.section-summary.sec-corn .section-title,
+    details.section summary.section-summary.sec-soy .section-title {
+      font-size: 18px !important;
+    }
+    @media (min-width: 560px) {
+      details.section { padding: 28px 0 0 !important; }
+      details.section[open] { padding-bottom: 24px !important; }
+      details.section summary.section-summary .section-title { font-size: 16px !important; }
+      details.section summary.section-summary.sec-corn .section-title,
+      details.section summary.section-summary.sec-soy .section-title {
+        font-size: 22px !important;
+      }
+    }
+
+    /* ─────────── H2 margins (non-section headings) ─────────── */
+    h2 {
+      margin: 24px 0 10px !important;
+      font-size: 13px !important;
+    }
+    @media (min-width: 560px) {
+      h2 { margin: 32px 0 12px !important; }
+    }
+
+    /* ─────────── Inputs globally: prevent iOS zoom on focus ─────────── */
+    input[type="text"], input[type="number"], input[type="search"],
+    input[type="email"], input[type="tel"], input[type="date"],
+    select, textarea {
+      font-size: 16px;
+    }
+    @media (min-width: 760px) {
+      input[type="text"], input[type="number"], input[type="search"],
+      input[type="email"], input[type="tel"], input[type="date"],
+      select, textarea {
+        font-size: 14px;
+      }
+    }
+
+    /* Ensure meta footer has breathing room */
+    .meta {
+      font-size: 11px !important;
+      margin-top: 32px !important;
+      line-height: 1.6 !important;
+    }
+    @media (min-width: 560px) {
+      .meta { margin-top: 48px !important; }
+    }
+
+    /* Chart caption summary — bigger tap target on phone */
+    details.chart-caption > summary {
+      padding: 8px 0 !important;
+      min-height: 32px;
+    }
+  </style>
 </head>
 <body>
 <div class="wrap">
