@@ -148,9 +148,12 @@
     }
 
     /* ────── Today's Call ────── */
+    /* Neutral base — used when there's nothing urgent to do (WAIT/HOLD,
+       stale HIT, all-done). Looks like a calm status card. */
     .call {
       background: #fff; border: 1px solid var(--line); border-radius: 10px;
       padding: 14px 16px; margin-bottom: 16px;
+      transition: background .2s ease, border-color .2s ease, box-shadow .2s ease;
     }
     .call-head { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
     .call-msg  { font-size: 16px; font-weight: 600; margin-top: 4px; line-height: 1.35; }
@@ -161,6 +164,91 @@
       font-size: 13px; font-weight: 900; color: #fff;
       margin-right: 10px; vertical-align: middle;
       border: 1px solid rgba(0,0,0,.25);
+    }
+
+    /* Hero mode — used ONLY when there's a fresh action item the farm
+       should act on today. Designed to be impossible to miss: strong
+       color fill, large action verb as the dominant element, bushels
+       as a right-side concrete number. This is the "sell 3,300 bu
+       corn NOW" state. */
+    .call.hero {
+      padding: 18px 20px 20px;
+      border-width: 2px;
+      box-shadow: 0 2px 10px rgba(0,0,0,.08);
+    }
+    .call.hero.hero-sell {
+      background: linear-gradient(135deg, #0f5a28 0%, #1e7a3a 100%);
+      border-color: #063818; color: #fff;
+    }
+    .call.hero.hero-catchup {
+      background: linear-gradient(135deg, #8a1a1a 0%, #b7321a 100%);
+      border-color: #5a0d0d; color: #fff;
+    }
+    .call.hero .call-head {
+      color: rgba(255,255,255,.78); font-weight: 700;
+    }
+    .call.hero .call-verb {
+      display: inline-block; font-size: 34px; font-weight: 800;
+      letter-spacing: .02em; line-height: 1; margin-top: 4px;
+    }
+    .call.hero .call-contract {
+      font-size: 14px; font-weight: 600; margin-top: 2px;
+      color: rgba(255,255,255,.88); letter-spacing: .02em;
+    }
+    .call.hero .call-sub {
+      color: rgba(255,255,255,.78); font-size: 13px; margin-top: 10px;
+      border-top: 1px solid rgba(255,255,255,.2); padding-top: 8px;
+    }
+    .call.hero .call-uplift {
+      margin-top: 10px; padding-top: 8px;
+      border-top: 1px dashed rgba(255,255,255,.3);
+      color: rgba(255,255,255,.82);
+    }
+    .call.hero .call-uplift .captured { color: #e8f5d8; }
+    .call.hero .call-uplift .potential { color: #fff; }
+    .call.hero .call-hero-grid {
+      display: grid; grid-template-columns: 1fr auto; gap: 16px;
+      align-items: flex-end;
+    }
+    .call.hero .call-bushels {
+      text-align: right; line-height: 1;
+    }
+    .call.hero .call-bushels .num {
+      font-size: 30px; font-weight: 800; font-variant-numeric: tabular-nums;
+      display: block;
+    }
+    .call.hero .call-bushels .unit {
+      font-size: 11px; letter-spacing: .06em; text-transform: uppercase;
+      color: rgba(255,255,255,.78); margin-top: 2px;
+    }
+    @media (max-width: 520px) {
+      .call.hero .call-hero-grid { grid-template-columns: 1fr; gap: 8px; }
+      .call.hero .call-bushels { text-align: left; }
+      .call.hero .call-verb { font-size: 28px; }
+    }
+
+    /* Top-of-page ribbon — shown ONLY when there's a fresh urgent item.
+       Lives above the price strip so it's the first thing the eye
+       catches. Hidden by default; JS unhides based on Today's Call. */
+    .action-ribbon {
+      display: none;
+      margin: 0 -4px 12px;
+      padding: 9px 14px; border-radius: 6px;
+      font-size: 13px; font-weight: 700;
+      display: none; align-items: center; gap: 10px;
+      box-shadow: 0 1px 4px rgba(0,0,0,.08);
+    }
+    .action-ribbon.show { display: flex; }
+    .action-ribbon.sell { background: #0f5a28; color: #fff; }
+    .action-ribbon.catchup { background: #8a1a1a; color: #fff; }
+    .action-ribbon .ribbon-icon {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 20px; height: 20px; border-radius: 3px;
+      background: rgba(255,255,255,.22); font-weight: 900; font-size: 12px;
+    }
+    .action-ribbon a {
+      color: #fff; text-decoration: underline; text-underline-offset: 2px;
+      margin-left: auto; font-size: 12px; font-weight: 600;
     }
 
     /* ────── Plan controls (Option A: reserve, Option B: SA crop) ────── */
@@ -220,6 +308,19 @@
        fresh alerts look urgent, old ones look archival. */
     .tranche-card.stale-hit { filter: saturate(.6); opacity: .85; }
     .tranche-card.stale-hit .therm { filter: grayscale(.4) brightness(1.05); }
+    /* The OPPOSITE treatment — a fresh HIT tranche gets a thick colored
+       left border + subtle glow so the grid is scannable at a glance.
+       Pairs with the staleness fade above: fresh pops, stale recedes. */
+    .tranche-card.fresh-hit {
+      border-left: 4px solid #0f5a28;
+      box-shadow: 0 0 0 1px rgba(15,90,40,.2), 0 1px 6px rgba(15,90,40,.18);
+      background: #f5faf1;
+    }
+    .tranche-card.overdue-urgent {
+      border-left: 4px solid #8a1a1a;
+      box-shadow: 0 0 0 1px rgba(138,26,26,.2), 0 1px 6px rgba(138,26,26,.18);
+      background: #faf1f1;
+    }
     .tranche-mark-handled {
       display: inline-block; font-size: 10px; color: var(--muted);
       text-decoration: underline dotted; cursor: pointer; margin-top: 3px;
@@ -356,6 +457,10 @@
 <div class="wrap">
   <h1>Freis Farm | The Grain Board</h1>
   <div class="sub" id="sub">loading…</div>
+
+  <!-- Only unhides when there's a fresh HIT or OVERDUE — first thing
+       the eye catches above the price strip. -->
+  <div class="action-ribbon" id="action-ribbon"></div>
 
   <div class="strip" id="strip"></div>
 
@@ -1099,10 +1204,15 @@ function renderTranches(cfg, live, mountId) {
       }
     }
 
-    // Stale-hit class dims the whole card and surfaces a "mark handled"
-    // link — the user's way of saying "I acted on this, stop nagging"
-    // without having to log exact bushels sold.
-    const cardCls = (e.state === "HIT" && e.hit_stale) ? "tranche-card stale-hit" : "tranche-card";
+    // Card tone: stale hits dim, fresh hits pop with a colored left
+    // border, overdue pops red, everything else neutral. Pairs with
+    // the Today's Call hero so the eye can confirm which card the
+    // hero is pointing at.
+    let cardCls = "tranche-card";
+    if (e.state === "HIT" && e.hit_stale)     cardCls += " stale-hit";
+    else if (e.state === "HIT" && !e.hit_stale) cardCls += " fresh-hit";
+    else if (e.state === "OVERDUE")           cardCls += " overdue-urgent";
+
     const handledLink = (e.state === "HIT" && e.hit_stale)
       ? `<a class="tranche-mark-handled" onclick="handleMarkHandled('${tr.id}')">mark handled</a>`
       : "";
@@ -1148,7 +1258,9 @@ function todaysCall(p) {
     }
   }
   if (!all.length) {
-    return { dot:"#0f5a28", icon:"\u2713", label:"DONE", msg:"All tranches are fully sold. Relax.", sub:"" };
+    return { dot:"#0f5a28", icon:"\u2713", label:"DONE",
+             msg:"All tranches are fully sold. Relax.", sub:"",
+             hero: null, ribbon: null };
   }
   all.sort((a,b) => b.e.score - a.e.score);
   const top = all[0];
@@ -1181,9 +1293,32 @@ function todaysCall(p) {
       msg = `${stateVis.label} ${cfg.label} ${tr.label}: price $${fmt2(live)} is above $${fmt2(e.target)}${freshTag}.`;
       sub = `Lock ${fmtBu(Math.max(0, e.targetBu - e.sold))} bu. Sold so far: ${fmtBu(e.sold)} / ${fmtBu(e.targetBu)}.`;
     }
+    // Hero-mode metadata consumed by renderCall. Only fresh HITs and
+    // OVERDUEs get the bright hero card + top ribbon; stale HITs and
+    // WATCH/HOLD states use the subtle neutral card.
+    return {
+      dot: stateVis.dot, icon: stateVis.icon, label: stateVis.label,
+      msg, sub,
+      hero: !e.hit_stale ? "sell" : null,
+      verb: e.hit_stale ? "REVIEW" : "SELL",
+      contract: `${cfg.label} · ${tr.label}`,
+      bushels: Math.max(0, e.targetBu - e.sold),
+      price_line: `Price $${fmt2(live)} vs trigger $${fmt2(e.target)}${freshTag}`,
+      ribbon: e.hit_stale ? null : `SELL ${fmtBu(Math.max(0, e.targetBu - e.sold))} bu ${cfg.label} — ${e.hit_label === "NEW" ? "hit just now" : "hit " + (e.hit_label||"").toLowerCase()}`,
+    };
   } else if (e.state === "OVERDUE") {
     msg = `${stateVis.label} on ${cfg.label} ${tr.label} — window has closed.`;
     sub = `Price ${live == null ? "—" : "$"+fmt2(live)} · target $${e.target ? fmt2(e.target) : "—"}. Sell the shortfall regardless.`;
+    // OVERDUE is also a hero state — the window has closed and the
+    // farm is behind. Red hero card + ribbon demand attention.
+    return {
+      dot: stateVis.dot, icon: stateVis.icon, label: stateVis.label, msg, sub,
+      hero: "catchup", verb: "CATCH UP",
+      contract: `${cfg.label} · ${tr.label}`,
+      bushels: Math.max(0, e.targetBu - e.sold),
+      price_line: `Window closed ${daysBetween(e.winE, today())}d ago · price $${fmt2(live)}`,
+      ribbon: `CATCH UP ${fmtBu(Math.max(0, e.targetBu - e.sold))} bu ${cfg.label} — window closed`,
+    };
   } else if (e.state === "ACTIVE") {
     const gap = e.target ? (((live - e.target)/e.target)*100).toFixed(1) : null;
     msg = `${stateVis.label} ${cfg.label} ${tr.label}. ${countdown(today(), e.winS, e.winE)}.`;
@@ -1194,7 +1329,8 @@ function todaysCall(p) {
     msg = `${stateVis.label}. Next window: ${cfg.label} ${tr.label}.`;
     sub = `${countdown(today(), e.winS, e.winE)} · target ${e.target ? "$"+fmt2(e.target) : "calendar-only"}.`;
   }
-  return { dot: stateVis.dot, icon: stateVis.icon, label: stateVis.label, msg, sub };
+  // ACTIVE / WAIT / fallback — subtle neutral card, no ribbon.
+  return { dot: stateVis.dot, icon: stateVis.icon, label: stateVis.label, msg, sub, hero: null, ribbon: null };
 }
 
 /* Shared month→x interpolation for the seasonal chart.
@@ -1375,18 +1511,63 @@ function renderCall(p) {
   const captured  = capturedUplift();
   const potential = potentialUplift();
   const pct = potential > 0 ? Math.max(0, Math.min(100, (captured / potential) * 100)) : 0;
-  document.getElementById("call").innerHTML = `
-    <div class="call-head">What to do today · ${today().toLocaleDateString()}</div>
-    <div class="call-msg"><span class="call-dot" style="background:${c.dot}">${c.icon}</span>${c.msg}</div>
-    ${c.sub ? `<div class="call-sub">${c.sub}</div>` : ""}
-    <div class="call-uplift">
-      <span>Captured <span class="captured">${fmtUSD(captured)}</span> above Oct low</span>
-      <span>Potential if all triggers fire: <span class="potential">${fmtUSD(potential)}</span>${potential>0 ? ` <span style="color:var(--muted)">(${pct.toFixed(0)}% captured)</span>` : ""}</span>
-    </div>
-    <div class="call-sub" style="margin-top:6px; font-size:11px; color:var(--muted); border-top:1px solid var(--line); padding-top:6px">
-      See <a href="#why" style="color:var(--muted)">Why — Pattern, Plan &amp; Catalysts</a> below for the chart that explains this recommendation.
-    </div>
-  `;
+
+  const callEl   = document.getElementById("call");
+  const ribbonEl = document.getElementById("action-ribbon");
+
+  // Reset classes each render — state changes (e.g. marking a stale hit
+  // as handled) need to drop the hero treatment, not stack classes.
+  callEl.className   = "call";
+  ribbonEl.className = "action-ribbon";
+  ribbonEl.innerHTML = "";
+
+  if (c.hero === "sell" || c.hero === "catchup") {
+    // Hero layout — dominant action verb + right-aligned bushel count,
+    // full-bleed color fill, ribbon above the price strip.
+    callEl.classList.add("hero", c.hero === "sell" ? "hero-sell" : "hero-catchup");
+    callEl.innerHTML = `
+      <div class="call-head">Action today · ${today().toLocaleDateString()}</div>
+      <div class="call-hero-grid">
+        <div>
+          <div class="call-verb">${c.verb}</div>
+          <div class="call-contract">${c.contract}</div>
+          <div class="call-sub">${c.price_line || c.sub || ""}</div>
+        </div>
+        <div class="call-bushels">
+          <span class="num">${fmtBu(c.bushels)}</span>
+          <span class="unit">bushels to sell</span>
+        </div>
+      </div>
+      <div class="call-uplift">
+        <span>Captured <span class="captured">${fmtUSD(captured)}</span> above Oct low</span>
+        <span>Potential: <span class="potential">${fmtUSD(potential)}</span>${potential>0 ? ` <span style="opacity:.7">(${pct.toFixed(0)}%)</span>` : ""}</span>
+      </div>`;
+
+    // Ribbon above the price strip — one line, scannable from the
+    // top of the page. Clicking jumps to the hero card.
+    ribbonEl.classList.add("show", c.hero === "sell" ? "sell" : "catchup");
+    ribbonEl.innerHTML = `
+      <span class="ribbon-icon">${c.hero === "sell" ? "\u2713" : "!"}</span>
+      <span>${c.ribbon || c.msg}</span>
+      <a href="#call">See details</a>`;
+  } else {
+    // Neutral/subtle layout — used for ACTIVE/WAIT/DONE/stale-HIT.
+    // Same as the pre-amplification look so non-urgent states stay calm.
+    callEl.innerHTML = `
+      <div class="call-head">What to do today · ${today().toLocaleDateString()}</div>
+      <div class="call-msg"><span class="call-dot" style="background:${c.dot}">${c.icon}</span>${c.msg}</div>
+      ${c.sub ? `<div class="call-sub">${c.sub}</div>` : ""}
+      <div class="call-uplift">
+        <span>Captured <span class="captured">${fmtUSD(captured)}</span> above Oct low</span>
+        <span>Potential if all triggers fire: <span class="potential">${fmtUSD(potential)}</span>${potential>0 ? ` <span style="color:var(--muted)">(${pct.toFixed(0)}% captured)</span>` : ""}</span>
+      </div>
+      <div class="call-sub" style="margin-top:6px; font-size:11px; color:var(--muted); border-top:1px solid var(--line); padding-top:6px">
+        See <a href="#why" style="color:var(--muted)">Why — Pattern, Plan &amp; Catalysts</a> below for the chart that explains this recommendation.
+      </div>`;
+  }
+
+  // Anchor target for the ribbon link.
+  callEl.id = "call";
 }
 
 function renderRemain() {
