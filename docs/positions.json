@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-24T20:00:42.744815+00:00",
+  "generated_at": "2026-04-27T13:33:16.224527+00:00",
   "positions": [
     {
       "contract_id": "APP-CORN-2026",
@@ -11,7 +11,7 @@
       "basis_cost": null,
       "quantity": 1500,
       "note": "Ritchie Avg Pricing Program \u2014 2026 crop delivery, priced as avg cash Apr\u2013Jul 2026",
-      "live": 4.6,
+      "live": 4.59,
       "mtm_per_bu": null,
       "total_mtm": null
     },
@@ -25,7 +25,7 @@
       "basis_cost": null,
       "quantity": 500,
       "note": "Ritchie Avg Pricing Program \u2014 2026 crop delivery, priced as avg cash Apr\u2013Jul 2026",
-      "live": 11.38,
+      "live": 11.42,
       "mtm_per_bu": null,
       "total_mtm": null
     },
@@ -39,7 +39,7 @@
       "basis_cost": null,
       "quantity": 9115,
       "note": "Unsold 2025 crop stored at Ritchie \u2014 available to sell",
-      "live": 4.6,
+      "live": 4.59,
       "mtm_per_bu": null,
       "total_mtm": null
     },
@@ -53,7 +53,7 @@
       "basis_cost": null,
       "quantity": 1967,
       "note": "Unsold 2025 crop stored at Ritchie \u2014 available to sell",
-      "live": 11.38,
+      "live": 11.42,
       "mtm_per_bu": null,
       "total_mtm": null
     }

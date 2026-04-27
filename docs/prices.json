@@ -1,52 +1,52 @@
 {
-  "corn": 4.6,
-  "soy": 11.38,
-  "wheat": 6.1325,
-  "corn_dec": 4.6,
-  "soy_nov": 11.38,
-  "wheat_jul": 6.1325,
+  "corn": 4.59,
+  "soy": 11.42,
+  "wheat": 6.1,
+  "corn_dec": 4.59,
+  "soy_nov": 11.42,
+  "wheat_jul": 6.1,
   "corn_basis_il": null,
   "soy_basis_il": null,
-  "feeder_cattle": 370.0,
+  "feeder_cattle": 369.32,
   "detail": {
     "corn": {
-      "prev_close": 4.5875,
-      "day_chg": 0.0125,
-      "day_chg_pct": 0.27,
+      "prev_close": 4.6,
+      "day_chg": -0.01,
+      "day_chg_pct": -0.22,
       "high_range": 4.8175,
       "low_range": 3.715,
-      "range_days": 254,
-      "as_of": "2026-04-23"
+      "range_days": 255,
+      "as_of": "2026-04-24"
     },
     "soy": {
-      "prev_close": 11.43,
-      "day_chg": -0.05,
-      "day_chg_pct": -0.44,
+      "prev_close": 11.38,
+      "day_chg": 0.04,
+      "day_chg_pct": 0.35,
       "high_range": 12.13,
       "low_range": 9.615,
-      "range_days": 254,
-      "as_of": "2026-04-23"
+      "range_days": 255,
+      "as_of": "2026-04-24"
     },
     "wheat": {
-      "prev_close": 6.0175,
-      "day_chg": 0.115,
-      "day_chg_pct": 1.91,
+      "prev_close": 6.1325,
+      "day_chg": -0.0325,
+      "day_chg_pct": -0.53,
       "high_range": 6.185,
       "low_range": 4.95,
-      "range_days": 254,
-      "as_of": "2026-04-23"
+      "range_days": 255,
+      "as_of": "2026-04-24"
     },
     "feeder_cattle": {
-      "prev_close": null,
-      "day_chg": null,
-      "day_chg_pct": null,
+      "prev_close": 370.0,
+      "day_chg": -0.68,
+      "day_chg_pct": -0.18,
       "high_range": 370.0,
-      "low_range": 370.0,
-      "range_days": 1,
-      "as_of": "2026-04-22"
+      "low_range": 369.32,
+      "range_days": 2,
+      "as_of": "2026-04-23"
     }
   },
-  "date": "2026-04-24",
+  "date": "2026-04-27",
   "source": "stooq (end-of-day close)",
-  "generated_at": "2026-04-24T20:00:42.744058+00:00"
+  "generated_at": "2026-04-27T13:33:16.223885+00:00"
 }
