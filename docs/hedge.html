@@ -363,7 +363,31 @@
   }
   input[type="range"] {
     width: 100%; accent-color: var(--sage-deep);
-    height: 24px; margin: 0;
+    height: 32px; margin: 0;
+    -webkit-appearance: none; appearance: none;
+    background: transparent;
+  }
+  input[type="range"]::-webkit-slider-runnable-track {
+    height: 4px; background: var(--rule); border-radius: 2px;
+  }
+  input[type="range"]::-moz-range-track {
+    height: 4px; background: var(--rule); border-radius: 2px;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 28px; height: 28px;
+    margin-top: -12px;
+    border-radius: 50%;
+    background: var(--sage-deep);
+    box-shadow: 0 0 0 4px rgba(123,174,127,0.18), 0 2px 8px rgba(58,61,54,0.18);
+    border: 2px solid var(--cream);
+    cursor: grab;
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 28px; height: 28px;
+    border-radius: 50%; background: var(--sage-deep);
+    box-shadow: 0 0 0 4px rgba(123,174,127,0.18);
+    border: 2px solid var(--cream); cursor: grab;
   }
   .slider-foot {
     display: flex; justify-content: space-between;
@@ -635,10 +659,10 @@
     .hero-call .cell .v { font-size: 22px; }
     .hero-call .cell .sub { font-size: 12px; }
 
-    /* Hero chart — viewBox 900x320 renders at ~0.38× scale on iPhone,
-       so 28px viewBox text becomes ~10.5px on screen. Legible. */
-    .hero svg text { font-size: 28px; }
-    .hero svg .anno { font-size: 30px; }
+    /* Hero chart — viewBox 900x320 renders at ~0.38× scale on iPhone.
+       32px viewBox → ~12px on screen. Fully legible. */
+    .hero svg text { font-size: 32px; }
+    .hero svg .anno { font-size: 36px; }
 
     .lede { font-size: 15px; }
 
@@ -657,9 +681,13 @@
     .slider-label .l-v { font-size: 22px; }
 
     /* Strike strip charts — viewBox 520x90 renders at ~0.66× on iPhone */
-    .strike-strip svg text { font-size: 22px !important; }
+    .strike-strip svg text { font-size: 28px !important; }
     /* Preserve hierarchy: today $-chip biggest */
-    .strike-strip svg text[font-weight="500"] { font-size: 26px !important; }
+    .strike-strip svg text[font-weight="500"] { font-size: 34px !important; }
+    /* Slider thumb a touch larger on phone for confident finger drag */
+    input[type="range"] { height: 40px; }
+    input[type="range"]::-webkit-slider-thumb { width: 34px; height: 34px; margin-top: -15px; }
+    input[type="range"]::-moz-range-thumb { width: 34px; height: 34px; }
     .strike-card { padding: 18px 16px 22px; }
     .strike-meta { margin-bottom: 12px; font-size: 10px; letter-spacing: 0.12em; }
     .strike-because { font-size: 13.5px; }
@@ -701,7 +729,7 @@
   <div class="nav">
     <div class="brand">freis<span class="out"> · farm</span></div>
     <div class="nav-links">
-      <a href="home.html">Today's Call</a>
+      <a href="./">Today's Call</a>
       <a href="hedge.html" class="here">Hedge</a>
     </div>
   </div>
@@ -1169,17 +1197,18 @@ function drawChart(s, curPrice) {
 
   const narrow = window.matchMedia && window.matchMedia('(max-width: 559px)').matches;
   const W = 900;
-  // Bigger chart — was 380/460, now 480/600. Roughly +25-30% taller.
-  const H = narrow ? 600 : 480;
+  // Bigger chart on narrow — accounts for the larger internal fonts.
+  const H = narrow ? 680 : 480;
   const margin = narrow
-    ? { top: 44, right: 28, bottom: 84, left: 130 }
+    ? { top: 60, right: 32, bottom: 120, left: 160 }
     : { top: 36, right: 36, bottom: 60, left: 96 };
   svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
   const yFmt = narrow ? fmtUSDCompact : fmtUSD;
   // Internal SVG fonts. On narrow viewports the SVG is scaled down ~3×;
-  // we compensate by drawing internal text larger so labels stay legible.
+  // we compensate by drawing internal text much larger so labels stay
+  // legible. (At iPhone width 375px and viewBox 900, scale ≈ 0.42×.)
   const FS = narrow
-    ? { tick: 22, axisTitle: 26, strike: 22 }
+    ? { tick: 32, axisTitle: 36, strike: 32 }
     : { tick: 11, axisTitle: 12, strike: 12 };
   const pw = W - margin.left - margin.right;
   const ph = H - margin.top - margin.bottom;
