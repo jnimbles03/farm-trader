@@ -153,26 +153,49 @@ def _due(now: datetime, sent_at: datetime,
     return now - anchor >= timedelta(seconds=REMINDER_INTERVAL)
 
 
-def _reminder_message(entry: dict) -> str:
-    """Context-carrying reminder text.
+def _last4(phone: str) -> str:
+    """Last 4 digits of a phone number, used to identify holdouts in the
+    group reminder without leaking full numbers. No name map yet, so
+    last-4 is the cheapest way to make 'who hasn't responded' legible.
+    """
+    digits = "".join(c for c in phone if c.isdigit())
+    return digits[-4:] if len(digits) >= 4 else phone
+
+
+def _reminder_message(entry: dict, pending_phones: list[str]) -> str:
+    """Context-carrying group-reminder text.
+
+    Sent to ALL recipients on the alert (not just the holdouts), so the
+    group can see who hasn't replied yet. Non-responders are listed by
+    last-4 of phone — enough to identify them without putting full
+    numbers on the wire.
 
     The original alert already explained the what; the reminder just
-    points at it and asks for a vote. We keep the full first line of
-    the original so the trade details (contract, prices, bushels,
-    tranche) survive — truncating mid-"Tranche" would be worse than
-    letting the SMS run to 2 segments.
+    points at it and asks for the missing votes. We keep the full first
+    line of the original so the trade details (contract, prices,
+    bushels, tranche) survive — truncating mid-"Tranche" would be worse
+    than letting the SMS run to 2 segments.
 
     Cap at 300 chars as a guardrail against a pathologically long
-    original. Real alerts are ~115 chars; reminder wrapper adds ~38.
+    original. Real alerts are ~115 chars; reminder wrapper adds ~50.
     """
     original = entry.get("message", "")
     snippet = original.strip().splitlines()[0] if original else ""
     if len(snippet) > 300:
         snippet = snippet[:297].rstrip() + "..."
+    pending_tag = (
+        ", ".join(f"...{_last4(p)}" for p in pending_phones) or "?"
+    )
     if snippet:
-        return f"FREIS FARM reminder — still need Y/N: {snippet}"
+        return (
+            f"FREIS FARM reminder — still need Y/N from {pending_tag}: "
+            f"{snippet}"
+        )
     sig_key = entry.get("signal_key", "")
-    return f"FREIS FARM reminder — still need Y/N on {sig_key}"
+    return (
+        f"FREIS FARM reminder — still need Y/N from {pending_tag} "
+        f"on {sig_key}"
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -200,30 +223,54 @@ def main() -> int:
             log.warning("sid=%s has no parsable sent_at; skipping", sid)
             continue
 
-        message = _reminder_message(entry)
         recipients = entry.setdefault("recipients", {})
 
+        # Step 1 — figure out which non-responders are due for a nudge
+        # this tick, and which are just at-cap (logged, not nudged).
+        due_phones: list[str] = []
         for phone, r in recipients.items():
             if r.get("vote") is not None:
                 continue  # already voted
             last_reminded_at = _parse_iso(r.get("last_reminded_at"))
             reminders_sent   = int(r.get("reminders_sent", 0))
-
             if reminders_sent >= MAX_REMINDERS:
                 skipped_cap += 1
                 continue
             if not _due(now, sent_at, last_reminded_at, reminders_sent):
                 continue
+            due_phones.append(phone)
 
+        if not due_phones:
+            continue
+
+        # Step 2 — build a single broadcast message that names every
+        # current holdout (not just the ones whose timer fired this
+        # tick) so the group sees the full pending list.
+        pending_phones = [
+            p for p, r in recipients.items() if r.get("vote") is None
+        ]
+        message = _reminder_message(entry, pending_phones)
+
+        # Step 3 — fan out to EVERY recipient on the alert, not just
+        # the non-responders. People who already voted Y/N still want
+        # visibility into who's holding things up. We only bump the
+        # reminders_sent counter for the holdouts whose own SMS
+        # succeeded — that's what the cap is gating against.
+        for phone in recipients:
             ok = send_reminder(phone, message)
-            if ok:
-                r["last_reminded_at"] = now.isoformat()
-                r["reminders_sent"]   = reminders_sent + 1
-                sent_count += 1
-            else:
-                # Don't bump the counter on failure — next tick will retry.
-                log.warning("reminder to %s for sid=%s failed; will retry",
-                            phone, sid)
+            if phone in due_phones:
+                if ok:
+                    recipients[phone]["last_reminded_at"] = now.isoformat()
+                    recipients[phone]["reminders_sent"] = (
+                        int(recipients[phone].get("reminders_sent", 0)) + 1
+                    )
+                    sent_count += 1
+                else:
+                    # Don't bump the counter on failure — next tick retries.
+                    log.warning(
+                        "reminder to %s for sid=%s failed; will retry",
+                        phone, sid,
+                    )
 
     if sent_count or skipped_cap:
         log.info("sweep complete: sent=%d, skipped_at_cap=%d",
