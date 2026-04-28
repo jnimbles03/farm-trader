@@ -719,6 +719,176 @@
     .binary-word { font-size: 38px; }
     .binary-verb { font-size: 26px; }
   }
+  /* ============ SOBER TYPOGRAPHY OVERRIDE ============
+     The earlier rules used Fraunces 400 italic for display, which
+     reads as editorial/elegant. For a decision-making dashboard with
+     a primary user in her 70s, italic display hurts readability and
+     the romance gets in the way of the answer. This block dials the
+     register down to DM Sans 500/600 roman, smaller sizes, and
+     reserves Fraunces only for the brand wordmark + the Yes badge.
+     Loaded last so it overrides specific earlier rules. */
+
+  /* Headlines — DM Sans medium, no italic, smaller */
+  h1, .ledger-h, .binary-verb, .detail-headline, .trade-h {
+    font-family: "DM Sans", -apple-system, sans-serif;
+    font-style: normal;
+    font-weight: 600;
+    letter-spacing: -0.012em;
+  }
+  h1 { font-size: 30px; line-height: 1.15; max-width: 720px; }
+  @media (min-width: 720px) { h1 { font-size: 36px; } }
+  .ledger-h { font-size: 22px; }
+  @media (min-width: 720px) { .ledger-h { font-size: 26px; } }
+  .binary-verb { font-size: 24px; }
+  @media (min-width: 720px) { .binary-verb { font-size: 28px; } }
+  .detail-headline { font-size: 20px; line-height: 1.25; }
+  @media (min-width: 720px) { .detail-headline { font-size: 23px; } }
+  .trade-h { font-size: 24px; }
+
+  /* Headline emphasis — sage color instead of italic */
+  h1 em, .ledger-h em, .binary-verb em, .detail-headline em, .trade-h em,
+  .cash-v em, .scenario-headline em, .hero-call .cell .v em {
+    font-style: normal;
+    color: var(--sage-deep);
+    font-weight: 600;
+  }
+
+  /* Decks & subs — DM Sans regular, slate */
+  .deck, .ledger-sub, .trade-sub {
+    font-family: "DM Sans", -apple-system, sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 15.5px;
+    line-height: 1.5;
+    color: var(--slate);
+    max-width: 620px;
+  }
+  @media (min-width: 720px) {
+    .deck { font-size: 16.5px; }
+    .ledger-sub { font-size: 15.5px; }
+  }
+
+  /* Lede paragraph — body weight, sage on emphasis */
+  .lede { font-size: 15px; line-height: 1.55; }
+  .lede em { font-style: normal; color: var(--sage-deep); font-weight: 500; }
+
+  /* Value numbers — DM Sans semibold tabular */
+  .hero-call .cell .v, .cash-v, .closed-value, .scenario-payoff,
+  .lot-row-val, .lot-detail-stats .s-v, .detail-stat .v,
+  .trade-bid, .trade-total-v, .slider-label .l-v,
+  .lot-detail-action, .lot-detail-headline {
+    font-family: "DM Sans", -apple-system, sans-serif;
+    font-style: normal;
+    font-weight: 600;
+    letter-spacing: -0.008em;
+  }
+  .hero-call .cell .v { font-size: 20px; }
+  @media (min-width: 720px) { .hero-call .cell .v { font-size: 22px; } }
+  .cash-v { font-size: 26px; }
+  @media (min-width: 720px) { .cash-v { font-size: 30px; } }
+  .closed-value { font-size: 24px; }
+  @media (min-width: 720px) { .closed-value { font-size: 28px; } }
+  .scenario-payoff { font-size: 22px; }
+  .lot-row-val { font-size: 16px; }
+  .detail-stat .v { font-size: 18px; }
+  .slider-label .l-v { font-size: 18px; }
+  .trade-bid { font-size: 22px; }
+  .trade-total-v { font-size: 26px; color: var(--sage-deep); }
+
+  /* Lot row name — sans, no italic, table-like */
+  .lot-row-name {
+    font-family: "DM Sans", -apple-system, sans-serif;
+    font-weight: 500;
+    font-size: 15px;
+    letter-spacing: 0;
+  }
+  .lot-row-name .lot-row-loc {
+    font-style: normal;
+    font-weight: 400;
+    color: var(--slate);
+    font-size: 13px;
+  }
+  .lot-row-pace {
+    font-family: "DM Sans", -apple-system, sans-serif;
+    font-style: normal;
+    font-size: 12.5px;
+  }
+  .lot-row-val.unpriced-val {
+    font-style: normal;
+    font-size: 13px;
+    color: var(--slate);
+  }
+
+  /* "Because" / takeaway / d lines — sans, slate, no italic */
+  .lot-detail-because, .closed-takeaway, .strike-because,
+  .scenario-because, .cash-d, .binary-reason, .trade-sub {
+    font-family: "DM Sans", -apple-system, sans-serif;
+    font-style: normal;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--slate);
+  }
+
+  /* Strike meta + scenario tag + closed meta */
+  .strike-meta, .scenario-tag, .closed-meta {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+  }
+
+  /* Scenario headline — sans, smaller */
+  .scenario-headline {
+    font-family: "DM Sans", -apple-system, sans-serif;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 17px;
+    letter-spacing: -0.005em;
+  }
+
+  /* Hero call sub label — sans */
+  .hero-call .cell .sub {
+    font-family: "DM Sans", -apple-system, sans-serif;
+    font-style: normal;
+  }
+
+  /* vs lines */
+  .vs-line {
+    font-family: "DM Sans", -apple-system, sans-serif;
+    font-style: normal;
+    font-size: 12px;
+  }
+
+  /* Binary chips — slightly tighter, smaller */
+  .binary-chip { font-size: 9.5px; letter-spacing: 0.10em; padding: 5px 8px; }
+
+  /* Slider value (price) */
+  .slider-label .l-v { color: var(--sage-deep); font-style: normal; }
+
+  /* Brand wordmark + binary "Yes" — keep Fraunces character but slimmer */
+  .nav .brand, .wordmark { font-weight: 500; }
+  .binary-word { font-weight: 500; font-style: normal; }
+
+  /* Mobile sizing dial-back */
+  @media (max-width: 560px) {
+    h1 { font-size: 26px; }
+    .deck { font-size: 14.5px; margin-bottom: 22px; }
+    .lede { font-size: 14.5px; }
+    .binary-verb { font-size: 22px; }
+    .binary-word { font-size: 36px; }
+    .ledger-h { font-size: 20px; }
+    .ledger-sub { font-size: 14px; margin-bottom: 24px; }
+    .cash-v { font-size: 22px; }
+    .closed-value { font-size: 22px; }
+    .scenario-headline { font-size: 16px; }
+    .scenario-payoff { font-size: 19px; }
+    .hero-call .cell .v { font-size: 18px; }
+    .detail-headline, .lot-detail-headline { font-size: 19px; }
+    .trade-h { font-size: 21px; }
+    .lot-row-val { font-size: 15px; }
+    .lot-row-name { font-size: 14px; }
+    .lot-row-name .lot-row-loc { font-size: 12px; }
+    .lot-row-pace { font-size: 11.5px; }
+  }
+
 </style>
 </head>
 <body>
