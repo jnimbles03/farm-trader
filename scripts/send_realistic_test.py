@@ -140,7 +140,26 @@ def _send(phone: str, message: str) -> bool:
         r = httpx.post("https://textbelt.com/text", data=payload, timeout=15.0)
         body = r.json()
         log.info("textbelt[%s]: %s", phone, body)
-        return bool(body.get("success"))
+        if body.get("success"):
+            return True
+        # TextBelt rejects replyWebhookUrl for accounts that haven't been
+        # whitelisted for URL features. Fall back to sending without the
+        # webhook so the SMS still delivers; log a warning so the missing
+        # reply-routing is visible.
+        if "replyWebhookUrl" in payload and "url" in (body.get("error") or "").lower():
+            log.warning(
+                "textbelt[%s]: replyWebhookUrl rejected (account not verified "
+                "for URL features). Retrying without webhook — inbound replies "
+                "will not be routed. Visit https://textbelt.com/whitelist to "
+                "enable this feature.",
+                phone,
+            )
+            payload.pop("replyWebhookUrl")
+            r2 = httpx.post("https://textbelt.com/text", data=payload, timeout=15.0)
+            body2 = r2.json()
+            log.info("textbelt[%s] (no webhook): %s", phone, body2)
+            return bool(body2.get("success"))
+        return False
     except Exception as e:
         log.exception("textbelt call failed for %s: %s", phone, e)
         return False
