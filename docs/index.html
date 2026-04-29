@@ -834,6 +834,185 @@
     line-height: 1.45;
   }
 
+  /* ---- New: order builder additions ---- */
+  .trade-stage[hidden] { display: none; }
+  .trade-stage { display: flex; flex-direction: column; gap: 18px; }
+
+  .trade-avail-strip {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+    padding: 12px 0;
+    border-top: 0.5px dotted var(--border);
+    border-bottom: 0.5px dotted var(--border);
+  }
+  .trade-avail-k {
+    font-family: "DM Sans", sans-serif; font-size: 10.5px; font-weight: 500;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--slate);
+    margin-bottom: 4px;
+  }
+  .trade-avail-v {
+    font-family: "Fraunces", Georgia, serif; font-size: 22px;
+    font-variant-numeric: tabular-nums oldstyle-nums; color: var(--ink);
+  }
+
+  .trade-tranches { display: flex; flex-direction: column; gap: 14px; }
+  .trade-tranche {
+    position: relative;
+    padding: 16px 14px 12px;
+    border: 0.5px solid var(--border);
+    background: var(--paper);
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .trade-tranche-num {
+    position: absolute; top: -7px; left: 14px;
+    background: var(--cream); padding: 0 8px;
+    font-family: "DM Sans", sans-serif; font-size: 9.5px;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--slate);
+  }
+  .trade-tranche-x {
+    position: absolute; top: 6px; right: 8px;
+    background: transparent; border: 0; cursor: pointer;
+    font-size: 14px; color: var(--dust); padding: 4px 6px; line-height: 1;
+  }
+  .trade-tranche-x:hover { color: var(--ink); }
+
+  .tranche-pill-row { display: flex; gap: 6px; padding: 2px 0; }
+  .tranche-pill {
+    flex: 1; padding: 7px 8px; border: 0.5px solid var(--rule);
+    font-family: "DM Sans", sans-serif; font-size: 10.5px;
+    letter-spacing: 0.10em; text-transform: uppercase; color: var(--slate);
+    background: transparent; cursor: pointer; text-align: center;
+  }
+  .tranche-pill.active { background: var(--ink); color: var(--cream); border-color: var(--ink); }
+
+  .tranche-row {
+    display: grid; grid-template-columns: 92px 1fr;
+    align-items: baseline; gap: 10px;
+  }
+  .tranche-row label {
+    font-family: "DM Sans", sans-serif; font-size: 10.5px;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--slate);
+  }
+  .tranche-row input[type="number"],
+  .tranche-row input[type="date"] {
+    font-family: "Fraunces", Georgia, serif; font-size: 17px;
+    background: transparent; color: var(--ink);
+    border: 0; border-bottom: 0.5px solid var(--rule);
+    padding: 5px 0;
+    font-variant-numeric: tabular-nums oldstyle-nums;
+  }
+  .tranche-row input[type="number"]::-webkit-outer-spin-button,
+  .tranche-row input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .tranche-row input[type="number"] { -moz-appearance: textfield; }
+  .tranche-row.is-disabled { opacity: 0.45; }
+  .tranche-row.is-disabled input { pointer-events: none; }
+
+  .trade-add {
+    background: transparent; border: 0.5px dashed var(--rule);
+    padding: 11px; cursor: pointer;
+    font-family: "DM Sans", sans-serif; font-size: 11px; font-weight: 500;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--slate);
+  }
+  .trade-add:hover { border-color: var(--ink); color: var(--ink); }
+
+  .trade-phone-line {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-family: "DM Sans", sans-serif; font-size: 11.5px; color: var(--slate);
+    padding: 4px 0; gap: 8px;
+  }
+  .trade-phone-line strong {
+    font-family: "Fraunces", Georgia, serif; font-style: italic;
+    font-weight: 500; font-size: 14px; color: var(--ink);
+    font-variant-numeric: tabular-nums oldstyle-nums;
+  }
+
+  button.trade-cta { cursor: pointer; }
+  .trade-cta:disabled { opacity: 0.4; cursor: not-allowed; }
+  .trade-cta:disabled:hover { background: var(--sage-deep); }
+  .trade-cta.is-secondary {
+    background: transparent; color: var(--ink);
+    border: 0.5px solid var(--rule); box-shadow: none;
+  }
+  .trade-cta.is-secondary:hover { background: var(--paper); border-color: var(--ink); }
+
+  .trade-back {
+    background: transparent; border: 0; cursor: pointer;
+    font-family: "DM Sans", sans-serif; font-size: 11px;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--slate);
+    padding: 6px 0; align-self: flex-start;
+  }
+  .trade-back:hover { color: var(--ink); }
+
+  .trade-otp-input {
+    font-family: "Fraunces", Georgia, serif; font-size: 32px;
+    letter-spacing: 0.32em; text-align: center; color: var(--ink);
+    background: transparent; border: 0;
+    border-bottom: 1px solid var(--ink); padding: 12px 0;
+    font-variant-numeric: tabular-nums; width: 100%;
+  }
+  .trade-otp-meta {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-family: "DM Sans", sans-serif; font-size: 11px; color: var(--slate);
+  }
+  .trade-otp-resend {
+    background: transparent; border: 0; cursor: pointer;
+    color: var(--sage-deep); font-family: inherit; font-size: 11px;
+    letter-spacing: 0.06em; text-decoration: underline; padding: 0;
+  }
+  .trade-otp-resend:disabled { color: var(--dust); cursor: not-allowed; text-decoration: none; }
+
+  .trade-error {
+    font-family: "DM Sans", sans-serif; font-size: 11.5px;
+    color: #B6534A; padding: 0; min-height: 0;
+  }
+  .trade-error:not(:empty) { padding: 4px 0; min-height: 1em; }
+
+  .trade-done-mark {
+    font-family: "Fraunces", Georgia, serif; font-size: 56px;
+    color: var(--sage-deep); text-align: center; padding: 12px 0; line-height: 1;
+  }
+  .trade-done-h {
+    font-family: "Fraunces", Georgia, serif; font-weight: 400;
+    font-size: 28px; letter-spacing: -0.018em; text-align: center;
+    color: var(--ink); margin: 0;
+  }
+
+  .trade-drafts {
+    margin-top: 4px; padding: 16px 0 0;
+    border-top: 0.5px solid var(--border);
+  }
+  .trade-drafts-h {
+    font-family: "DM Sans", sans-serif; font-size: 10.5px; font-weight: 500;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--slate);
+    margin-bottom: 10px;
+  }
+  .trade-drafts-list {
+    list-style: none; padding: 0; margin: 0;
+    display: flex; flex-direction: column;
+  }
+  .trade-drafts-empty {
+    font-family: "Fraunces", Georgia, serif; font-style: italic;
+    font-size: 13px; color: var(--dust); padding: 4px 0;
+  }
+  .trade-drafts-list li {
+    display: grid; grid-template-columns: 1fr auto; gap: 4px 12px;
+    padding: 9px 0; border-bottom: 0.5px dotted var(--border);
+    align-items: baseline;
+  }
+  .trade-drafts-list li:last-child { border-bottom: 0; }
+  .draft-line { font-family: "DM Sans", sans-serif; font-size: 12.5px; color: var(--ink); }
+  .draft-line strong {
+    font-family: "Fraunces", Georgia, serif; font-style: italic;
+    font-weight: 500; color: var(--sage-deep);
+  }
+  .draft-meta {
+    font-family: "DM Sans", sans-serif; font-size: 10.5px;
+    letter-spacing: 0.04em; color: var(--slate); margin-top: 2px;
+  }
+  .draft-status {
+    font-family: "DM Sans", sans-serif; font-size: 10px; font-weight: 500;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--slate);
+  }
+
   /* ============ MOBILE (iPhone) ============
      CSS wins over inline SVG `font-size=""` attributes (presentation
      attrs have specificity 0). At iPhone widths we scale chart text up
@@ -1130,8 +1309,10 @@
   .lot-row-arrow { display: none !important; }
 
   /* === COVER TOP — H1 stack + market wire blotter side-by-side ===
-     Wraps the eyebrow/h1/deck on the left and the blotter on the right.
-     Stacks vertically on phones. */
+     On desktop: blotter is absolutely positioned so its height matches
+     the headline column exactly — the blotter then scrolls internally
+     for any overflow rather than pushing the page taller.
+     On mobile: stacks vertically (grid 1-col). */
   .cover-top {
     display: grid;
     grid-template-columns: 1fr;
@@ -1139,15 +1320,30 @@
     margin-bottom: 36px;
   }
   @media (min-width: 720px) {
-    .cover-top { grid-template-columns: minmax(0, 1fr) 360px; gap: 56px; }
+    .cover-top {
+      display: block;
+      position: relative;
+    }
+    .cover-headline {
+      margin-right: 416px;   /* 360 blotter + 56 gap */
+      min-width: 0;
+    }
+    .blotter {
+      position: absolute;
+      top: 0; right: 0;
+      height: 100%;
+      width: 360px;
+    }
   }
-  .cover-headline { min-width: 0; }
 
   /* Blotter card */
   .blotter {
     background: var(--paper);
     border: 0.5px solid var(--border);
     padding: 16px 18px 6px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
   }
   .blotter-head {
     display: flex; justify-content: space-between; align-items: baseline;
@@ -1165,7 +1361,21 @@
     font-size: 10px; letter-spacing: 0.06em;
     color: var(--dust); text-transform: uppercase;
   }
-  .blotter-list { list-style: none; padding: 0; margin: 0; }
+  .blotter-list {
+    list-style: none; padding: 0; margin: 0;
+    /* Fill available height in the flex column and scroll internally
+       so the card stays the height of the headline column. */
+    flex: 1 1 auto;
+    overflow-y: auto;
+    min-height: 0;
+    /* Subtle hairline scrollbar that fits the quiet aesthetic */
+    scrollbar-width: thin;
+    scrollbar-color: var(--rule) transparent;
+  }
+  .blotter-list::-webkit-scrollbar { width: 4px; }
+  .blotter-list::-webkit-scrollbar-track { background: transparent; }
+  .blotter-list::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 2px; }
+  .blotter-list::-webkit-scrollbar-thumb:hover { background: var(--dust); }
   .blotter-item {
     display: grid;
     grid-template-columns: 56px 1fr 28px;
@@ -1685,51 +1895,111 @@
 </section>
 
 <!-- ================== TRADE ORDER WIDGET ================== -->
-<button class="trade-trigger" id="trade-trigger" type="button" aria-label="Open the trade order widget">
+<button class="trade-trigger" id="trade-trigger" type="button" aria-label="Open the trade order builder">
   <span class="trade-trigger-rail" aria-hidden="true"></span>
-  <span class="trade-trigger-label">Lock a sale</span>
+  <span class="trade-trigger-label">Draft an order</span>
 </button>
 
-<aside class="trade-drawer" id="trade-drawer" aria-hidden="true" role="dialog" aria-label="Lock a sale">
+<aside class="trade-drawer" id="trade-drawer" aria-hidden="true" role="dialog" aria-label="Build a draft order">
   <div class="trade-head">
-    <div class="trade-eyebrow">Trade order</div>
+    <div class="trade-eyebrow">Trade order · Draft</div>
     <button class="trade-close" id="trade-close" type="button" aria-label="Close">×</button>
   </div>
 
-  <h3 class="trade-h">Lock a sale.</h3>
-  <p class="trade-sub">Pre-filled with today's recommended action.</p>
+  <h3 class="trade-h">Build a <em>draft</em> order.</h3>
+  <p class="trade-sub">Stack tranches. Confirm with a code we'll text to your phone.</p>
 
-  <div class="trade-field">
-    <label class="trade-label">Crop</label>
-    <div class="crop-toggle" id="crop-toggle">
-      <button data-crop="soy"  class="active" type="button">Soybeans</button>
-      <button data-crop="corn" type="button">Corn</button>
+  <!-- ====== STAGE 1: BUILD ====== -->
+  <div class="trade-stage" id="trade-stage-build">
+
+    <div class="trade-field">
+      <label class="trade-label">Crop</label>
+      <div class="crop-toggle" id="crop-toggle">
+        <button data-crop="soy"  class="active" type="button">Soybeans</button>
+        <button data-crop="corn" type="button">Corn</button>
+      </div>
     </div>
+
+    <div class="trade-avail-strip">
+      <div>
+        <div class="trade-avail-k">Available · Ritchie</div>
+        <div class="trade-avail-v" id="trade-avail">1,967 bu</div>
+      </div>
+      <div>
+        <div class="trade-avail-k">Today's bid</div>
+        <div class="trade-avail-v"><span id="trade-bid">$11.68</span><span class="trade-bid-unit"> / bu</span></div>
+      </div>
+    </div>
+
+    <div class="trade-tranches" id="trade-tranches"></div>
+
+    <button type="button" class="trade-add" id="trade-add">+ Add tranche</button>
+
+    <div class="trade-total">
+      <div class="trade-total-k">Max proceeds</div>
+      <div class="trade-total-v" id="trade-total">$0</div>
+    </div>
+
+    <div class="trade-phone-line">
+      <span>Code goes to</span>
+      <strong>+1 (630) 247-9950</strong>
+    </div>
+
+    <div class="trade-error" id="trade-build-error"></div>
+
+    <button class="trade-cta" id="trade-send-code" type="button">
+      <span class="trade-cta-l">Send confirmation code</span>
+      <span class="trade-cta-num">2-step submit · stays a draft</span>
+    </button>
   </div>
 
-  <div class="trade-field">
-    <label class="trade-label" for="trade-bu">Bushels to sell</label>
-    <input type="number" id="trade-bu" value="1967" min="1" />
-    <div class="trade-hint">Available · <span id="trade-avail">1,967 bu</span> at Ritchie</div>
+  <!-- ====== STAGE 2: OTP ====== -->
+  <div class="trade-stage" id="trade-stage-otp" hidden>
+    <p class="trade-sub">Enter the 6-digit code we just texted to <strong>+1 (630) 247-9950</strong>.</p>
+
+    <div class="trade-field">
+      <label class="trade-label">Confirmation code</label>
+      <input class="trade-otp-input" type="text" id="trade-otp"
+             inputmode="numeric" pattern="\d{6}" maxlength="6"
+             autocomplete="one-time-code" placeholder="••••••" />
+    </div>
+
+    <div class="trade-otp-meta">
+      <span id="trade-otp-msg">Code expires in 5:00.</span>
+      <button type="button" class="trade-otp-resend" id="trade-otp-resend" disabled>Resend</button>
+    </div>
+
+    <div class="trade-error" id="trade-otp-error"></div>
+
+    <button class="trade-cta" id="trade-submit" type="button" disabled>
+      <span class="trade-cta-l">Submit draft order</span>
+      <span class="trade-cta-num" id="trade-submit-num">—</span>
+    </button>
+    <button type="button" class="trade-back" id="trade-back">← Edit tranches</button>
   </div>
 
-  <div class="trade-field">
-    <label class="trade-label">Today's bid</label>
-    <div class="trade-bid"><span id="trade-bid">$11.68</span> <span class="trade-bid-unit">/ bu</span></div>
+  <!-- ====== STAGE 3: DONE ====== -->
+  <div class="trade-stage" id="trade-stage-done" hidden>
+    <div class="trade-done-mark">✓</div>
+    <h4 class="trade-done-h">Drafted.</h4>
+    <p class="trade-sub" style="text-align:center;">
+      Saved as a <em>draft</em>. It will not execute until you promote it to live.
+    </p>
+    <button class="trade-cta is-secondary" id="trade-done-close" type="button">
+      <span class="trade-cta-l">Close</span>
+    </button>
   </div>
 
-  <div class="trade-total">
-    <div class="trade-total-k">Proceeds</div>
-    <div class="trade-total-v" id="trade-total">$22,975</div>
+  <!-- Drafts ledger (always shown) -->
+  <div class="trade-drafts" id="trade-drafts">
+    <div class="trade-drafts-h">Open drafts · <span id="trade-drafts-count">0</span></div>
+    <ul class="trade-drafts-list" id="trade-drafts-list">
+      <li><span class="trade-drafts-empty">No drafts yet.</span></li>
+    </ul>
   </div>
-
-  <a class="trade-cta" id="trade-cta" href="tel:+13095551234">
-    <span class="trade-cta-l">Call Ritchie to lock</span>
-    <span class="trade-cta-num">(309) 555-1234</span>
-  </a>
 
   <div class="trade-foot">
-    Logging happens after the elevator confirms · Bushel feed will pick it up
+    Drafts never reach Ritchie automatically · promote them in the dashboard when ready
   </div>
 </aside>
 
@@ -1919,44 +2189,415 @@ document.getElementById('lots-strip').addEventListener('click', (e) => {
 renderLot('soy');
 
 /* ─────────────────────────────────────────────────────────────
-   TRADE ORDER WIDGET
-   ───────────────────────────────────────────────────────────── */
-const BIDS = { soy: 11.68, corn: 4.47 };
-const AVAIL = { soy: 1967, corn: 9115 };
-let tradeCrop = 'soy';
+   TRADE ORDER WIDGET — order builder + OTP submit (draft-only)
 
-function prefillTrade(t) {
-  tradeCrop = t.crop;
-  document.querySelectorAll('#crop-toggle button').forEach(b =>
-    b.classList.toggle('active', b.dataset.crop === t.crop));
-  document.getElementById('trade-bu').value = t.bu;
-  document.getElementById('trade-bid').textContent = '$' + (t.bid).toFixed(2);
-  document.getElementById('trade-avail').textContent = (t.avail).toLocaleString() + ' bu';
+   Two-step submission: build tranches → request SMS code → enter
+   code → submit. Worker side is stateless: HMAC binds {code, phone,
+   payload_hash, nonce, expires_at} so the server doesn't need a KV
+   to remember outstanding codes.
+
+   Set TRADE_API_BASE to the deployed Cloudflare Worker URL when
+   that side ships. Until then, the widget runs in stub mode: a
+   code is shown inline (in the OTP message slot) and submitted
+   orders are stashed in localStorage so the UX is testable
+   end-to-end before the worker exists.
+   ───────────────────────────────────────────────────────────── */
+const TRADE_API_BASE  = "";                      // e.g. "https://freis-farm.workers.dev"
+const TRADE_PHONE     = "+16302479950";          // whitelist target
+const TRADE_PHONE_FMT = "+1 (630) 247-9950";
+const ORDERS_JSON_URL = "docs/orders.json";      // resolved relative to the page
+
+const BIDS  = { soy: 11.68, corn: 4.47 };
+const AVAIL = { soy: 1967,  corn: 9115 };
+const CROP_LABEL = { soy: "Soy", corn: "Corn" };
+
+let tradeCrop = 'soy';
+let TRANCHES = [];       // [{bushels, type:'limit'|'market', limit_price, expiry}]
+let OTP = null;          // {nonce, hmac, expires_at, payload_hash}
+let OTP_TIMER = null;
+
+const round2   = (n) => Math.round(n * 100) / 100;
+const fmtMoney = (n) => '$' + Math.round(n).toLocaleString('en-US');
+const fmtBu    = (n) => Number(n).toLocaleString('en-US') + ' bu';
+
+function defaultTranche() {
+  const today = new Date();
+  const exp = new Date(today.getFullYear(), today.getMonth() + 3, today.getDate());
+  return {
+    bushels:     Math.min(500, AVAIL[tradeCrop]),
+    type:        'limit',
+    limit_price: round2(BIDS[tradeCrop] * 1.04),  // 4% above today's bid as a starter
+    expiry:      exp.toISOString().slice(0, 10),
+  };
+}
+
+/* ----- Render the tranche cards ----- */
+function renderTranches() {
+  const wrap = document.getElementById('trade-tranches');
+  wrap.innerHTML = '';
+  TRANCHES.forEach((t, i) => {
+    const isMarket = t.type === 'market';
+    const row = document.createElement('div');
+    row.className = 'trade-tranche';
+    row.innerHTML = `
+      <div class="trade-tranche-num">Tranche ${i + 1}</div>
+      ${TRANCHES.length > 1 ? `<button class="trade-tranche-x" type="button" data-rm="${i}" aria-label="Remove tranche">✕</button>` : ''}
+      <div class="tranche-pill-row" data-pills="${i}">
+        <button type="button" class="tranche-pill ${t.type === 'limit'  ? 'active' : ''}" data-type="limit">Limit</button>
+        <button type="button" class="tranche-pill ${t.type === 'market' ? 'active' : ''}" data-type="market">Market</button>
+      </div>
+      <div class="tranche-row">
+        <label>Bushels</label>
+        <input type="number" min="1" step="1" data-bu="${i}" value="${t.bushels}" />
+      </div>
+      <div class="tranche-row ${isMarket ? 'is-disabled' : ''}">
+        <label>${isMarket ? "Today's bid" : 'Limit price'}</label>
+        <input type="number" min="0" step="0.01" data-px="${i}"
+               value="${(isMarket ? BIDS[tradeCrop] : t.limit_price).toFixed(2)}"
+               ${isMarket ? 'readonly' : ''}/>
+      </div>
+      <div class="tranche-row ${isMarket ? 'is-disabled' : ''}">
+        <label>${isMarket ? 'Submit by' : 'Expires'}</label>
+        <input type="date" data-exp="${i}" value="${t.expiry}" ${isMarket ? 'readonly' : ''}/>
+      </div>
+    `;
+    wrap.appendChild(row);
+  });
   updateTotal();
+  validateBuild();
 }
 
 function updateTotal() {
-  const bu = +document.getElementById('trade-bu').value || 0;
-  const bid = BIDS[tradeCrop];
-  const total = bu * bid;
-  document.getElementById('trade-total').textContent =
-    '$' + total.toLocaleString('en-US', { maximumFractionDigits: 0 });
+  let total = 0;
+  TRANCHES.forEach(t => {
+    const px = t.type === 'market' ? BIDS[tradeCrop] : Number(t.limit_price);
+    total += (Number(t.bushels) || 0) * (px || 0);
+  });
+  document.getElementById('trade-total').textContent = fmtMoney(total);
+  const n = TRANCHES.length;
+  document.getElementById('trade-submit-num').textContent =
+    `${n} tranche${n === 1 ? '' : 's'} · ${fmtMoney(total)}`;
 }
 
+function validateBuild() {
+  const sumBu = TRANCHES.reduce((a, t) => a + (Number(t.bushels) || 0), 0);
+  const errEl = document.getElementById('trade-build-error');
+  const btn   = document.getElementById('trade-send-code');
+  let err = '';
+  if (sumBu <= 0) {
+    err = 'Enter at least one bushel.';
+  } else if (sumBu > AVAIL[tradeCrop]) {
+    err = `Tranches sum to ${fmtBu(sumBu)} — over the ${fmtBu(AVAIL[tradeCrop])} on hand at Ritchie.`;
+  } else {
+    for (const [i, t] of TRANCHES.entries()) {
+      if (t.type === 'limit') {
+        if (!t.limit_price || Number(t.limit_price) <= 0) { err = `Tranche ${i + 1}: set a limit price.`; break; }
+        if (!t.expiry) { err = `Tranche ${i + 1}: set an expiry date.`; break; }
+      }
+    }
+  }
+  errEl.textContent = err;
+  btn.disabled = !!err;
+}
+
+/* ----- Crop toggle ----- */
 document.getElementById('crop-toggle').addEventListener('click', (e) => {
   const btn = e.target.closest('button');
   if (!btn) return;
   tradeCrop = btn.dataset.crop;
   document.querySelectorAll('#crop-toggle button').forEach(b =>
     b.classList.toggle('active', b === btn));
-  document.getElementById('trade-bid').textContent = '$' + BIDS[tradeCrop].toFixed(2);
-  document.getElementById('trade-avail').textContent = AVAIL[tradeCrop].toLocaleString() + ' bu';
-  document.getElementById('trade-bu').value = AVAIL[tradeCrop];
-  updateTotal();
+  document.getElementById('trade-bid').textContent   = '$' + BIDS[tradeCrop].toFixed(2);
+  document.getElementById('trade-avail').textContent = fmtBu(AVAIL[tradeCrop]);
+  TRANCHES = [defaultTranche()];
+  renderTranches();
 });
-document.getElementById('trade-bu').addEventListener('input', updateTotal);
 
+/* ----- Tranche edits (delegated) ----- */
+document.getElementById('trade-tranches').addEventListener('input', (e) => {
+  const t = e.target;
+  if (t.dataset.bu  !== undefined) TRANCHES[+t.dataset.bu].bushels     = Number(t.value);
+  else if (t.dataset.px  !== undefined) TRANCHES[+t.dataset.px].limit_price = Number(t.value);
+  else if (t.dataset.exp !== undefined) TRANCHES[+t.dataset.exp].expiry      = t.value;
+  updateTotal();
+  validateBuild();
+});
+
+document.getElementById('trade-tranches').addEventListener('click', (e) => {
+  const pill = e.target.closest('.tranche-pill');
+  if (pill) {
+    const i = +pill.parentElement.dataset.pills;
+    TRANCHES[i].type = pill.dataset.type;
+    if (TRANCHES[i].type === 'market') TRANCHES[i].limit_price = BIDS[tradeCrop];
+    renderTranches();
+    return;
+  }
+  const rm = e.target.closest('[data-rm]');
+  if (rm) {
+    TRANCHES.splice(+rm.dataset.rm, 1);
+    if (TRANCHES.length === 0) TRANCHES.push(defaultTranche());
+    renderTranches();
+  }
+});
+
+document.getElementById('trade-add').addEventListener('click', () => {
+  TRANCHES.push(defaultTranche());
+  renderTranches();
+});
+
+/* ----- Stage transitions ----- */
+function showStage(name) {
+  ['build', 'otp', 'done'].forEach(s => {
+    document.getElementById('trade-stage-' + s).hidden = (s !== name);
+  });
+}
+
+/* ----- Send code (stage 1 → 2) ----- */
+document.getElementById('trade-send-code').addEventListener('click', async () => {
+  const btn = document.getElementById('trade-send-code');
+  btn.disabled = true;
+  document.getElementById('trade-build-error').textContent = '';
+  try {
+    OTP = await orderApiStart(buildPayload());
+    document.getElementById('trade-otp').value = '';
+    document.getElementById('trade-otp-error').textContent = '';
+    document.getElementById('trade-submit').disabled = true;
+    showStage('otp');
+    startOtpCountdown(OTP.expires_at);
+    setTimeout(() => document.getElementById('trade-otp').focus(), 50);
+  } catch (err) {
+    document.getElementById('trade-build-error').textContent =
+      err.message || 'Could not send code. Try again.';
+  } finally {
+    btn.disabled = false;
+    validateBuild();  // re-enable if still valid
+  }
+});
+
+/* ----- OTP entry (stage 2) ----- */
+document.getElementById('trade-otp').addEventListener('input', (e) => {
+  const v = e.target.value.replace(/\D/g, '').slice(0, 6);
+  e.target.value = v;
+  document.getElementById('trade-submit').disabled = (v.length !== 6 || !OTP);
+});
+
+document.getElementById('trade-back').addEventListener('click', () => {
+  if (OTP_TIMER) clearInterval(OTP_TIMER);
+  OTP = null;
+  showStage('build');
+});
+
+document.getElementById('trade-otp-resend').addEventListener('click', async () => {
+  const btn = document.getElementById('trade-otp-resend');
+  btn.disabled = true;
+  try {
+    OTP = await orderApiStart(buildPayload());
+    document.getElementById('trade-otp').value = '';
+    document.getElementById('trade-submit').disabled = true;
+    document.getElementById('trade-otp-error').textContent = '';
+    startOtpCountdown(OTP.expires_at);
+  } catch (err) {
+    document.getElementById('trade-otp-error').textContent = err.message || 'Resend failed.';
+    btn.disabled = false;
+  }
+});
+
+document.getElementById('trade-submit').addEventListener('click', async () => {
+  const btn  = document.getElementById('trade-submit');
+  const code = document.getElementById('trade-otp').value;
+  btn.disabled = true;
+  document.getElementById('trade-otp-error').textContent = '';
+  try {
+    await orderApiSubmit(buildPayload(), code);
+    if (OTP_TIMER) clearInterval(OTP_TIMER);
+    OTP = null;
+    showStage('done');
+    setTimeout(loadDrafts, 4000);  // give the GH Actions write a few seconds
+  } catch (err) {
+    document.getElementById('trade-otp-error').textContent =
+      err.message || 'Code did not match.';
+    btn.disabled = (code.length !== 6);
+  }
+});
+
+document.getElementById('trade-done-close').addEventListener('click', () => {
+  closeTrade();
+  TRANCHES = [defaultTranche()];
+  renderTranches();
+  showStage('build');
+});
+
+/* ----- OTP countdown ----- */
+function startOtpCountdown(expiresAtIso) {
+  if (OTP_TIMER) clearInterval(OTP_TIMER);
+  const expEpoch  = new Date(expiresAtIso).getTime();
+  const msgEl     = document.getElementById('trade-otp-msg');
+  const resendBtn = document.getElementById('trade-otp-resend');
+  resendBtn.disabled = true;
+  function tick() {
+    const remain = Math.max(0, Math.floor((expEpoch - Date.now()) / 1000));
+    const m = Math.floor(remain / 60);
+    const s = remain % 60;
+    msgEl.textContent = remain > 0
+      ? `Code expires in ${m}:${s.toString().padStart(2, '0')}.`
+      : 'Code expired.';
+    if (remain <= 0) {
+      clearInterval(OTP_TIMER);
+      resendBtn.disabled = false;
+      document.getElementById('trade-submit').disabled = true;
+    } else if (remain <= 60) {
+      resendBtn.disabled = false;
+    }
+  }
+  tick();
+  OTP_TIMER = setInterval(tick, 1000);
+}
+
+/* ----- Payload + API ----- */
+function buildPayload() {
+  return {
+    submission_id: cryptoUuid(),
+    submitted_at:  new Date().toISOString(),
+    crop:          tradeCrop,
+    tranches: TRANCHES.map(t => ({
+      bushels:     Number(t.bushels),
+      type:        t.type,
+      limit_price: t.type === 'market' ? null : Number(t.limit_price),
+      expiry:      t.type === 'market' ? null : t.expiry,
+    })),
+  };
+}
+
+function cryptoUuid() {
+  if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+    const r = Math.random() * 16 | 0;
+    return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+  });
+}
+
+async function orderApiStart(payload) {
+  if (!TRADE_API_BASE) return localStubStart(payload);
+  const r = await fetch(TRADE_API_BASE + '/orders/start', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ phone: TRADE_PHONE, payload }),
+  });
+  if (!r.ok) {
+    const text = await r.text().catch(() => '');
+    throw new Error(text || ('Server refused: ' + r.status));
+  }
+  return r.json();  // {nonce, hmac, expires_at, payload_hash}
+}
+
+async function orderApiSubmit(payload, code) {
+  if (!TRADE_API_BASE) return localStubSubmit(payload, code);
+  const r = await fetch(TRADE_API_BASE + '/orders/submit', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      phone:        TRADE_PHONE,
+      payload,
+      code,
+      nonce:        OTP.nonce,
+      expires_at:   OTP.expires_at,
+      payload_hash: OTP.payload_hash,
+      hmac:         OTP.hmac,
+    }),
+  });
+  if (!r.ok) {
+    const text = await r.text().catch(() => '');
+    throw new Error(text || ('Server refused: ' + r.status));
+  }
+  return r.json();
+}
+
+/* ----- Local stub (no worker yet) ----- */
+function localStubStart(payload) {
+  const code  = String(Math.floor(100000 + Math.random() * 900000));
+  const exp   = new Date(Date.now() + 5 * 60 * 1000).toISOString();
+  const nonce = 'stub-' + Math.random().toString(36).slice(2, 10);
+  // Surface the code where the user would normally see the SMS, so the
+  // flow is testable locally. This branch is dead once TRADE_API_BASE is set.
+  setTimeout(() => {
+    const m = document.getElementById('trade-otp-msg');
+    if (m) m.innerHTML = `Stub mode · code is <strong>${code}</strong>. Expires in 5:00.`;
+  }, 80);
+  return Promise.resolve({
+    nonce,
+    expires_at:   exp,
+    payload_hash: 'stub',
+    hmac:         'stub:' + code,
+  });
+}
+
+function localStubSubmit(payload, code) {
+  if (!OTP || !OTP.hmac.startsWith('stub:')) throw new Error('No active code.');
+  if (code !== OTP.hmac.slice(5))            throw new Error('Code did not match.');
+  if (new Date(OTP.expires_at).getTime() < Date.now()) throw new Error('Code expired.');
+  const stored = JSON.parse(localStorage.getItem('freis_orders') || '[]');
+  payload.tranches.forEach(tr => {
+    stored.push({
+      id:            cryptoUuid(),
+      submission_id: payload.submission_id,
+      crop:          payload.crop,
+      type:          tr.type,
+      bushels:       tr.bushels,
+      limit_price:   tr.limit_price,
+      expiry:        tr.expiry,
+      status:        'draft',
+      created_at:    new Date().toISOString(),
+      source:        'stub',
+    });
+  });
+  localStorage.setItem('freis_orders', JSON.stringify(stored));
+  return Promise.resolve({ ok: true, mode: 'stub' });
+}
+
+/* ----- Drafts ledger (in-drawer) ----- */
+async function loadDrafts() {
+  let orders = [];
+  if (TRADE_API_BASE) {
+    try {
+      const r = await fetch(ORDERS_JSON_URL + '?t=' + Date.now());
+      if (r.ok) {
+        const data = await r.json();
+        orders = data.orders || [];
+      }
+    } catch (_) { /* offline OK */ }
+  } else {
+    orders = JSON.parse(localStorage.getItem('freis_orders') || '[]');
+  }
+  renderDrafts(orders.filter(o => o.status === 'draft'));
+}
+
+function renderDrafts(drafts) {
+  const list = document.getElementById('trade-drafts-list');
+  document.getElementById('trade-drafts-count').textContent = drafts.length;
+  if (drafts.length === 0) {
+    list.innerHTML = '<li><span class="trade-drafts-empty">No drafts yet.</span></li>';
+    return;
+  }
+  list.innerHTML = drafts.map(o => {
+    const crop = CROP_LABEL[o.crop] || o.crop;
+    const bu   = fmtBu(o.bushels);
+    const px   = o.type === 'market' ? "today's bid" : '$' + Number(o.limit_price).toFixed(2);
+    const exp  = o.expiry ? ` · exp ${o.expiry}` : '';
+    return `<li>
+      <div>
+        <div class="draft-line">${crop} · <strong>${bu}</strong> @ ${px}</div>
+        <div class="draft-meta">${o.type === 'market' ? 'Market' : 'Limit'}${exp}</div>
+      </div>
+      <div class="draft-status">Draft</div>
+    </li>`;
+  }).join('');
+}
+
+/* ----- Drawer open/close ----- */
 function openTrade() {
+  if (TRANCHES.length === 0) TRANCHES = [defaultTranche()];
+  renderTranches();
+  loadDrafts();
   document.getElementById('trade-drawer').classList.add('open');
   document.getElementById('trade-scrim').classList.add('open');
   document.getElementById('trade-drawer').setAttribute('aria-hidden', 'false');
@@ -1966,10 +2607,43 @@ function closeTrade() {
   document.getElementById('trade-scrim').classList.remove('open');
   document.getElementById('trade-drawer').setAttribute('aria-hidden', 'true');
 }
+
+/* ----- Pre-fill from lot detail panel ----- */
+function prefillTrade(t) {
+  if (t.crop && t.crop !== tradeCrop) {
+    tradeCrop = t.crop;
+    document.querySelectorAll('#crop-toggle button').forEach(b =>
+      b.classList.toggle('active', b.dataset.crop === t.crop));
+    document.getElementById('trade-bid').textContent   = '$' + BIDS[tradeCrop].toFixed(2);
+    document.getElementById('trade-avail').textContent = fmtBu(AVAIL[tradeCrop]);
+  }
+  // Lots that ship a bid different from today's bid are watch-triggers — pre-fill as Limit.
+  // Otherwise default to a Market tranche for the suggested bushels.
+  const todayBid = BIDS[tradeCrop];
+  const isWatch  = t.bid && Math.abs(t.bid - todayBid) > 0.01;
+  TRANCHES = [{
+    bushels:     t.bu,
+    type:        isWatch ? 'limit' : 'market',
+    limit_price: isWatch ? round2(t.bid) : todayBid,
+    expiry:      defaultTranche().expiry,
+  }];
+  renderTranches();
+}
+
 document.getElementById('trade-trigger').addEventListener('click', openTrade);
 document.getElementById('trade-close').addEventListener('click', closeTrade);
 document.getElementById('trade-scrim').addEventListener('click', closeTrade);
-document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeTrade(); });
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' &&
+      document.getElementById('trade-drawer').classList.contains('open')) {
+    closeTrade();
+  }
+});
+
+/* ----- Initial render ----- */
+TRANCHES = [defaultTranche()];
+renderTranches();
+loadDrafts();
 </script>
 
 </body>
