@@ -45,6 +45,17 @@ from typing import Any
 
 import httpx
 
+# usda_alerts.py lives alongside evaluate.py in farm-proxy/. Import is
+# tolerant — if the module fails to import for any reason we skip the
+# pair-alert emission and fall back to the legacy generic USDA alert.
+try:
+    from usda_alerts import usda_pair_news_for_today
+except Exception as _e:  # pragma: no cover
+    usda_pair_news_for_today = None
+    _USDA_PAIR_IMPORT_ERR = _e
+else:
+    _USDA_PAIR_IMPORT_ERR = None
+
 
 # ---------------------------------------------------------------------------
 # Paths
@@ -639,12 +650,18 @@ def _direction_hint(item: dict[str, Any]) -> str:
 
 
 def _news_alert_message(item: dict[str, Any]) -> str:
-    """Build the SMS body for one news item in plain English, aimed at
-    a non-trader audience. Impact tier decides the intro ("big news" vs
-    "heads up"); _layman_headline scrubs jargon like tranche / front-month
-    / WASDE from the title; _direction_hint adds a short second sentence
-    so the recipient knows which way prices are moving and what it means
-    for selling. Full context over segment cost — 2 SMS segments is fine."""
+    """Build the SMS body for one news item.
+
+    If the item carries `format: "usda-pair"` and a prebuilt `body`, we
+    send that verbatim — usda_alerts.py already produced the structured
+    [GRAIN] block with surprise + predicted move band.
+
+    Otherwise this is a legacy item: build a plain-English message with
+    impact-tier intro + jargon-scrubbed headline + direction hint. Full
+    context over segment cost — 2 SMS segments is fine."""
+    if item.get("format") == "usda-pair" and item.get("body"):
+        return item["body"]
+
     impact = (item.get("impact") or "").upper()
     date   = item.get("date") or ""
 
@@ -1513,6 +1530,23 @@ def main() -> int:
     news_events = []
     news_events.extend(usda_news_for_today())
     news_events.extend(policy_calendar_news_for_today())
+    # USDA report-day pair alerts (preview D-1, release D). Generates
+    # structured [GRAIN] messages with surprise vs trade-estimate +
+    # predicted move band. Driven by usda_reports[] in plan.json.
+    # Falls back to legacy generic USDA alert if the module didn't import
+    # or no pair-eligible report has data populated for today.
+    if usda_pair_news_for_today is not None:
+        try:
+            pair_items = usda_pair_news_for_today()
+            news_events.extend(pair_items)
+            if pair_items:
+                log.info("news.json: %d USDA pair alert(s) emitted",
+                         len(pair_items))
+        except Exception as e:
+            log.warning("usda pair alerts: failed, skipping: %s", e)
+    elif _USDA_PAIR_IMPORT_ERR is not None:
+        log.warning("usda_alerts module not available: %s",
+                    _USDA_PAIR_IMPORT_ERR)
     try:
         news_events.extend(rss_news_today())
     except Exception as e:

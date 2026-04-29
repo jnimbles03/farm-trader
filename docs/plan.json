@@ -101,6 +101,49 @@
     "m":     ["export", "import", "crop progress", "harvest", "yield", "weather", "forecast", "brazil", "argentina", "china buy", "russia", "ukraine", "drought", "rain"]
   },
 
+  "_usda_reports_doc": "USDA report-day alert pair (preview D-1, release T+5 min). Driven by usda_alerts.py. Each entry holds release time, the fields the report prints, the consensus trade estimates (manually populated 1-3 days before release from Reuters/Pro Farmer poll), and actuals (populated within minutes of release). Magnitude band is computed by usda_alerts.predict_move; CFTC z-scores widen the band when funds are crowded. Report-id should be unique and stable.",
+  "usda_reports": [
+    {
+      "report_id": "wasde-2026-01-historical",
+      "label":     "Jan 2026 WASDE (backtest)",
+      "release":   "2026-01-12T11:00-06:00",
+      "fields": [
+        { "key": "us_corn_yield_bu_ac",       "label": "US corn yield (bu/ac)",     "asset": "corn", "kind": "yield"          },
+        { "key": "us_corn_production_bb",     "label": "US corn production (BB)",   "asset": "corn", "kind": "production"     },
+        { "key": "us_corn_ending_stocks_mb",  "label": "US corn ending stocks (mb)","asset": "corn", "kind": "ending_stocks"  },
+        { "key": "us_soy_ending_stocks_mb",   "label": "US soy ending stocks (mb)", "asset": "soy",  "kind": "ending_stocks"  }
+      ],
+      "trade_estimates": {
+        "us_corn_yield_bu_ac":       183.5,
+        "us_corn_production_bb":      16.544,
+        "us_corn_ending_stocks_mb":  1860,
+        "us_soy_ending_stocks_mb":    470
+      },
+      "actuals": {
+        "us_corn_yield_bu_ac":       186.5,
+        "us_corn_production_bb":      17.021,
+        "us_corn_ending_stocks_mb":  2200,
+        "us_soy_ending_stocks_mb":    480
+      },
+      "cftc": { "corn_net_spec_z": 0.2, "soy_net_spec_z": 0.3 }
+    },
+    {
+      "report_id": "wasde-2026-05",
+      "label":     "May WASDE",
+      "release":   "2026-05-12T11:00-05:00",
+      "fields": [
+        { "key": "us_corn_ending_stocks_mb_2526", "label": "25/26 corn ending stocks (mb)", "asset": "corn", "kind": "ending_stocks" },
+        { "key": "us_corn_ending_stocks_mb_2627", "label": "26/27 corn ending stocks (mb)", "asset": "corn", "kind": "ending_stocks" },
+        { "key": "us_soy_ending_stocks_mb_2526",  "label": "25/26 soy ending stocks (mb)",  "asset": "soy",  "kind": "ending_stocks" },
+        { "key": "us_soy_ending_stocks_mb_2627",  "label": "26/27 soy ending stocks (mb)",  "asset": "soy",  "kind": "ending_stocks" }
+      ],
+      "trade_estimates": {},
+      "actuals": {},
+      "cftc": { "corn_net_spec_z": 0.0, "soy_net_spec_z": 0.0 },
+      "_note": "Populate trade_estimates 1-3 days before release from Reuters/Pro Farmer poll. Populate actuals within 5 min of 11am CT release. cftc z-scores from latest CoT report (Friday 3:30pm CT)."
+    }
+  ],
+
   "big_move_pct": 3.0,
   "news_retention_days": 30
 }
