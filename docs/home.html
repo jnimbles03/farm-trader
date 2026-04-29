@@ -117,7 +117,36 @@
     line-height: 1.1;
   }
   .hero-call .cell .v em { font-style: italic; color: var(--sage-deep); }
+  .hero-call .cell .v .pos { color: var(--sage-deep); font-style: normal; }
+  .hero-call .cell .v .neg { color: var(--ink); font-style: normal; }
   .hero-call .cell .sub { font-size: 12.5px; color: var(--slate); margin-top: 4px; line-height: 1.4; }
+
+  /* Pace gloss — one-line italic decoder for the term "pace",
+     placed under the deck so the word's first appearance is also its definition. */
+  .pace-gloss {
+    font-family: "Fraunces", Georgia, serif;
+    font-style: italic; font-size: 13.5px; line-height: 1.5;
+    color: var(--dust); margin: -28px 0 36px; max-width: 560px;
+    border-left: 0.5px solid var(--border); padding-left: 12px;
+  }
+  .pace-gloss strong { font-weight: 500; color: var(--slate); font-style: normal; }
+
+  /* Hero CTA — quiet sage-outline pill that hangs off the verdict and opens
+     the trade drawer pre-filled. Closes the gap from recommendation → action. */
+  .hero-cta {
+    display: inline-flex; align-items: center; gap: 10px;
+    margin: 4px 0 24px;
+    padding: 11px 18px;
+    border: 0.5px solid var(--sage-deep);
+    background: transparent; color: var(--sage-deep);
+    font-family: "DM Sans", sans-serif;
+    font-size: 13px; font-weight: 500;
+    letter-spacing: 0.04em; text-transform: none;
+    cursor: pointer; border-radius: 0;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  .hero-cta:hover { background: var(--sage-deep); color: var(--paper); }
+  .hero-cta .arr { font-family: "Fraunces", Georgia, serif; font-style: italic; }
 
   .hero { margin: 0 -8px 30px; }
   .hero svg { width: 100%; height: auto; display: block; }
@@ -1645,8 +1674,8 @@
 <!-- ================== STATUS STRIP (mobile-first headline) ================== -->
 <aside class="status-strip" data-tone="calm" aria-live="polite">
   <span class="pulse" aria-hidden="true"></span>
-  <span class="label">Today</span>
-  <span class="msg">Corn $4.42 (+3¢) · Soy $10.78 (+1¢) · <em>no trade signal</em> — board's quiet.</span>
+  <span class="label">Plan</span>
+  <span class="msg"><em>Sell ~1,000 bu soy by June 1</em> · hold corn · Corn $4.42 (+3¢) · Soy $10.78 (+1¢) · no live signal today.</span>
   <span class="stamp">Apr 28</span>
 </aside>
 
@@ -1668,31 +1697,41 @@
        ag wire, etc.) for production. Each row tagged CORN / SOY / MACRO. -->
   <div class="cover-top">
     <div class="cover-headline">
-      <p class="eyebrow">Grain · April 28, 2026</p>
-      <h1>Today's call</h1>
-      <p class="deck">Soy <em>+5pp</em> ahead of pace · corn on pace · $20,500 in May–June obligations.</p>
+      <p class="eyebrow">For Mom · Grain marketing · April 28, 2026</p>
+      <h1>Hold corn. Sell <em>~1,000 bu soy</em> by June 1.</h1>
+      <p class="deck">Soy is <em>+5pp ahead</em> of seasonal pace and slowly losing value as it sits — turn ~1,000 bu into cash before the June bills land. Corn is on pace and worth holding through summer.</p>
 
-      <!-- Three-cell hero call lives here so it stacks under the deck on
-           the LEFT side of the cover-top. Together with the H1 stack the
-           left column gets tall enough to balance the blotter on the
-           right (which auto-matches via top:0; bottom:0 absolute pos). -->
+      <p class="pace-gloss">
+        <strong>Pace</strong> = the share of the crop a typical Illinois seller has moved by today's date.
+        We're 5 percentage points <em>ahead</em> on soy (sold more than the seasonal target) and right on it for corn.
+      </p>
+
+      <!-- Three-cell hero call: evidence for the verdict above.
+           Each cell is signed (+ stored, − owed) so a naive reader doesn't
+           have to track which side of the ledger a number lives on. The third
+           cell ("If we sit") is the synthesis — what the first two imply. -->
       <div class="hero-call">
         <div class="cell">
-          <div class="k">Inventory value</div>
-          <div class="v">$63,719 <em>at bid</em></div>
+          <div class="k">In storage</div>
+          <div class="v"><span class="pos">+$63,719</span> <em>at bid</em></div>
           <div class="sub">9,115 bu corn @ $4.47 · 1,967 bu soy @ $11.68 · Ritchie Grain</div>
         </div>
         <div class="cell">
-          <div class="k">May–June bills</div>
-          <div class="v">$20,500</div>
+          <div class="k">Bills due May–June</div>
+          <div class="v"><span class="neg">−$20,500</span></div>
           <div class="sub">Real-estate tax · LDI fertilizer $10,500 · Ritchie input bill ~$10,000</div>
         </div>
         <div class="cell">
-          <div class="k">Pace position</div>
-          <div class="v">Corn <em>at pace</em> · Soy +5pp</div>
-          <div class="sub">Net dollar value of holding through June: corn ≈ nothing, soy ≈ −$420.</div>
+          <div class="k">If we just sit</div>
+          <div class="v">Corn <em>≈ flat</em> · Soy <em>−$420</em></div>
+          <div class="sub">Net dollar value of holding through June. Soy bleeds, corn carries — that's why the call is sell soy, hold corn.</div>
         </div>
       </div>
+
+      <button type="button" class="hero-cta" id="hero-cta-soy"
+              aria-label="Open trade builder pre-filled to sell ~1,000 bushels of soybeans">
+        Build that soy order <span class="arr">→</span>
+      </button>
     </div>
 
     <aside class="blotter" aria-label="Market wire — headlines and what they mean for our bushels">
@@ -1914,7 +1953,7 @@
 <section class="ledger">
   <div class="ledger-wrap">
 
-    <h2 class="ledger-h">Open positions</h2>
+    <h2 class="ledger-h">Open lots</h2>
     <p class="ledger-sub">Tap any position for the chart and detail.</p>
 
     <!-- The strip: 4 single-row summaries, each clickable -->
@@ -2039,7 +2078,7 @@
     </div>
 
     <!-- ────────── Closed book ────────── -->
-    <h2 class="ledger-h ledger-h-2">Closed contracts</h2>
+    <h2 class="ledger-h ledger-h-2">Closed lots</h2>
     <p class="ledger-sub">Twelve sales last season, plotted against the typical year's price pattern (so we can see if we sold above or below the usual rhythm).</p>
 
     <div class="closed-strip">
@@ -2862,6 +2901,15 @@ function prefillTrade(t) {
 document.getElementById('trade-trigger').addEventListener('click', openTrade);
 document.getElementById('trade-close').addEventListener('click', closeTrade);
 document.getElementById('trade-scrim').addEventListener('click', closeTrade);
+
+// Hero CTA: open the drawer pre-filled to sell ~1,000 bu soy at today's bid.
+const heroCtaSoy = document.getElementById('hero-cta-soy');
+if (heroCtaSoy) {
+  heroCtaSoy.addEventListener('click', () => {
+    prefillTrade({ crop: 'soy', bu: 1000 });
+    openTrade();
+  });
+}
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' &&
       document.getElementById('trade-drawer').classList.contains('open')) {
