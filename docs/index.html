@@ -1463,6 +1463,28 @@
       <p class="eyebrow">Grain · April 28, 2026</p>
       <h1>Today's call</h1>
       <p class="deck">Soy <em>+5pp</em> ahead of pace · corn on pace · $20,500 in May–June obligations.</p>
+
+      <!-- Three-cell hero call lives here so it stacks under the deck on
+           the LEFT side of the cover-top. Together with the H1 stack the
+           left column gets tall enough to balance the blotter on the
+           right (which auto-matches via top:0; bottom:0 absolute pos). -->
+      <div class="hero-call">
+        <div class="cell">
+          <div class="k">Inventory value</div>
+          <div class="v">$63,719 <em>at bid</em></div>
+          <div class="sub">9,115 bu corn @ $4.47 · 1,967 bu soy @ $11.68 · Ritchie Grain</div>
+        </div>
+        <div class="cell">
+          <div class="k">May–June bills</div>
+          <div class="v">$20,500</div>
+          <div class="sub">Real-estate tax · LDI fertilizer $10,500 · Ritchie input bill ~$10,000</div>
+        </div>
+        <div class="cell">
+          <div class="k">Pace position</div>
+          <div class="v">Corn <em>at pace</em> · Soy +5pp</div>
+          <div class="sub">Net dollar value of holding through June: corn ≈ nothing, soy ≈ −$420.</div>
+        </div>
+      </div>
     </div>
 
     <aside class="blotter" aria-label="Market wire — headlines material to corn or soybean prices">
@@ -1503,25 +1525,6 @@
         </li>
       </ul>
     </aside>
-  </div>
-
-  <!-- Three-cell hero call: cleanly states the headline math -->
-  <div class="hero-call">
-    <div class="cell">
-      <div class="k">Inventory value</div>
-      <div class="v">$63,719 <em>at bid</em></div>
-      <div class="sub">9,115 bu corn @ $4.47 · 1,967 bu soy @ $11.68 · Ritchie Grain</div>
-    </div>
-    <div class="cell">
-      <div class="k">May–June bills</div>
-      <div class="v">$20,500</div>
-      <div class="sub">Real-estate tax · LDI fertilizer $10,500 · Ritchie input bill ~$10,000</div>
-    </div>
-    <div class="cell">
-      <div class="k">Pace position</div>
-      <div class="v">Corn <em>at pace</em> · Soy +5pp</div>
-      <div class="sub">Net dollar value of holding through June: corn ≈ nothing, soy ≈ −$420.</div>
-    </div>
   </div>
 
   <!-- Hero chart: seasonal pace overlay. Editorial register: Fraunces
@@ -2205,7 +2208,7 @@ renderLot('soy');
 const TRADE_API_BASE  = "";                      // e.g. "https://freis-farm.workers.dev"
 const TRADE_PHONE     = "+16302479950";          // whitelist target
 const TRADE_PHONE_FMT = "+1 (630) 247-9950";
-const ORDERS_JSON_URL = "docs/orders.json";      // resolved relative to the page
+const ORDERS_JSON_URL = "orders.json";           // sibling of home.html under docs/
 
 const BIDS  = { soy: 11.68, corn: 4.47 };
 const AVAIL = { soy: 1967,  corn: 9115 };
