@@ -62,8 +62,11 @@
   }
   .nav .brand {
     font-family: "Fraunces", Georgia, serif;
-    font-weight: 500; font-size: 17px; letter-spacing: -0.012em;
-    color: var(--ink);
+    font-weight: 500; font-size: 40px; letter-spacing: -0.018em;
+    color: var(--ink); line-height: 1;
+  }
+  @media (min-width: 720px) {
+    .nav .brand { font-size: 56px; }
   }
   .nav .brand .out { color: var(--sage-deep); font-style: italic; font-weight: 400; }
   .nav-links {
