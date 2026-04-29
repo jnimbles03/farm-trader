@@ -1091,6 +1091,44 @@
   .nav .brand, .wordmark { font-weight: 500; }
   .binary-word { font-weight: 500; font-style: normal; }
 
+  /* === LOTS GRID OVERRIDE ============
+     4 lots as a 2x2 compact card grid on desktop, 1-col on mobile. */
+  .lots-strip {
+    display: grid; grid-template-columns: 1fr; gap: 8px;
+    border-top: none; border-bottom: none; margin-bottom: 18px;
+  }
+  @media (min-width: 720px) {
+    .lots-strip { grid-template-columns: 1fr 1fr; gap: 14px; }
+  }
+  .lot-row {
+    display: grid !important;
+    grid-template-columns: 60px 1fr auto !important;
+    grid-template-rows: auto auto !important;
+    gap: 4px 14px !important;
+    padding: 14px 16px !important;
+    background: var(--cream) !important;
+    border: 0.5px solid var(--border) !important;
+    cursor: pointer; text-align: left; font: inherit; color: var(--ink);
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+  .lot-row:hover { background: var(--paper) !important; }
+  .lot-row.active {
+    background: var(--paper) !important;
+    border-color: var(--sage-deep) !important;
+    box-shadow: 0 0 0 1px var(--sage-deep) inset;
+  }
+  .lot-row-pill {
+    grid-column: 1; grid-row: 1 / span 2;
+    align-self: center;
+    min-width: 0 !important; width: 100%;
+    padding: 6px 4px !important;
+  }
+  .lot-row-name { grid-column: 2; grid-row: 1; }
+  .lot-row-val  { grid-column: 3; grid-row: 1; text-align: right; }
+  .lot-row-bu   { grid-column: 2; grid-row: 2; }
+  .lot-row-pace { grid-column: 3; grid-row: 2; text-align: right; }
+  .lot-row-arrow { display: none !important; }
+
   /* Mobile sizing dial-back */
   @media (max-width: 560px) {
     h1 { font-size: 26px; }
@@ -1128,31 +1166,26 @@
     </div>
   </div>
 
-  <p class="eyebrow">Grain Marketing · Internal Brief · April 28, 2026</p>
+  <p class="eyebrow">Grain · April 28, 2026</p>
 
-  <h1>Today, we <em>sell</em>.</h1>
+  <h1>Today's call</h1>
 
-  <p class="deck">
-    Soybeans have run ahead of seasonal pace; corn sits at pace. Selling
-    the soy alone covers roughly twenty thousand dollars in May–June
-    obligations and locks a price already trading at the summer-peak
-    level.
-  </p>
+  <p class="deck">Soy <em>+5pp</em> ahead of pace · corn on pace · $20,500 in May–June obligations.</p>
 
   <!-- Three-cell hero call: cleanly states the headline math -->
   <div class="hero-call">
     <div class="cell">
-      <div class="k">Today's Position</div>
+      <div class="k">Inventory value</div>
       <div class="v">$63,719 <em>at bid</em></div>
       <div class="sub">9,115 bu corn @ $4.47 · 1,967 bu soy @ $11.68 · Ritchie Grain</div>
     </div>
     <div class="cell">
-      <div class="k">May–June Obligations</div>
+      <div class="k">May–June bills</div>
       <div class="v">$20,500</div>
       <div class="sub">Real-estate tax · LDI fertilizer $10,500 · Ritchie input bill ~$10,000</div>
     </div>
     <div class="cell">
-      <div class="k">Pace Position, Today</div>
+      <div class="k">Pace position</div>
       <div class="v">Corn <em>at pace</em> · Soy +5pp</div>
       <div class="sub">Net dollar value of holding through June: corn ≈ nothing, soy ≈ −$420.</div>
     </div>
@@ -1302,33 +1335,21 @@
     </svg>
   </figure>
 
-  <p class="lede">
-    The bias is to <em>sell when liquidity demands it and pace agrees</em>. Corn
-    sits at the seasonal curve — flat-footed, waiting on weather. Soy is five
-    points ahead of where it usually is in late April, already trading at the
-    summer-peak level we'd hope for in June. <strong>Selling the soy alone
-    covers the May–June bills with margin to spare</strong>, leaving the corn
-    free to ride the seasonal curve into the June 30 stocks-and-acreage
-    print. The details follow in closer form.
-  </p>
+
 
 </section>
 
 <!-- ================== ZONE BREAK ================== -->
 <div class="zone-break">
-  <span>Lots &amp; Ledger</span>
+  <span>Inventory</span>
 </div>
 
 <!-- ================== LEDGER (v2 — strip + drilldown) ================== -->
 <section class="ledger">
   <div class="ledger-wrap">
 
-    <h2 class="ledger-h">Four lots. <em>One moves now.</em></h2>
-    <p class="ledger-sub">
-      Tap a row to see the detail. Sage rows are actionable today;
-      black rows are holds; outlined rows are forwards waiting on a
-      price trigger.
-    </p>
+    <h2 class="ledger-h">Open positions</h2>
+    <p class="ledger-sub">Tap any position for the chart and detail.</p>
 
     <!-- The strip: 4 single-row summaries, each clickable -->
     <div class="lots-strip" id="lots-strip">
@@ -1372,10 +1393,8 @@
     </div>
 
     <!-- ────────── Cash plan ────────── -->
-    <h2 class="ledger-h ledger-h-2">The cash plan, <em>in three numbers</em>.</h2>
-    <p class="ledger-sub">
-      You have $25,000 today. Here's what May costs and what June puts back.
-    </p>
+    <h2 class="ledger-h ledger-h-2">Cash runway</h2>
+    <p class="ledger-sub">May 30 trough · June 1 recovery from the soy sale.</p>
 
     <!-- Three big numbers: today, trough, recovery -->
     <div class="cash-three">
@@ -1454,12 +1473,8 @@
     </div>
 
     <!-- ────────── Closed book ────────── -->
-    <h2 class="ledger-h ledger-h-2">The closed book. <em>Soy beat. Corn didn't.</em></h2>
-    <p class="ledger-sub">
-      Twelve sales over the last marketing year, plotted against the
-      typical seasonal pace. Each dot is one contract. The further above
-      the line, the better that sale beat what the curve predicted.
-    </p>
+    <h2 class="ledger-h ledger-h-2">Closed contracts</h2>
+    <p class="ledger-sub">Twelve sales · last marketing year · plotted against seasonal pace.</p>
 
     <div class="closed-strip">
 
@@ -1501,10 +1516,7 @@
           <circle cx="155" cy="14" r="4" fill="#7BAE7F" stroke="#FAF7F2" stroke-width="1.5"/>
           <text x="170" y="18" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="11" fill="#6A9D6E">today $11.68</text>
         </svg>
-        <div class="closed-takeaway">
-          On time, mostly. The discipline that delivered the soy result
-          is the discipline driving today's call.
-        </div>
+        <div class="closed-takeaway">On time. The win to repeat.</div>
       </article>
 
       <article class="closed-card">
@@ -1537,10 +1549,7 @@
           <circle cx="155" cy="36" r="4" fill="#7BAE7F" stroke="#FAF7F2" stroke-width="1.5"/>
           <text x="170" y="40" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="11" fill="#6A9D6E">today $4.47</text>
         </svg>
-        <div class="closed-takeaway">
-          Every contract sat below the seasonal pace. The lesson:
-          don't sell into the early curve unless cash demands it.
-        </div>
+        <div class="closed-takeaway">Every contract below pace. Don't sell early next year.</div>
       </article>
 
     </div>

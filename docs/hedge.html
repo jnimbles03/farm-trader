@@ -904,7 +904,7 @@
     </div>
   </div>
 
-  <p class="eyebrow">New-Crop Hedge · Internal Brief · April 28, 2026</p>
+  <p class="eyebrow">Hedge · April 28, 2026</p>
 
   <!-- BINARY YES/NO INDICATOR — single biggest signal on the page -->
   <div class="binary binary-yes">
@@ -913,12 +913,8 @@
       <div class="binary-disc"><div class="binary-word">Yes</div></div>
     </div>
     <div class="binary-side">
-      <h2 class="binary-verb">Keep the <em>floor</em>.</h2>
-      <p class="binary-reason">
-        Both crops are bid between strikes — the collar is silent today, and
-        the floor protects 35,000 bushels of new crop against a harvest-time
-        print near the October low. Nothing to do; nothing to undo.
-      </p>
+      <h2 class="binary-verb">Keep the hedge</h2>
+      <p class="binary-reason">Both crops between strikes. Collar is silent. Floor protects 35,000 bu of new crop. No action needed today.</p>
       <div class="binary-chips">
         <span class="binary-chip binary-chip-on">Both crops between strikes</span>
         <span class="binary-chip binary-chip-on">Zero cost to carry</span>
@@ -927,14 +923,9 @@
     </div>
   </div>
 
-  <h1>A floor worth <em>keeping</em>.</h1>
+  <h1>Active collars</h1>
 
-  <p class="deck">
-    A zero-cost collar on thirty thousand bushels of corn and five thousand
-    of soybeans floors the new-crop downside near last October's low and
-    caps the upside above the third-tranche price we'd already plan to
-    sell at.
-  </p>
+  <p class="deck">Zero-cost collar · floors near Oct low · caps above T3 trigger · 35,000 bu protected.</p>
 
   <div class="hero-call">
     <div class="cell">
@@ -1024,13 +1015,7 @@
     </svg>
   </figure>
 
-  <p class="lede">
-    The collar is small and intentional. We are paid for selling upside
-    we wouldn't have held anyway — corn above five dollars is past the
-    third-tranche trigger we already plan to sell into. With that
-    premium we buy a floor near the harvest low.
-    <em>The shape of the book changes; the expected outcome barely does.</em>
-  </p>
+
 
 </section>
 
@@ -1043,11 +1028,8 @@
 <section class="ledger">
   <div class="ledger-wrap">
 
-    <h2 class="ledger-h">Two collars. <em>Both silent today.</em></h2>
-    <p class="ledger-sub">
-      Tap a row to drag the price slider through every settlement
-      outcome and watch the dollar payoff update.
-    </p>
+    <h2 class="ledger-h">Two collars</h2>
+    <p class="ledger-sub">Tap a collar; drag the price slider through every settlement.</p>
 
     <div class="lots-strip" id="hedge-strip">
       <button class="lot-row active" data-collar="corn" type="button">
@@ -1107,11 +1089,8 @@
     </div>
 
     <!-- ── Where the strikes sit ── -->
-    <h2 class="ledger-h ledger-h-2">Where the strikes sit, <em>today</em>.</h2>
-    <p class="ledger-sub">
-      Sage is the put floor. Ink is the call cap. The dot is today's bid;
-      the slate dashed mark is the October-low reference.
-    </p>
+    <h2 class="ledger-h ledger-h-2">Strike positions</h2>
+    <p class="ledger-sub">Sage zone = floor pays. Ink zone = cap forgoes. Dot = today.</p>
 
     <div class="strike-cards">
 
@@ -1145,10 +1124,7 @@
             <text x="284" y="34" font-family="DM Sans, sans-serif" font-size="9" letter-spacing="0.12em" fill="#6A9D6E" text-anchor="middle">TODAY</text>
           </svg>
         </div>
-        <div class="strike-because">
-          $0.35 of upside before the cap kicks in; $0.35 of downside before
-          the floor kicks in. Roughly symmetric.
-        </div>
+<div class="strike-because">$0.35 of room either way. Roughly symmetric.</div>
       </article>
 
       <article class="strike-card">
@@ -1175,20 +1151,14 @@
             <text x="319" y="34" font-family="DM Sans, sans-serif" font-size="9" letter-spacing="0.12em" fill="#6A9D6E" text-anchor="middle">TODAY</text>
           </svg>
         </div>
-        <div class="strike-because">
-          $0.27 of upside before the cap kicks in. Closer to the cap than
-          the corn collar — the upside we've sold is more nearby.
-        </div>
+<div class="strike-because">$0.27 of upside before the cap. Closer than the corn collar.</div>
       </article>
 
     </div>
 
     <!-- ── When the floor pays ── -->
-    <h2 class="ledger-h ledger-h-2">When the floor <em>pays</em>.</h2>
-    <p class="ledger-sub">
-      Three settlement scenarios. The first is what we hope for; the
-      second is the base case; the third is the one the floor exists for.
-    </p>
+    <h2 class="ledger-h ledger-h-2">Settlement scenarios</h2>
+    <p class="ledger-sub">Bullish · base · bearish. Three corn outcomes at expiry.</p>
 
     <div class="scenarios">
 
@@ -1196,30 +1166,21 @@
         <div class="scenario-tag">Bullish · weather rally</div>
         <div class="scenario-headline">Corn settles at <em>$5.50</em></div>
         <div class="scenario-payoff neg">−$15,000</div>
-        <div class="scenario-because">
-          Cap is in force; we've sold $0.50/bu of upside on 30,000 bu. We
-          would have sold the cash position into this rally anyway.
-        </div>
+<div class="scenario-because">Cap in force; $0.50/bu of upside sold on 30,000 bu. Cash gets sold here anyway.</div>
       </article>
 
       <article class="scenario">
         <div class="scenario-tag">Base · between strikes</div>
         <div class="scenario-headline">Corn settles at <em>$4.65</em></div>
         <div class="scenario-payoff">$0</div>
-        <div class="scenario-because">
-          The collar is silent and cash tracks the market one for one.
-          Today's bid; nothing to celebrate, nothing to regret.
-        </div>
+<div class="scenario-because">Collar silent. Cash tracks market 1:1.</div>
       </article>
 
       <article class="scenario">
         <div class="scenario-tag">Bearish · harvest break</div>
         <div class="scenario-headline">Corn settles at <em>$3.50</em></div>
         <div class="scenario-payoff">+$24,000</div>
-        <div class="scenario-because">
-          Floor is in force; the put pays $0.80/bu on 30,000 bu. This is
-          the outcome the hedge exists for — a hard break at harvest.
-        </div>
+<div class="scenario-because">Floor in force. Put pays $0.80/bu on 30,000 bu. Why the hedge exists.</div>
       </article>
 
     </div>
