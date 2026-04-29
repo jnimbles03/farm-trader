@@ -1410,40 +1410,44 @@
       <circle cx="564" cy="140" r="9"  fill="#7BAE7F" opacity="0.22"/>
       <circle cx="564" cy="140" r="5"  fill="#7BAE7F" stroke="#FAF7F2" stroke-width="2"/>
 
-      <!-- Right-side annotations -->
-      <line class="connector" x1="564" y1="74" x2="700" y2="56"/>
-      <text class="anno anno-sage" x="705" y="60">Soy · already at June pace</text>
-      <text class="anno"           x="705" y="76" font-size="10.5">+5pp ahead of typical</text>
+      <!-- Stamped price chips — fold price + status into one block,
+           anchored to the dots' empty side (LEFT, since dots sit in the
+           right half of the chart). DM Sans 600 keeps the sober register.
+           Drawn LAST so they sit above everything. -->
 
-      <line class="connector" x1="564" y1="140" x2="700" y2="156"/>
-      <text class="anno"           x="705" y="160">Corn · on pace</text>
-      <text class="anno"           x="705" y="176" font-size="10.5" fill="#7A756D">+9% over Oct low</text>
-
-      <!-- Stamped price chips — drawn LAST so they sit above everything.
-           Placed to the LEFT of each today dot (in clear space — no
-           curve, axis, gridline, or legend overlap at x=540). -->
-      <text x="540" y="79"
+      <!-- Soy chip: price + status, two lines, anchored end at x=510 -->
+      <text x="510" y="68"
             text-anchor="end"
-            font-family="Fraunces, Georgia, serif"
-            font-style="italic" font-weight="500"
-            font-size="20" fill="#6A9D6E">$11.68</text>
-      <text x="540" y="145"
+            font-family="DM Sans, sans-serif"
+            font-weight="600" font-size="22" fill="#6A9D6E"
+            font-variant-numeric="tabular-nums">$11.68</text>
+      <text x="510" y="86"
             text-anchor="end"
-            font-family="Fraunces, Georgia, serif"
-            font-style="italic" font-weight="500"
-            font-size="15" fill="#3D3A36">$4.47</text>
+            font-family="DM Sans, sans-serif"
+            font-weight="500" font-size="11"
+            letter-spacing="0.12em" fill="#6A9D6E">+5PP AHEAD OF PACE</text>
 
-      <!-- May–June obligations annotation — bigger, sits inside the band
-           but above the soy curve there (soy curve is at y≈100 at x=641). -->
-      <text x="641" y="62"
-            text-anchor="middle"
-            font-family="Fraunces, Georgia, serif"
-            font-style="italic" font-weight="500"
-            font-size="15" fill="#6A9D6E">$20,500</text>
-      <text x="641" y="79"
+      <!-- Corn chip: just the price, placed in the empty gap between
+           corn curve (y≈136 at x=510) and soy curve (y≈175 at x=510).
+           "On pace" doesn't need a label — the dot sitting ON the
+           corn curve says it. Drop the subtitle to gain clearance. -->
+      <text x="510" y="160"
+            text-anchor="end"
+            font-family="DM Sans, sans-serif"
+            font-weight="600" font-size="16" fill="#3D3A36"
+            font-variant-numeric="tabular-nums">$4.47</text>
+
+      <!-- May–June obligations label — moved DOWN to the band's empty
+           middle, well below the curves (curves cross the band at y≈100). -->
+      <text x="641" y="206"
             text-anchor="middle"
             font-family="DM Sans, sans-serif"
-            font-size="9.5" letter-spacing="0.14em" fill="#6A9D6E">MAY → JUNE</text>
+            font-weight="600" font-size="18" fill="#6A9D6E"
+            font-variant-numeric="tabular-nums">$20,500</text>
+      <text x="641" y="224"
+            text-anchor="middle"
+            font-family="DM Sans, sans-serif"
+            font-weight="500" font-size="10" letter-spacing="0.14em" fill="#6A9D6E">MAY → JUNE</text>
 
       <!-- Series legend -->
       <g>
