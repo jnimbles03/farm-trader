@@ -46,18 +46,39 @@
   .cover { max-width: 960px; margin: 0 auto; padding: 56px 32px 32px; }
   @media (min-width: 720px) { .cover { padding: 72px 48px 48px; } }
   .nav {
-    display: flex; justify-content: space-between; align-items: baseline;
+    display: flex; justify-content: space-between; align-items: flex-end;
     margin: 0 0 36px; gap: 18px;
-    border-bottom: 0.5px solid var(--border); padding-bottom: 14px;
+    border-bottom: 0.5px solid var(--border); padding-bottom: 16px;
   }
+  /* Brand lockup — section-grid mark + Fraunces wordmark + small-caps tag.
+     Mirrored from home.html so identity holds across tabs. */
   .nav .brand {
-    font-family: "Fraunces", Georgia, serif;
-    font-weight: 500; font-size: 17px; letter-spacing: -0.012em; color: var(--ink);
+    display: inline-flex; align-items: center; gap: 14px;
+    color: var(--ink); text-decoration: none; line-height: 1;
   }
+  .brand-mark { flex: 0 0 48px; width: 48px; height: 48px; color: var(--ink); }
+  .brand-words { display: inline-flex; flex-direction: column; align-items: flex-start; gap: 6px; line-height: 1; }
+  .brand-name {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 500; font-size: 30px; letter-spacing: -0.018em;
+    color: var(--ink); line-height: 0.92;
+  }
+  @media (min-width: 720px) { .brand-name { font-size: 42px; } }
+  .brand-and { color: var(--sage-deep); font-style: italic; font-weight: 400; }
+  .brand-tag {
+    font-family: "DM Sans", sans-serif;
+    font-weight: 500; font-size: 9.5px;
+    letter-spacing: 0.26em; text-transform: uppercase;
+    color: var(--sage-deep);
+    border-top: 0.5px solid var(--rule);
+    padding-top: 5px; width: 100%;
+  }
+  @media (min-width: 720px) { .brand-tag { font-size: 10.5px; padding-top: 6px; } }
   .nav .brand .out { color: var(--sage-deep); font-style: italic; font-weight: 400; }
   .nav-links {
     display: flex; gap: 22px; font-size: 11px;
     letter-spacing: 0.14em; text-transform: uppercase; color: var(--slate);
+    padding-bottom: 4px;
   }
   .nav-links a { border: 0; color: var(--slate); }
   .nav-links a.here { color: var(--ink); border-bottom: 0.5px solid var(--ink); padding-bottom: 2px; }
@@ -420,7 +441,11 @@
   @media (min-width: 720px) { .foot { padding: 0 48px 48px; } }
 
   /* ---- Nav: tap-target hygiene + safe wrap ---- */
-  .nav { gap: 12px; flex-wrap: wrap; }
+  .nav { gap: 12px; flex-wrap: wrap; padding-bottom: 14px; }
+  .nav .brand { gap: 10px; }
+  .brand-mark { flex-basis: 38px; width: 38px; height: 38px; }
+  .brand-words { gap: 4px; }
+  .brand-tag { padding-top: 4px; letter-spacing: 0.20em; }
   .nav-links { gap: 16px; flex-wrap: wrap; row-gap: 6px; }
   .nav-links a {
     display: inline-flex; align-items: center;
@@ -561,6 +586,163 @@
     .sm .sm-v { font-size: 20px; }
     .sm .sm-k { font-size: 9.5px; }
   }
+
+  /* ============================================================
+     LIFETIME / TRENDS / NEW-SECTION CONTENT
+     Used by Lifetime, Cattle, Hay, Storage folds.
+     ============================================================ */
+  .lifetime-headline {
+    display: grid; grid-template-columns: 1fr; gap: 16px;
+    border-top: 0.5px solid var(--border);
+    border-bottom: 0.5px solid var(--border);
+    padding: 18px 0;
+    margin: 4px 0 18px;
+  }
+  @media (min-width: 720px) {
+    .lifetime-headline { grid-template-columns: 1fr 1fr; gap: 32px; padding: 22px 0; }
+  }
+  .lh-cell .lh-k {
+    font-family: "DM Sans", sans-serif;
+    font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--slate); margin: 0 0 4px;
+  }
+  .lh-cell .lh-v {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 32px; font-weight: 400; letter-spacing: -0.01em;
+    color: var(--ink); font-variant-numeric: tabular-nums oldstyle-nums;
+    line-height: 1.1;
+  }
+  .lh-cell .lh-v em { color: var(--sage-deep); font-style: italic; }
+  .lh-cell .lh-d {
+    font-family: "Iowan Old Style", "Charter", Georgia, serif;
+    font-style: italic; font-size: 12px; line-height: 1.45;
+    color: var(--slate); margin-top: 4px;
+  }
+
+  .trends {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 18px 22px;
+    margin: 8px 0 4px;
+  }
+  @media (min-width: 720px) { .trends { grid-template-columns: repeat(4, 1fr); gap: 22px 28px; } }
+  .trend {
+    border-top: 0.5px solid var(--rule); padding: 10px 0 0;
+  }
+  .trend-k {
+    font-family: "DM Sans", sans-serif;
+    font-size: 10px; font-weight: 500;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--slate); margin: 0 0 4px;
+  }
+  .trend-v {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 22px; font-weight: 400; letter-spacing: -0.005em;
+    color: var(--ink); font-variant-numeric: tabular-nums oldstyle-nums;
+    line-height: 1.1;
+  }
+  .trend-v .est {
+    font-style: italic; color: var(--slate);
+    font-size: 12px; margin-left: 4px;
+  }
+  .trend-d {
+    font-size: 11px; color: var(--slate); margin-top: 4px;
+    font-family: "Iowan Old Style", Georgia, serif;
+    font-style: italic;
+  }
+  .trend-spark { width: 100%; height: auto; margin-top: 8px; display: block; }
+  .trend-spark .spark-line { stroke: var(--ink); stroke-width: 1.5; fill: none; stroke-linejoin: round; }
+  .trend-spark .spark-soy  { stroke: var(--sage-deep); }
+  .trend-spark .spark-dot  { fill: var(--ink); }
+  .trend-spark .spark-dot.now { fill: var(--sage-deep); }
+  .trend-spark .spark-tick {
+    font-family: "DM Sans", sans-serif; font-size: 9px; fill: var(--dust);
+    letter-spacing: 0.12em; text-transform: uppercase;
+  }
+
+  /* Stat strips used in cattle/hay/storage folds */
+  .stat-strip {
+    display: grid; grid-template-columns: 1fr; gap: 12px;
+    margin: 4px 0 14px;
+    padding: 14px 0;
+    border-top: 0.5px solid var(--border);
+    border-bottom: 0.5px solid var(--border);
+  }
+  @media (min-width: 720px) {
+    .stat-strip { grid-template-columns: repeat(3, 1fr); gap: 28px; padding: 18px 0; }
+  }
+  .stat-strip .ss-k {
+    font-family: "DM Sans", sans-serif;
+    font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--slate); margin: 0 0 4px;
+  }
+  .stat-strip .ss-v {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 26px; font-weight: 400; letter-spacing: -0.005em;
+    color: var(--ink); font-variant-numeric: tabular-nums oldstyle-nums;
+    line-height: 1.1;
+  }
+  .stat-strip .ss-v em { color: var(--sage-deep); font-style: italic; }
+  .stat-strip .ss-d {
+    font-family: "Iowan Old Style", Georgia, serif;
+    font-style: italic; font-size: 12px;
+    color: var(--slate); margin-top: 4px;
+  }
+
+  /* Storage list */
+  .storage-list {
+    display: grid; grid-template-columns: 1fr; gap: 0;
+    border-top: 0.5px solid var(--rule);
+  }
+  .storage-list .sl-row {
+    display: grid; grid-template-columns: 1.2fr 1fr 1.4fr;
+    gap: 14px; padding: 12px 0;
+    border-bottom: 0.5px solid var(--rule);
+    align-items: baseline;
+  }
+  .storage-list .sl-row .sl-name { font-style: italic; color: var(--ink); }
+  .storage-list .sl-row .sl-qty {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 18px; font-variant-numeric: tabular-nums oldstyle-nums;
+    text-align: right; color: var(--ink);
+  }
+  .storage-list .sl-row .sl-note { font-size: 11.5px; color: var(--slate); }
+
+  @media (max-width: 560px) {
+    .storage-list .sl-row {
+      grid-template-columns: 1fr auto;
+      column-gap: 12px; row-gap: 4px;
+    }
+    .storage-list .sl-row .sl-name { grid-column: 1 / 2; grid-row: 1; }
+    .storage-list .sl-row .sl-qty  { grid-column: 2 / 3; grid-row: 1; }
+    .storage-list .sl-row .sl-note { grid-column: 1 / -1; grid-row: 2; font-size: 12px; }
+  }
+
+  /* Backlog list — repurposing vendors styling */
+  .backlog-list { margin-top: 4px; }
+  .backlog-list .bl-row {
+    display: grid; grid-template-columns: auto 1fr auto;
+    gap: 12px 18px; padding: 12px 0;
+    border-bottom: 0.5px solid var(--rule);
+    align-items: baseline;
+  }
+  .backlog-list .bl-type {
+    font-family: "DM Sans", sans-serif; font-size: 10px;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--slate); padding: 3px 8px;
+    border: 0.5px solid var(--rule); border-radius: 999px;
+    align-self: start;
+  }
+  .backlog-list .bl-item { color: var(--ink); }
+  .backlog-list .bl-item em {
+    font-family: "Iowan Old Style", Georgia, serif;
+    font-style: italic; color: var(--slate); font-size: 12px;
+    display: block; margin-top: 2px;
+  }
+  .backlog-list .bl-status {
+    font-family: "DM Sans", sans-serif; font-size: 10px;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--slate);
+  }
+  .backlog-list .bl-status.recurring { color: var(--sage-deep); }
 
   /* ============================================================
      COLLAPSIBLE LEDGERS — quick-glance scaffold over the inside body.
@@ -756,9 +938,127 @@
     .fold[open] > .fold-body { animation: none; }
   }
 
+
+  /* ============================================================
+     AUTH GATE — Garage Code
+     Static client-side gate. sessionStorage-backed; clears on tab close.
+     Code = "8467" (per Garage Code tip). Replace match in <script>.
+     ============================================================ */
+  .auth-gate {
+    position: fixed; inset: 0; z-index: 9999;
+    background: var(--cream);
+    display: flex; align-items: center; justify-content: center;
+    padding: 32px;
+    transition: opacity 0.32s ease;
+  }
+  .auth-gate.out { opacity: 0; pointer-events: none; }
+  .auth-card {
+    max-width: 380px; width: 100%;
+    text-align: center;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .auth-eyebrow {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 500; font-size: 18px;
+    letter-spacing: -0.01em; color: var(--ink);
+  }
+  .auth-eyebrow em {
+    color: var(--sage-deep); font-style: italic; font-weight: 400;
+  }
+  .auth-title {
+    font-family: "DM Sans", -apple-system, sans-serif;
+    font-weight: 600; font-size: 26px;
+    letter-spacing: -0.01em; color: var(--ink);
+    margin: 8px 0 0;
+  }
+  .auth-tip {
+    font-family: "Fraunces", Georgia, serif;
+    font-style: italic; font-size: 15px;
+    color: var(--slate); margin: 0 0 4px;
+  }
+  .auth-input {
+    display: block; margin: 0 auto;
+    width: 100%; max-width: 240px;
+    padding: 14px 18px;
+    border: 0.5px solid var(--rule); border-radius: 8px;
+    background: var(--paper);
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 36px; font-weight: 500;
+    text-align: center; letter-spacing: 0.34em;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none; appearance: none;
+  }
+  .auth-input:focus {
+    outline: 0;
+    border-color: var(--sage-deep);
+    box-shadow: 0 0 0 3px rgba(123,174,127,0.18);
+  }
+  .auth-error {
+    min-height: 18px;
+    font-family: "DM Sans", sans-serif;
+    font-size: 12px; color: #B35742;
+    letter-spacing: 0.04em;
+  }
+  @keyframes auth-shake {
+    0%,100% { transform: translateX(0); }
+    20%,60% { transform: translateX(-6px); }
+    40%,80% { transform: translateX(6px); }
+  }
+  .auth-gate.shake .auth-card { animation: auth-shake 0.34s ease both; }
+  body.auth-locked { overflow: hidden; }
+
 </style>
 </head>
 <body>
+
+<!-- ================== AUTH GATE (Garage Code) ================== -->
+<div class="auth-gate" id="auth-gate" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+  <div class="auth-card">
+    <span class="auth-eyebrow">freis <em>·</em> farm</span>
+    <h2 class="auth-title" id="auth-title">Garage code</h2>
+    <p class="auth-tip">Same four digits as the door.</p>
+    <input class="auth-input" id="auth-input" type="text" inputmode="numeric"
+           pattern="\d*" maxlength="4" autocomplete="off"
+           aria-label="Four-digit garage code" autofocus />
+    <div class="auth-error" id="auth-error" aria-live="polite"></div>
+  </div>
+</div>
+<script>
+(function() {
+  const KEY = 'freis-farm-garage';
+  const gate = document.getElementById('auth-gate');
+  if (!gate) return;
+  if (sessionStorage.getItem(KEY) === '1') { gate.remove(); return; }
+  document.body.classList.add('auth-locked');
+  const input = document.getElementById('auth-input');
+  const err   = document.getElementById('auth-error');
+  setTimeout(() => input?.focus(), 80);
+  input?.addEventListener('input', () => {
+    err.textContent = '';
+    input.value = input.value.replace(/\D/g, '');
+    if (input.value.length !== 4) return;
+    if (input.value === '8467') {
+      sessionStorage.setItem(KEY, '1');
+      gate.classList.add('out');
+      setTimeout(() => {
+        gate.remove();
+        document.body.classList.remove('auth-locked');
+      }, 350);
+    } else {
+      gate.classList.add('shake');
+      err.textContent = 'Wrong code. Try again.';
+      setTimeout(() => {
+        gate.classList.remove('shake');
+        input.value = '';
+        input.focus();
+      }, 400);
+    }
+  });
+})();
+</script>
+
 
 <!-- ================== STATUS STRIP (mobile-first headline) ================== -->
 <aside class="status-strip" data-tone="calm" aria-live="polite">
@@ -772,7 +1072,19 @@
 <section class="cover">
 
   <div class="nav">
-    <div class="brand">freis<span class="out"> · farm</span></div>
+    <a href="./" class="brand" aria-label="Freis Farm — Board of Trade">
+      <svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+        <polygon points="24,3 45,24 24,45 3,24"
+                 fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="miter"/>
+        <line x1="24" y1="3"  x2="24" y2="45" stroke="var(--sage-deep)" stroke-width="0.55"/>
+        <line x1="3"  y1="24" x2="45" y2="24" stroke="var(--sage-deep)" stroke-width="0.55"/>
+        <rect x="22.4" y="22.4" width="3.2" height="3.2" fill="var(--sage-deep)"/>
+      </svg>
+      <span class="brand-words">
+        <span class="brand-name">Freis <span class="brand-and">·</span> Farm</span>
+        <span class="brand-tag">Board of Trade</span>
+      </span>
+    </a>
     <div class="nav-links">
       <a href="./">Today's Call</a>
       <a href="hedge.html">Hedge</a>
@@ -900,16 +1212,122 @@
     <!-- ─── Sticky section rail (mobile-first quick-jump) ─────────────── -->
     <nav class="ledger-rail" aria-label="Ledger sections">
       <div class="ledger-rail-track" id="ledger-rail-track">
+        <a href="#section-lifetime" class="active">Lifetime</a>
         <a href="#section-income">Income</a>
         <a href="#section-margin">Margin</a>
-        <a href="#section-expenses" class="active">Expenses</a>
+        <a href="#section-expenses">Expenses</a>
         <a href="#section-vendors">Vendors</a>
         <a href="#section-runway">Runway</a>
+        <a href="#section-cattle">Cattle</a>
+        <a href="#section-hay">Hay</a>
+        <a href="#section-storage">Storage</a>
+        <a href="#section-backlog">Backlog</a>
         <span class="ledger-rail-actions">
           <button type="button" id="fold-expand-all" aria-label="Expand all sections">Expand all</button>
         </span>
       </div>
     </nav>
+
+    <!-- ─── 0. Lifetime · multi-year story ─────────────────── -->
+    <details class="fold" id="section-lifetime" open>
+      <summary>
+        <span class="fold-title">Lifetime · multi-year</span>
+        <span class="fold-glance">
+          <span class="num">$242,411</span> grain net since MY 2021-2022 ·
+          <em>54,979</em> bu sold ·
+          four trends below
+        </span>
+        <span class="fold-chev" aria-hidden="true">▾</span>
+      </summary>
+      <div class="fold-body">
+        <p class="sub-h">The four single-number-per-year metrics that tell the whole story over time.</p>
+
+        <div class="lifetime-headline">
+          <div class="lh-cell">
+            <div class="lh-k">Net dollars · grain</div>
+            <div class="lh-v">$242,411</div>
+            <div class="lh-d">Since MY 2021-2022 across five marketing years (one with a sales-data gap).</div>
+          </div>
+          <div class="lh-cell">
+            <div class="lh-k">Bushels · user share</div>
+            <div class="lh-v">54,979</div>
+            <div class="lh-d">Cumulative bushels sold and recorded; pre-Akron entries from old <em>Harvest to Sale</em> spreadsheet.</div>
+          </div>
+        </div>
+
+        <div class="trends">
+
+          <!-- 1. Net $/bu Corn — three points: MY21-22 ($6.77), 2024 ($3.39), 2025 ($3.50) -->
+          <div class="trend">
+            <div class="trend-k">Net $/bu Corn</div>
+            <div class="trend-v">$3.50</div>
+            <div class="trend-d">Was $6.77 in MY 2021-22; settled near $3.40 since 2024.</div>
+            <svg class="trend-spark" viewBox="0 0 200 64" aria-label="Net dollars per bushel of corn over time, from $6.77 in MY 2021-22 down to $3.50 in 2025.">
+              <line x1="14" y1="56" x2="186" y2="56" stroke="#E2DDD5" stroke-width="0.5"/>
+              <!-- y range $3 ($60) to $7 ($14); 10pt scale -->
+              <polyline class="spark-line" points="14,18 100,52 186,51"/>
+              <circle class="spark-dot" cx="14"  cy="18" r="3"/>
+              <circle class="spark-dot" cx="100" cy="52" r="3"/>
+              <circle class="spark-dot now" cx="186" cy="51" r="4"/>
+              <text class="spark-tick" x="14"  y="62" text-anchor="middle">'22</text>
+              <text class="spark-tick" x="186" y="62" text-anchor="middle">'25</text>
+            </svg>
+          </div>
+
+          <!-- 2. Net $/bu Soybeans — four points: MY21-22 ($15.20), 2024 ($9.54), 2025 ($10.08), 2026 YTD ($10.78) -->
+          <div class="trend">
+            <div class="trend-k">Net $/bu Soybeans</div>
+            <div class="trend-v">$10.78</div>
+            <div class="trend-d">Came off the 2022 high of $15.20; recovering since 2024.</div>
+            <svg class="trend-spark" viewBox="0 0 200 64" aria-label="Net dollars per bushel of soybeans over time.">
+              <line x1="14" y1="56" x2="186" y2="56" stroke="#E2DDD5" stroke-width="0.5"/>
+              <!-- y range $9 to $16, 6pt scale per dollar -->
+              <polyline class="spark-line spark-soy" points="14,16 100,52 143,49 186,45"/>
+              <circle class="spark-dot" cx="14"  cy="16" r="3" style="fill:#6A9D6E"/>
+              <circle class="spark-dot" cx="100" cy="52" r="3" style="fill:#6A9D6E"/>
+              <circle class="spark-dot" cx="143" cy="49" r="3" style="fill:#6A9D6E"/>
+              <circle class="spark-dot now" cx="186" cy="45" r="4"/>
+              <text class="spark-tick" x="14"  y="62" text-anchor="middle">'22</text>
+              <text class="spark-tick" x="186" y="62" text-anchor="middle">'26</text>
+            </svg>
+          </div>
+
+          <!-- 3. Calving rate — only one data point: 2026 = 11/11 = 100% -->
+          <div class="trend">
+            <div class="trend-k">Calving rate</div>
+            <div class="trend-v">100%<span class="est">2026</span></div>
+            <div class="trend-d">11 cows, 11 calves. Earlier years not recorded yet.</div>
+            <svg class="trend-spark" viewBox="0 0 200 64" aria-label="Calving rate, 2026 only.">
+              <line x1="14" y1="56" x2="186" y2="56" stroke="#E2DDD5" stroke-width="0.5"/>
+              <line x1="14" y1="14" x2="186" y2="14" stroke="#E2DDD5" stroke-width="0.3" stroke-dasharray="2 3"/>
+              <text class="spark-tick" x="20"  y="12">100%</text>
+              <circle class="spark-dot now" cx="186" cy="14" r="5"/>
+              <text class="spark-tick" x="186" y="62" text-anchor="middle">'26</text>
+            </svg>
+          </div>
+
+          <!-- 4. Per-acre cash inputs — only one full-year estimate: 2026 ≈ $82/ac -->
+          <div class="trend">
+            <div class="trend-k">$/ac cash inputs</div>
+            <div class="trend-v">$82<span class="est">'26 est.</span></div>
+            <div class="trend-d">Excl. seed (paid via fall prepay) and RE tax. Earlier years not recorded.</div>
+            <svg class="trend-spark" viewBox="0 0 200 64" aria-label="Per-acre cash inputs, 2026 estimate only.">
+              <line x1="14" y1="56" x2="186" y2="56" stroke="#E2DDD5" stroke-width="0.5"/>
+              <circle class="spark-dot now" cx="186" cy="34" r="5"/>
+              <text class="spark-tick" x="186" y="62" text-anchor="middle">'26</text>
+            </svg>
+          </div>
+
+        </div>
+
+        <span class="src"><span class="lead">Source</span>
+          <em>data/Finances/Freis_Farm_Books_and_Records.xlsx</em> ·
+          Headline Metrics + Crop Year sheets ·
+          5 marketing years, 12 Akron settlements, 2 pre-Akron crop years.
+        </span>
+      </div>
+    </details>
+
 
     <!-- ─── 1. Income & margin ─────────────────── -->
     <details class="fold" id="section-income">
@@ -1290,6 +1708,176 @@
         Bean sales modeled at $11.50/bu (today's bid is $11.68). Refresh when LDI invoice lands or RE tax bill arrives.
       </figcaption>
     </figure>
+      </div>
+    </details>
+
+
+    <!-- ─── 6. Cattle ─────────────────── -->
+    <details class="fold" id="section-cattle">
+      <summary>
+        <span class="fold-title">Cattle</span>
+        <span class="fold-glance">
+          <span class="num">11</span>-for-<span class="num">11</span> calving · <em>6 fall calves</em> bound for Milford · final phase of herd upgrade
+        </span>
+        <span class="fold-chev" aria-hidden="true">▾</span>
+      </summary>
+      <div class="fold-body">
+        <p class="sub-h">Per-year cycle: cows at start, calves born, calves sold to Milford in fall, herd-upgrade arc. Earlier years' records pending.</p>
+
+        <div class="stat-strip">
+          <div>
+            <div class="ss-k">2026 calving</div>
+            <div class="ss-v"><em>11/11</em></div>
+            <div class="ss-d">100% — every cow calved.</div>
+          </div>
+          <div>
+            <div class="ss-k">Fall calves committed</div>
+            <div class="ss-v">6 head</div>
+            <div class="ss-d">Slated for Milford, Sept-Oct 2026.</div>
+          </div>
+          <div>
+            <div class="ss-k">Herd remaining (post-upgrade)</div>
+            <div class="ss-v">2 cows + 1 bull</div>
+            <div class="ss-d">Final phase of multi-year herd refresh; older cows + old bull to retire.</div>
+          </div>
+        </div>
+
+        <span class="src"><span class="lead">Note</span>
+          18-month bull sale closes this spring. <em>Cattle by Year</em> sheet captures the structural shape — cow count, calving rate, calves born/sold, $/cwt at sale, net cattle income — so 2024/2025 records slot in once they're pulled from the books.
+        </span>
+      </div>
+    </details>
+
+
+    <!-- ─── 7. Hay ─────────────────── -->
+    <details class="fold" id="section-hay">
+      <summary>
+        <span class="fold-title">Hay</span>
+        <span class="fold-glance">
+          <span class="num">~4,000</span> bales/yr · ~<em>$5</em>/bale · Kevin Quigley brokers · new field ready 2027
+        </span>
+        <span class="fold-chev" aria-hidden="true">▾</span>
+      </summary>
+      <div class="fold-body">
+        <p class="sub-h">Three cuttings a year (late May, mid-July, September). Field rotation in progress.</p>
+
+        <div class="stat-strip">
+          <div>
+            <div class="ss-k">2025 produced</div>
+            <div class="ss-v">~4,000 bales</div>
+            <div class="ss-d">Three cuttings completed off the 8-acre field.</div>
+          </div>
+          <div>
+            <div class="ss-k">Realized $/bale</div>
+            <div class="ss-v">~$5.00</div>
+            <div class="ss-d">~$20,000 net for the year. Kevin Quigley handles sales.</div>
+          </div>
+          <div>
+            <div class="ss-k">Field rotation</div>
+            <div class="ss-v">8 ac → 10 ac</div>
+            <div class="ss-d">Old 8-ac used through 2026; new 10-ac planted spring '26, ready 2027.</div>
+          </div>
+        </div>
+
+        <span class="src"><span class="lead">Note</span>
+          <em>Hay by Year</em> sheet has the per-cutting bale breakdown — once you mark cutting dates and counts each year, the trend lines (bales per cutting, $/bale by season) become the year-over-year comparison.
+        </span>
+      </div>
+    </details>
+
+
+    <!-- ─── 8. Storage state ─────────────────── -->
+    <details class="fold" id="section-storage">
+      <summary>
+        <span class="fold-title">Storage state</span>
+        <span class="fold-glance">
+          <span class="num">9,115</span> bu corn + <span class="num">1,967</span> bu beans at Ritchie ·
+          <em>1,500/500</em> bu in Average Pricing
+        </span>
+        <span class="fold-chev" aria-hidden="true">▾</span>
+      </summary>
+      <div class="fold-body">
+        <p class="sub-h">What we're holding at Ritchie + the Average Pricing Program enrollment. Snapshot as of April 28, 2026.</p>
+
+        <div class="storage-list">
+          <div class="sl-row">
+            <div class="sl-name">Corn · Ritchie storage</div>
+            <div class="sl-qty">9,115 bu</div>
+            <div class="sl-note">1-week halo, then $0.29/bu·4mo · netted on settlement</div>
+          </div>
+          <div class="sl-row">
+            <div class="sl-name">Soybeans · Ritchie storage</div>
+            <div class="sl-qty">1,967 bu</div>
+            <div class="sl-note">~$79/mo storage charge against this lot</div>
+          </div>
+          <div class="sl-row">
+            <div class="sl-name">Corn · Avg Pricing Program</div>
+            <div class="sl-qty">1,500 bu</div>
+            <div class="sl-note">Ritchie averages each day's price across the contract — not a floor</div>
+          </div>
+          <div class="sl-row">
+            <div class="sl-name">Soybeans · Avg Pricing Program</div>
+            <div class="sl-qty">500 bu</div>
+            <div class="sl-note">Same averaging mechanism as corn</div>
+          </div>
+          <div class="sl-row">
+            <div class="sl-name">Modeled collar (next harvest)</div>
+            <div class="sl-qty">35,000 bu</div>
+            <div class="sl-note">Hypothetical only · see Hedge tab for the what-if model</div>
+          </div>
+        </div>
+
+        <span class="src"><span class="lead">Note</span>
+          <em>Storage State</em> sheet captures year-end snapshots so we can see what we carried into each new year — bushels held, AP enrollment, forwards open.
+        </span>
+      </div>
+    </details>
+
+
+    <!-- ─── 9. Capex backlog ─────────────────── -->
+    <details class="fold" id="section-backlog">
+      <summary>
+        <span class="fold-title">Capex backlog</span>
+        <span class="fold-glance">
+          <span class="num">5</span> open projects · plus the recurring fertilizer line · all from the original Dec 2022 list
+        </span>
+        <span class="fold-chev" aria-hidden="true">▾</span>
+      </summary>
+      <div class="fold-body">
+        <p class="sub-h">Open capital projects + recurring spend recorded but not yet itemized as a real invoice.</p>
+
+        <div class="backlog-list">
+          <div class="bl-row">
+            <span class="bl-type">Drainage</span>
+            <span class="bl-item">Tile 3 wetspots in the field<em>John (operator) flagged this · per Other Info sheet, Dec 2022</em></span>
+            <span class="bl-status">Open</span>
+          </div>
+          <div class="bl-row">
+            <span class="bl-type">Buildings</span>
+            <span class="bl-item">Machine shed foundation — out of plumb<em>Structural; needs assessment before next equipment season</em></span>
+            <span class="bl-status">Open</span>
+          </div>
+          <div class="bl-row">
+            <span class="bl-type">Buildings</span>
+            <span class="bl-item">Back cattle barn — west side needs fixing<em>Per Other Info sheet</em></span>
+            <span class="bl-status">Open</span>
+          </div>
+          <div class="bl-row">
+            <span class="bl-type">Buildings</span>
+            <span class="bl-item">Add airflow to barns (not full enclosure)<em>Ventilation, not airtight</em></span>
+            <span class="bl-status">Open</span>
+          </div>
+          <div class="bl-row">
+            <span class="bl-type">Plumbing</span>
+            <span class="bl-item">Kitchen sink low pressure<em>Per Other Info sheet</em></span>
+            <span class="bl-status">Open</span>
+          </div>
+          <div class="bl-row">
+            <span class="bl-type">Inputs</span>
+            <span class="bl-item">FS fertilizer bill — recurring annual<em>~$15k/yr per old records · 2026 estimate ~$10.5k (Lattering)</em></span>
+            <span class="bl-status recurring">Recurring</span>
+          </div>
+        </div>
       </div>
     </details>
 

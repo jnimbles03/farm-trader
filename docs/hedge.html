@@ -1023,9 +1023,127 @@
     body { padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px)); }
   }
 
+
+  /* ============================================================
+     AUTH GATE — Garage Code
+     Static client-side gate. sessionStorage-backed; clears on tab close.
+     Code = "8467" (per Garage Code tip). Replace match in <script>.
+     ============================================================ */
+  .auth-gate {
+    position: fixed; inset: 0; z-index: 9999;
+    background: var(--cream);
+    display: flex; align-items: center; justify-content: center;
+    padding: 32px;
+    transition: opacity 0.32s ease;
+  }
+  .auth-gate.out { opacity: 0; pointer-events: none; }
+  .auth-card {
+    max-width: 380px; width: 100%;
+    text-align: center;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .auth-eyebrow {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 500; font-size: 18px;
+    letter-spacing: -0.01em; color: var(--ink);
+  }
+  .auth-eyebrow em {
+    color: var(--sage-deep); font-style: italic; font-weight: 400;
+  }
+  .auth-title {
+    font-family: "DM Sans", -apple-system, sans-serif;
+    font-weight: 600; font-size: 26px;
+    letter-spacing: -0.01em; color: var(--ink);
+    margin: 8px 0 0;
+  }
+  .auth-tip {
+    font-family: "Fraunces", Georgia, serif;
+    font-style: italic; font-size: 15px;
+    color: var(--slate); margin: 0 0 4px;
+  }
+  .auth-input {
+    display: block; margin: 0 auto;
+    width: 100%; max-width: 240px;
+    padding: 14px 18px;
+    border: 0.5px solid var(--rule); border-radius: 8px;
+    background: var(--paper);
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 36px; font-weight: 500;
+    text-align: center; letter-spacing: 0.34em;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none; appearance: none;
+  }
+  .auth-input:focus {
+    outline: 0;
+    border-color: var(--sage-deep);
+    box-shadow: 0 0 0 3px rgba(123,174,127,0.18);
+  }
+  .auth-error {
+    min-height: 18px;
+    font-family: "DM Sans", sans-serif;
+    font-size: 12px; color: #B35742;
+    letter-spacing: 0.04em;
+  }
+  @keyframes auth-shake {
+    0%,100% { transform: translateX(0); }
+    20%,60% { transform: translateX(-6px); }
+    40%,80% { transform: translateX(6px); }
+  }
+  .auth-gate.shake .auth-card { animation: auth-shake 0.34s ease both; }
+  body.auth-locked { overflow: hidden; }
+
 </style>
 </head>
 <body>
+
+<!-- ================== AUTH GATE (Garage Code) ================== -->
+<div class="auth-gate" id="auth-gate" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+  <div class="auth-card">
+    <span class="auth-eyebrow">freis <em>·</em> farm</span>
+    <h2 class="auth-title" id="auth-title">Garage code</h2>
+    <p class="auth-tip">Same four digits as the door.</p>
+    <input class="auth-input" id="auth-input" type="text" inputmode="numeric"
+           pattern="\d*" maxlength="4" autocomplete="off"
+           aria-label="Four-digit garage code" autofocus />
+    <div class="auth-error" id="auth-error" aria-live="polite"></div>
+  </div>
+</div>
+<script>
+(function() {
+  const KEY = 'freis-farm-garage';
+  const gate = document.getElementById('auth-gate');
+  if (!gate) return;
+  if (sessionStorage.getItem(KEY) === '1') { gate.remove(); return; }
+  document.body.classList.add('auth-locked');
+  const input = document.getElementById('auth-input');
+  const err   = document.getElementById('auth-error');
+  setTimeout(() => input?.focus(), 80);
+  input?.addEventListener('input', () => {
+    err.textContent = '';
+    input.value = input.value.replace(/\D/g, '');
+    if (input.value.length !== 4) return;
+    if (input.value === '8467') {
+      sessionStorage.setItem(KEY, '1');
+      gate.classList.add('out');
+      setTimeout(() => {
+        gate.remove();
+        document.body.classList.remove('auth-locked');
+      }, 350);
+    } else {
+      gate.classList.add('shake');
+      err.textContent = 'Wrong code. Try again.';
+      setTimeout(() => {
+        gate.classList.remove('shake');
+        input.value = '';
+        input.focus();
+      }, 400);
+    }
+  });
+})();
+</script>
+
 
 <!-- ================== STATUS STRIP (mobile-first headline) ================== -->
 <aside class="status-strip" data-tone="warn" aria-live="polite">
