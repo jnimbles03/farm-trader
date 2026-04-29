@@ -70,6 +70,7 @@ LASTRUN_FILE       = DOCS_DIR / "last_run.json"
 PUBLIC_CONF_FILE   = DOCS_DIR / "confirmations.json"
 NEWS_FILE          = DOCS_DIR / "news.json"
 PLAN_FILE          = DOCS_DIR / "plan.json"
+ORDERS_FILE        = DOCS_DIR / "orders.json"
 
 # How long auto-generated news items stay in the feed before pruning.
 # Hand-entered items (no id prefix) are preserved regardless.
@@ -1267,6 +1268,65 @@ def build_ledger_snapshot() -> dict[str, Any]:
     }
 
 
+def load_orders() -> dict[str, Any]:
+    """Read docs/orders.json. Returns the canonical {orders: [...]} shape
+    or an empty default if the file is missing/corrupt — a bad orders
+    file should not wedge the price pipeline."""
+    if not ORDERS_FILE.exists():
+        return {"orders": []}
+    try:
+        data = json.loads(ORDERS_FILE.read_text())
+        if not isinstance(data, dict) or "orders" not in data:
+            log.warning("orders.json missing 'orders' key; treating as empty")
+            return {"orders": []}
+        return data
+    except json.JSONDecodeError as e:
+        log.warning("orders.json corrupt, treating as empty: %s", e)
+        return {"orders": []}
+
+
+def summarize_orders(orders: list[dict[str, Any]]) -> dict[str, int]:
+    """Tally orders by status for last_run.json visibility."""
+    out: dict[str, int] = {"draft": 0, "live": 0, "filled": 0,
+                           "cancelled": 0, "expired": 0, "other": 0}
+    for o in orders:
+        s = o.get("status", "other")
+        if s in out:
+            out[s] += 1
+        else:
+            out["other"] += 1
+    return out
+
+
+def process_live_orders(orders: list[dict[str, Any]],
+                        prices: dict[str, Any]) -> int:
+    """Reserved hook for SMS-firing limit-order triggers.
+
+    Per current product policy (2026-04-28), all incoming orders land as
+    `status: "draft"` and are NEVER auto-promoted. Drafts are inert: this
+    function deliberately ignores them. When a draft is manually promoted
+    to `status: "live"` (a JSON edit, or a future "promote" UI), this is
+    the place that will compare each live limit order against the latest
+    bid and fire an SMS-confirmation through the existing /reply pipeline.
+
+    Returns the number of orders that triggered an alert this run. For
+    now: always 0, since drafts are skipped and there are no live rows.
+    """
+    fired = 0
+    for o in orders:
+        if o.get("status") != "live":
+            continue
+        # Hook for future logic — left intentionally empty so a stray
+        # `live` row doesn't surprise anyone with an SMS until we
+        # explicitly wire this up. Log loudly so we notice if it lands.
+        log.warning(
+            "orders.json has a live row (%s) — live-order firing is not "
+            "yet wired. Manually update or revert to draft.",
+            o.get("id", "<no-id>"),
+        )
+    return fired
+
+
 def evaluate_signals(state: dict[str, dict[str, Any]]) -> tuple[list[dict[str, Any]], int]:
     """
     Walk the signals, compare live vs target, mutate `state` in place,
@@ -1474,11 +1534,23 @@ def main() -> int:
     save_state(state)
     log.info("wrote %s", STATE_FILE)
 
+    # Orders snapshot — accept_order.py is what writes docs/orders.json,
+    # so evaluate.py just READS it to (a) tally drafts vs live for the
+    # last_run summary and (b) call process_live_orders() which is
+    # currently a no-op guard. Drafts never fire alerts.
+    orders_data = load_orders()
+    order_rows  = orders_data.get("orders", [])
+    order_tally = summarize_orders(order_rows)
+    order_alerts = process_live_orders(order_rows, prices)
+    log.info("orders.json: %s (alerts fired: %d)", order_tally, order_alerts)
+
     LASTRUN_FILE.write_text(json.dumps({
-        "ran_at":      datetime.now(timezone.utc).isoformat(),
+        "ran_at":       datetime.now(timezone.utc).isoformat(),
         "signal_count": len(rows),
         "sms_fired":    fired,
         "sms_ready":    bool(ALERT_PHONE and TEXTBELT_KEY),
+        "orders":       order_tally,
+        "order_alerts": order_alerts,
     }, indent=2) + "\n")
 
     return 0

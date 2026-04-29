@@ -1,0 +1,56 @@
+name: Accept draft order
+
+# Fired by the Cloudflare Worker (cloudflare-worker/) when the dashboard
+# successfully completes the SMS-OTP flow on /orders/submit. The worker
+# has already verified the OTP/HMAC; this workflow is the persistence
+# step that turns the accepted submission into a row in docs/orders.json.
+#
+# Concurrency is keyed on submission_id so two retries of the same dispatch
+# can't double-write the same draft row. accept_order.py is also idempotent
+# on submission_id as a belt-and-suspenders guard.
+on:
+  repository_dispatch:
+    types: [order_draft]
+
+concurrency:
+  group: accept-order-${{ github.event.client_payload.payload.submission_id }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  accept:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install deps
+        run: pip install -r requirements.txt
+
+      - name: Record draft order
+        env:
+          ORDER_PHONE:        ${{ github.event.client_payload.phone }}
+          ORDER_PAYLOAD_JSON: ${{ toJSON(github.event.client_payload.payload) }}
+          ORDER_ACCEPTED_AT:  ${{ github.event.client_payload.accepted_at }}
+          ORDER_NONCE:        ${{ github.event.client_payload.nonce }}
+        run: python scripts/accept_order.py
+
+      - name: Commit updated orders
+        run: |
+          git config user.name  "freis-farm-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add state docs
+          if git diff --cached --quiet; then
+            echo "no changes to commit"
+            exit 0
+          fi
+          git commit -m "order draft: $(date -u +'%Y-%m-%dT%H:%MZ')"
+          git push
