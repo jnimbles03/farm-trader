@@ -348,9 +348,425 @@
     display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap;
   }
   @media (min-width: 720px) { .foot { padding: 0 48px 48px; } }
+
+  /* ============================================================
+     MOBILE-FIRST PATCH — additive, loaded last so it overrides.
+     Three jobs: status strip, mobile-first reflow, chart legibility.
+     ============================================================ */
+
+  /* Safe-area insets so nothing tucks under the home indicator. */
+  @supports (padding: max(0px)) {
+    .cover, .inside-grid, .close, .foot, .zone-break {
+      padding-left: max(20px, env(safe-area-inset-left));
+      padding-right: max(20px, env(safe-area-inset-right));
+    }
+    @media (min-width: 720px) {
+      .cover, .inside-grid, .close, .foot, .zone-break {
+        padding-left: max(48px, env(safe-area-inset-left));
+        padding-right: max(48px, env(safe-area-inset-right));
+      }
+    }
+  }
+
+  /* ---- Status strip ---- */
+  .status-strip {
+    background: var(--paper);
+    border-bottom: 0.5px solid var(--border);
+    padding: 11px 20px;
+    font-size: 13px; line-height: 1.4;
+    color: var(--ink);
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    font-variant-numeric: tabular-nums oldstyle-nums;
+  }
+  .status-strip[data-tone="warn"]  { background: #FBF4E5; }
+  .status-strip[data-tone="alert"] { background: #F6E7E0; }
+  @media (min-width: 720px) {
+    .status-strip { padding: 12px 48px; font-size: 13.5px; gap: 14px; }
+  }
+  .status-strip .pulse {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--sage-deep); flex: 0 0 auto;
+  }
+  .status-strip[data-tone="warn"]  .pulse { background: #C99437; }
+  .status-strip[data-tone="alert"] .pulse { background: #B35742; }
+  .status-strip .label {
+    font-family: "DM Sans", sans-serif; font-size: 10px;
+    font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--slate); flex: 0 0 auto;
+  }
+  .status-strip .msg { flex: 1 1 220px; color: var(--ink); }
+  .status-strip .msg em {
+    font-family: "Fraunces", Georgia, serif; font-style: italic;
+    color: var(--sage-deep); font-weight: 400;
+  }
+  .status-strip .stamp {
+    font-family: "DM Sans", sans-serif; font-size: 10px;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--dust); flex: 0 0 auto; margin-left: auto;
+  }
+
+  /* ---- Mobile-first padding (tighter than 32px on phones) ---- */
+  .cover { padding: 28px 20px 28px; }
+  @media (min-width: 720px) { .cover { padding: 72px 48px 48px; } }
+  .zone-break { padding: 0 20px; margin: 44px auto 0; }
+  @media (min-width: 720px) { .zone-break { padding: 0 48px; margin-top: 72px; } }
+  .inside-grid { padding: 0 20px; }
+  @media (min-width: 720px) { .inside-grid { padding: 0 48px; } }
+  .inside { padding: 36px 0 44px; }
+  @media (min-width: 720px) { .inside { padding: 56px 0 64px; } }
+  .close { padding: 44px 20px 32px; }
+  @media (min-width: 720px) { .close { padding: 64px 48px 56px; } }
+  .foot { padding: 0 20px 32px; }
+  @media (min-width: 720px) { .foot { padding: 0 48px 48px; } }
+
+  /* ---- Nav: tap-target hygiene + safe wrap ---- */
+  .nav { gap: 12px; flex-wrap: wrap; }
+  .nav-links { gap: 16px; flex-wrap: wrap; row-gap: 6px; }
+  .nav-links a {
+    display: inline-flex; align-items: center;
+    min-height: 44px;
+  }
+  @media (min-width: 720px) {
+    .nav-links { row-gap: 0; }
+    .nav-links a { min-height: 0; }
+    .nav-links a.here { padding-bottom: 2px; }
+  }
+
+  /* ---- Hero call: punch up the lead number on mobile ---- */
+  @media (max-width: 719px) {
+    .hero-call { padding: 14px 0; gap: 12px; }
+    .hero-call .cell:first-child .v { font-size: 34px; }
+    .hero-call .cell:first-child {
+      padding-bottom: 12px;
+      border-bottom: 0.5px dotted var(--border);
+    }
+  }
+
+  /* ---- Charts at narrow widths: SPARKLINE MODE ----
+         Numbers live in HTML above each chart (.hero-call, table headers).
+         Hide narrative in-chart labels that overlap; keep axes legible.
+         Chart shape carries the visual meaning; HTML carries the numbers. */
+  @media (max-width: 600px) {
+    figure.hero { margin-left: -2px; margin-right: -2px; }
+    /* Hero quarterly bar chart: keep bar dollar-totals (one per quarter, well-spaced)
+       but ease back the bump so they don't crash into each other. */
+    figure.hero svg text { font-size: 13px; }
+    figure.hero svg .anno { font-size: 12px; }
+    figure.hero svg [style*="font-size:12px"] { font-size: 13px !important; }
+    figure.hero svg [style*="font-size:11px"] { font-size: 12px !important; }
+
+    /* Runway waterfall: hide in-chart annotations (the .ann italics), keep just
+       the bar amounts and axis. Numbers are also in the cash narrative below. */
+    .runway-figure svg text { font-size: 12px; }
+    .runway-figure svg .lbl { font-size: 12px; }
+    .runway-figure svg .ann { display: none; }
+
+    /* Margin overlay: hide annotations, keep ticks + values modest. */
+    .margin-overlay svg .mm-tick { font-size: 12px; }
+    .margin-overlay svg .mm-val  { font-size: 13px; }
+    .margin-overlay svg .mm-anno,
+    .margin-overlay svg .mm-anno-faint { display: none; }
+  }
+
+  /* ---- Income table → cards at narrow widths (no horizontal scroll) ---- */
+  @media (max-width: 560px) {
+    .inside .tbl-wrap { overflow-x: visible; }
+    .inside .tbl-wrap table { min-width: 0; }
+    .inside table, .inside table tbody, .inside table thead { display: block; }
+    .inside table thead { display: none; }
+    .inside table tbody tr { display: block; }
+
+    .inside table tbody tr.section td {
+      display: block;
+      border-top: 0.5px solid var(--ink);
+      padding: 16px 0 6px;
+    }
+    .inside table tbody tr:not(.section):not(.total) {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      column-gap: 14px; row-gap: 8px;
+      padding: 12px 0 14px;
+      border-bottom: 0.5px solid var(--rule);
+    }
+    .inside table tbody tr:not(.section):not(.total) td {
+      padding: 0; text-align: left; font-size: 14px; font-style: normal;
+    }
+    .inside table tbody tr:not(.section):not(.total) td:first-child {
+      grid-column: 1 / -1;
+      font-family: "DM Sans", sans-serif;
+      font-weight: 600; font-size: 11px;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--slate);
+    }
+    .inside table tbody tr:not(.section):not(.total) td.num::before {
+      display: block;
+      font-family: "DM Sans", sans-serif; font-style: normal;
+      font-size: 9.5px; font-weight: 500;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--slate); margin-bottom: 2px;
+    }
+    /* Income & margin (6 cols): Year | Bushels | Net price | Margin/bu | Margin total | YoY */
+    .inside table tbody tr:not(.section):not(.total) td:nth-child(2)::before { content: "Bushels"; }
+    .inside table tbody tr:not(.section):not(.total) td:nth-child(3)::before { content: "Net price"; }
+    .inside table tbody tr:not(.section):not(.total) td:nth-child(4)::before { content: "Margin / bu"; }
+    .inside table tbody tr:not(.section):not(.total) td:nth-child(5)::before { content: "Margin total"; }
+    .inside table tbody tr:not(.section):not(.total) td:nth-child(6)::before { content: "YoY"; }
+
+    .inside table tbody tr.total {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      column-gap: 14px; row-gap: 8px;
+      padding: 14px 0;
+      border-top: 1px solid var(--ink);
+      border-bottom: 1px solid var(--ink);
+    }
+    .inside table tbody tr.total td {
+      text-align: left; padding: 0; font-size: 15px;
+    }
+    .inside table tbody tr.total td:first-child {
+      grid-column: 1 / -1;
+      font-size: 11px; letter-spacing: 0.14em;
+      text-transform: uppercase; padding-bottom: 2px;
+    }
+    .inside table tbody tr.total td.num:nth-child(2)::before { content: "Bushels"; }
+    .inside table tbody tr.total td.num:nth-child(5)::before { content: "Margin total"; }
+    .inside table tbody tr.total td.num:nth-child(2)::before,
+    .inside table tbody tr.total td.num:nth-child(5)::before {
+      display: block;
+      font-family: "DM Sans", sans-serif; font-size: 9.5px;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--slate); margin-bottom: 2px;
+    }
+    /* hide empty dash cells on total */
+    .inside table tbody tr.total td.num:nth-child(3),
+    .inside table tbody tr.total td.num:nth-child(4),
+    .inside table tbody tr.total td.num:nth-child(6) { display: none; }
+  }
+
+  /* ---- Vendor cards: stack name+amount on row 1, note flows below ---- */
+  @media (max-width: 560px) {
+    .vendors > .v {
+      grid-template-columns: 1fr auto;
+      column-gap: 12px; row-gap: 4px;
+      padding: 12px 0;
+    }
+    .vendors > .v .v-name { grid-column: 1 / 2; grid-row: 1; }
+    .vendors > .v .v-amt  { grid-column: 2 / 3; grid-row: 1; }
+    .vendors > .v .v-note { grid-column: 1 / -1; grid-row: 2; font-size: 12px; }
+  }
+
+  /* ---- Small multiples: keep 2-up at narrow but loosen gap ---- */
+  @media (max-width: 480px) {
+    .multiples { gap: 14px 16px; }
+    .sm .sm-v { font-size: 20px; }
+    .sm .sm-k { font-size: 9.5px; }
+  }
+
+  /* ============================================================
+     COLLAPSIBLE LEDGERS — quick-glance scaffold over the inside body.
+     Each major section is a <details class="fold"> with a <summary>
+     that doubles as the section title, glance line, and tap target.
+     A sticky sub-nav rail sits at the top of .inside-grid.
+     ============================================================ */
+
+  /* Allow height transitions on <details> (Chrome 129+, Safari 18.4+) */
+  @supports (interpolate-size: allow-keywords) {
+    :root { interpolate-size: allow-keywords; }
+    .fold {
+      transition: height 0.32s cubic-bezier(.22,.61,.36,1);
+    }
+    .fold[open] { height: auto; }
+  }
+
+  /* The <details> itself */
+  .fold {
+    margin: 0; padding: 0;
+    border-top: 0.5px solid var(--rule);
+    scroll-margin-top: 60px; /* land below the sticky rail when jumped to */
+  }
+  .fold:first-of-type { border-top: 0; }
+  .fold + .fold { margin-top: 0; }
+
+  /* Hide native disclosure marker, we draw our own */
+  .fold > summary { list-style: none; }
+  .fold > summary::-webkit-details-marker { display: none; }
+
+  /* Summary row: clickable, generous tap target */
+  .fold > summary {
+    cursor: pointer;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: baseline;
+    gap: 6px 12px;
+    padding: 18px 0 14px;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    position: relative;
+  }
+  .fold > summary:focus-visible {
+    outline: 2px solid var(--sage-deep);
+    outline-offset: 4px;
+    border-radius: 4px;
+  }
+  .fold-title {
+    font-family: "DM Sans", sans-serif;
+    font-weight: 600; font-size: 18px; letter-spacing: -0.005em;
+    color: var(--ink);
+    grid-column: 1 / 2; grid-row: 1;
+  }
+  .fold-glance {
+    grid-column: 1 / -1; grid-row: 2;
+    font-family: "Iowan Old Style", "Charter", Georgia, serif;
+    font-style: italic; font-size: 13px;
+    color: var(--slate); line-height: 1.4;
+    font-variant-numeric: tabular-nums oldstyle-nums;
+  }
+  .fold-glance em {
+    font-family: "Fraunces", Georgia, serif;
+    font-style: italic; color: var(--sage-deep); font-weight: 400;
+  }
+  .fold-glance .num {
+    font-family: "Fraunces", Georgia, serif;
+    font-style: normal; font-weight: 400; color: var(--ink);
+  }
+  .fold-chev {
+    grid-column: 2 / 3; grid-row: 1 / span 2;
+    align-self: center;
+    width: 26px; height: 26px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--slate);
+    font-size: 13px;
+    transition: transform 0.24s ease, color 0.2s ease;
+    flex: 0 0 auto;
+  }
+  .fold[open] > summary .fold-chev { transform: rotate(180deg); color: var(--sage-deep); }
+  .fold > summary:hover .fold-title { color: var(--sage-deep); }
+
+  /* The section body — soft fade-in when opened */
+  .fold-body {
+    padding: 4px 0 26px;
+  }
+  .fold-body > .sub-h:first-of-type {
+    margin-top: 0; margin-bottom: 12px;
+  }
+  @keyframes fold-fade-in {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .fold[open] > .fold-body {
+    animation: fold-fade-in 0.28s ease both;
+  }
+
+  /* History toggle inside the income table — folds 2024/2025 rows */
+  .history-toggle {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: transparent; border: 0;
+    color: var(--slate); cursor: pointer;
+    font-family: "DM Sans", sans-serif;
+    font-size: 11px; font-weight: 500;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    padding: 10px 0; margin: 4px 0 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .history-toggle::before {
+    content: "+";
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 18px; height: 18px;
+    border: 0.5px solid var(--rule); border-radius: 50%;
+    font-size: 14px; font-weight: 400;
+    transition: transform 0.24s ease, border-color 0.2s ease, color 0.2s ease;
+    color: var(--slate);
+  }
+  .history-toggle[aria-expanded="true"]::before {
+    content: "−"; border-color: var(--sage-deep); color: var(--sage-deep);
+    transform: rotate(180deg);
+  }
+  .history-toggle:hover { color: var(--ink); }
+  .history-toggle:hover::before { border-color: var(--ink); color: var(--ink); }
+
+  /* Default-hidden 2024/2025 history rows; revealed when toggle is on */
+  .inside table tbody tr.is-history { display: none; }
+  .inside table.show-history tbody tr.is-history { display: table-row; }
+  /* On mobile (where rows become cards) keep the same logic */
+  @media (max-width: 560px) {
+    .inside table tbody tr.is-history { display: none; }
+    .inside table.show-history tbody tr.is-history { display: grid; }
+  }
+
+  /* ---- Sticky section rail ---- */
+  .ledger-rail {
+    position: sticky;
+    top: 0; z-index: 30;
+    margin: 0 -20px 6px;
+    padding: 8px 20px;
+    background: rgba(255, 253, 247, 0.92);
+    backdrop-filter: saturate(140%) blur(8px);
+    -webkit-backdrop-filter: saturate(140%) blur(8px);
+    border-bottom: 0.5px solid var(--border);
+    overflow-x: auto; overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .ledger-rail::-webkit-scrollbar { display: none; }
+  @media (min-width: 720px) {
+    .ledger-rail { margin: 0 -48px 10px; padding: 10px 48px; }
+  }
+  .ledger-rail-track {
+    display: flex; gap: 4px;
+    align-items: center;
+    min-width: max-content;
+  }
+  .ledger-rail a {
+    border: 0;
+    flex: 0 0 auto;
+    font-family: "DM Sans", sans-serif;
+    font-size: 11px; font-weight: 500;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--slate);
+    padding: 8px 12px; border-radius: 999px;
+    transition: background 0.2s ease, color 0.2s ease;
+    white-space: nowrap;
+    text-decoration: none;
+  }
+  .ledger-rail a:hover { background: var(--border); color: var(--ink); }
+  .ledger-rail a.active {
+    background: var(--ink); color: var(--cream);
+  }
+  .ledger-rail a.active:hover { background: var(--ink); color: var(--cream); }
+  .ledger-rail-actions {
+    margin-left: auto;
+    flex: 0 0 auto;
+    display: flex; gap: 4px; padding-left: 8px;
+    border-left: 0.5px solid var(--border);
+  }
+  .ledger-rail-actions button {
+    background: transparent; border: 0;
+    font-family: "DM Sans", sans-serif;
+    font-size: 10.5px; font-weight: 500;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--slate);
+    padding: 8px 10px; border-radius: 999px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .ledger-rail-actions button:hover { background: var(--border); color: var(--ink); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fold, .fold-chev, .history-toggle::before { transition: none; }
+    .fold[open] > .fold-body { animation: none; }
+  }
+
 </style>
 </head>
 <body>
+
+<!-- ================== STATUS STRIP (mobile-first headline) ================== -->
+<aside class="status-strip" data-tone="calm" aria-live="polite">
+  <span class="pulse" aria-hidden="true"></span>
+  <span class="label">Today</span>
+  <span class="msg">$25k cash on hand · next bill <em>Lattering $10.5k</em> in ~32 days · 1,250 bu beans bound for Jun/Jul.</span>
+  <span class="stamp">Apr 28</span>
+</aside>
 
 <!-- ================== FRONT OF BOOK ================== -->
 <section class="cover">
@@ -481,12 +897,36 @@
 <section class="inside">
   <div class="inside-grid">
 
-    <!-- ─── Income & margin table ─────────────────── -->
-    <h2>Income &amp; margin</h2>
-    <p class="sub-h">Net price minus estimated input cost · is each crop earning more or less per bushel?</p>
+    <!-- ─── Sticky section rail (mobile-first quick-jump) ─────────────── -->
+    <nav class="ledger-rail" aria-label="Ledger sections">
+      <div class="ledger-rail-track" id="ledger-rail-track">
+        <a href="#section-income">Income</a>
+        <a href="#section-margin">Margin</a>
+        <a href="#section-expenses" class="active">Expenses</a>
+        <a href="#section-vendors">Vendors</a>
+        <a href="#section-runway">Runway</a>
+        <span class="ledger-rail-actions">
+          <button type="button" id="fold-expand-all" aria-label="Expand all sections">Expand all</button>
+        </span>
+      </div>
+    </nav>
+
+    <!-- ─── 1. Income & margin ─────────────────── -->
+    <details class="fold" id="section-income">
+      <summary>
+        <span class="fold-title">Income &amp; margin</span>
+        <span class="fold-glance">
+          <span class="num">$8,915</span> soy YTD ·
+          <span class="num">$69,217</span> lifetime margin ·
+          <em>+11%</em> on 2026 beans
+        </span>
+        <span class="fold-chev" aria-hidden="true">▾</span>
+      </summary>
+      <div class="fold-body">
+        <p class="sub-h">Net price minus estimated input cost · is each crop earning more or less per bushel?</p>
 
     <div class="tbl-wrap">
-    <table>
+    <table id="income-table">
       <thead>
         <tr>
           <th>Year</th>
@@ -494,19 +934,19 @@
           <th class="num">Net price</th>
           <th class="num">Margin / bu</th>
           <th class="num">Margin total</th>
-          <th class="num">YoY</th>
+          <th class="num">vs last year</th>
         </tr>
       </thead>
       <tbody>
         <!-- ── Corn ── -->
         <tr class="section"><td colspan="6">Corn <span class="cost-tag">est. input cost ~$1.65 / bu</span></td></tr>
-        <tr><td>2024</td>
+        <tr class="is-history"><td>2024</td>
             <td class="num">8,728</td>
             <td class="num">$3.39</td>
             <td class="num">$1.74</td>
             <td class="num">$15,143</td>
             <td class="num muted">—</td></tr>
-        <tr><td>2025</td>
+        <tr class="is-history"><td>2025</td>
             <td class="num">11,829</td>
             <td class="num">$3.50</td>
             <td class="num">$1.85</td>
@@ -521,13 +961,13 @@
 
         <!-- ── Soybeans ── -->
         <tr class="section"><td colspan="6">Soybeans <span class="cost-tag">est. input cost ~$3.65 / bu</span></td></tr>
-        <tr><td>2024</td>
+        <tr class="is-history"><td>2024</td>
             <td class="num">1,389</td>
             <td class="num">$9.54</td>
             <td class="num">$5.89</td>
             <td class="num">$8,178</td>
             <td class="num muted">—</td></tr>
-        <tr><td>2025</td>
+        <tr class="is-history"><td>2025</td>
             <td class="num">2,350</td>
             <td class="num">$10.08</td>
             <td class="num">$6.43</td>
@@ -550,6 +990,24 @@
     </table>
     </div>
 
+    <button type="button" class="history-toggle" id="history-toggle"
+            aria-expanded="false" aria-controls="income-table">
+      Show 2024–2025 history
+    </button>
+      </div>
+    </details>
+
+    <!-- ─── 2. Margin trend (corn vs soy as % of revenue) ─────────── -->
+    <details class="fold" id="section-margin">
+      <summary>
+        <span class="fold-title">Margin trend</span>
+        <span class="fold-glance">
+          Soy <span class="num">66%</span> · Corn <span class="num">53%</span> ·
+          <em>11pp</em> spread, both climbing
+        </span>
+        <span class="fold-chev" aria-hidden="true">▾</span>
+      </summary>
+      <div class="fold-body">
     <!-- Margin overlay — corn vs soy as % of revenue on shared y-axis.
          Plot:  x 70..600 (3 years: 110, 355, 600), y 40..210 (50%..70%, 8.5px/pp)
          Data:  Corn 2024 51.3% (y=199.3), 2025 52.8% (y=185.9)
@@ -607,11 +1065,22 @@
     <span class="src"><span class="lead">Note</span>
       Cost per bushel held flat across years at <em>est.</em> values from the 2026 budget — actual costs varied somewhat. Yield assumed: corn 180 bu/ac, soy 55 bu/ac. Margin <em>direction</em> is robust to these assumptions; the absolute level shifts as real invoice data lands.
     </span>
+      </div>
+    </details>
 
 
-    <!-- ─── Expense small multiples ──────────────── -->
-    <h2>Expenses · 2026 projected</h2>
-    <p class="sub-h">Two are real (settlement adjustments). The rest are estimates pending invoices.</p>
+    <!-- ─── 3. Expenses · 2026 projected ──────────────── -->
+    <details class="fold" id="section-expenses" open>
+      <summary>
+        <span class="fold-title">Expenses · 2026</span>
+        <span class="fold-glance">
+          <em>~$25,500</em> through July 1 ·
+          Fertilizer <span class="num">$10.5k</span>, Chem <span class="num">$10k</span>, RE tax <span class="num">$5k</span>
+        </span>
+        <span class="fold-chev" aria-hidden="true">▾</span>
+      </summary>
+      <div class="fold-body">
+        <p class="sub-h">Two are real (deductions Ritchie already pulled out of our bushel check). The rest are estimates pending invoices.</p>
 
     <div class="multiples">
       <div class="sm">
@@ -635,13 +1104,13 @@
       <div class="sm">
         <div class="sm-k">Seed</div>
         <div class="sm-v">$0 <span class="est">paid</span></div>
-        <div class="sm-sub">Booked w/ fall prepay</div>
+        <div class="sm-sub">Already paid last fall (prepay)</div>
         <div class="meter"><span style="width:0%"></span></div>
       </div>
       <div class="sm">
         <div class="sm-k">Storage rate</div>
         <div class="sm-v">$0.29<span class="est">/bu·4mo</span></div>
-        <div class="sm-sub">Ritchie, settlement adj.</div>
+        <div class="sm-sub">Deducted from bushel check</div>
         <div class="meter real"><span style="width:35%"></span></div>
       </div>
       <div class="sm">
@@ -664,11 +1133,22 @@
       </div>
     </div>
     <span class="src"><span class="lead">Note</span> Bushel returns invoice totals only — line items aren't itemized in Akron's tenant. Refresh once Lattering invoice lands.</span>
+      </div>
+    </details>
 
 
-    <!-- ─── Vendor list ─────────────────────────── -->
-    <h2>By vendor</h2>
-    <p class="sub-h">Where the money goes</p>
+    <!-- ─── 4. By vendor ─────────────────────────── -->
+    <details class="fold" id="section-vendors">
+      <summary>
+        <span class="fold-title">By vendor</span>
+        <span class="fold-glance">
+          <span class="num">5</span> vendors ·
+          Lattering <span class="num">$10.5k</span> &amp; Ritchie chem <span class="num">$10k</span> are the big two
+        </span>
+        <span class="fold-chev" aria-hidden="true">▾</span>
+      </summary>
+      <div class="fold-body">
+        <p class="sub-h">Where the money goes</p>
 
     <div class="vendors">
       <div class="v">
@@ -684,7 +1164,7 @@
       <div class="v">
         <div class="v-name">Ritchie Grain — storage</div>
         <div class="v-amt">$0.29/bu</div>
-        <div class="v-note">1-week halo, then prorated · netted on settlement</div>
+        <div class="v-note">1 free week after delivery, then charged by the day · taken out of the bushel check</div>
       </div>
       <div class="v">
         <div class="v-name">County (real-estate tax)</div>
@@ -694,14 +1174,26 @@
       <div class="v">
         <div class="v-name">Seed dealer</div>
         <div class="v-amt">prepaid</div>
-        <div class="v-note">Booked fall, locked in</div>
+        <div class="v-note">Paid up-front last fall · price locked</div>
       </div>
     </div>
+      </div>
+    </details>
 
 
-    <!-- ─── Cash runway waterfall ─────────────── -->
-    <h2>Cash runway · May → July 1</h2>
-    <p class="sub-h">Starting from $25,000, threading two bean sales through three bills</p>
+    <!-- ─── 5. Cash runway · May → July 1 ─────────────── -->
+    <details class="fold" id="section-runway" open>
+      <summary>
+        <span class="fold-title">Cash runway · May → Jul 1</span>
+        <span class="fold-glance">
+          <span class="num">$25k</span> →
+          trough <em>$9.5k</em> May 30 →
+          <span class="num">$22.5k</span> by Jul 1
+        </span>
+        <span class="fold-chev" aria-hidden="true">▾</span>
+      </summary>
+      <div class="fold-body">
+        <p class="sub-h">Starting from $25,000, threading two bean sales through three bills</p>
 
     <figure class="runway-figure">
       <!-- Waterfall layout
@@ -798,6 +1290,8 @@
         Bean sales modeled at $11.50/bu (today's bid is $11.68). Refresh when LDI invoice lands or RE tax bill arrives.
       </figcaption>
     </figure>
+      </div>
+    </details>
 
 
   </div>
@@ -805,13 +1299,120 @@
 
 <!-- ================== BACK OF BOOK ================== -->
 <section class="close">
-  <p>The grain side is wired live. <strong>Next:</strong> a single Lattering invoice and the expense side becomes real, too.</p>
   <div class="wordmark">freis<span class="out"> · farm</span></div>
 </section>
 <div class="foot">
   <span>Internal Brief · Apr 2026</span>
   <span>Bushel feed · Ritchie Grain · 250 acres</span>
 </div>
+
+<script>
+/* ─────────────────────────────────────────────────────────────
+   COLLAPSIBLE LEDGERS — three behaviours:
+     1. History toggle inside the income table
+     2. Scroll-spy on the sticky rail (IntersectionObserver)
+     3. Expand-all / collapse-all toggle in the rail
+   ───────────────────────────────────────────────────────────── */
+(() => {
+  // 1) History toggle
+  const historyBtn   = document.getElementById('history-toggle');
+  const incomeTable  = document.getElementById('income-table');
+  if (historyBtn && incomeTable) {
+    historyBtn.addEventListener('click', () => {
+      const expanded = incomeTable.classList.toggle('show-history');
+      historyBtn.setAttribute('aria-expanded', String(expanded));
+      historyBtn.textContent = expanded
+        ? 'Hide 2024–2025 history'
+        : 'Show 2024–2025 history';
+    });
+  }
+
+  // 2) Scroll-spy: highlight the rail entry whose section is currently
+  //    closest to the top of the viewport. Uses IntersectionObserver against
+  //    a band 80–280px from the top so we light up "what you're about to read".
+  const railLinks = Array.from(document.querySelectorAll('.ledger-rail a'));
+  const sections  = railLinks
+    .map(a => document.querySelector(a.getAttribute('href')))
+    .filter(Boolean);
+
+  if (sections.length && 'IntersectionObserver' in window) {
+    // Reset any default active state so the observer drives it
+    railLinks.forEach(a => a.classList.remove('active'));
+
+    const visible = new Map(); // section id -> intersection ratio
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) visible.set(e.target.id, e.intersectionRatio);
+        else                  visible.delete(e.target.id);
+      });
+      // Pick the section with the largest visible ratio
+      let topId = null, topRatio = 0;
+      for (const [id, ratio] of visible) {
+        if (ratio > topRatio) { topRatio = ratio; topId = id; }
+      }
+      // Fallback: nothing is "in band" — pick the section just above the viewport
+      if (!topId) {
+        const y = window.scrollY + 100;
+        let best = null, bestTop = -Infinity;
+        sections.forEach(sec => {
+          const top = sec.getBoundingClientRect().top + window.scrollY;
+          if (top <= y && top > bestTop) { bestTop = top; best = sec.id; }
+        });
+        topId = best;
+      }
+      railLinks.forEach(a => {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + topId);
+        if (a.classList.contains('active')) {
+          // keep the active chip visible in the horizontally-scrolling rail
+          a.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' });
+        }
+      });
+    }, {
+      // Observe a band that mimics the user's reading focus
+      rootMargin: '-80px 0px -55% 0px',
+      threshold: [0, 0.2, 0.5, 0.8, 1]
+    });
+    sections.forEach(sec => io.observe(sec));
+  }
+
+  // 3) Expand-all / Collapse-all
+  const expandBtn = document.getElementById('fold-expand-all');
+  const folds     = Array.from(document.querySelectorAll('.fold'));
+  const setBtn = (allOpen) => {
+    if (!expandBtn) return;
+    expandBtn.textContent = allOpen ? 'Collapse all' : 'Expand all';
+    expandBtn.setAttribute('aria-label',
+      allOpen ? 'Collapse all sections' : 'Expand all sections');
+  };
+  if (expandBtn) {
+    expandBtn.addEventListener('click', () => {
+      const allOpen = folds.every(f => f.open);
+      folds.forEach(f => { f.open = !allOpen; });
+      setBtn(!allOpen);
+    });
+    // Keep button label in sync if user toggles individual folds
+    folds.forEach(f => f.addEventListener('toggle', () => {
+      setBtn(folds.every(x => x.open));
+    }));
+    setBtn(folds.every(f => f.open));
+  }
+
+  // 4) Smooth scroll on rail click — accounting for the rail's own height
+  railLinks.forEach(a => {
+    a.addEventListener('click', (e) => {
+      const id = a.getAttribute('href').slice(1);
+      const sec = document.getElementById(id);
+      if (!sec) return;
+      e.preventDefault();
+      // Open the target fold so the user lands on visible content
+      if (sec.tagName === 'DETAILS') sec.open = true;
+      const railH = document.querySelector('.ledger-rail')?.offsetHeight || 0;
+      const top = sec.getBoundingClientRect().top + window.scrollY - railH - 8;
+      window.scrollTo({ top, behavior: 'smooth' });
+    });
+  });
+})();
+</script>
 
 </body>
 </html>

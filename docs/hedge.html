@@ -872,9 +872,168 @@
     .lot-row-pace { font-size: 11.5px; }
   }
 
+  /* ============================================================
+     MOBILE-FIRST PATCH — additive, loaded last so it overrides.
+     Three jobs: status strip, mobile-first reflow, chart legibility.
+     ============================================================ */
+
+  @supports (padding: max(0px)) {
+    .cover, .inside-grid, .close, .foot, .zone-break {
+      padding-left: max(20px, env(safe-area-inset-left));
+      padding-right: max(20px, env(safe-area-inset-right));
+    }
+    @media (min-width: 720px) {
+      .cover, .inside-grid, .close, .foot, .zone-break {
+        padding-left: max(48px, env(safe-area-inset-left));
+        padding-right: max(48px, env(safe-area-inset-right));
+      }
+    }
+  }
+
+  /* ---- Status strip ---- */
+  .status-strip {
+    background: var(--paper);
+    border-bottom: 0.5px solid var(--border);
+    padding: 11px 20px;
+    font-size: 13px; line-height: 1.4;
+    color: var(--ink);
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    font-variant-numeric: tabular-nums oldstyle-nums;
+  }
+  .status-strip[data-tone="warn"]  { background: #FBF4E5; }
+  .status-strip[data-tone="alert"] { background: #F6E7E0; }
+  @media (min-width: 720px) {
+    .status-strip { padding: 12px 48px; font-size: 13.5px; gap: 14px; }
+  }
+  .status-strip .pulse {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--sage-deep); flex: 0 0 auto;
+  }
+  .status-strip[data-tone="warn"]  .pulse { background: #C99437; }
+  .status-strip[data-tone="alert"] .pulse { background: #B35742; }
+  .status-strip .label {
+    font-family: "DM Sans", sans-serif; font-size: 10px;
+    font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--slate); flex: 0 0 auto;
+  }
+  .status-strip .msg { flex: 1 1 220px; color: var(--ink); }
+  .status-strip .msg em {
+    font-family: "Fraunces", Georgia, serif; font-style: italic;
+    color: var(--sage-deep); font-weight: 400;
+  }
+  .status-strip .stamp {
+    font-family: "DM Sans", sans-serif; font-size: 10px;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--dust); flex: 0 0 auto; margin-left: auto;
+  }
+
+  /* ---- Mobile-first padding ---- */
+  .cover { padding: 28px 20px 28px; }
+  @media (min-width: 720px) { .cover { padding: 72px 48px 48px; } }
+  .zone-break { padding: 0 20px; margin: 44px auto 0; }
+  @media (min-width: 720px) { .zone-break { padding: 0 48px; margin-top: 72px; } }
+  .inside-grid { padding: 0 20px; }
+  @media (min-width: 720px) { .inside-grid { padding: 0 48px; } }
+  .inside { padding: 36px 0 44px; }
+  @media (min-width: 720px) { .inside { padding: 56px 0 64px; } }
+  .close { padding: 44px 20px 32px; }
+  @media (min-width: 720px) { .close { padding: 64px 48px 56px; } }
+  .foot { padding: 0 20px 32px; }
+  @media (min-width: 720px) { .foot { padding: 0 48px 48px; } }
+
+  /* ---- Nav ---- */
+  .nav { gap: 12px; flex-wrap: wrap; }
+  .nav-links { gap: 16px; flex-wrap: wrap; row-gap: 6px; }
+  .nav-links a { display: inline-flex; align-items: center; min-height: 44px; }
+  @media (min-width: 720px) {
+    .nav-links { row-gap: 0; }
+    .nav-links a { min-height: 0; }
+    .nav-links a.here { padding-bottom: 2px; }
+  }
+
+  /* ---- Hero call ---- */
+  @media (max-width: 719px) {
+    .hero-call { padding: 14px 0; gap: 12px; }
+    .hero-call .cell:first-child .v { font-size: 34px; }
+    .hero-call .cell:first-child {
+      padding-bottom: 12px;
+      border-bottom: 0.5px dotted var(--border);
+    }
+  }
+
+  /* ---- Charts at narrow widths: SPARKLINE MODE ----
+         Hide narrative in-chart Fraunces labels; keep axis ticks modest. */
+  @media (max-width: 600px) {
+    figure.hero { margin-left: -2px; margin-right: -2px; }
+    figure.hero svg text { font-size: 13px; }
+    figure.hero svg .anno { font-size: 12px; }
+    figure.hero svg text[font-family*="Fraunces"] { display: none; }
+  }
+
+  /* Strike cards: keep tighter, legible meta. */
+  @media (max-width: 600px) {
+    .strike-card .strike-strip svg text { font-size: 13px; }
+    .strike-card .strike-strip svg text[font-family*="Fraunces"] { display: none; }
+  }
+
+  /* ---- Lot rows: single-column stack on phones ---- */
+  @media (max-width: 560px) {
+    .lot-row {
+      grid-template-columns: 1fr auto !important;
+      column-gap: 12px; row-gap: 6px;
+      padding: 14px 0;
+    }
+    .lot-row > * { min-width: 0; }
+  }
+
+  /* ---- Trade drawer: full-screen sheet on phones ---- */
+  @media (max-width: 560px) {
+    .trade-drawer {
+      width: 100% !important;
+      max-width: 100% !important;
+      border-radius: 0;
+    }
+  }
+
+  /* ---- Inline asides: tiny parenthetical glossary inside any heading ---- */
+  .aside {
+    font-family: "DM Sans", sans-serif;
+    font-style: italic; font-weight: 400;
+    font-size: 0.78em; letter-spacing: 0;
+    color: var(--slate); text-transform: none;
+    margin-left: 4px;
+  }
+
+  /* ---- Trade trigger: rotated tab on desktop, sticky bottom pill on phones ---- */
+  @media (max-width: 720px) {
+    .trade-trigger {
+      position: fixed;
+      left: 12px; right: 12px; top: auto;
+      bottom: max(12px, env(safe-area-inset-bottom, 12px));
+      transform: none;
+      writing-mode: horizontal-tb;
+      padding: 16px 20px;
+      font-size: 13px; letter-spacing: 0.16em;
+      border-radius: 999px;
+      box-shadow: 0 6px 24px rgba(58,61,54,0.18), 0 0 0 0.5px rgba(58,61,54,0.08);
+      display: flex; align-items: center; justify-content: center;
+      min-height: 48px;
+    }
+    .trade-trigger-rail { display: none !important; }
+    body { padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px)); }
+  }
+
 </style>
 </head>
 <body>
+
+<!-- ================== STATUS STRIP (mobile-first headline) ================== -->
+<aside class="status-strip" data-tone="warn" aria-live="polite">
+  <span class="pulse" aria-hidden="true"></span>
+  <span class="label">What-if</span>
+  <span class="msg">This page <em>models</em> a collar we don't actually have. Real position today: 1,500 bu corn / 500 bu soy in Ritchie's <em>Average Pricing</em> (averages each day's price across the contract — not a floor).</span>
+  <span class="stamp">Apr 28</span>
+</aside>
 
 <!-- ================== FRONT OF BOOK ================== -->
 <section class="cover">
@@ -888,41 +1047,41 @@
     </div>
   </div>
 
-  <p class="eyebrow">Hedge · April 28, 2026</p>
+  <p class="eyebrow">Hedge · What-if model · April 28, 2026</p>
 
   <!-- Quiet status row — small dot + plain-English reason.
        Class flips to .binary-no when there's actually something to do. -->
   <div class="binary binary-yes">
-    <div class="binary-q">Today's call</div>
-    <div class="binary-status">All quiet</div>
-    <h2 class="binary-verb">Nothing to do today</h2>
-    <p class="binary-reason">Corn and beans are both inside the safe range. The price-protection plan covering 35,000 bu of next harvest is sitting quietly — costing nothing to keep in place — so we wait.</p>
+    <div class="binary-q">If we bought this protection</div>
+    <div class="binary-status">Asleep</div>
+    <h2 class="binary-verb">Nothing would trigger today</h2>
+    <p class="binary-reason">In the model, corn and beans are both between the floor and the ceiling — so the protection stays asleep. It costs nothing to keep in place. (Reminder: this is a model. We haven't bought a collar; we'd have to call Ritchie or a broker to set one up.)</p>
     <div class="binary-chips">
-      <span class="binary-chip binary-chip-on">Inside the safe range</span>
-      <span class="binary-chip binary-chip-on">Free to maintain</span>
-      <span class="binary-chip">35,000 bu protected</span>
+      <span class="binary-chip binary-chip-on">Between floor &amp; ceiling</span>
+      <span class="binary-chip binary-chip-on">Free to hold (in the model)</span>
+      <span class="binary-chip">35,000 bu modeled</span>
     </div>
   </div>
 
-  <h1>Price protection in place</h1>
+  <h1>What if we bought <em>price protection?</em></h1>
 
-  <p class="deck">A floor-and-ceiling safety net on next harvest — minimum prices near our October low, ceilings above our June sale-trigger price. Costs nothing to keep in place; covers 35,000 bushels.</p>
+  <p class="deck">A "collar" pairs a floor (a minimum price you can't fall below) with a ceiling (a maximum you can't rise above) — the ceiling pays for the floor, so it costs nothing up front. This page walks through what one would cover on next harvest, so you can decide whether it's worth a call to Ritchie.</p>
 
   <div class="hero-call">
     <div class="cell">
-      <div class="k">Bushels Protected</div>
+      <div class="k">Bushels covered <span class="aside">(if we bought it)</span></div>
       <div class="v">35,000</div>
       <div class="sub">30,000 bu Dec '26 corn · 5,000 bu Nov '26 beans</div>
     </div>
     <div class="cell">
       <div class="k">Worst-case payout</div>
       <div class="v"><em>$39,000</em></div>
-      <div class="sub">What we'd collect if prices crashed to $3.00 corn and $8.00 beans by harvest</div>
+      <div class="sub">What the floor would pay if prices crashed to $3.00 corn and $8.00 beans by harvest</div>
     </div>
     <div class="cell">
-      <div class="k">What it costs</div>
+      <div class="k">What it would cost</div>
       <div class="v">$0</div>
-      <div class="sub">The ceiling we sold paid for the floor we bought — no money out of pocket</div>
+      <div class="sub">In a collar, selling the ceiling pays for the floor — net zero out-of-pocket</div>
     </div>
   </div>
 
@@ -974,7 +1133,7 @@
         <line x1="80" y1="20" x2="106" y2="20" stroke="#7A756D" stroke-width="1.6" stroke-dasharray="5 3"/>
         <text x="112" y="24">unprotected</text>
         <line x1="220" y1="20" x2="246" y2="20" stroke="#3D3A36" stroke-width="1.6"/>
-        <text x="252" y="24">protected · cash + safety net</text>
+        <text x="252" y="24">with collar · cash + protection</text>
         <line x1="430" y1="20" x2="456" y2="20" stroke="#7BAE7F" stroke-width="2"/>
         <text x="462" y="24">floor active</text>
         <circle cx="600" cy="20" r="4" fill="#7BAE7F"/>
@@ -1009,8 +1168,8 @@
 <section class="ledger">
   <div class="ledger-wrap">
 
-    <h2 class="ledger-h">Two safety nets</h2>
-    <p class="ledger-sub">Tap a crop, drag the price slider — see what we'd take home at every closing price.</p>
+    <h2 class="ledger-h">Two pieces of the model</h2>
+    <p class="ledger-sub">A separate collar (floor + ceiling) on each crop. Tap a crop, drag the price slider — see what we'd take home at every closing price <em>if we'd bought one</em>.</p>
 
     <div class="lots-strip" id="hedge-strip">
       <button class="lot-row active" data-collar="corn" type="button">
@@ -1047,99 +1206,99 @@
       </div>
 
       <div class="payoff">
-        <svg id="d-chart" viewBox="0 0 900 380" preserveAspectRatio="xMidYMid meet"></svg>
+        <svg id="d-chart" viewBox="0 0 900 580" preserveAspectRatio="xMidYMid meet"></svg>
       </div>
 
       <div class="detail-stats">
         <div class="detail-stat">
-          <div class="k">Without protection</div>
+          <div class="k">Without a collar</div>
           <div class="v" id="d-uh">—</div>
-          <div class="d" id="d-uh-d">— vs. last fall's low</div>
+          <div class="d" id="d-uh-d">— sell at whatever the market is</div>
         </div>
         <div class="detail-stat">
-          <div class="k">With safety net</div>
+          <div class="k">With the modeled collar</div>
           <div class="v" id="d-hd">—</div>
-          <div class="d" id="d-hd-d">— same bushels protected by the floor &amp; ceiling</div>
+          <div class="d" id="d-hd-d">— floor catches the downside, ceiling caps the upside</div>
         </div>
         <div class="detail-stat">
-          <div class="k">What protection added</div>
+          <div class="k">What the collar adds</div>
           <div class="v" id="d-delta">—</div>
-          <div class="d" id="d-delta-d">— what we gained, or upside we gave up</div>
+          <div class="d" id="d-delta-d">— gained from the floor, or upside given up to the ceiling</div>
         </div>
       </div>
     </div>
 
     <!-- ── Where the strikes sit ── -->
     <h2 class="ledger-h ledger-h-2">Where the floor and ceiling sit</h2>
-    <p class="ledger-sub">Green zone — floor pays out out. Dark zone — ceiling caps us. Dot — today.</p>
+    <p class="ledger-sub">Green band — if price ends below this, the floor pays the difference. Dark band — if price ends above this, we give up the gain to the ceiling. Dot is today.</p>
 
     <div class="strike-cards">
 
       <article class="strike-card">
         <div class="strike-meta">Corn · Dec '26 · 30,000 bu</div>
         <div class="strike-strip">
-          <svg viewBox="0 0 520 90" aria-label="Corn collar strike layout: floor at $4.30, today $4.65, cap at $5.00, against the $3.00 to $6.00 settlement range.">
+          <svg viewBox="0 0 520 130" aria-label="Corn collar strike layout: floor at $4.30, today $4.65, cap at $5.00, against the $3.00 to $6.00 settlement range.">
             <!-- Range axis -->
-            <line x1="20" y1="60" x2="500" y2="60" stroke="#C8C3BA" stroke-width="0.5"/>
+            <line x1="20" y1="80" x2="500" y2="80" stroke="#C8C3BA" stroke-width="0.5"/>
             <!-- $3 to $6 range. Each $0.30 ≈ 48px -->
-            <text x="20"  y="80" font-family="DM Sans, sans-serif" font-size="9.5" letter-spacing="0.1em" fill="#7A756D">$3.00</text>
-            <text x="500" y="80" font-family="DM Sans, sans-serif" font-size="9.5" letter-spacing="0.1em" fill="#7A756D" text-anchor="end">$6.00</text>
-            <!-- Floor zone (sage) — from $3.00 (x=20) to $4.30 (x=228) -->
-            <rect x="20"  y="44" width="208" height="32" fill="#7BAE7F" fill-opacity="0.18"/>
-            <text x="124" y="34" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="11" fill="#6A9D6E" text-anchor="middle">floor pays out</text>
-            <!-- Cap zone (ink) — from $5.00 (x=340) to $6.00 (x=500) -->
-            <rect x="340" y="44" width="160" height="32" fill="#3D3A36" fill-opacity="0.06"/>
-            <text x="420" y="34" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="11" fill="#3D3A36" text-anchor="middle">ceiling caps us</text>
+            <text x="20"  y="100" font-family="DM Sans, sans-serif" font-size="9.5" letter-spacing="0.1em" fill="#7A756D">$3.00</text>
+            <text x="500" y="100" font-family="DM Sans, sans-serif" font-size="9.5" letter-spacing="0.1em" fill="#7A756D" text-anchor="end">$6.00</text>
+            <!-- Floor band (sage) — from $3.00 (x=20) to $4.30 (x=228) -->
+            <rect x="20"  y="60" width="208" height="40" fill="#7BAE7F" fill-opacity="0.18"/>
+            <text x="124" y="50" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="11" fill="#6A9D6E" text-anchor="middle">floor catches us</text>
+            <!-- Cap band (ink) — from $5.00 (x=340) to $6.00 (x=500) -->
+            <rect x="340" y="60" width="160" height="40" fill="#3D3A36" fill-opacity="0.06"/>
+            <text x="420" y="50" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="11" fill="#3D3A36" text-anchor="middle">ceiling holds us back</text>
             <!-- Strike marks -->
-            <line x1="228" y1="44" x2="228" y2="76" stroke="#6A9D6E" stroke-width="1.5"/>
-            <text x="228" y="92" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="12" fill="#6A9D6E" text-anchor="middle">$4.30</text>
-            <line x1="340" y1="44" x2="340" y2="76" stroke="#3D3A36" stroke-width="1.5"/>
-            <text x="340" y="92" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="12" fill="#3D3A36" text-anchor="middle">$5.00</text>
+            <line x1="228" y1="60" x2="228" y2="100" stroke="#6A9D6E" stroke-width="1.5"/>
+            <text x="228" y="118" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="12" fill="#6A9D6E" text-anchor="middle">$4.30</text>
+            <line x1="340" y1="60" x2="340" y2="100" stroke="#3D3A36" stroke-width="1.5"/>
+            <text x="340" y="118" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="12" fill="#3D3A36" text-anchor="middle">$5.00</text>
             <!-- October low ref ($4.35 ≈ x=236) -->
-            <line x1="236" y1="44" x2="236" y2="76" stroke="#A8A39A" stroke-width="0.7" stroke-dasharray="3 2"/>
+            <line x1="236" y1="60" x2="236" y2="100" stroke="#A8A39A" stroke-width="0.7" stroke-dasharray="3 2"/>
             <!-- Today ($4.65 ≈ x=284) — radiating sage -->
-            <circle cx="284" cy="60" r="20" fill="#7BAE7F" opacity="0.10"/>
-            <circle cx="284" cy="60" r="13" fill="#7BAE7F" opacity="0.22"/>
-            <circle cx="284" cy="60" r="7"  fill="#7BAE7F" stroke="#FFFDF7" stroke-width="2"/>
-            <text x="284" y="20" font-family="Fraunces, Georgia, serif" font-style="italic" font-weight="500" font-size="16" fill="#6A9D6E" text-anchor="middle">$4.65</text>
-            <text x="284" y="34" font-family="DM Sans, sans-serif" font-size="9" letter-spacing="0.12em" fill="#6A9D6E" text-anchor="middle">TODAY</text>
+            <circle cx="284" cy="80" r="22" fill="#7BAE7F" opacity="0.10"/>
+            <circle cx="284" cy="80" r="14" fill="#7BAE7F" opacity="0.22"/>
+            <circle cx="284" cy="80" r="7"  fill="#7BAE7F" stroke="#FFFDF7" stroke-width="2"/>
+            <text x="284" y="32" font-family="Fraunces, Georgia, serif" font-style="italic" font-weight="500" font-size="16" fill="#6A9D6E" text-anchor="middle">$4.65</text>
+            <text x="284" y="46" font-family="DM Sans, sans-serif" font-size="9" letter-spacing="0.12em" fill="#6A9D6E" text-anchor="middle">TODAY</text>
           </svg>
         </div>
-<div class="strike-because">$0.35 of room either way before the safety net kicks in.</div>
+<div class="strike-because">$0.35 of room either way before the modeled collar would do anything.</div>
       </article>
 
       <article class="strike-card">
         <div class="strike-meta">Beans · Nov '26 · 5,000 bu</div>
         <div class="strike-strip">
-          <svg viewBox="0 0 520 90" aria-label="Soy collar strike layout: floor at $10.75, today $11.73, cap at $12.00, against the $8.00 to $14.00 settlement range.">
-            <line x1="20" y1="60" x2="500" y2="60" stroke="#C8C3BA" stroke-width="0.5"/>
-            <text x="20"  y="80" font-family="DM Sans, sans-serif" font-size="9.5" letter-spacing="0.1em" fill="#7A756D">$8.00</text>
-            <text x="500" y="80" font-family="DM Sans, sans-serif" font-size="9.5" letter-spacing="0.1em" fill="#7A756D" text-anchor="end">$14.00</text>
+          <svg viewBox="0 0 520 130" aria-label="Soy collar strike layout: floor at $10.75, today $11.73, cap at $12.00, against the $8.00 to $14.00 settlement range.">
+            <line x1="20" y1="80" x2="500" y2="80" stroke="#C8C3BA" stroke-width="0.5"/>
+            <text x="20"  y="100" font-family="DM Sans, sans-serif" font-size="9.5" letter-spacing="0.1em" fill="#7A756D">$8.00</text>
+            <text x="500" y="100" font-family="DM Sans, sans-serif" font-size="9.5" letter-spacing="0.1em" fill="#7A756D" text-anchor="end">$14.00</text>
             <!-- $8 to $14 → $1 ≈ 80px. Floor at $10.75 (x=240); cap at $12 (x=340); today at $11.73 (x=319); ref at $10.80 (x=244) -->
-            <rect x="20"  y="44" width="220" height="32" fill="#7BAE7F" fill-opacity="0.18"/>
-            <text x="120" y="34" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="11" fill="#6A9D6E" text-anchor="middle">floor pays out</text>
-            <rect x="340" y="44" width="160" height="32" fill="#3D3A36" fill-opacity="0.06"/>
-            <text x="420" y="34" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="11" fill="#3D3A36" text-anchor="middle">ceiling caps us</text>
-            <line x1="240" y1="44" x2="240" y2="76" stroke="#6A9D6E" stroke-width="1.5"/>
-            <text x="240" y="92" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="12" fill="#6A9D6E" text-anchor="middle">$10.75</text>
-            <line x1="340" y1="44" x2="340" y2="76" stroke="#3D3A36" stroke-width="1.5"/>
-            <text x="340" y="92" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="12" fill="#3D3A36" text-anchor="middle">$12.00</text>
-            <line x1="244" y1="44" x2="244" y2="76" stroke="#A8A39A" stroke-width="0.7" stroke-dasharray="3 2"/>
-            <circle cx="319" cy="60" r="20" fill="#7BAE7F" opacity="0.10"/>
-            <circle cx="319" cy="60" r="13" fill="#7BAE7F" opacity="0.22"/>
-            <circle cx="319" cy="60" r="7"  fill="#7BAE7F" stroke="#FFFDF7" stroke-width="2"/>
-            <text x="319" y="20" font-family="Fraunces, Georgia, serif" font-style="italic" font-weight="500" font-size="16" fill="#6A9D6E" text-anchor="middle">$11.73</text>
-            <text x="319" y="34" font-family="DM Sans, sans-serif" font-size="9" letter-spacing="0.12em" fill="#6A9D6E" text-anchor="middle">TODAY</text>
+            <rect x="20"  y="60" width="220" height="40" fill="#7BAE7F" fill-opacity="0.18"/>
+            <text x="120" y="50" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="11" fill="#6A9D6E" text-anchor="middle">floor catches us</text>
+            <rect x="340" y="60" width="160" height="40" fill="#3D3A36" fill-opacity="0.06"/>
+            <text x="420" y="50" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="11" fill="#3D3A36" text-anchor="middle">ceiling holds us back</text>
+            <line x1="240" y1="60" x2="240" y2="100" stroke="#6A9D6E" stroke-width="1.5"/>
+            <text x="240" y="118" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="12" fill="#6A9D6E" text-anchor="middle">$10.75</text>
+            <line x1="340" y1="60" x2="340" y2="100" stroke="#3D3A36" stroke-width="1.5"/>
+            <text x="340" y="118" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="12" fill="#3D3A36" text-anchor="middle">$12.00</text>
+            <line x1="244" y1="60" x2="244" y2="100" stroke="#A8A39A" stroke-width="0.7" stroke-dasharray="3 2"/>
+            <circle cx="319" cy="80" r="22" fill="#7BAE7F" opacity="0.10"/>
+            <circle cx="319" cy="80" r="14" fill="#7BAE7F" opacity="0.22"/>
+            <circle cx="319" cy="80" r="7"  fill="#7BAE7F" stroke="#FFFDF7" stroke-width="2"/>
+            <text x="319" y="32" font-family="Fraunces, Georgia, serif" font-style="italic" font-weight="500" font-size="16" fill="#6A9D6E" text-anchor="middle">$11.73</text>
+            <text x="319" y="46" font-family="DM Sans, sans-serif" font-size="9" letter-spacing="0.12em" fill="#6A9D6E" text-anchor="middle">TODAY</text>
           </svg>
         </div>
-<div class="strike-because">$0.27 to the ceiling. Closer to capping than corn.</div>
+<div class="strike-because">Beans are $0.27 below where the ceiling would kick in — closer to the cap than corn is.</div>
       </article>
 
     </div>
 
-    <!-- ── When the floor pays out ── -->
-    <h2 class="ledger-h ledger-h-2">What happens at harvest</h2>
-    <p class="ledger-sub">Three corn closing prices at harvest — what each means for the safety net.</p>
+    <!-- ── Three scenarios ── -->
+    <h2 class="ledger-h ledger-h-2">What would happen at harvest</h2>
+    <p class="ledger-sub">Three corn closing prices and what the modeled collar would do at each.</p>
 
     <div class="scenarios">
 
@@ -1147,21 +1306,21 @@
         <div class="scenario-tag">Best case · weather rally</div>
         <div class="scenario-headline">Corn closes at <em>$5.50</em></div>
         <div class="scenario-payoff neg">−$15,000</div>
-<div class="scenario-because">Ceiling kicks in; we give up $0.50/bu of upside on 30,000 bu. We'd have sold the cash crop at this price anyway, so we still come out ahead.</div>
+<div class="scenario-because">Ceiling kicks in; we'd give up $0.50/bu of upside on 30,000 bu. We'd have sold the cash crop at this price anyway, so we still come out ahead — just less than without the cap.</div>
       </article>
 
       <article class="scenario">
-        <div class="scenario-tag">Most likely · stays in the safe range</div>
+        <div class="scenario-tag">Most likely · stays between floor &amp; ceiling</div>
         <div class="scenario-headline">Corn closes at <em>$4.65</em></div>
         <div class="scenario-payoff">$0</div>
-<div class="scenario-because">Safety net dormant. We sell at the market price, no protection paid out, no upside given up.</div>
+<div class="scenario-because">Collar stays asleep. We sell at the market price; nothing pays out, nothing given up.</div>
       </article>
 
       <article class="scenario">
         <div class="scenario-tag">Worst case · harvest crash</div>
         <div class="scenario-headline">Corn closes at <em>$3.50</em></div>
         <div class="scenario-payoff">+$24,000</div>
-<div class="scenario-because">Floor kicks in. We collect $0.80/bu on 30,000 bu — exactly what the safety net is for.</div>
+<div class="scenario-because">Floor kicks in. We'd collect $0.80/bu on 30,000 bu — exactly what the collar is for.</div>
       </article>
 
     </div>
@@ -1175,22 +1334,22 @@
 </section>
 <div class="foot">
   <span>Internal Brief · Apr 2026</span>
-  <span>No-cost safety net · Not financial advice</span>
+  <span>What-if model · Not financial advice</span>
 </div>
 
 <!-- ================== TRADE ORDER WIDGET ================== -->
-<button class="trade-trigger" id="trade-trigger" type="button" aria-label="Open the protection adjustment widget">
-  <span>Adjust protection</span>
+<button class="trade-trigger" id="trade-trigger" type="button" aria-label="Open the model adjustment widget">
+  <span>Tune the model</span>
 </button>
 
-<aside class="trade-drawer" id="trade-drawer" aria-hidden="true" role="dialog" aria-label="Adjust the safety net">
+<aside class="trade-drawer" id="trade-drawer" aria-hidden="true" role="dialog" aria-label="Tune the collar model">
   <div class="trade-head">
-    <div class="trade-eyebrow">Adjust protection</div>
+    <div class="trade-eyebrow">Tune the model</div>
     <button class="trade-close" id="trade-close" type="button" aria-label="Close">×</button>
   </div>
 
-  <h3 class="trade-h">Adjust the <em>safety net</em>.</h3>
-  <p class="trade-sub">Move a price level, add bushels, or close it out.</p>
+  <h3 class="trade-h">Tune the <em>what-if</em>.</h3>
+  <p class="trade-sub">Move a price level, change bushels — see how the modeled collar changes. (This doesn't place a real order.)</p>
 
   <div class="trade-field">
     <label class="trade-label">Crop</label>
@@ -1309,11 +1468,11 @@ function drawChart(s, curPrice) {
 
   const narrow = window.matchMedia && window.matchMedia('(max-width: 559px)').matches;
   const W = 900;
-  // Bigger chart on narrow — accounts for the larger internal fonts.
-  const H = narrow ? 680 : 480;
+  // Taller chart so floor/ceiling bands and the payoff lines have real room.
+  const H = narrow ? 800 : 580;
   const margin = narrow
-    ? { top: 60, right: 32, bottom: 120, left: 160 }
-    : { top: 36, right: 36, bottom: 60, left: 96 };
+    ? { top: 72, right: 32, bottom: 130, left: 160 }
+    : { top: 44, right: 36, bottom: 70, left: 96 };
   svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
   const yFmt = narrow ? fmtUSDCompact : fmtUSD;
   // Internal SVG fonts. On narrow viewports the SVG is scaled down ~3×;
@@ -1445,14 +1604,14 @@ function updateStats(s, price) {
   dEl.className = 'v ' + (delta >= 0 ? 'pos' : 'neg');
 
   let detail;
-  if (price < s.put_strike)      detail = 'Put floor active — protection of ' + fmtUSD((s.put_strike - price) * s.hedged_bu) + ' on ' + s.hedged_bu.toLocaleString() + ' bu';
-  else if (price > s.call_strike) detail = 'Call cap active — upside forgone of ' + fmtUSD((price - s.call_strike) * s.hedged_bu) + ' on ' + s.hedged_bu.toLocaleString() + ' bu';
-  else                            detail = 'Between strikes — collar silent, cash tracks market 1:1';
+  if (price < s.put_strike)      detail = 'Floor kicks in — collects ' + fmtUSD((s.put_strike - price) * s.hedged_bu) + ' on ' + s.hedged_bu.toLocaleString() + ' bu';
+  else if (price > s.call_strike) detail = 'Ceiling kicks in — gives up ' + fmtUSD((price - s.call_strike) * s.hedged_bu) + ' on ' + s.hedged_bu.toLocaleString() + ' bu';
+  else                            detail = 'Between floor and ceiling — collar asleep, cash sale at market';
   document.getElementById('d-delta-d').textContent = detail;
   document.getElementById('d-uh-d').textContent =
-    s.total_bu.toLocaleString() + ' bu × (' + fmtPrice(price) + ' − ' + fmtPrice(s.ref_price) + ')';
+    s.total_bu.toLocaleString() + ' bu at ' + fmtPrice(price) + ' (vs reference ' + fmtPrice(s.ref_price) + ')';
   document.getElementById('d-hd-d').textContent =
-    'cash + ' + s.contracts + ' contract collar (' + s.hedged_bu.toLocaleString() + ' bu)';
+    'cash sale + modeled collar covering ' + s.hedged_bu.toLocaleString() + ' bu';
 }
 
 function sliderToPrice(val, s) { return s.price_min + (s.price_max - s.price_min) * (val / 100); }
