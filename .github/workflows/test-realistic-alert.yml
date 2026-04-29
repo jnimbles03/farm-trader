@@ -5,6 +5,9 @@ name: Test realistic alert
 # records it as pending so remind-pending.yml nudges on its usual
 # schedule — first reminder at +5 min, then every minute up to cap.
 #
+# Uses the plain (URL-safe) send script so the test works on Textbelt
+# accounts that have not been whitelisted for URL features.
+#
 # Use this when you want to see what a real alert AND its first
 # reminder look like on your phone. Costs 2 TextBelt credits per
 # recipient if you ignore the initial (initial + 1st reminder), up to
@@ -37,9 +40,8 @@ jobs:
 
       - name: Send realistic alert + record pending
         env:
-          TEXTBELT_KEY:      ${{ secrets.TEXTBELT_KEY }}
-          ALERT_PHONE:       ${{ secrets.ALERT_PHONE }}
-          REPLY_WEBHOOK_URL: ${{ secrets.REPLY_WEBHOOK_URL }}
+          TEXTBELT_KEY: ${{ secrets.TEXTBELT_KEY }}
+          ALERT_PHONE:  ${{ secrets.ALERT_PHONE }}
           # Tweak any of these to simulate a different tranche/fire.
           SIM_COMMODITY: "corn"
           SIM_CONTRACT:  "Dec '26"
@@ -47,7 +49,7 @@ jobs:
           SIM_TARGET:    "4.74"
           SIM_QUANTITY:  "8250"
           SIM_TRANCHE:   "Tranche 1 (25%)"
-        run: python scripts/send_realistic_test.py
+        run: python scripts/send_realistic_test_plain.py
 
       - name: Commit confirmations state
         run: |
