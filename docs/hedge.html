@@ -73,82 +73,65 @@
   }
 
   /* ── BINARY YES/NO INDICATOR ── */
+  /* Status row — quiet inline indicator. Was a giant bullseye disc;
+     now a small colored dot + uppercase tag + plain-English reason.
+     Keeps .binary-yes / .binary-no class pattern so flipping state
+     just swaps a class. */
   .binary {
     border-top: 0.5px solid var(--border);
     border-bottom: 0.5px solid var(--border);
-    padding: 28px 0 32px;
-    margin-bottom: 36px;
-    display: grid; grid-template-columns: 1fr; gap: 24px;
-    align-items: center;
-  }
-  @media (min-width: 720px) {
-    .binary { grid-template-columns: auto 1fr; gap: 40px; padding: 36px 0 40px; }
+    padding: 18px 0 22px;
+    margin-bottom: 32px;
+    display: flex; flex-direction: column; gap: 6px;
   }
   .binary-q {
     font-family: "DM Sans", sans-serif;
     font-size: 10.5px; font-weight: 500;
     letter-spacing: 0.18em; text-transform: uppercase;
     color: var(--slate);
-    grid-column: 1 / -1;
   }
-  .binary-badge {
-    position: relative; width: 160px; height: 160px;
-    display: flex; align-items: center; justify-content: center;
-    margin: 0 auto;
+  .binary-status {
+    display: inline-flex; align-items: center; gap: 9px;
+    font-family: "DM Sans", sans-serif;
+    font-size: 10.5px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--slate);
+    margin: 0 0 2px;
   }
-  @media (min-width: 720px) { .binary-badge { margin: 0; } }
-  .binary-badge::before, .binary-badge::after {
-    content: ''; position: absolute; inset: 0;
-    border-radius: 50%; pointer-events: none;
+  .binary-status::before {
+    content: ""; display: inline-block;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--rule);
   }
-  .binary-yes .binary-badge::before {
-    background: var(--sage); opacity: 0.10; transform: scale(1.5);
-  }
-  .binary-yes .binary-badge::after {
-    background: var(--sage); opacity: 0.22; transform: scale(1.18);
-  }
-  .binary-yes .binary-disc {
-    position: relative; z-index: 1;
-    width: 130px; height: 130px; border-radius: 50%;
-    background: var(--sage-deep);
-    display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 0 64px rgba(123,174,127,0.45);
-  }
-  .binary-no .binary-disc {
-    position: relative; z-index: 1;
-    width: 130px; height: 130px; border-radius: 50%;
+  .binary-yes .binary-status { color: var(--sage-deep); }
+  .binary-yes .binary-status::before { background: var(--sage-deep); }
+  .binary-no  .binary-status { color: var(--ink); }
+  .binary-no  .binary-status::before {
     background: transparent; border: 1px solid var(--ink);
-    display: flex; align-items: center; justify-content: center;
+    width: 7px; height: 7px;
   }
-  .binary-word {
-    font-family: "Fraunces", Georgia, serif;
-    font-style: italic; font-weight: 400; font-size: 52px;
-    color: var(--cream); letter-spacing: -0.02em; line-height: 1;
-  }
-  .binary-no .binary-word { color: var(--ink); }
 
-  .binary-side { display: flex; flex-direction: column; gap: 12px; }
   .binary-verb {
     font-family: "Fraunces", Georgia, serif;
-    font-weight: 400; font-size: 32px; line-height: 1.1;
-    letter-spacing: -0.018em; color: var(--ink); margin: 0;
+    font-weight: 400; font-size: 24px; line-height: 1.15;
+    letter-spacing: -0.014em; color: var(--ink); margin: 0;
   }
-  @media (min-width: 720px) { .binary-verb { font-size: 38px; } }
+  @media (min-width: 720px) { .binary-verb { font-size: 28px; } }
   .binary-verb em { font-style: italic; color: var(--sage-deep); }
   .binary-reason {
     font-family: "Fraunces", Georgia, serif;
-    font-style: italic; font-size: 15.5px; line-height: 1.5;
-    color: var(--slate); margin: 0; max-width: 540px;
+    font-style: italic; font-size: 15px; line-height: 1.5;
+    color: var(--slate); margin: 4px 0 0; max-width: 580px;
   }
   .binary-chips {
-    display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px;
+    display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px;
   }
   .binary-chip {
     font-family: "DM Sans", sans-serif;
-    font-size: 10.5px; font-weight: 500;
+    font-size: 10px; font-weight: 500;
     letter-spacing: 0.10em; text-transform: uppercase;
     color: var(--slate);
-    padding: 6px 10px;
+    padding: 4px 8px;
     border: 0.5px solid var(--rule);
   }
   .binary-chip-on { color: var(--sage-deep); border-color: var(--sage); }
@@ -449,7 +432,7 @@
     padding-top: 12px; border-top: 0.5px dotted var(--border);
   }
 
-  /* Scenario cards — when the floor pays */
+  /* Scenario cards — when the floor pays out */
   .scenarios {
     display: grid; grid-template-columns: 1fr; gap: 18px;
   }
@@ -907,42 +890,39 @@
 
   <p class="eyebrow">Hedge · April 28, 2026</p>
 
-  <!-- BINARY YES/NO INDICATOR — single biggest signal on the page -->
+  <!-- Quiet status row — small dot + plain-English reason.
+       Class flips to .binary-no when there's actually something to do. -->
   <div class="binary binary-yes">
-    <div class="binary-q">Hedge today?</div>
-    <div class="binary-badge">
-      <div class="binary-disc"><div class="binary-word">Yes</div></div>
-    </div>
-    <div class="binary-side">
-      <h2 class="binary-verb">Keep the hedge</h2>
-      <p class="binary-reason">Both crops between strikes. Collar is silent. Floor protects 35,000 bu of new crop. No action needed today.</p>
-      <div class="binary-chips">
-        <span class="binary-chip binary-chip-on">Both crops between strikes</span>
-        <span class="binary-chip binary-chip-on">Zero cost to carry</span>
-        <span class="binary-chip">35,000 bu exposed</span>
-      </div>
+    <div class="binary-q">Today's call</div>
+    <div class="binary-status">All quiet</div>
+    <h2 class="binary-verb">Nothing to do today</h2>
+    <p class="binary-reason">Corn and beans are both inside the safe range. The price-protection plan covering 35,000 bu of next harvest is sitting quietly — costing nothing to keep in place — so we wait.</p>
+    <div class="binary-chips">
+      <span class="binary-chip binary-chip-on">Inside the safe range</span>
+      <span class="binary-chip binary-chip-on">Free to maintain</span>
+      <span class="binary-chip">35,000 bu protected</span>
     </div>
   </div>
 
-  <h1>Active collars</h1>
+  <h1>Price protection in place</h1>
 
-  <p class="deck">Zero-cost collar · floors near Oct low · caps above T3 trigger · 35,000 bu protected.</p>
+  <p class="deck">A floor-and-ceiling safety net on next harvest — minimum prices near our October low, ceilings above our June sale-trigger price. Costs nothing to keep in place; covers 35,000 bushels.</p>
 
   <div class="hero-call">
     <div class="cell">
-      <div class="k">Bushels Hedged</div>
+      <div class="k">Bushels Protected</div>
       <div class="v">35,000</div>
-      <div class="sub">30,000 bu corn ZCZ26 · 5,000 bu soy ZSX26 · 7 contracts total</div>
+      <div class="sub">30,000 bu Dec '26 corn · 5,000 bu Nov '26 beans</div>
     </div>
     <div class="cell">
-      <div class="k">Floor Protection</div>
+      <div class="k">Worst-case payout</div>
       <div class="v"><em>$39,000</em></div>
-      <div class="sub">Maximum payoff if corn settles at $3.00 and soy at $8.00 at expiry</div>
+      <div class="sub">What we'd collect if prices crashed to $3.00 corn and $8.00 beans by harvest</div>
     </div>
     <div class="cell">
-      <div class="k">Cost</div>
+      <div class="k">What it costs</div>
       <div class="v">$0</div>
-      <div class="sub">Zero-cost collar — call premium received funds put premium paid</div>
+      <div class="sub">The ceiling we sold paid for the floor we bought — no money out of pocket</div>
     </div>
   </div>
 
@@ -968,7 +948,7 @@
       <text x="500" y="258" text-anchor="middle">$4.65</text>
       <text x="660" y="258" text-anchor="middle">$5.00</text>
       <text x="860" y="258" text-anchor="middle">$6.00</text>
-      <text x="470" y="290" text-anchor="middle" fill="#3D3A36">ZCZ26 settlement price ($ / bu)</text>
+      <text x="470" y="290" text-anchor="middle" fill="#3D3A36">Dec '26 corn closing price ($ / bu)</text>
 
       <!-- Floor and cap bands -->
       <rect fill="#7BAE7F" fill-opacity="0.18" x="80"  y="40" width="280" height="200"/>
@@ -992,27 +972,27 @@
       <!-- Legend -->
       <g>
         <line x1="80" y1="20" x2="106" y2="20" stroke="#7A756D" stroke-width="1.6" stroke-dasharray="5 3"/>
-        <text x="112" y="24">unhedged</text>
+        <text x="112" y="24">unprotected</text>
         <line x1="220" y1="20" x2="246" y2="20" stroke="#3D3A36" stroke-width="1.6"/>
-        <text x="252" y="24">hedged · cash + collar</text>
+        <text x="252" y="24">protected · cash + safety net</text>
         <line x1="430" y1="20" x2="456" y2="20" stroke="#7BAE7F" stroke-width="2"/>
-        <text x="462" y="24">floor in force</text>
+        <text x="462" y="24">floor active</text>
         <circle cx="600" cy="20" r="4" fill="#7BAE7F"/>
         <text x="610" y="24">today</text>
       </g>
 
       <!-- Annotations -->
       <line class="connector" x1="220" y1="192" x2="290" y2="170"/>
-      <text class="anno anno-sage" x="295" y="174">Floor — $4.30 put · 30,000 bu</text>
+      <text class="anno anno-sage" x="295" y="174">Floor — $4.30 minimum · 30,000 bu</text>
       <line class="connector" x1="760" y1="84" x2="830" y2="60"/>
-      <text class="anno" x="830" y="64" text-anchor="end">Ceiling — $5.00 call</text>
+      <text class="anno" x="830" y="64" text-anchor="end">Ceiling — $5.00 maximum</text>
 
       <!-- Today price chip — drawn last -->
       <text x="486" y="129" text-anchor="end"
             font-family="Fraunces, Georgia, serif" font-style="italic" font-weight="500"
             font-size="20" fill="#6A9D6E">$4.65</text>
       <text x="486" y="146" text-anchor="end"
-            font-family="DM Sans, sans-serif" font-size="10" letter-spacing="0.12em" fill="#6A9D6E">TODAY · BETWEEN STRIKES</text>
+            font-family="DM Sans, sans-serif" font-size="10" letter-spacing="0.12em" fill="#6A9D6E">TODAY · INSIDE THE SAFE RANGE</text>
     </svg>
   </figure>
 
@@ -1029,24 +1009,24 @@
 <section class="ledger">
   <div class="ledger-wrap">
 
-    <h2 class="ledger-h">Two collars</h2>
-    <p class="ledger-sub">Tap a collar; drag the price slider through every settlement.</p>
+    <h2 class="ledger-h">Two safety nets</h2>
+    <p class="ledger-sub">Tap a crop, drag the price slider — see what we'd take home at every closing price.</p>
 
     <div class="lots-strip" id="hedge-strip">
       <button class="lot-row active" data-collar="corn" type="button">
-        <span class="lot-row-pill pill-silent">Silent</span>
-        <span class="lot-row-name">Corn collar <span class="lot-row-loc">· ZCZ26 · Dec '26</span></span>
+        <span class="lot-row-pill pill-silent">Quiet</span>
+        <span class="lot-row-name">Corn safety net <span class="lot-row-loc">· Dec '26</span></span>
         <span class="lot-row-bu">30,000 bu</span>
         <span class="lot-row-val">$4.65</span>
-        <span class="lot-row-pace">$0.35 from cap</span>
+        <span class="lot-row-pace">$0.35 below the ceiling</span>
         <span class="lot-row-arrow" aria-hidden="true">→</span>
       </button>
       <button class="lot-row" data-collar="soy" type="button">
-        <span class="lot-row-pill pill-silent">Silent</span>
-        <span class="lot-row-name">Soy collar <span class="lot-row-loc">· ZSX26 · Nov '26</span></span>
+        <span class="lot-row-pill pill-silent">Quiet</span>
+        <span class="lot-row-name">Bean safety net <span class="lot-row-loc">· Nov '26</span></span>
         <span class="lot-row-bu">5,000 bu</span>
         <span class="lot-row-val">$11.73</span>
-        <span class="lot-row-pace">$0.27 from cap</span>
+        <span class="lot-row-pace">$0.27 below the ceiling</span>
         <span class="lot-row-arrow" aria-hidden="true">→</span>
       </button>
     </div>
@@ -1072,31 +1052,31 @@
 
       <div class="detail-stats">
         <div class="detail-stat">
-          <div class="k">Unhedged</div>
+          <div class="k">Without protection</div>
           <div class="v" id="d-uh">—</div>
-          <div class="d" id="d-uh-d">— vs. October-low reference</div>
+          <div class="d" id="d-uh-d">— vs. last fall's low</div>
         </div>
         <div class="detail-stat">
-          <div class="k">Hedged · cash + collar</div>
+          <div class="k">With safety net</div>
           <div class="v" id="d-hd">—</div>
-          <div class="d" id="d-hd-d">— same bushels with the floor-and-ceiling</div>
+          <div class="d" id="d-hd-d">— same bushels protected by the floor &amp; ceiling</div>
         </div>
         <div class="detail-stat">
-          <div class="k">Hedge contribution</div>
+          <div class="k">What protection added</div>
           <div class="v" id="d-delta">—</div>
-          <div class="d" id="d-delta-d">— protection captured or upside forgone</div>
+          <div class="d" id="d-delta-d">— what we gained, or upside we gave up</div>
         </div>
       </div>
     </div>
 
     <!-- ── Where the strikes sit ── -->
-    <h2 class="ledger-h ledger-h-2">Strike positions</h2>
-    <p class="ledger-sub">Sage zone = floor pays. Ink zone = cap forgoes. Dot = today.</p>
+    <h2 class="ledger-h ledger-h-2">Where the floor and ceiling sit</h2>
+    <p class="ledger-sub">Green zone — floor pays out out. Dark zone — ceiling caps us. Dot — today.</p>
 
     <div class="strike-cards">
 
       <article class="strike-card">
-        <div class="strike-meta">Corn ZCZ26 · 30,000 bu</div>
+        <div class="strike-meta">Corn · Dec '26 · 30,000 bu</div>
         <div class="strike-strip">
           <svg viewBox="0 0 520 90" aria-label="Corn collar strike layout: floor at $4.30, today $4.65, cap at $5.00, against the $3.00 to $6.00 settlement range.">
             <!-- Range axis -->
@@ -1106,10 +1086,10 @@
             <text x="500" y="80" font-family="DM Sans, sans-serif" font-size="9.5" letter-spacing="0.1em" fill="#7A756D" text-anchor="end">$6.00</text>
             <!-- Floor zone (sage) — from $3.00 (x=20) to $4.30 (x=228) -->
             <rect x="20"  y="44" width="208" height="32" fill="#7BAE7F" fill-opacity="0.18"/>
-            <text x="124" y="34" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="11" fill="#6A9D6E" text-anchor="middle">floor pays</text>
+            <text x="124" y="34" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="11" fill="#6A9D6E" text-anchor="middle">floor pays out</text>
             <!-- Cap zone (ink) — from $5.00 (x=340) to $6.00 (x=500) -->
             <rect x="340" y="44" width="160" height="32" fill="#3D3A36" fill-opacity="0.06"/>
-            <text x="420" y="34" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="11" fill="#3D3A36" text-anchor="middle">cap forgoes</text>
+            <text x="420" y="34" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="11" fill="#3D3A36" text-anchor="middle">ceiling caps us</text>
             <!-- Strike marks -->
             <line x1="228" y1="44" x2="228" y2="76" stroke="#6A9D6E" stroke-width="1.5"/>
             <text x="228" y="92" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="12" fill="#6A9D6E" text-anchor="middle">$4.30</text>
@@ -1125,11 +1105,11 @@
             <text x="284" y="34" font-family="DM Sans, sans-serif" font-size="9" letter-spacing="0.12em" fill="#6A9D6E" text-anchor="middle">TODAY</text>
           </svg>
         </div>
-<div class="strike-because">$0.35 of room either way. Roughly symmetric.</div>
+<div class="strike-because">$0.35 of room either way before the safety net kicks in.</div>
       </article>
 
       <article class="strike-card">
-        <div class="strike-meta">Soy ZSX26 · 5,000 bu</div>
+        <div class="strike-meta">Beans · Nov '26 · 5,000 bu</div>
         <div class="strike-strip">
           <svg viewBox="0 0 520 90" aria-label="Soy collar strike layout: floor at $10.75, today $11.73, cap at $12.00, against the $8.00 to $14.00 settlement range.">
             <line x1="20" y1="60" x2="500" y2="60" stroke="#C8C3BA" stroke-width="0.5"/>
@@ -1137,9 +1117,9 @@
             <text x="500" y="80" font-family="DM Sans, sans-serif" font-size="9.5" letter-spacing="0.1em" fill="#7A756D" text-anchor="end">$14.00</text>
             <!-- $8 to $14 → $1 ≈ 80px. Floor at $10.75 (x=240); cap at $12 (x=340); today at $11.73 (x=319); ref at $10.80 (x=244) -->
             <rect x="20"  y="44" width="220" height="32" fill="#7BAE7F" fill-opacity="0.18"/>
-            <text x="120" y="34" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="11" fill="#6A9D6E" text-anchor="middle">floor pays</text>
+            <text x="120" y="34" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="11" fill="#6A9D6E" text-anchor="middle">floor pays out</text>
             <rect x="340" y="44" width="160" height="32" fill="#3D3A36" fill-opacity="0.06"/>
-            <text x="420" y="34" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="11" fill="#3D3A36" text-anchor="middle">cap forgoes</text>
+            <text x="420" y="34" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="11" fill="#3D3A36" text-anchor="middle">ceiling caps us</text>
             <line x1="240" y1="44" x2="240" y2="76" stroke="#6A9D6E" stroke-width="1.5"/>
             <text x="240" y="92" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="12" fill="#6A9D6E" text-anchor="middle">$10.75</text>
             <line x1="340" y1="44" x2="340" y2="76" stroke="#3D3A36" stroke-width="1.5"/>
@@ -1152,36 +1132,36 @@
             <text x="319" y="34" font-family="DM Sans, sans-serif" font-size="9" letter-spacing="0.12em" fill="#6A9D6E" text-anchor="middle">TODAY</text>
           </svg>
         </div>
-<div class="strike-because">$0.27 of upside before the cap. Closer than the corn collar.</div>
+<div class="strike-because">$0.27 to the ceiling. Closer to capping than corn.</div>
       </article>
 
     </div>
 
-    <!-- ── When the floor pays ── -->
-    <h2 class="ledger-h ledger-h-2">Settlement scenarios</h2>
-    <p class="ledger-sub">Bullish · base · bearish. Three corn outcomes at expiry.</p>
+    <!-- ── When the floor pays out ── -->
+    <h2 class="ledger-h ledger-h-2">What happens at harvest</h2>
+    <p class="ledger-sub">Three corn closing prices at harvest — what each means for the safety net.</p>
 
     <div class="scenarios">
 
       <article class="scenario">
-        <div class="scenario-tag">Bullish · weather rally</div>
-        <div class="scenario-headline">Corn settles at <em>$5.50</em></div>
+        <div class="scenario-tag">Best case · weather rally</div>
+        <div class="scenario-headline">Corn closes at <em>$5.50</em></div>
         <div class="scenario-payoff neg">−$15,000</div>
-<div class="scenario-because">Cap in force; $0.50/bu of upside sold on 30,000 bu. Cash gets sold here anyway.</div>
+<div class="scenario-because">Ceiling kicks in; we give up $0.50/bu of upside on 30,000 bu. We'd have sold the cash crop at this price anyway, so we still come out ahead.</div>
       </article>
 
       <article class="scenario">
-        <div class="scenario-tag">Base · between strikes</div>
-        <div class="scenario-headline">Corn settles at <em>$4.65</em></div>
+        <div class="scenario-tag">Most likely · stays in the safe range</div>
+        <div class="scenario-headline">Corn closes at <em>$4.65</em></div>
         <div class="scenario-payoff">$0</div>
-<div class="scenario-because">Collar silent. Cash tracks market 1:1.</div>
+<div class="scenario-because">Safety net dormant. We sell at the market price, no protection paid out, no upside given up.</div>
       </article>
 
       <article class="scenario">
-        <div class="scenario-tag">Bearish · harvest break</div>
-        <div class="scenario-headline">Corn settles at <em>$3.50</em></div>
+        <div class="scenario-tag">Worst case · harvest crash</div>
+        <div class="scenario-headline">Corn closes at <em>$3.50</em></div>
         <div class="scenario-payoff">+$24,000</div>
-<div class="scenario-because">Floor in force. Put pays $0.80/bu on 30,000 bu. Why the hedge exists.</div>
+<div class="scenario-because">Floor kicks in. We collect $0.80/bu on 30,000 bu — exactly what the safety net is for.</div>
       </article>
 
     </div>
@@ -1195,28 +1175,28 @@
 </section>
 <div class="foot">
   <span>Internal Brief · Apr 2026</span>
-  <span>Zero-cost collar · Not financial advice</span>
+  <span>No-cost safety net · Not financial advice</span>
 </div>
 
 <!-- ================== TRADE ORDER WIDGET ================== -->
-<button class="trade-trigger" id="trade-trigger" type="button" aria-label="Open the hedge adjustment widget">
-  <span>Adjust hedge</span>
+<button class="trade-trigger" id="trade-trigger" type="button" aria-label="Open the protection adjustment widget">
+  <span>Adjust protection</span>
 </button>
 
-<aside class="trade-drawer" id="trade-drawer" aria-hidden="true" role="dialog" aria-label="Adjust the hedge">
+<aside class="trade-drawer" id="trade-drawer" aria-hidden="true" role="dialog" aria-label="Adjust the safety net">
   <div class="trade-head">
-    <div class="trade-eyebrow">Hedge order</div>
+    <div class="trade-eyebrow">Adjust protection</div>
     <button class="trade-close" id="trade-close" type="button" aria-label="Close">×</button>
   </div>
 
-  <h3 class="trade-h">Adjust the <em>hedge</em>.</h3>
-  <p class="trade-sub">Roll a strike, add bushels, or close the collar.</p>
+  <h3 class="trade-h">Adjust the <em>safety net</em>.</h3>
+  <p class="trade-sub">Move a price level, add bushels, or close it out.</p>
 
   <div class="trade-field">
     <label class="trade-label">Crop</label>
     <div class="crop-toggle" id="crop-toggle">
-      <button data-crop="corn" class="active" type="button">Corn ZCZ26</button>
-      <button data-crop="soy" type="button">Soy ZSX26</button>
+      <button data-crop="corn" class="active" type="button">Corn (Dec '26)</button>
+      <button data-crop="soy" type="button">Beans (Nov '26)</button>
     </div>
   </div>
 
@@ -1228,11 +1208,11 @@
         <span class="roll-option-r">Recommended today</span>
       </button>
       <button class="roll-option" data-roll="up" type="button">
-        <span class="roll-option-l">Roll the floor up</span>
+        <span class="roll-option-l">Raise the floor</span>
         <span class="roll-option-r">$4.30 → $4.50</span>
       </button>
       <button class="roll-option" data-roll="up-cap" type="button">
-        <span class="roll-option-l">Roll the cap up</span>
+        <span class="roll-option-l">Raise the ceiling</span>
         <span class="roll-option-r">$5.00 → $5.25</span>
       </button>
       <button class="roll-option" data-roll="add" type="button">
@@ -1240,8 +1220,8 @@
         <span class="roll-option-r">+5,000 bu</span>
       </button>
       <button class="roll-option" data-roll="close" type="button">
-        <span class="roll-option-l">Close the collar</span>
-        <span class="roll-option-r">Buy back · sell back</span>
+        <span class="roll-option-l">Close it out</span>
+        <span class="roll-option-r">Unwind both sides</span>
       </button>
     </div>
   </div>
@@ -1252,7 +1232,7 @@
   </a>
 
   <div class="trade-foot">
-    Premium impact and net cost confirmed by broker · Logged after fill
+    Cost confirmed by broker before any change · Logged after the order fills
   </div>
 </aside>
 
@@ -1274,7 +1254,7 @@ const COLLAR = {
       { label: 'T3 June peak', price: 4.87 },
     ],
     price_min: 3.00, price_max: 6.00,
-    headline: 'Corn collar · floor <em>$4.30</em> · cap <em>$5.00</em> · 30,000 bu',
+    headline: 'Corn safety net · floor <em>$4.30</em> · ceiling <em>$5.00</em> · 30,000 bu',
   },
   soy: {
     label: 'Soybeans (Nov 2026)', symbol: 'ZSX26',
@@ -1288,7 +1268,7 @@ const COLLAR = {
       { label: 'T4 Jul–Aug', price: 11.66 },
     ],
     price_min: 8.00, price_max: 14.00,
-    headline: 'Soy collar · floor <em>$10.75</em> · cap <em>$12.00</em> · 5,000 bu',
+    headline: 'Bean safety net · floor <em>$10.75</em> · ceiling <em>$12.00</em> · 5,000 bu',
   }
 };
 let current = 'corn';
