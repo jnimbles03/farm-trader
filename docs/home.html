@@ -1129,6 +1129,78 @@
   .lot-row-pace { grid-column: 3; grid-row: 2; text-align: right; }
   .lot-row-arrow { display: none !important; }
 
+  /* === COVER TOP — H1 stack + market wire blotter side-by-side ===
+     Wraps the eyebrow/h1/deck on the left and the blotter on the right.
+     Stacks vertically on phones. */
+  .cover-top {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 32px;
+    margin-bottom: 36px;
+  }
+  @media (min-width: 720px) {
+    .cover-top { grid-template-columns: minmax(0, 1fr) 360px; gap: 56px; }
+  }
+  .cover-headline { min-width: 0; }
+
+  /* Blotter card */
+  .blotter {
+    background: var(--paper);
+    border: 0.5px solid var(--border);
+    padding: 16px 18px 6px;
+  }
+  .blotter-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    border-bottom: 0.5px solid var(--border);
+    padding-bottom: 10px; margin-bottom: 4px;
+  }
+  .blotter-eyebrow {
+    font-family: "DM Sans", -apple-system, sans-serif;
+    font-size: 10.5px; font-weight: 600;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--ink);
+  }
+  .blotter-meta {
+    font-family: "DM Sans", -apple-system, sans-serif;
+    font-size: 10px; letter-spacing: 0.06em;
+    color: var(--dust); text-transform: uppercase;
+  }
+  .blotter-list { list-style: none; padding: 0; margin: 0; }
+  .blotter-item {
+    display: grid;
+    grid-template-columns: 56px 1fr 28px;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 0.5px solid var(--border);
+    align-items: baseline;
+  }
+  .blotter-item:last-child { border-bottom: 0; }
+  .blotter-tag {
+    font-family: "DM Sans", -apple-system, sans-serif;
+    font-size: 9px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    text-align: center;
+    padding: 3px 4px;
+    border: 0.5px solid var(--rule);
+    color: var(--slate);
+    align-self: start;
+  }
+  .blotter-tag.tag-corn  { color: var(--ink);       border-color: var(--ink); }
+  .blotter-tag.tag-soy   { color: var(--sage-deep); border-color: var(--sage); }
+  .blotter-tag.tag-macro { color: var(--slate);     border-color: var(--rule); }
+  .blotter-text {
+    font-family: "DM Sans", -apple-system, sans-serif;
+    font-size: 13px; line-height: 1.4;
+    color: var(--ink);
+  }
+  .blotter-time {
+    font-family: "DM Sans", -apple-system, sans-serif;
+    font-size: 10px; letter-spacing: 0.04em;
+    color: var(--dust);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
   /* Mobile sizing dial-back */
   @media (max-width: 560px) {
     h1 { font-size: 26px; }
@@ -1149,6 +1221,12 @@
     .lot-row-name { font-size: 14px; }
     .lot-row-name .lot-row-loc { font-size: 12px; }
     .lot-row-pace { font-size: 11.5px; }
+
+    /* Blotter on iPhone */
+    .cover-top { gap: 22px; margin-bottom: 24px; }
+    .blotter { padding: 14px 14px 4px; }
+    .blotter-item { grid-template-columns: 52px 1fr 26px; gap: 8px; padding: 9px 0; }
+    .blotter-text { font-size: 12.5px; line-height: 1.35; }
   }
 
 </style>
@@ -1166,11 +1244,56 @@
     </div>
   </div>
 
-  <p class="eyebrow">Grain · April 28, 2026</p>
+  <!-- Cover top: H1 stack on the left, market wire blotter on the right.
+       The blotter is currently inlined with plausible Apr 2026 headlines;
+       wire to a real curated feed (USDA crop progress, FCStone, Reuters
+       ag wire, etc.) for production. Each row tagged CORN / SOY / MACRO. -->
+  <div class="cover-top">
+    <div class="cover-headline">
+      <p class="eyebrow">Grain · April 28, 2026</p>
+      <h1>Today's call</h1>
+      <p class="deck">Soy <em>+5pp</em> ahead of pace · corn on pace · $20,500 in May–June obligations.</p>
+    </div>
 
-  <h1>Today's call</h1>
-
-  <p class="deck">Soy <em>+5pp</em> ahead of pace · corn on pace · $20,500 in May–June obligations.</p>
+    <aside class="blotter" aria-label="Market wire — headlines material to corn or soybean prices">
+      <div class="blotter-head">
+        <span class="blotter-eyebrow">Market wire</span>
+        <span class="blotter-meta">Updated 2h ago</span>
+      </div>
+      <ul class="blotter-list">
+        <li class="blotter-item">
+          <span class="blotter-tag tag-corn">Corn</span>
+          <span class="blotter-text">USDA: 28% planted vs 5-yr avg 32%; planting window opens this week</span>
+          <span class="blotter-time">2h</span>
+        </li>
+        <li class="blotter-item">
+          <span class="blotter-tag tag-soy">Soy</span>
+          <span class="blotter-text">China books 240,000 MT US soy for July — first new-crop buy in 3 weeks</span>
+          <span class="blotter-time">4h</span>
+        </li>
+        <li class="blotter-item">
+          <span class="blotter-tag tag-corn">Corn</span>
+          <span class="blotter-text">Brazil safrinha estimate trimmed to 121M MT on Mato Grosso dryness</span>
+          <span class="blotter-time">6h</span>
+        </li>
+        <li class="blotter-item">
+          <span class="blotter-tag tag-macro">Macro</span>
+          <span class="blotter-text">Dollar index 102.8, weakest in 6 weeks as Fed minutes signal Q3 cut</span>
+          <span class="blotter-time">1d</span>
+        </li>
+        <li class="blotter-item">
+          <span class="blotter-tag tag-soy">Soy</span>
+          <span class="blotter-text">Argentina harvest 47% complete; on track for 50.5M MT crop</span>
+          <span class="blotter-time">1d</span>
+        </li>
+        <li class="blotter-item">
+          <span class="blotter-tag tag-macro">Calendar</span>
+          <span class="blotter-text">May 10 WASDE — first new-crop balance sheet of the year</span>
+          <span class="blotter-time">12d</span>
+        </li>
+      </ul>
+    </aside>
+  </div>
 
   <!-- Three-cell hero call: cleanly states the headline math -->
   <div class="hero-call">
