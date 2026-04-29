@@ -55,20 +55,67 @@
   @media (min-width: 720px) { .cover { padding: 72px 48px 48px; } }
 
   .nav {
-    display: flex; justify-content: space-between; align-items: baseline;
+    display: flex; justify-content: space-between; align-items: flex-end;
     margin: 0 0 36px; gap: 18px;
     border-bottom: 0.5px solid var(--border);
-    padding-bottom: 14px;
+    padding-bottom: 16px;
   }
+  /* === BRAND LOCKUP =====================================================
+     Section-grid mark + Fraunces wordmark + small-caps tagline.
+     The mark is an abstract reference to the Midwest survey-section grid
+     (each square mile divided in quarters) — geometric, etched, no kitsch.
+     Wordmark is intentionally large; this is the front of the book. */
   .nav .brand {
-    font-family: "Fraunces", Georgia, serif;
-    font-weight: 500; font-size: 17px; letter-spacing: -0.012em;
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
     color: var(--ink);
+    text-decoration: none;
+    line-height: 1;
   }
+  .brand-mark {
+    flex: 0 0 64px;
+    width: 64px; height: 64px;
+    color: var(--ink); /* drives currentColor on the outer diamond */
+  }
+  @media (min-width: 720px) {
+    .brand-mark { flex-basis: 84px; width: 84px; height: 84px; }
+  }
+  .brand-words {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    line-height: 1;
+  }
+  .brand-name {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 500;
+    font-size: 30px;
+    letter-spacing: -0.018em;
+    color: var(--ink);
+    line-height: 0.92;
+  }
+  @media (min-width: 720px) { .brand-name { font-size: 42px; } }
+  .brand-and { color: var(--sage-deep); font-style: italic; font-weight: 400; }
+  .brand-tag {
+    font-family: "DM Sans", sans-serif;
+    font-weight: 500;
+    font-size: 9.5px;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    color: var(--sage-deep);
+    border-top: 0.5px solid var(--rule);
+    padding-top: 5px;
+    width: 100%;
+  }
+  @media (min-width: 720px) { .brand-tag { font-size: 10.5px; padding-top: 6px; } }
+  /* legacy `.out` kept for the back-of-book wordmark */
   .nav .brand .out { color: var(--sage-deep); font-style: italic; font-weight: 400; }
   .nav-links {
     display: flex; gap: 22px; font-size: 11px;
     letter-spacing: 0.14em; text-transform: uppercase; color: var(--slate);
+    padding-bottom: 4px;
   }
   .nav-links a { border: 0; color: var(--slate); }
   .nav-links a.here { color: var(--ink); border-bottom: 0.5px solid var(--ink); padding-bottom: 2px; }
@@ -1137,10 +1184,18 @@
   }
   .close p strong { font-style: normal; font-weight: 500; color: var(--ink); }
   .wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
     font-family: "Fraunces", Georgia, serif;
-    font-weight: 500; font-size: 22px; letter-spacing: -0.012em;
+    font-weight: 500; font-size: 32px; letter-spacing: -0.014em;
+    line-height: 1;
   }
-  .wordmark .out { color: var(--sage-deep); font-style: italic; font-weight: 400; }
+  @media (max-width: 719px) { .wordmark { font-size: 26px; gap: 10px; } }
+  .wordmark .out,
+  .wordmark .brand-and { color: var(--sage-deep); font-style: italic; font-weight: 400; }
+  .wordmark .brand-mark { width: 40px; height: 40px; flex-basis: 40px; color: var(--ink); }
+  @media (max-width: 719px) { .wordmark .brand-mark { width: 32px; height: 32px; flex-basis: 32px; } }
   .foot {
     max-width: 960px;
     margin: 0 auto;
@@ -1557,7 +1612,12 @@
   @media (min-width: 720px) { .foot { padding: 0 48px 48px; } }
 
   /* ---- Nav ---- */
-  .nav { gap: 12px; flex-wrap: wrap; }
+  .nav { gap: 12px; flex-wrap: wrap; padding-bottom: 14px; }
+  @media (max-width: 719px) {
+    .nav .brand { gap: 10px; }
+    .brand-words { gap: 4px; }
+    .brand-tag { padding-top: 4px; letter-spacing: 0.20em; }
+  }
   .nav-links { gap: 16px; flex-wrap: wrap; row-gap: 6px; }
   .nav-links a { display: inline-flex; align-items: center; min-height: 44px; }
   @media (min-width: 720px) {
@@ -1683,7 +1743,26 @@
 <section class="cover">
 
   <div class="nav">
-    <div class="brand">freis<span class="out"> · farm</span></div>
+    <a href="./" class="brand" aria-label="Freis Farm — Board of Trade">
+      <!-- Section-grid mark: rotated square divided into quarters,
+           a hairline reference to the survey-section grid that
+           defines the Midwest. No corn, no tractor, no farmhouse. -->
+      <svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+        <polygon points="24,3 45,24 24,45 3,24"
+                 fill="none" stroke="currentColor" stroke-width="1.1"
+                 stroke-linejoin="miter"/>
+        <line x1="24" y1="3"  x2="24" y2="45"
+              stroke="var(--sage-deep)" stroke-width="0.55"/>
+        <line x1="3"  y1="24" x2="45" y2="24"
+              stroke="var(--sage-deep)" stroke-width="0.55"/>
+        <rect x="22.4" y="22.4" width="3.2" height="3.2"
+              fill="var(--sage-deep)"/>
+      </svg>
+      <span class="brand-words">
+        <span class="brand-name">Freis <span class="brand-and">·</span> Farm</span>
+        <span class="brand-tag">Board of Trade</span>
+      </span>
+    </a>
     <div class="nav-links">
       <a href="./" class="here">Today's Call</a>
       <a href="hedge.html">Hedge</a>
@@ -2276,7 +2355,20 @@
 
 <!-- ================== BACK OF BOOK ================== -->
 <section class="close">
-  <div class="wordmark">freis<span class="out"> · farm</span></div>
+  <div class="wordmark" aria-label="Freis Farm">
+    <svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+      <polygon points="24,3 45,24 24,45 3,24"
+               fill="none" stroke="currentColor" stroke-width="1.1"
+               stroke-linejoin="miter"/>
+      <line x1="24" y1="3"  x2="24" y2="45"
+            stroke="var(--sage-deep)" stroke-width="0.55"/>
+      <line x1="3"  y1="24" x2="45" y2="24"
+            stroke="var(--sage-deep)" stroke-width="0.55"/>
+      <rect x="22.4" y="22.4" width="3.2" height="3.2"
+            fill="var(--sage-deep)"/>
+    </svg>
+    <span>Freis <span class="brand-and">·</span> Farm</span>
+  </div>
 </section>
 <div class="foot">
   <span>Internal Brief · Apr 2026</span>
