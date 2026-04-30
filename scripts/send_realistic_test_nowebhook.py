@@ -45,6 +45,8 @@ def _recipients() -> list[str]:
 def _send(phone: str, message: str) -> bool:
     # Note the deliberate omission: NO replyWebhookUrl, even if
     # REPLY_WEBHOOK_URL is set in the environment.
+    if not message.startswith("[FARM]"):
+        message = "[FARM] " + message
     payload = {"phone": phone, "message": message, "key": TEXTBELT_KEY}
     try:
         r = httpx.post("https://textbelt.com/text", data=payload, timeout=15.0)

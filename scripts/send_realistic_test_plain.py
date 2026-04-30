@@ -134,6 +134,8 @@ def _drop_stale_sim_entries(data: dict) -> None:
 
 def _send(phone: str, message: str) -> bool:
     """Send via Textbelt using only phone + message + key (no webhook/URL fields)."""
+    if not message.startswith("[FARM]"):
+        message = "[FARM] " + message
     payload = {"phone": phone, "message": message, "key": TEXTBELT_KEY}
     try:
         r = httpx.post("https://textbelt.com/text", data=payload, timeout=15.0)

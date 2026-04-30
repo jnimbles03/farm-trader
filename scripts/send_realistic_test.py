@@ -133,6 +133,8 @@ def _drop_stale_sim_entries(data: dict) -> None:
 # ---------------------------------------------------------------------------
 
 def _send(phone: str, message: str) -> bool:
+    if not message.startswith("[FARM]"):
+        message = "[FARM] " + message
     payload = {"phone": phone, "message": message, "key": TEXTBELT_KEY}
     if REPLY_WEBHOOK_URL:
         payload["replyWebhookUrl"] = REPLY_WEBHOOK_URL

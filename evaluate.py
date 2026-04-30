@@ -1060,6 +1060,11 @@ def send_sms(message: str, reply_webhook_url: str = "") -> bool:
 
 def _send_sms_textbelt(message: str, phone: str,
                        reply_webhook_url: str = "") -> bool:
+    # Every outbound SMS is prefixed with [FARM] so recipients can
+    # filter / fast-recognize farm alerts among general SMS traffic.
+    # Idempotent — won't double-prefix if a caller already added it.
+    if not message.startswith("[FARM]"):
+        message = "[FARM] " + message
     try:
         data = {"phone": phone, "message": message, "key": TEXTBELT_KEY}
         if reply_webhook_url:
@@ -1391,15 +1396,47 @@ def evaluate_signals(state: dict[str, dict[str, Any]]) -> tuple[list[dict[str, A
         prior = state.get(s.signal_key) or {}
         prior_status = prior.get("status", "WAIT")
         last_fired = prior.get("last_fired")
+        last_fired_price = prior.get("last_fired_price")
+
+        # ── Smart cooldown ──
+        # Replace the simple 24h rolling cooldown with a two-condition rule:
+        #
+        #   Re-fire on this signal iff the prior fire was on a DIFFERENT
+        #   calendar day in CT, OR price has moved >= 2% beyond the target
+        #   from where it fired last time.
+        #
+        # First condition stops same-day nag oscillations (HIT, WAIT, HIT,
+        # WAIT…). Second condition lets a real breakout get a second alert
+        # because the situation has materially changed since you last saw
+        # it. Together: max ~one alert per signal per day, plus emergency
+        # re-fire on a meaningful break.
+        #
+        # ALERT_COOLDOWN env var is kept as a safety floor — even if both
+        # conditions above pass, we never re-fire faster than ALERT_COOLDOWN
+        # seconds (default 1h) to absorb evaluator drift / clock skew.
+        BREACH_PCT = 0.02
+        SAFETY_FLOOR_S = min(ALERT_COOLDOWN, 3600)  # at least 1h between fires
 
         should_fire = False
         if hit and prior_status != "HIT":
-            if last_fired:
-                elapsed = (datetime.now(timezone.utc)
-                           - datetime.fromisoformat(last_fired)).total_seconds()
-                should_fire = elapsed >= ALERT_COOLDOWN
-            else:
+            if not last_fired:
                 should_fire = True
+            else:
+                last_fired_dt = datetime.fromisoformat(last_fired)
+                elapsed_s = (datetime.now(timezone.utc) - last_fired_dt).total_seconds()
+                if elapsed_s < SAFETY_FLOOR_S:
+                    should_fire = False
+                else:
+                    # Different CT calendar day?
+                    ct = timezone(timedelta(hours=-6))  # CST baseline; close enough for day-boundary
+                    different_day = (last_fired_dt.astimezone(ct).date()
+                                     != datetime.now(timezone.utc).astimezone(ct).date())
+                    # Price moved ≥2% from where it last fired?
+                    breach_pct = 0.0
+                    if last_fired_price and s.target_price:
+                        breach_pct = abs(live - last_fired_price) / s.target_price
+                    breached = breach_pct >= BREACH_PCT
+                    should_fire = different_day or breached
 
         if should_fire:
             now = datetime.now(timezone.utc)
@@ -1412,7 +1449,9 @@ def evaluate_signals(state: dict[str, dict[str, Any]]) -> tuple[list[dict[str, A
             month_abbr = _MONTH_ABBR[s.futures_month]
             yr2 = f"'{s.futures_year % 100:02d}"
             verb = "SELL" if s.action == "SELL" else "BUY BACK"
-            base_msg = (f"FREIS FARM {verb} alert: "
+            # [FARM] prefix is added centrally in _send_sms_textbelt;
+            # don't repeat the brand here.
+            base_msg = (f"{verb} alert: "
                         f"{s.commodity.capitalize()} {month_abbr} {yr2} is at "
                         f"${live:.2f} (target ${s.target_price:.2f})")
 
@@ -1432,6 +1471,7 @@ def evaluate_signals(state: dict[str, dict[str, Any]]) -> tuple[list[dict[str, A
             if send_sms(msg, reply_webhook_url=REPLY_WEBHOOK_URL):
                 fired += 1
                 last_fired = now_iso
+                last_fired_price = round(live, 4)
             else:
                 # Don't set last_fired on failure — we want the next run
                 # to try again rather than silently sitting in cooldown.
@@ -1445,10 +1485,11 @@ def evaluate_signals(state: dict[str, dict[str, Any]]) -> tuple[list[dict[str, A
                     _save_confirmations(data)
 
         state[s.signal_key] = {
-            "status":       new_status,
-            "last_fired":   last_fired,
-            "last_price":   round(live, 4),
-            "last_updated": now_iso,
+            "status":             new_status,
+            "last_fired":         last_fired,
+            "last_fired_price":   last_fired_price,
+            "last_price":         round(live, 4),
+            "last_updated":       now_iso,
         }
 
         rows.append({

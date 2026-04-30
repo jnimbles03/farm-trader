@@ -146,6 +146,8 @@ def send_follow_up(phones: list[str], message: str) -> None:
     if not phones:
         log.warning("follow-up SMS skipped — no recipients")
         return
+    if not message.startswith("[FARM]"):
+        message = "[FARM] " + message
     for phone in phones:
         try:
             r = httpx.post(

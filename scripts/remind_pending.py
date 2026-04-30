@@ -110,6 +110,8 @@ def send_reminder(phone: str, message: str) -> bool:
     if not TEXTBELT_KEY:
         log.warning("reminder skipped — TEXTBELT_KEY missing")
         return False
+    if not message.startswith("[FARM]"):
+        message = "[FARM] " + message
     try:
         data = {"phone": phone, "message": message, "key": TEXTBELT_KEY}
         if REPLY_WEBHOOK_URL:
