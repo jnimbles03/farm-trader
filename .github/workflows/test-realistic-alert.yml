@@ -12,8 +12,19 @@ name: Test realistic alert
 # reminder look like on your phone. Costs 2 TextBelt credits per
 # recipient if you ignore the initial (initial + 1st reminder), up to
 # 6 if you let the cap fully play out (initial + 5 reminders).
+#
+# Inputs (all optional):
+#   phone   E.164 phone (or comma-separated list) to receive the test.
+#           When provided, OVERRIDES the ALERT_PHONE secret so the test
+#           lands on just the number(s) you specified. Leave blank to
+#           hit every number in ALERT_PHONE — same as a production fire.
 on:
   workflow_dispatch:
+    inputs:
+      phone:
+        description: "Override recipient (E.164, comma-sep). Blank = use ALERT_PHONE secret."
+        required: false
+        default: ""
 
 concurrency:
   group: test-realistic-alert
@@ -41,7 +52,10 @@ jobs:
       - name: Send realistic alert + record pending
         env:
           TEXTBELT_KEY: ${{ secrets.TEXTBELT_KEY }}
-          ALERT_PHONE:  ${{ secrets.ALERT_PHONE }}
+          # If `phone` input is set, use it; otherwise fall back to the secret.
+          # GitHub renders the input verbatim, so quoting protects against
+          # accidental whitespace/newlines.
+          ALERT_PHONE:  ${{ inputs.phone != '' && inputs.phone || secrets.ALERT_PHONE }}
           # Tweak any of these to simulate a different tranche/fire.
           SIM_COMMODITY: "corn"
           SIM_CONTRACT:  "Dec '26"
@@ -49,7 +63,9 @@ jobs:
           SIM_TARGET:    "4.74"
           SIM_QUANTITY:  "8250"
           SIM_TRANCHE:   "Tranche 1 (25%)"
-        run: python scripts/send_realistic_test_plain.py
+        run: |
+          echo "Sending test alert to: ${ALERT_PHONE}"
+          python scripts/send_realistic_test_plain.py
 
       - name: Commit confirmations state
         run: |
