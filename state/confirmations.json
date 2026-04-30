@@ -26,13 +26,15 @@
     "recipients": {
       "+16302479950": {
         "last_reminded_at": "2026-04-30T19:36:46.403470+00:00",
+        "raw": "Y",
         "reminders_sent": 1,
-        "vote": null
+        "replied_at": "2026-04-30T19:37:18.619Z",
+        "vote": "Y"
       }
     },
     "sent_at": "2026-04-30T19:04:25.025355+00:00",
     "signal_key": "sim|corn|Dec '26|SELL|4.7400|2026-04-30T19:04:25",
-    "status": "pending"
+    "status": "confirmed"
   },
   "smoke1": {
     "message": "FREIS FARM reminder-system smoke test (round 2)",
