@@ -1,14 +1,26 @@
 name: Evaluate grain signals
 
-# Every 15 min, 13:00-19:45 UTC, Mon-Fri. That window covers the
-# CBOT grain day session (8:30-13:20 CT) under both CST (UTC-6)
-# and CDT (UTC-5), with a little slack on either side.
+# Two-tier schedule, all UTC (GitHub Actions cron has no TZ support):
 #
-# GitHub's scheduler can drift 0-15 min under load; that's fine
-# for a family dashboard that already lives on delayed quotes.
+# 1) Active hours — every 15 min during 6am-9pm CT (the user's chosen
+#    quiet-hours boundary). CT is UTC-6 in winter (CST) and UTC-5 in
+#    summer (CDT), so we cover the union: 11:00-02:59 UTC = 5am/6am-
+#    8pm/9pm CT depending on DST. Crosses UTC midnight, hence two
+#    range tokens.
+# 2) Quiet hours — once per hour during 10pm-5am CT. Same DST logic
+#    in reverse: 03:00-10:00 UTC. This keeps the dashboard fresh and
+#    catches overnight news drops at top-of-hour granularity without
+#    spamming the phone (the SMS cooldown is what actually decides
+#    whether anything sends).
+#
+# 7 days a week — covers Sunday-night USDA WASDE drops, weekend news.
+#
+# GitHub's scheduler drifts 0-15 min under load; fine for a family
+# dashboard that already lives on delayed quotes.
 on:
   schedule:
-    - cron: "*/15 13-19 * * 1-5"
+    - cron: "*/15 11-23,0-2 * * *"   # active: 6am-9pm CT (both DST seasons)
+    - cron: "0 3-10 * * *"           # quiet:  10pm-5am CT, hourly
   workflow_dispatch:    # also runnable on demand from the Actions tab
 
 concurrency:
