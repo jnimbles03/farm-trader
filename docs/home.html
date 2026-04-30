@@ -1861,8 +1861,25 @@
 <section class="cover">
 
   <div class="nav">
-    <a href="./" class="brand" aria-label="Freis Farm">
-      <img src="freisfarm-light.png" alt="Freis Farm" class="brand-logo" style="height:48px;width:auto;display:block;">
+    <a href="./" class="brand" aria-label="Freis Farm — Board of Trade">
+      <!-- Section-grid mark: rotated square divided into quarters,
+           a hairline reference to the survey-section grid that
+           defines the Midwest. No corn, no tractor, no farmhouse. -->
+      <svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+        <polygon points="24,3 45,24 24,45 3,24"
+                 fill="none" stroke="currentColor" stroke-width="1.1"
+                 stroke-linejoin="miter"/>
+        <line x1="24" y1="3"  x2="24" y2="45"
+              stroke="var(--sage-deep)" stroke-width="0.55"/>
+        <line x1="3"  y1="24" x2="45" y2="24"
+              stroke="var(--sage-deep)" stroke-width="0.55"/>
+        <rect x="22.4" y="22.4" width="3.2" height="3.2"
+              fill="var(--sage-deep)"/>
+      </svg>
+      <span class="brand-words">
+        <span class="brand-name">Freis <span class="brand-and">·</span> Farm</span>
+        <span class="brand-tag">Board of Trade</span>
+      </span>
     </a>
     <div class="nav-links">
       <a href="./" class="here">Today's Call</a>

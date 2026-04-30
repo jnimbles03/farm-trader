@@ -1072,8 +1072,18 @@
 <section class="cover">
 
   <div class="nav">
-    <a href="./" class="brand" aria-label="Freis Farm">
-      <img src="freisfarm-light.png" alt="Freis Farm" class="brand-logo" style="height:48px;width:auto;display:block;">
+    <a href="./" class="brand" aria-label="Freis Farm — Board of Trade">
+      <svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+        <polygon points="24,3 45,24 24,45 3,24"
+                 fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="miter"/>
+        <line x1="24" y1="3"  x2="24" y2="45" stroke="var(--sage-deep)" stroke-width="0.55"/>
+        <line x1="3"  y1="24" x2="45" y2="24" stroke="var(--sage-deep)" stroke-width="0.55"/>
+        <rect x="22.4" y="22.4" width="3.2" height="3.2" fill="var(--sage-deep)"/>
+      </svg>
+      <span class="brand-words">
+        <span class="brand-name">Freis <span class="brand-and">·</span> Farm</span>
+        <span class="brand-tag">Board of Trade</span>
+      </span>
     </a>
     <div class="nav-links">
       <a href="./">Today's Call</a>
@@ -1223,123 +1233,97 @@
       <summary>
         <span class="fold-title">Lifetime · multi-year</span>
         <span class="fold-glance">
-          <span class="num">$432,487</span> grain net since MY 2021-2022 ·
-          <em>~68,500</em> bu sold across 5 marketing years
+          <span class="num">$242,411</span> grain net since MY 2021-2022 ·
+          <em>54,979</em> bu sold ·
+          four trends below
         </span>
         <span class="fold-chev" aria-hidden="true">▾</span>
       </summary>
       <div class="fold-body">
-        <p class="sub-h">Eight years of prices and nine years of yields, against the lifetime totals. Two-elevator reality (Akron/Ritchie + Posen Coop / FS Grain).</p>
+        <p class="sub-h">The four single-number-per-year metrics that tell the whole story over time.</p>
 
         <div class="lifetime-headline">
           <div class="lh-cell">
             <div class="lh-k">Net dollars · grain</div>
-            <div class="lh-v">$432,487</div>
-            <div class="lh-d">Since MY 2021-2022 across five marketing years (last one still open).</div>
+            <div class="lh-v">$242,411</div>
+            <div class="lh-d">Since MY 2021-2022 across five marketing years (one with a sales-data gap).</div>
           </div>
           <div class="lh-cell">
             <div class="lh-k">Bushels · user share</div>
-            <div class="lh-v">~68,500</div>
-            <div class="lh-d">Cumulative bushels sold and recorded across both elevators (Akron/Ritchie + PC/FS Grain).</div>
+            <div class="lh-v">54,979</div>
+            <div class="lh-d">Cumulative bushels sold and recorded; pre-Akron entries from old <em>Harvest to Sale</em> spreadsheet.</div>
           </div>
         </div>
 
         <div class="trends">
 
-          <!-- 1. Net $/bu Corn — 8 years 2018-2025 -->
+          <!-- 1. Net $/bu Corn — three points: MY21-22 ($6.77), 2024 ($3.39), 2025 ($3.50) -->
           <div class="trend">
             <div class="trend-k">Net $/bu Corn</div>
-            <div class="trend-v">$4.13<span class="est">'25</span></div>
-            <div class="trend-d">2022 cycle peak $6.77 · settled $3.66-$4.13 since 2024.</div>
-            <svg class="trend-spark" viewBox="0 0 200 64" aria-label="Net dollars per bushel of corn, 2018 through 2025.">
+            <div class="trend-v">$3.50</div>
+            <div class="trend-d">Was $6.77 in MY 2021-22; settled near $3.40 since 2024.</div>
+            <svg class="trend-spark" viewBox="0 0 200 64" aria-label="Net dollars per bushel of corn over time, from $6.77 in MY 2021-22 down to $3.50 in 2025.">
               <line x1="14" y1="56" x2="186" y2="56" stroke="#E2DDD5" stroke-width="0.5"/>
-              <polyline class="spark-line" points="14,46 38.6,41.8 63.1,46.3 87.7,22.4 112.3,12.3 136.9,25.3 161.4,43.4 186,38.7"/>
-              <circle class="spark-dot" cx="14"    cy="46"   r="2.4"/>
-              <circle class="spark-dot" cx="38.6"  cy="41.8" r="2.4"/>
-              <circle class="spark-dot" cx="63.1"  cy="46.3" r="2.4"/>
-              <circle class="spark-dot" cx="87.7"  cy="22.4" r="2.4"/>
-              <circle class="spark-dot" cx="112.3" cy="12.3" r="2.4"/>
-              <circle class="spark-dot" cx="136.9" cy="25.3" r="2.4"/>
-              <circle class="spark-dot" cx="161.4" cy="43.4" r="2.4"/>
-              <circle class="spark-dot now" cx="186" cy="38.7" r="3.6"/>
-              <text class="spark-tick" x="14"  y="62" text-anchor="middle">'18</text>
+              <!-- y range $3 ($60) to $7 ($14); 10pt scale -->
+              <polyline class="spark-line" points="14,18 100,52 186,51"/>
+              <circle class="spark-dot" cx="14"  cy="18" r="3"/>
+              <circle class="spark-dot" cx="100" cy="52" r="3"/>
+              <circle class="spark-dot now" cx="186" cy="51" r="4"/>
+              <text class="spark-tick" x="14"  y="62" text-anchor="middle">'22</text>
               <text class="spark-tick" x="186" y="62" text-anchor="middle">'25</text>
             </svg>
           </div>
 
-          <!-- 2. Net $/bu Soy — 8 years 2018-2025 -->
+          <!-- 2. Net $/bu Soybeans — four points: MY21-22 ($15.20), 2024 ($9.54), 2025 ($10.08), 2026 YTD ($10.78) -->
           <div class="trend">
             <div class="trend-k">Net $/bu Soybeans</div>
-            <div class="trend-v">$10.29<span class="est">'25</span></div>
-            <div class="trend-d">2022 high of $15.70 · settled around $10.30 since 2024.</div>
-            <svg class="trend-spark" viewBox="0 0 200 64" aria-label="Net dollars per bushel of soybeans, 2018 through 2025.">
+            <div class="trend-v">$10.78</div>
+            <div class="trend-d">Came off the 2022 high of $15.20; recovering since 2024.</div>
+            <svg class="trend-spark" viewBox="0 0 200 64" aria-label="Net dollars per bushel of soybeans over time.">
               <line x1="14" y1="56" x2="186" y2="56" stroke="#E2DDD5" stroke-width="0.5"/>
-              <polyline class="spark-line spark-soy" points="14,39.9 38.6,46.4 63.1,44.2 87.7,13.5 112.3,11.5 136.9,19.0 161.4,37.0 186,38.6"/>
-              <circle class="spark-dot" cx="14"    cy="39.9" r="2.4" style="fill:#6A9D6E"/>
-              <circle class="spark-dot" cx="38.6"  cy="46.4" r="2.4" style="fill:#6A9D6E"/>
-              <circle class="spark-dot" cx="63.1"  cy="44.2" r="2.4" style="fill:#6A9D6E"/>
-              <circle class="spark-dot" cx="87.7"  cy="13.5" r="2.4" style="fill:#6A9D6E"/>
-              <circle class="spark-dot" cx="112.3" cy="11.5" r="2.4" style="fill:#6A9D6E"/>
-              <circle class="spark-dot" cx="136.9" cy="19.0" r="2.4" style="fill:#6A9D6E"/>
-              <circle class="spark-dot" cx="161.4" cy="37.0" r="2.4" style="fill:#6A9D6E"/>
-              <circle class="spark-dot now" cx="186" cy="38.6" r="3.6"/>
-              <text class="spark-tick" x="14"  y="62" text-anchor="middle">'18</text>
-              <text class="spark-tick" x="186" y="62" text-anchor="middle">'25</text>
+              <!-- y range $9 to $16, 6pt scale per dollar -->
+              <polyline class="spark-line spark-soy" points="14,16 100,52 143,49 186,45"/>
+              <circle class="spark-dot" cx="14"  cy="16" r="3" style="fill:#6A9D6E"/>
+              <circle class="spark-dot" cx="100" cy="52" r="3" style="fill:#6A9D6E"/>
+              <circle class="spark-dot" cx="143" cy="49" r="3" style="fill:#6A9D6E"/>
+              <circle class="spark-dot now" cx="186" cy="45" r="4"/>
+              <text class="spark-tick" x="14"  y="62" text-anchor="middle">'22</text>
+              <text class="spark-tick" x="186" y="62" text-anchor="middle">'26</text>
             </svg>
           </div>
 
-          <!-- 3. Corn yield bu/ac — 9 years 2017-2025 -->
+          <!-- 3. Calving rate — only one data point: 2026 = 11/11 = 100% -->
           <div class="trend">
-            <div class="trend-k">Corn yield bu/ac</div>
-            <div class="trend-v">222<span class="est">'25</span></div>
-            <div class="trend-d">9-year range 168-239. 2019 was 178 on weather-cut acres.</div>
-            <svg class="trend-spark" viewBox="0 0 200 64" aria-label="Corn yield in bushels per acre, 2017 through 2025.">
+            <div class="trend-k">Calving rate</div>
+            <div class="trend-v">100%<span class="est">2026</span></div>
+            <div class="trend-d">11 cows, 11 calves. Earlier years not recorded yet.</div>
+            <svg class="trend-spark" viewBox="0 0 200 64" aria-label="Calving rate, 2026 only.">
               <line x1="14" y1="56" x2="186" y2="56" stroke="#E2DDD5" stroke-width="0.5"/>
-              <polyline class="spark-line" points="14,10.6 35.5,36.6 57,40.7 78.5,21.1 100,45.9 121.5,29.7 143,16.6 164.5,19.8 186,18.8"/>
-              <circle class="spark-dot" cx="14"    cy="10.6" r="2.4"/>
-              <circle class="spark-dot" cx="35.5"  cy="36.6" r="2.4"/>
-              <circle class="spark-dot" cx="57"    cy="40.7" r="2.4"/>
-              <circle class="spark-dot" cx="78.5"  cy="21.1" r="2.4"/>
-              <circle class="spark-dot" cx="100"   cy="45.9" r="2.4"/>
-              <circle class="spark-dot" cx="121.5" cy="29.7" r="2.4"/>
-              <circle class="spark-dot" cx="143"   cy="16.6" r="2.4"/>
-              <circle class="spark-dot" cx="164.5" cy="19.8" r="2.4"/>
-              <circle class="spark-dot now" cx="186" cy="18.8" r="3.6"/>
-              <text class="spark-tick" x="14"  y="62" text-anchor="middle">'17</text>
-              <text class="spark-tick" x="186" y="62" text-anchor="middle">'25</text>
+              <line x1="14" y1="14" x2="186" y2="14" stroke="#E2DDD5" stroke-width="0.3" stroke-dasharray="2 3"/>
+              <text class="spark-tick" x="20"  y="12">100%</text>
+              <circle class="spark-dot now" cx="186" cy="14" r="5"/>
+              <text class="spark-tick" x="186" y="62" text-anchor="middle">'26</text>
             </svg>
           </div>
 
-          <!-- 4. Bean yield bu/ac — 9 years 2017-2025 -->
+          <!-- 4. Per-acre cash inputs — only one full-year estimate: 2026 ≈ $82/ac -->
           <div class="trend">
-            <div class="trend-k">Bean yield bu/ac</div>
-            <div class="trend-v">73<span class="est">'25</span></div>
-            <div class="trend-d">Best year in nine. 2024 was the worst at 50 (drought).</div>
-            <svg class="trend-spark" viewBox="0 0 200 64" aria-label="Bean yield in bushels per acre, 2017 through 2025.">
+            <div class="trend-k">$/ac cash inputs</div>
+            <div class="trend-v">$82<span class="est">'26 est.</span></div>
+            <div class="trend-d">Excl. seed (paid via fall prepay) and RE tax. Earlier years not recorded.</div>
+            <svg class="trend-spark" viewBox="0 0 200 64" aria-label="Per-acre cash inputs, 2026 estimate only.">
               <line x1="14" y1="56" x2="186" y2="56" stroke="#E2DDD5" stroke-width="0.5"/>
-              <polyline class="spark-line spark-soy" points="14,29.3 35.5,24.6 57,39.0 78.5,29.9 100,30.4 121.5,35.9 143,25.1 164.5,43.7 186,12.9"/>
-              <circle class="spark-dot" cx="14"    cy="29.3" r="2.4" style="fill:#6A9D6E"/>
-              <circle class="spark-dot" cx="35.5"  cy="24.6" r="2.4" style="fill:#6A9D6E"/>
-              <circle class="spark-dot" cx="57"    cy="39.0" r="2.4" style="fill:#6A9D6E"/>
-              <circle class="spark-dot" cx="78.5"  cy="29.9" r="2.4" style="fill:#6A9D6E"/>
-              <circle class="spark-dot" cx="100"   cy="30.4" r="2.4" style="fill:#6A9D6E"/>
-              <circle class="spark-dot" cx="121.5" cy="35.9" r="2.4" style="fill:#6A9D6E"/>
-              <circle class="spark-dot" cx="143"   cy="25.1" r="2.4" style="fill:#6A9D6E"/>
-              <circle class="spark-dot" cx="164.5" cy="43.7" r="2.4" style="fill:#6A9D6E"/>
-              <circle class="spark-dot now" cx="186" cy="12.9" r="3.6"/>
-              <text class="spark-tick" x="14"  y="62" text-anchor="middle">'17</text>
-              <text class="spark-tick" x="186" y="62" text-anchor="middle">'25</text>
+              <circle class="spark-dot now" cx="186" cy="34" r="5"/>
+              <text class="spark-tick" x="186" y="62" text-anchor="middle">'26</text>
             </svg>
           </div>
 
         </div>
 
-        <span class="src"><span class="lead">Calendar P&amp;L note</span>
-          On a calendar-year basis, 2024 closed at <em>−$43,693</em> (Can-Am UTV + cattle purchase + lower corn) and 2025 at <em>−$33,251</em> (heavy capex year: insulation $11,784, landscaping $11,925, rodent removal). 2023 was +$6,746. Tax-year P&amp;L bucketed by inventory origin reads slightly different — see the <em>Annual P&amp;L</em> sheet.
-        </span>
-
         <span class="src"><span class="lead">Source</span>
-          <em>data/Finances/Freis_Farm_Books_and_Records.xlsx</em> · Yields History + Prices History + Annual P&amp;L sheets · 132 transactions across 5 marketing years.
+          <em>data/Finances/Freis_Farm_Books_and_Records.xlsx</em> ·
+          Headline Metrics + Crop Year sheets ·
+          5 marketing years, 12 Akron settlements, 2 pre-Akron crop years.
         </span>
       </div>
     </details>
@@ -1733,30 +1717,12 @@
       <summary>
         <span class="fold-title">Cattle</span>
         <span class="fold-glance">
-          <span class="num">11</span>-for-<span class="num">11</span> calving · <em>6 fall calves</em> bound for Milford · 3-year sales arc <span class="num">$4.2k → $2.1k → $10.4k</span>
+          <span class="num">11</span>-for-<span class="num">11</span> calving · <em>6 fall calves</em> bound for Milford · final phase of herd upgrade
         </span>
         <span class="fold-chev" aria-hidden="true">▾</span>
       </summary>
       <div class="fold-body">
-        <p class="sub-h">Annual cattle income through the herd-refresh arc, plus 2026 calving + fall-sale state.</p>
-
-        <div class="stat-strip">
-          <div>
-            <div class="ss-k">2023 cattle income</div>
-            <div class="ss-v">$4,171</div>
-            <div class="ss-d">Black cow $1,451 · Red stripe $715 · 2 cows $2,005 (per-animal detail recorded).</div>
-          </div>
-          <div>
-            <div class="ss-k">2024 cattle income</div>
-            <div class="ss-v">$2,061</div>
-            <div class="ss-d">Annual rollup. Same year we bought $8,400 of new cattle for the herd refresh.</div>
-          </div>
-          <div>
-            <div class="ss-k">2025 cattle income</div>
-            <div class="ss-v"><em>$10,444</em></div>
-            <div class="ss-d">Big year as the refresh proceeded. $3,000 private grant also funded the new water line + fences.</div>
-          </div>
-        </div>
+        <p class="sub-h">Per-year cycle: cows at start, calves born, calves sold to Milford in fall, herd-upgrade arc. Earlier years' records pending.</p>
 
         <div class="stat-strip">
           <div>
@@ -1772,12 +1738,12 @@
           <div>
             <div class="ss-k">Herd remaining (post-upgrade)</div>
             <div class="ss-v">2 cows + 1 bull</div>
-            <div class="ss-d">Final phase of multi-year refresh; older cows + old bull to retire. 18-month bull sale closes this spring.</div>
+            <div class="ss-d">Final phase of multi-year herd refresh; older cows + old bull to retire.</div>
           </div>
         </div>
 
-        <span class="src"><span class="lead">Source</span>
-          <em>data/Finances/Freis_Farm_Books_and_Records.xlsx</em> · Cattle by Year sheet · annual rollups for 2023-2025 from Farm YYYY.xlsx books.
+        <span class="src"><span class="lead">Note</span>
+          18-month bull sale closes this spring. <em>Cattle by Year</em> sheet captures the structural shape — cow count, calving rate, calves born/sold, $/cwt at sale, net cattle income — so 2024/2025 records slot in once they're pulled from the books.
         </span>
       </div>
     </details>
@@ -1788,51 +1754,33 @@
       <summary>
         <span class="fold-title">Hay</span>
         <span class="fold-glance">
-          Most hay <em>fed in-house</em> · sales tiny ($349 / $955 / $0 across '23-'25) · field rotation in progress
+          <span class="num">~4,000</span> bales/yr · ~<em>$5</em>/bale · Kevin Quigley brokers · new field ready 2027
         </span>
         <span class="fold-chev" aria-hidden="true">▾</span>
       </summary>
       <div class="fold-body">
-        <p class="sub-h">Three cuttings a year. Most production goes to the herd; what's left over goes to retail through Kevin Quigley.</p>
+        <p class="sub-h">Three cuttings a year (late May, mid-July, September). Field rotation in progress.</p>
 
         <div class="stat-strip">
           <div>
-            <div class="ss-k">2023 hay sales</div>
-            <div class="ss-v">$349</div>
-            <div class="ss-d">Tiny retail surplus over what the herd ate.</div>
+            <div class="ss-k">2025 produced</div>
+            <div class="ss-v">~4,000 bales</div>
+            <div class="ss-d">Three cuttings completed off the 8-acre field.</div>
           </div>
           <div>
-            <div class="ss-k">2024 hay sales</div>
-            <div class="ss-v">$955</div>
-            <div class="ss-d">Same pattern, slightly more sold.</div>
-          </div>
-          <div>
-            <div class="ss-k">2025 hay sales</div>
-            <div class="ss-v">$0</div>
-            <div class="ss-d">Nothing sold — all production fed in-house through the herd refresh.</div>
-          </div>
-        </div>
-
-        <div class="stat-strip">
-          <div>
-            <div class="ss-k">Cuttings per year</div>
-            <div class="ss-v">3</div>
-            <div class="ss-d">Late May · mid-July · September.</div>
+            <div class="ss-k">Realized $/bale</div>
+            <div class="ss-v">~$5.00</div>
+            <div class="ss-d">~$20,000 net for the year. Kevin Quigley handles sales.</div>
           </div>
           <div>
             <div class="ss-k">Field rotation</div>
             <div class="ss-v">8 ac → 10 ac</div>
             <div class="ss-d">Old 8-ac used through 2026; new 10-ac planted spring '26, ready 2027.</div>
           </div>
-          <div>
-            <div class="ss-k">Broker</div>
-            <div class="ss-v">Kevin Quigley</div>
-            <div class="ss-d">Handles retail sales when there's surplus to move.</div>
-          </div>
         </div>
 
-        <span class="src"><span class="lead">Source</span>
-          <em>data/Finances/Freis_Farm_Books_and_Records.xlsx</em> · Hay by Year sheet · annual rollups from Farm YYYY.xlsx.
+        <span class="src"><span class="lead">Note</span>
+          <em>Hay by Year</em> sheet has the per-cutting bale breakdown — once you mark cutting dates and counts each year, the trend lines (bales per cutting, $/bale by season) become the year-over-year comparison.
         </span>
       </div>
     </details>
