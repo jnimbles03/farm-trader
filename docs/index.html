@@ -55,18 +55,40 @@
   @media (min-width: 720px) { .cover { padding: 72px 48px 48px; } }
 
   .nav {
-    display: flex; justify-content: space-between; align-items: baseline;
+    display: flex; justify-content: space-between; align-items: center;
     margin: 0 0 36px; gap: 18px;
     border-bottom: 0.5px solid var(--border);
     padding-bottom: 14px;
   }
   .nav .brand {
-    font-family: "Fraunces", Georgia, serif;
-    font-weight: 500; font-size: 40px; letter-spacing: -0.018em;
-    color: var(--ink); line-height: 1;
+    display: inline-flex; align-items: center;
+    color: var(--ink); text-decoration: none; line-height: 1;
+  }
+  /* Corn wordmark — header brand asset.
+     Transparent PNG, large size, layered drop shadows to float above the page.
+     image-rendering hints + crisp scaling to keep edges sharp. */
+  .brand-wordmark {
+    display: block;
+    height: 112px;
+    width: auto;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    filter:
+      drop-shadow(0 1px 1px rgba(38, 50, 30, 0.18))
+      drop-shadow(0 8px 18px rgba(38, 50, 30, 0.24))
+      drop-shadow(0 22px 40px rgba(38, 50, 30, 0.16));
+    transform: translateZ(0);
+    transition: transform 220ms ease, filter 220ms ease;
   }
   @media (min-width: 720px) {
-    .nav .brand { font-size: 56px; }
+    .brand-wordmark { height: 156px; }
+  }
+  .nav .brand:hover .brand-wordmark {
+    transform: translateY(-2px);
+    filter:
+      drop-shadow(0 1px 1px rgba(38, 50, 30, 0.20))
+      drop-shadow(0 12px 24px rgba(38, 50, 30, 0.30))
+      drop-shadow(0 28px 50px rgba(38, 50, 30, 0.20));
   }
   .nav .brand .out { color: var(--sage-deep); font-style: italic; font-weight: 400; }
   .nav-links {
@@ -1588,7 +1610,12 @@
 <section class="cover">
 
   <div class="nav">
-    <div class="brand">freis<span class="out"> · farm</span></div>
+    <a href="./" class="brand" aria-label="Freis Farm — Board of Trade">
+      <picture>
+        <source srcset="freisfarm-dark.png" media="(prefers-color-scheme: dark)">
+        <img src="freisfarm-light.png" alt="Freis Farm" class="brand-wordmark">
+      </picture>
+    </a>
     <div class="nav-links">
       <a href="./" class="here">Today's Call</a>
       <a href="hedge.html">Hedge</a>
