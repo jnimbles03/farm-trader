@@ -52,10 +52,13 @@ jobs:
       - name: Send realistic alert + record pending
         env:
           TEXTBELT_KEY: ${{ secrets.TEXTBELT_KEY }}
-          # If `phone` input is set, use it; otherwise fall back to the secret.
-          # GitHub renders the input verbatim, so quoting protects against
-          # accidental whitespace/newlines.
+          # If `phone` input is set, use it for ALL recipient lists so the
+          # test stays scoped to that single number regardless of whether
+          # the script reads ALERT_PHONE or TRADE_PHONES. Otherwise fall
+          # back to the standard secrets.
           ALERT_PHONE:  ${{ inputs.phone != '' && inputs.phone || secrets.ALERT_PHONE }}
+          TRADE_PHONES: ${{ inputs.phone != '' && inputs.phone || secrets.TRADE_PHONES }}
+          NEWS_PHONES:  ${{ inputs.phone != '' && inputs.phone || secrets.NEWS_PHONES }}
           # Tweak any of these to simulate a different tranche/fire.
           SIM_COMMODITY: "corn"
           SIM_CONTRACT:  "Dec '26"

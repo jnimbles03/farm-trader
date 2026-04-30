@@ -30,4 +30,6 @@ jobs:
         env:
           TEXTBELT_KEY: ${{ secrets.TEXTBELT_KEY }}
           ALERT_PHONE:  ${{ secrets.ALERT_PHONE }}
+          TRADE_PHONES: ${{ secrets.TRADE_PHONES }}
+          NEWS_PHONES:  ${{ secrets.NEWS_PHONES }}
         run: python evaluate.py --test-sms

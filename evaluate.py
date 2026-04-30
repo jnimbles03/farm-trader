@@ -97,7 +97,18 @@ STATE_DIR.mkdir(parents=True, exist_ok=True)
 # ---------------------------------------------------------------------------
 
 TEXTBELT_KEY      = os.environ.get("TEXTBELT_KEY", "")
+# Recipient lists. Two-tier:
+#   TRADE_PHONES — narrow list for trade signal SMS (target hits, drafts).
+#   NEWS_PHONES  — wider list for "really impacts our crops" news (USDA
+#                  release surprises). Reminders + vote-tally follow-ups
+#                  inherit the list of the original alert via the pending
+#                  record's `recipients` field.
+# Backwards-compat: if TRADE_PHONES isn't set, fall back to ALERT_PHONE.
+# If NEWS_PHONES isn't set, fall back to TRADE_PHONES (so a single-secret
+# install behaves exactly like before).
 ALERT_PHONE       = os.environ.get("ALERT_PHONE", "")
+TRADE_PHONES      = os.environ.get("TRADE_PHONES", "") or ALERT_PHONE
+NEWS_PHONES       = os.environ.get("NEWS_PHONES",  "") or TRADE_PHONES
 ALERT_COOLDOWN    = int(os.environ.get("ALERT_COOLDOWN", "86400"))  # 24h
 # Optional — set this to the Cloudflare Worker URL so recipients can
 # reply "Y <code>" / "N <code>" and the worker fans the reply into
@@ -699,8 +710,8 @@ def send_news_alerts(candidates: list[dict[str, Any]]) -> int:
     """
     if not candidates:
         return 0
-    if not (ALERT_PHONE and TEXTBELT_KEY):
-        log.info("news alerts skipped — ALERT_PHONE or TEXTBELT_KEY not set")
+    if not (TEXTBELT_KEY and (TRADE_PHONES or NEWS_PHONES)):
+        log.info("news alerts skipped — TEXTBELT_KEY or recipients not set")
         return 0
 
     state = _load_news_alerts_sent()
@@ -731,10 +742,14 @@ def send_news_alerts(candidates: list[dict[str, Any]]) -> int:
             continue
 
         msg = _news_alert_message(item)
-        if send_sms(msg):
+        # Routing decision: USDA *release* surprises go to the wider
+        # NEWS_PHONES list ("really impacts our crops"). Previews and
+        # generic news stay narrow on TRADE_PHONES.
+        kind = "news" if item.get("phase") == "release" else "trade"
+        if send_sms(msg, kind=kind):
             sent_ids.add(nid)
             fired += 1
-            log.info("news alert fired: %s (%s)", nid, impact)
+            log.info("news alert fired: %s (%s, kind=%s)", nid, impact, kind)
         else:
             log.warning("news alert SMS failed for %s — will retry next run", nid)
 
@@ -1022,19 +1037,27 @@ def big_move_news_for(commodity: str, detail: dict[str, Any] | None) -> list[dic
 # SMS
 # ---------------------------------------------------------------------------
 
-def _recipients() -> list[str]:
-    """ALERT_PHONE may be a single number or a comma-separated list.
+def _recipients(kind: str = "trade") -> list[str]:
+    """Resolve a list of recipients for an alert of the given kind.
 
-    We split so the workflow secret can hold multiple recipients without
-    introducing ALERT_PHONE_2 / ALERT_PHONE_3 secrets. Whitespace and empty
-    entries are trimmed. TextBelt bills 1 credit per number, so sending
-    to N numbers deducts N credits per alert.
+    `kind` is one of:
+      "trade" — trade signal alerts, drafts, generic news, previews.
+                Goes to TRADE_PHONES (or ALERT_PHONE fallback).
+      "news"  — USDA-release impact news. Goes to NEWS_PHONES
+                (or TRADE_PHONES → ALERT_PHONE fallback).
+
+    Empty / unknown kind defaults to "trade" — fail-safe to the narrowest
+    audience rather than the widest.
     """
-    return [p.strip() for p in ALERT_PHONE.split(",") if p.strip()]
+    raw = NEWS_PHONES if kind == "news" else TRADE_PHONES
+    return [p.strip() for p in raw.split(",") if p.strip()]
 
 
-def send_sms(message: str, reply_webhook_url: str = "") -> bool:
-    """Dispatch via TextBelt to every recipient in ALERT_PHONE.
+def send_sms(message: str, reply_webhook_url: str = "", kind: str = "trade") -> bool:
+    """Dispatch via TextBelt to every recipient for the given kind.
+
+    `kind` selects which list to use ("trade" or "news"). See _recipients
+    for the resolution + fallback ladder.
 
     Returns True iff *every* recipient was accepted. A partial failure
     (one of two numbers accepted) still returns False so the caller
@@ -1044,7 +1067,7 @@ def send_sms(message: str, reply_webhook_url: str = "") -> bool:
     If `reply_webhook_url` is provided, TextBelt will POST inbound replies
     to it. We use that to fan confirmations into the collect-reply flow.
     """
-    recipients = _recipients()
+    recipients = _recipients(kind)
     if not recipients:
         log.warning("SMS skipped — ALERT_PHONE not set")
         return False

@@ -278,8 +278,10 @@ def format_preview_sms(report: dict, plan: dict) -> str:
             continue
         est_lines.append(f"{f['label']}: est {v}")
 
+    # [FARM] prefix is added centrally in evaluate.py _send_sms_textbelt;
+    # don't repeat any sub-tag here.
     body = (
-        f"[GRAIN] {label} preview — {when}\n"
+        f"{label} preview — {when}\n"
         f"WHY: surprise vs trade estimate is what moves the market\n"
         f"WATCH: " + "; ".join(est_lines) + "\n"
         f"Alert at release with surprise + predicted move."
@@ -294,7 +296,7 @@ def format_release_sms(report: dict, plan: dict) -> str:
 
     if not surprises:
         return (
-            f"[GRAIN] {label}: actuals not yet loaded.\n"
+            f"{label}: actuals not yet loaded.\n"
             f"Re-run when plan.json is updated with the release numbers."
         )
 
@@ -322,7 +324,7 @@ def format_release_sms(report: dict, plan: dict) -> str:
         return ""  # caller checks for empty and skips fire
 
     body = (
-        f"[GRAIN] {label}: {sur_str}\n"
+        f"{label}: {sur_str}\n"
         f"WHY: {'bearish supply surprise' if any(s['pct']>0 and s.get('kind') in ('yield','ending_stocks','production') for s in top) else 'bullish supply surprise' if any(s['pct']<0 and s.get('kind') in ('yield','ending_stocks','production') for s in top) else 'demand-side shift'}, next 1-2 sessions\n"
         f"EXPECT: {move_corn} / {move_soy}\n"
         f"CONF: {conf} — {falsifier}"
@@ -362,6 +364,7 @@ def usda_pair_news_for_today(plan: dict | None = None,
                 "affects": "both",
                 "source":  "USDA",
                 "format":  "usda-pair",
+                "phase":   "preview",   # routes to TRADE_PHONES (narrow)
                 "body":    body,
             })
 
@@ -377,6 +380,7 @@ def usda_pair_news_for_today(plan: dict | None = None,
                     "affects": "both",
                     "source":  "USDA",
                     "format":  "usda-pair",
+                    "phase":   "release",   # routes to NEWS_PHONES (wider)
                     "body":    body,
                 })
     return out

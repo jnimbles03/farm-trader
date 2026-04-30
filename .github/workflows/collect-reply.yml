@@ -37,6 +37,8 @@ jobs:
           REPLY_RECEIVED_AT: ${{ github.event.client_payload.received_at }}
           TEXTBELT_KEY:      ${{ secrets.TEXTBELT_KEY }}
           ALERT_PHONE:       ${{ secrets.ALERT_PHONE }}
+          TRADE_PHONES:      ${{ secrets.TRADE_PHONES }}
+          NEWS_PHONES:       ${{ secrets.NEWS_PHONES }}
         run: python scripts/collect_reply.py
 
       - name: Commit updated confirmation state
