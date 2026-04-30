@@ -1,0 +1,2813 @@
+<!DOCTYPE html>
+<!--
+  Freis Farm Board of Trade — home page (redesign prototype)
+  =================================================================
+  Barbell architecture:
+    - Front of book   : thesis, hero chart (seasonal pace overlay)
+    - Zone break      : "Lots & Ledger"
+    - Inside pages    : per-lot evidence (small multiples, ledger
+                         table, cash runway, marketing calendar)
+    - Back of book    : strategic takeaway, wordmark
+
+  Self-contained. No build step. Vanilla JS, hand-rolled SVG.
+  Live data inlined in DATA constant — swap to fetch('bushel.json')
+  when wiring to production.
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Freis Farm Board of Trade — Today's Call</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FAF7F2;
+    --paper: #FFFDF7;
+    --border: #E2DDD5;
+    --rule:   #C8C3BA;
+    --dust:   #A8A39A;
+    --slate:  #7A756D;
+    --ink:    #3D3A36;
+    --sage:      #7BAE7F;
+    --sage-deep: #6A9D6E;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: "DM Sans", -apple-system, sans-serif;
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--sage-deep); text-decoration: none; border-bottom: 0.5px solid var(--rule); }
+  a:hover { border-bottom-color: var(--sage-deep); }
+
+  /* ============ FRONT OF BOOK ============ */
+  .cover {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 56px 32px 32px;
+  }
+  @media (min-width: 720px) { .cover { padding: 72px 48px 48px; } }
+
+  .nav {
+    display: flex; justify-content: space-between; align-items: center;
+    margin: 0 0 36px; gap: 18px;
+    border-bottom: 0.5px solid var(--border);
+    padding-bottom: 14px;
+  }
+  .nav .brand {
+    display: inline-flex; align-items: center;
+    color: var(--ink); text-decoration: none; line-height: 1;
+  }
+  /* Corn wordmark — header brand asset.
+     Sized to fit alongside nav-links without dominating the page.
+     Single tight drop-shadow for subtle depth. */
+  .brand-wordmark {
+    display: block;
+    height: 56px;
+    width: auto;
+    image-rendering: -webkit-optimize-contrast;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.12));
+    transition: transform 180ms ease;
+  }
+  @media (min-width: 720px) {
+    .brand-wordmark { height: 72px; }
+  }
+  .nav .brand:hover .brand-wordmark {
+    transform: translateY(-1px);
+  }
+  .nav .brand .out { color: var(--sage-deep); font-style: italic; font-weight: 400; }
+  .nav-links {
+    display: flex; gap: 22px; font-size: 11px;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--slate);
+  }
+  .nav-links a { border: 0; color: var(--slate); }
+  .nav-links a.here { color: var(--ink); border-bottom: 0.5px solid var(--ink); padding-bottom: 2px; }
+
+  .eyebrow {
+    font-family: "DM Sans", sans-serif;
+    font-size: 11px; font-weight: 500;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--slate); margin: 0 0 14px;
+  }
+  h1 {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 400; font-size: 44px; line-height: 1.04;
+    letter-spacing: -0.022em; margin: 0 0 22px;
+    color: var(--ink); max-width: 780px;
+  }
+  @media (min-width: 720px) { h1 { font-size: 52px; } }
+  h1 em { font-style: italic; font-weight: 400; color: var(--sage-deep); }
+  .deck {
+    font-family: "Fraunces", Georgia, serif;
+    font-style: italic; font-weight: 400;
+    font-size: 19px; line-height: 1.45;
+    color: var(--slate); margin: 0 0 44px; max-width: 640px;
+  }
+  @media (min-width: 720px) { .deck { font-size: 20px; } }
+
+  /* Hero call cards — three numbers under the deck, one line per */
+  .hero-call {
+    display: grid; grid-template-columns: 1fr; gap: 14px;
+    margin: 0 0 36px;
+    border-top: 0.5px solid var(--border);
+    border-bottom: 0.5px solid var(--border);
+    padding: 18px 0;
+  }
+  @media (min-width: 720px) {
+    .hero-call { grid-template-columns: 1.1fr 1fr 1fr; gap: 28px; padding: 22px 0; }
+  }
+  .hero-call .cell .k {
+    font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--slate); margin: 0 0 4px;
+  }
+  .hero-call .cell .v {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 26px; font-weight: 400; letter-spacing: -0.01em;
+    color: var(--ink); font-variant-numeric: tabular-nums oldstyle-nums;
+    line-height: 1.1;
+  }
+  .hero-call .cell .v em { font-style: italic; color: var(--sage-deep); }
+  .hero-call .cell .sub { font-size: 12.5px; color: var(--slate); margin-top: 4px; line-height: 1.4; }
+
+  .hero { margin: 0 -8px 30px; }
+  .hero svg { width: 100%; height: auto; display: block; }
+  .hero svg text { font-family: "DM Sans", sans-serif; font-size: 11.5px; fill: var(--slate); }
+  .hero svg .anno { font-family: "Fraunces", Georgia, serif; font-style: italic; font-size: 12.5px; fill: var(--ink); }
+  .hero svg .anno-sage { fill: var(--sage-deep); }
+  .hero svg .axis { stroke: var(--ink); stroke-width: 0.75; fill: none; }
+  .hero svg .series { fill: none; stroke-width: 1.6; }
+  .hero svg .series-corn { stroke: var(--ink); }
+  .hero svg .series-soy  { stroke: var(--slate); stroke-dasharray: 5 3; }
+  .hero svg .mark        { fill: var(--sage); stroke: var(--cream); stroke-width: 2; }
+  .hero svg .mark-shadow { fill: var(--sage); opacity: 0.18; }
+  .hero svg .connector { stroke: var(--ink); stroke-width: 0.5; fill: none; }
+  .hero svg .obligation-bar { fill: var(--sage); opacity: 0.10; }
+  .hero svg .obligation-tick { stroke: var(--sage-deep); stroke-width: 1; stroke-dasharray: 2 2; }
+
+  .lede {
+    font-size: 16px; line-height: 1.62;
+    color: var(--ink); max-width: 640px; margin: 0 0 12px;
+  }
+  .lede em { color: var(--sage-deep); font-style: italic; }
+  .lede strong { font-weight: 500; color: var(--ink); }
+
+  /* ============ ZONE BREAK ============ */
+  .zone-break {
+    max-width: 960px;
+    margin: 56px auto 0;
+    padding: 0 32px;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 22px; align-items: center;
+  }
+  @media (min-width: 720px) { .zone-break { padding: 0 48px; margin-top: 72px; } }
+  .zone-break::before, .zone-break::after {
+    content: ""; height: 0.5px; background: var(--rule); display: block;
+  }
+  .zone-break span {
+    font-family: "DM Sans", sans-serif;
+    font-size: 10.5px; font-weight: 500;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--dust);
+  }
+
+  /* ============ INSIDE PAGES ============ */
+  .inside { background: var(--paper); padding: 44px 0 56px; }
+  @media (min-width: 720px) { .inside { padding: 56px 0 64px; } }
+
+  .inside-grid {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+  @media (min-width: 920px) {
+    .inside-grid {
+      padding: 0 48px;
+      display: grid;
+      grid-template-columns: minmax(0, 540px) 320px;
+      column-gap: 40px;
+    }
+    .inside-grid > .col-main { grid-column: 1; }
+    .inside-grid > .col-side { grid-column: 2; }
+    .inside-grid > .col-full { grid-column: 1 / -1; }
+  }
+
+  .inside {
+    font-family: "Iowan Old Style", "Charter", "Palatino", "Book Antiqua", Georgia, serif;
+    font-size: 13px; line-height: 1.5; color: var(--ink);
+    font-feature-settings: "onum", "liga";
+  }
+  .inside h2 {
+    font-family: inherit; font-style: italic; font-weight: 400;
+    font-size: 14.5px; margin: 26px 0 6px; color: var(--ink);
+  }
+  .inside p { margin: 0 0 10px; text-align: justify; hyphens: auto; }
+  .inside p + p { text-indent: 1.2em; margin-top: 0; }
+
+  aside.margin {
+    font-size: 11px; line-height: 1.45;
+    color: var(--slate); font-style: italic; margin: 18px 0;
+  }
+  @media (min-width: 920px) { aside.margin { margin: 28px 0 18px; } }
+  aside.margin .fignum {
+    font-style: normal;
+    font-family: "DM Sans", sans-serif;
+    font-size: 9.5px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--dust); margin-right: 4px;
+  }
+
+  /* Inline sparklines */
+  .spark { display: inline-block; vertical-align: -5px; margin: 0 2px; }
+  .spark-val {
+    font-variant-numeric: tabular-nums oldstyle-nums;
+    color: var(--ink); font-style: normal;
+  }
+  .spark-up   { color: var(--sage-deep); }
+  .spark-down { color: var(--ink); }
+
+  /* Tables */
+  .inside table {
+    width: 100%; border-collapse: collapse;
+    font-variant-numeric: tabular-nums oldstyle-nums;
+    font-size: 12px;
+  }
+  .inside thead th {
+    font-weight: 400; font-style: italic;
+    text-align: left; padding: 6px 8px 6px 0;
+    border-bottom: 0.5px solid var(--ink); color: var(--ink);
+    white-space: nowrap;
+  }
+  .inside thead th.num { text-align: right; padding-right: 0; padding-left: 8px; }
+  .inside tbody td { padding: 5px 8px 5px 0; vertical-align: baseline; }
+  .inside tbody td.num { text-align: right; padding-right: 0; padding-left: 8px; }
+  .inside tbody tr:last-child td { border-bottom: 0.5px solid var(--ink); }
+  .inside tbody td.name { font-style: italic; }
+  .inside tbody td.rec  { font-style: italic; }
+  .inside tbody td.rec.sell { color: var(--sage-deep); font-weight: 500; }
+  .inside tbody td.rec.hold { color: var(--ink); }
+  .inside tbody td.rec.watch { color: var(--slate); }
+  .inside tbody tr.split td { padding-bottom: 1px; }
+  .inside tbody tr.split + tr td { padding-top: 0; border-top: 0; }
+
+  /* Wrap table on phone: scroll horizontally rather than collapse */
+  .tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .tbl-wrap table { min-width: 540px; }
+
+  /* Figures */
+  figure { margin: 12px 0 22px; }
+  figcaption {
+    font-size: 10.5px; font-style: italic;
+    color: var(--slate); margin-top: 6px;
+  }
+  figcaption .fignum {
+    font-style: normal;
+    font-family: "DM Sans", sans-serif;
+    font-size: 9.5px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--dust); margin-right: 4px;
+  }
+
+  /* Inside charts */
+  .inside svg text {
+    font-family: "Iowan Old Style", Georgia, serif;
+    font-size: 10px; fill: var(--slate);
+  }
+  .inside svg .tick { font-size: 9.5px; fill: var(--slate); }
+  .inside svg .label { font-size: 10.5px; fill: var(--ink); }
+  .inside svg .label-it { font-size: 10px; fill: var(--ink); font-style: italic; }
+  .inside svg .axis { stroke: var(--ink); stroke-width: 0.5; fill: none; }
+  .inside svg .rule { stroke: var(--rule); stroke-width: 0.3; fill: none; }
+  .inside svg .line { fill: none; stroke: var(--ink); stroke-width: 0.9; }
+  .inside svg .line-faint { fill: none; stroke: var(--slate); stroke-width: 0.7; }
+  .inside svg .line-accent { fill: none; stroke: var(--sage); stroke-width: 1.1; }
+  .inside svg .line-dashed { stroke-dasharray: 2 2; }
+  .inside svg .dot { fill: var(--ink); }
+  .inside svg .dot-accent { fill: var(--sage); }
+  .inside svg .spark-line { fill: none; stroke: var(--ink); stroke-width: 0.9; stroke-linejoin: round; }
+
+  /* Small multiples */
+  .multiples {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px 22px;
+    margin: 12px 0 8px;
+  }
+  @media (min-width: 720px) { .multiples { grid-template-columns: repeat(4, 1fr); gap: 18px 24px; } }
+  .sm .sm-title { font-style: italic; margin-bottom: 1px; color: var(--ink); font-size: 11.5px; }
+  .sm .sm-sub {
+    font-size: 9.5px; color: var(--slate);
+    font-variant-numeric: tabular-nums oldstyle-nums;
+    margin-top: 1px;
+  }
+  .sm .sm-sub .lead { color: var(--ink); }
+  .sm svg { display: block; width: 100%; height: auto; }
+
+  /* Typographic ladder */
+  .ladder { margin: 10px 0 12px; padding: 0; list-style: none; font-size: 12px; }
+  .ladder li {
+    display: grid;
+    grid-template-columns: 96px 1fr 100px;
+    gap: 14px; padding: 6px 0;
+    border-bottom: 0.25px solid var(--rule);
+    align-items: baseline;
+  }
+  .ladder li:first-child { border-top: 0.5px solid var(--ink); padding-top: 7px; }
+  .ladder li:last-child  { border-bottom: 0.5px solid var(--ink); }
+  .ladder .tier { font-style: italic; }
+  .ladder .friction {
+    font-family: "DM Sans", sans-serif;
+    font-size: 9.5px; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--slate); text-align: right;
+  }
+
+  /* Recommendation block — used in front of book and inside */
+  .rec-block {
+    border-left: 2px solid var(--sage);
+    padding: 0 0 0 14px;
+    margin: 4px 0 0;
+  }
+  .rec-block .rec-l { font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--sage-deep); font-family: "DM Sans", sans-serif; font-weight: 500; }
+  .rec-block .rec-v { font-size: 14px; font-style: italic; color: var(--ink); margin-top: 2px; }
+
+  /* Cash runway figure */
+  .runway { margin-top: 8px; }
+  .runway svg { width: 100%; height: auto; }
+
+  /* ============ LEDGER (infographic register) ============
+     Carries the front-of-book typography (Fraunces + DM Sans) into the
+     lots / cash / closed-book sections, treating them as visual cards
+     rather than analytical inside pages. Generous whitespace, no body
+     prose, large numbers, plain-English action pills. */
+  .ledger { background: var(--paper); padding: 48px 0 56px; }
+  @media (min-width: 720px) { .ledger { padding: 64px 0 72px; } }
+  .ledger-wrap {
+    max-width: 1040px; margin: 0 auto;
+    padding: 0 32px;
+  }
+  @media (min-width: 720px) { .ledger-wrap { padding: 0 48px; } }
+
+  .ledger-h {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 400; font-size: 30px; line-height: 1.1;
+    letter-spacing: -0.018em; color: var(--ink);
+    margin: 0 0 12px; max-width: 720px;
+  }
+  @media (min-width: 720px) { .ledger-h { font-size: 36px; } }
+  .ledger-h em { font-style: italic; color: var(--sage-deep); }
+  .ledger-h-2 { margin-top: 64px; }
+  .ledger-sub {
+    font-family: "Fraunces", Georgia, serif;
+    font-style: italic; font-size: 17px; line-height: 1.45;
+    color: var(--slate); margin: 0 0 36px; max-width: 620px;
+  }
+  @media (min-width: 720px) { .ledger-sub { font-size: 18px; margin-bottom: 44px; } }
+
+  /* Four lot cards in a 2-column grid (1 col on mobile) */
+  .lots {
+    display: grid; grid-template-columns: 1fr; gap: 24px;
+  }
+  @media (min-width: 720px) { .lots { grid-template-columns: 1fr 1fr; gap: 36px 32px; } }
+
+  .lot {
+    background: var(--cream);
+    border: 0.5px solid var(--border);
+    border-radius: 0;
+    padding: 22px 22px 26px;
+    display: flex; flex-direction: column; gap: 16px;
+  }
+  @media (min-width: 720px) { .lot { padding: 28px 28px 30px; gap: 18px; } }
+
+  .lot-meta {
+    font-family: "DM Sans", sans-serif;
+    font-size: 10.5px; font-weight: 500;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--slate);
+  }
+  .lot-value {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 400; font-size: 38px; line-height: 1;
+    letter-spacing: -0.018em; color: var(--ink);
+    font-variant-numeric: tabular-nums oldstyle-nums;
+    margin: -2px 0 0;
+  }
+  .lot-value .unpriced {
+    font-size: 22px; font-style: italic; color: var(--slate);
+    letter-spacing: -0.01em;
+  }
+  .lot-pace {
+    font-family: "Fraunces", Georgia, serif;
+    font-style: italic; font-size: 16px; line-height: 1.35;
+    color: var(--ink); margin: -6px 0 0;
+  }
+  .lot-pace .lot-pace-l { color: var(--slate); }
+  .lot-pace .lot-pace-num { color: var(--sage-deep); font-weight: 500; }
+
+  /* The mini pace chart inside each lot — full width of the card */
+  .lot-chart svg { display: block; width: 100%; height: auto; }
+
+  /* Action pill — the call to action */
+  .lot-pill {
+    font-family: "DM Sans", sans-serif;
+    font-size: 12px; font-weight: 600;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 11px 16px; text-align: center;
+    border-radius: 0;
+    align-self: stretch;
+  }
+  .lot-pill.pill-sell  { background: var(--sage-deep); color: var(--cream); }
+  .lot-pill.pill-hold  { background: var(--ink);       color: var(--cream); }
+  .lot-pill.pill-watch { background: transparent; color: var(--ink); border: 0.5px solid var(--ink); }
+
+  .lot-because {
+    font-family: "Fraunces", Georgia, serif;
+    font-style: italic; font-size: 14.5px; line-height: 1.45;
+    color: var(--slate); margin: -2px 0 0;
+  }
+  .lot-because strong { font-style: normal; font-weight: 500; color: var(--ink); }
+
+  /* Cash runway — full-width, prominent, no figcaption clutter */
+  .runway-block { margin-top: 10px; }
+  .runway-block svg {
+    width: 100%; height: auto; display: block;
+    background: var(--cream);
+    border: 0.5px solid var(--border);
+    padding: 18px 14px 8px;
+  }
+  @media (min-width: 720px) { .runway-block svg { padding: 26px 24px 10px; } }
+  .runway-block svg text { font-family: "DM Sans", sans-serif; font-size: 11px; fill: var(--slate); }
+  .runway-block svg text.label-it {
+    font-family: "Fraunces", Georgia, serif; font-style: italic; font-size: 12px;
+  }
+
+  /* Closed-book strip — two stat cards */
+  .closed-strip {
+    display: grid; grid-template-columns: 1fr; gap: 24px;
+  }
+  @media (min-width: 720px) { .closed-strip { grid-template-columns: 1fr 1fr; gap: 36px 32px; } }
+  .closed-card {
+    background: var(--cream);
+    border: 0.5px solid var(--border);
+    padding: 22px 22px 26px;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  @media (min-width: 720px) { .closed-card { padding: 28px 28px 30px; gap: 16px; } }
+  .closed-meta {
+    font-family: "DM Sans", sans-serif;
+    font-size: 10.5px; font-weight: 500;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--slate);
+  }
+  .closed-value {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 400; font-size: 38px; line-height: 1;
+    letter-spacing: -0.018em; color: var(--ink);
+    font-variant-numeric: tabular-nums oldstyle-nums;
+  }
+  .closed-value .unit {
+    font-size: 16px; color: var(--slate); font-style: italic;
+    margin-left: 6px; letter-spacing: 0;
+  }
+  .closed-vs {
+    font-family: "Fraunces", Georgia, serif;
+    font-style: italic; font-size: 14.5px; color: var(--slate);
+  }
+  .closed-vs .vs-pos { color: var(--sage-deep); font-weight: 500; font-style: normal; }
+  .closed-vs .vs-neg { color: var(--ink); font-weight: 500; font-style: normal; }
+  .closed-card svg { display: block; width: 100%; height: auto; }
+
+  /* ============ LOTS STRIP + DRILLDOWN ============ */
+  .lots-strip {
+    display: flex; flex-direction: column;
+    border-top: 0.5px solid var(--border);
+    border-bottom: 0.5px solid var(--border);
+    margin-bottom: 18px;
+  }
+  .lot-row {
+    display: grid;
+    grid-template-columns: 64px 1fr auto auto auto 18px;
+    gap: 14px;
+    align-items: center;
+    padding: 16px 4px;
+    background: transparent; border: 0;
+    border-bottom: 0.5px solid var(--border);
+    text-align: left;
+    cursor: pointer;
+    font: inherit; color: var(--ink);
+    -webkit-tap-highlight-color: transparent;
+    transition: background 0.15s ease;
+    width: 100%;
+  }
+  .lot-row:last-child { border-bottom: 0; }
+  .lot-row:hover { background: var(--cream); }
+  .lot-row.active { background: var(--cream); }
+  .lot-row.active .lot-row-arrow { color: var(--sage-deep); transform: rotate(90deg); }
+
+  @media (max-width: 720px) {
+    .lot-row {
+      grid-template-columns: 56px 1fr auto;
+      grid-template-rows: auto auto;
+      gap: 4px 12px;
+      padding: 14px 4px;
+    }
+    .lot-row-pill { grid-row: 1 / span 2; align-self: center; }
+    .lot-row-name { grid-column: 2; grid-row: 1; }
+    .lot-row-val  { grid-column: 3; grid-row: 1; text-align: right; }
+    .lot-row-bu   { grid-column: 2; grid-row: 2; font-size: 11.5px; color: var(--slate); }
+    .lot-row-pace { grid-column: 3; grid-row: 2; text-align: right; font-size: 11.5px; }
+    .lot-row-arrow { display: none; }
+  }
+
+  .lot-row-pill {
+    display: inline-block; text-align: center;
+    font-family: "DM Sans", sans-serif;
+    font-size: 9.5px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    padding: 6px 10px; border-radius: 0;
+    min-width: 56px;
+  }
+  .lot-row-pill.pill-sell  { background: var(--sage-deep); color: var(--cream); }
+  .lot-row-pill.pill-hold  { background: var(--ink);       color: var(--cream); }
+  .lot-row-pill.pill-watch { background: transparent; color: var(--ink); border: 0.5px solid var(--ink); }
+
+  .lot-row-name {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 17px; color: var(--ink); letter-spacing: -0.01em;
+  }
+  .lot-row-name .lot-row-loc {
+    font-style: italic; color: var(--slate); font-size: 14px;
+  }
+  .lot-row-bu {
+    font-family: "DM Sans", sans-serif; font-size: 12.5px;
+    color: var(--slate); letter-spacing: 0.04em;
+    font-variant-numeric: tabular-nums;
+  }
+  .lot-row-val {
+    font-family: "Fraunces", Georgia, serif; font-size: 19px;
+    color: var(--ink); font-variant-numeric: tabular-nums oldstyle-nums;
+    letter-spacing: -0.01em;
+  }
+  .lot-row-val.unpriced-val {
+    font-style: italic; font-size: 15px; color: var(--slate);
+  }
+  .lot-row-pace {
+    font-family: "Fraunces", Georgia, serif; font-style: italic;
+    font-size: 13.5px; color: var(--slate);
+  }
+  .lot-row-arrow {
+    color: var(--dust); font-size: 18px; line-height: 1;
+    transition: transform 0.15s ease, color 0.15s ease;
+  }
+
+  /* Detail panel — single lot at a time, swapped by JS */
+  .lot-detail {
+    background: var(--cream);
+    border: 0.5px solid var(--border);
+    padding: 24px 22px 28px;
+    margin-bottom: 18px;
+    display: grid; grid-template-columns: 1fr; gap: 18px;
+  }
+  @media (min-width: 720px) {
+    .lot-detail { padding: 32px; grid-template-columns: 1.2fr 1fr; gap: 36px; }
+  }
+  .lot-detail-chart svg { display: block; width: 100%; height: auto; }
+  .lot-detail-side {
+    display: flex; flex-direction: column; gap: 16px; justify-content: space-between;
+  }
+  .lot-detail-headline {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 26px; line-height: 1.15; letter-spacing: -0.015em;
+    color: var(--ink); font-variant-numeric: tabular-nums oldstyle-nums;
+  }
+  @media (min-width: 720px) { .lot-detail-headline { font-size: 30px; } }
+  .lot-detail-headline em { font-style: italic; color: var(--sage-deep); }
+  .lot-detail-because {
+    font-family: "Fraunces", Georgia, serif; font-style: italic;
+    font-size: 15px; line-height: 1.45; color: var(--slate);
+  }
+  .lot-detail-stats {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px 24px;
+    padding-top: 14px; border-top: 0.5px solid var(--border);
+  }
+  .lot-detail-stats .s-k {
+    font-family: "DM Sans", sans-serif;
+    font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--slate); margin-bottom: 2px;
+  }
+  .lot-detail-stats .s-v {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 17px; color: var(--ink);
+    font-variant-numeric: tabular-nums oldstyle-nums;
+  }
+  .lot-detail-action {
+    align-self: flex-start;
+    font-family: "DM Sans", sans-serif;
+    font-size: 12px; font-weight: 600;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 12px 18px; border: 0; cursor: pointer;
+    color: var(--cream); background: var(--sage-deep);
+    box-shadow: 0 0 28px rgba(123, 174, 127, 0.32);
+  }
+  .lot-detail-action.is-hold  { background: var(--ink); box-shadow: none; }
+  .lot-detail-action.is-watch { background: transparent; color: var(--ink); border: 0.5px solid var(--ink); box-shadow: none; }
+
+  /* ============ CASH PLAN (simplified) ============ */
+  .cash-three {
+    display: grid; grid-template-columns: 1fr; gap: 18px;
+    align-items: stretch; margin-bottom: 28px;
+  }
+  @media (min-width: 720px) {
+    .cash-three { grid-template-columns: 1fr 18px 1fr 18px 1fr; gap: 18px; }
+  }
+  .cash-cell {
+    background: var(--cream); border: 0.5px solid var(--border);
+    padding: 22px 22px 24px;
+  }
+  .cash-cell-low { border-color: var(--sage); border-width: 1px; }
+  .cash-cell-back { border-color: var(--ink); border-width: 0.75px; }
+  .cash-k {
+    font-family: "DM Sans", sans-serif;
+    font-size: 10.5px; font-weight: 500;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--slate); margin-bottom: 8px;
+  }
+  .cash-v {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 38px; font-weight: 400; letter-spacing: -0.02em;
+    color: var(--ink); font-variant-numeric: tabular-nums oldstyle-nums;
+    line-height: 1;
+  }
+  .cash-v em { font-style: italic; color: var(--sage-deep); }
+  .cash-d {
+    font-family: "Fraunces", Georgia, serif; font-style: italic;
+    font-size: 14px; color: var(--slate); margin-top: 8px; line-height: 1.4;
+  }
+  .cash-arrow {
+    display: none; align-items: center; justify-content: center;
+    color: var(--dust); font-size: 22px; line-height: 1;
+  }
+  @media (min-width: 720px) { .cash-arrow { display: flex; } }
+
+  .cash-timeline svg { display: block; width: 100%; height: auto; }
+
+  /* ============ CLOSED BOOK additions ============ */
+  .closed-value-row {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 14px;
+    flex-wrap: wrap;
+  }
+  .closed-vs-stack {
+    display: flex; flex-direction: column; gap: 2px; align-items: flex-end;
+  }
+  .vs-line {
+    font-family: "Fraunces", Georgia, serif; font-style: italic;
+    font-size: 13px; color: var(--slate);
+  }
+  .vs-line .vs-pos { color: var(--sage-deep); font-weight: 500; font-style: normal; margin-right: 3px; }
+  .vs-line .vs-neg { color: var(--ink); font-weight: 500; font-style: normal; margin-right: 3px; }
+  .closed-takeaway {
+    font-family: "Fraunces", Georgia, serif; font-style: italic;
+    font-size: 14px; line-height: 1.45; color: var(--slate);
+    padding-top: 12px; border-top: 0.5px dotted var(--border);
+  }
+
+  /* ============ TRADE ORDER WIDGET ============ */
+  .trade-trigger {
+    position: fixed; right: 0; top: 50%; transform: translateY(-50%);
+    background: var(--sage-deep); color: var(--cream);
+    border: 0; padding: 18px 12px;
+    font-family: "DM Sans", sans-serif;
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    cursor: pointer;
+    writing-mode: vertical-rl;
+    box-shadow: 0 0 32px rgba(123, 174, 127, 0.35), 0 0 0 0.5px rgba(58,61,54,0.08);
+    z-index: 50;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .trade-trigger-rail { display: none; }
+
+  .trade-drawer {
+    position: fixed; top: 0; right: 0; bottom: 0;
+    width: 380px; max-width: 92vw;
+    background: var(--cream);
+    border-left: 0.5px solid var(--border);
+    box-shadow: -24px 0 64px rgba(58,61,54,0.10);
+    transform: translateX(100%);
+    transition: transform 0.32s cubic-bezier(.22,.61,.36,1);
+    z-index: 60;
+    overflow-y: auto;
+    padding: 28px 28px 36px;
+    display: flex; flex-direction: column; gap: 20px;
+  }
+  .trade-drawer.open { transform: translateX(0); }
+
+  @media (max-width: 560px) {
+    .trade-drawer {
+      width: 100vw; max-width: 100vw;
+      bottom: 0; top: auto; height: 88vh; right: 0;
+      transform: translateY(100%);
+      border-left: 0; border-top: 0.5px solid var(--border);
+      border-radius: 0;
+    }
+    .trade-drawer.open { transform: translateY(0); }
+  }
+
+  .trade-scrim {
+    position: fixed; inset: 0;
+    background: rgba(58,61,54,0.30);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.25s ease;
+    z-index: 55;
+  }
+  .trade-scrim.open { opacity: 1; pointer-events: auto; }
+
+  .trade-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    border-bottom: 0.5px solid var(--border); padding-bottom: 10px;
+  }
+  .trade-eyebrow {
+    font-family: "DM Sans", sans-serif;
+    font-size: 10.5px; font-weight: 500;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--slate);
+  }
+  .trade-close {
+    background: transparent; border: 0; cursor: pointer;
+    font-size: 26px; line-height: 1; color: var(--slate);
+    padding: 0 4px;
+  }
+  .trade-close:hover { color: var(--ink); }
+
+  .trade-h {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 400; font-size: 32px; line-height: 1.1;
+    letter-spacing: -0.018em; color: var(--ink);
+    margin: 4px 0 0;
+  }
+  .trade-h em { font-style: italic; color: var(--sage-deep); }
+  .trade-sub {
+    font-family: "Fraunces", Georgia, serif; font-style: italic;
+    font-size: 15px; color: var(--slate); margin: 0 0 10px;
+  }
+
+  .trade-field { display: flex; flex-direction: column; gap: 8px; }
+  .trade-label {
+    font-family: "DM Sans", sans-serif;
+    font-size: 10.5px; font-weight: 500;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--slate);
+  }
+
+  .crop-toggle {
+    display: flex; gap: 0;
+    border: 0.5px solid var(--rule);
+  }
+  .crop-toggle button {
+    flex: 1 1 50%;
+    background: transparent; border: 0;
+    padding: 11px 14px;
+    font-family: "DM Sans", sans-serif;
+    font-size: 12px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--slate);
+    cursor: pointer; border-right: 0.5px solid var(--rule);
+    -webkit-tap-highlight-color: transparent;
+  }
+  .crop-toggle button:last-child { border-right: 0; }
+  .crop-toggle button.active {
+    background: var(--ink); color: var(--cream);
+  }
+
+  .trade-field input[type="number"] {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 24px; font-weight: 400; letter-spacing: -0.012em;
+    color: var(--ink);
+    background: transparent;
+    border: 0; border-bottom: 1px solid var(--ink);
+    padding: 8px 0;
+    font-variant-numeric: tabular-nums oldstyle-nums;
+    -moz-appearance: textfield;
+  }
+  .trade-field input[type="number"]::-webkit-outer-spin-button,
+  .trade-field input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+  .trade-hint {
+    font-family: "DM Sans", sans-serif; font-size: 11px;
+    color: var(--slate); letter-spacing: 0.04em;
+  }
+
+  .trade-bid {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 28px; color: var(--ink);
+    font-variant-numeric: tabular-nums oldstyle-nums; letter-spacing: -0.015em;
+  }
+  .trade-bid-unit { font-size: 14px; color: var(--slate); font-style: italic; margin-left: 4px; }
+
+  .trade-total {
+    margin: 8px 0 4px;
+    padding: 18px 0;
+    border-top: 0.5px solid var(--border);
+    border-bottom: 0.5px solid var(--border);
+    display: flex; justify-content: space-between; align-items: baseline;
+  }
+  .trade-total-k {
+    font-family: "DM Sans", sans-serif;
+    font-size: 11px; font-weight: 500;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--slate);
+  }
+  .trade-total-v {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 400; font-size: 38px; letter-spacing: -0.02em;
+    color: var(--sage-deep); font-style: italic;
+    font-variant-numeric: tabular-nums oldstyle-nums;
+  }
+
+  .trade-cta {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    background: var(--sage-deep); color: var(--cream);
+    padding: 16px 18px; text-decoration: none; border: 0;
+    box-shadow: 0 0 32px rgba(123, 174, 127, 0.35);
+  }
+  .trade-cta:hover { background: #5e8b62; }
+  .trade-cta-l {
+    font-family: "DM Sans", sans-serif;
+    font-size: 12px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase;
+  }
+  .trade-cta-num {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 19px; letter-spacing: -0.01em; font-style: italic;
+    font-variant-numeric: tabular-nums oldstyle-nums;
+  }
+
+  .trade-foot {
+    font-family: "DM Sans", sans-serif; font-size: 10.5px;
+    color: var(--dust); letter-spacing: 0.06em; text-align: center;
+    line-height: 1.45;
+  }
+
+  /* ---- New: order builder additions ---- */
+  .trade-stage[hidden] { display: none; }
+  .trade-stage { display: flex; flex-direction: column; gap: 18px; }
+
+  .trade-avail-strip {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+    padding: 12px 0;
+    border-top: 0.5px dotted var(--border);
+    border-bottom: 0.5px dotted var(--border);
+  }
+  .trade-avail-k {
+    font-family: "DM Sans", sans-serif; font-size: 10.5px; font-weight: 500;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--slate);
+    margin-bottom: 4px;
+  }
+  .trade-avail-v {
+    font-family: "Fraunces", Georgia, serif; font-size: 22px;
+    font-variant-numeric: tabular-nums oldstyle-nums; color: var(--ink);
+  }
+
+  .trade-tranches { display: flex; flex-direction: column; gap: 14px; }
+  .trade-tranche {
+    position: relative;
+    padding: 16px 14px 12px;
+    border: 0.5px solid var(--border);
+    background: var(--paper);
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .trade-tranche-num {
+    position: absolute; top: -7px; left: 14px;
+    background: var(--cream); padding: 0 8px;
+    font-family: "DM Sans", sans-serif; font-size: 9.5px;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--slate);
+  }
+  .trade-tranche-x {
+    position: absolute; top: 6px; right: 8px;
+    background: transparent; border: 0; cursor: pointer;
+    font-size: 14px; color: var(--dust); padding: 4px 6px; line-height: 1;
+  }
+  .trade-tranche-x:hover { color: var(--ink); }
+
+  .tranche-pill-row { display: flex; gap: 6px; padding: 2px 0; }
+  .tranche-pill {
+    flex: 1; padding: 7px 8px; border: 0.5px solid var(--rule);
+    font-family: "DM Sans", sans-serif; font-size: 10.5px;
+    letter-spacing: 0.10em; text-transform: uppercase; color: var(--slate);
+    background: transparent; cursor: pointer; text-align: center;
+  }
+  .tranche-pill.active { background: var(--ink); color: var(--cream); border-color: var(--ink); }
+
+  .tranche-row {
+    display: grid; grid-template-columns: 92px 1fr;
+    align-items: baseline; gap: 10px;
+  }
+  .tranche-row label {
+    font-family: "DM Sans", sans-serif; font-size: 10.5px;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--slate);
+  }
+  .tranche-row input[type="number"],
+  .tranche-row input[type="date"] {
+    font-family: "Fraunces", Georgia, serif; font-size: 17px;
+    background: transparent; color: var(--ink);
+    border: 0; border-bottom: 0.5px solid var(--rule);
+    padding: 5px 0;
+    font-variant-numeric: tabular-nums oldstyle-nums;
+  }
+  .tranche-row input[type="number"]::-webkit-outer-spin-button,
+  .tranche-row input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .tranche-row input[type="number"] { -moz-appearance: textfield; }
+  .tranche-row.is-disabled { opacity: 0.45; }
+  .tranche-row.is-disabled input { pointer-events: none; }
+
+  .trade-add {
+    background: transparent; border: 0.5px dashed var(--rule);
+    padding: 11px; cursor: pointer;
+    font-family: "DM Sans", sans-serif; font-size: 11px; font-weight: 500;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--slate);
+  }
+  .trade-add:hover { border-color: var(--ink); color: var(--ink); }
+
+  .trade-phone-line {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-family: "DM Sans", sans-serif; font-size: 11.5px; color: var(--slate);
+    padding: 4px 0; gap: 8px;
+  }
+  .trade-phone-line strong {
+    font-family: "Fraunces", Georgia, serif; font-style: italic;
+    font-weight: 500; font-size: 14px; color: var(--ink);
+    font-variant-numeric: tabular-nums oldstyle-nums;
+  }
+
+  button.trade-cta { cursor: pointer; }
+  .trade-cta:disabled { opacity: 0.4; cursor: not-allowed; }
+  .trade-cta:disabled:hover { background: var(--sage-deep); }
+  .trade-cta.is-secondary {
+    background: transparent; color: var(--ink);
+    border: 0.5px solid var(--rule); box-shadow: none;
+  }
+  .trade-cta.is-secondary:hover { background: var(--paper); border-color: var(--ink); }
+
+  .trade-back {
+    background: transparent; border: 0; cursor: pointer;
+    font-family: "DM Sans", sans-serif; font-size: 11px;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--slate);
+    padding: 6px 0; align-self: flex-start;
+  }
+  .trade-back:hover { color: var(--ink); }
+
+  .trade-otp-input {
+    font-family: "Fraunces", Georgia, serif; font-size: 32px;
+    letter-spacing: 0.32em; text-align: center; color: var(--ink);
+    background: transparent; border: 0;
+    border-bottom: 1px solid var(--ink); padding: 12px 0;
+    font-variant-numeric: tabular-nums; width: 100%;
+  }
+  .trade-otp-meta {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-family: "DM Sans", sans-serif; font-size: 11px; color: var(--slate);
+  }
+  .trade-otp-resend {
+    background: transparent; border: 0; cursor: pointer;
+    color: var(--sage-deep); font-family: inherit; font-size: 11px;
+    letter-spacing: 0.06em; text-decoration: underline; padding: 0;
+  }
+  .trade-otp-resend:disabled { color: var(--dust); cursor: not-allowed; text-decoration: none; }
+
+  .trade-error {
+    font-family: "DM Sans", sans-serif; font-size: 11.5px;
+    color: #B6534A; padding: 0; min-height: 0;
+  }
+  .trade-error:not(:empty) { padding: 4px 0; min-height: 1em; }
+
+  .trade-done-mark {
+    font-family: "Fraunces", Georgia, serif; font-size: 56px;
+    color: var(--sage-deep); text-align: center; padding: 12px 0; line-height: 1;
+  }
+  .trade-done-h {
+    font-family: "Fraunces", Georgia, serif; font-weight: 400;
+    font-size: 28px; letter-spacing: -0.018em; text-align: center;
+    color: var(--ink); margin: 0;
+  }
+
+  .trade-drafts {
+    margin-top: 4px; padding: 16px 0 0;
+    border-top: 0.5px solid var(--border);
+  }
+  .trade-drafts-h {
+    font-family: "DM Sans", sans-serif; font-size: 10.5px; font-weight: 500;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--slate);
+    margin-bottom: 10px;
+  }
+  .trade-drafts-list {
+    list-style: none; padding: 0; margin: 0;
+    display: flex; flex-direction: column;
+  }
+  .trade-drafts-empty {
+    font-family: "Fraunces", Georgia, serif; font-style: italic;
+    font-size: 13px; color: var(--dust); padding: 4px 0;
+  }
+  .trade-drafts-list li {
+    display: grid; grid-template-columns: 1fr auto; gap: 4px 12px;
+    padding: 9px 0; border-bottom: 0.5px dotted var(--border);
+    align-items: baseline;
+  }
+  .trade-drafts-list li:last-child { border-bottom: 0; }
+  .draft-line { font-family: "DM Sans", sans-serif; font-size: 12.5px; color: var(--ink); }
+  .draft-line strong {
+    font-family: "Fraunces", Georgia, serif; font-style: italic;
+    font-weight: 500; color: var(--sage-deep);
+  }
+  .draft-meta {
+    font-family: "DM Sans", sans-serif; font-size: 10.5px;
+    letter-spacing: 0.04em; color: var(--slate); margin-top: 2px;
+  }
+  .draft-status {
+    font-family: "DM Sans", sans-serif; font-size: 10px; font-weight: 500;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--slate);
+  }
+
+  /* ============ MOBILE (iPhone) ============
+     CSS wins over inline SVG `font-size=""` attributes (presentation
+     attrs have specificity 0). At iPhone widths we scale chart text up
+     so labels remain legible after the SVG is shrunk. */
+  @media (max-width: 560px) {
+    body { font-size: 14px; }
+    .cover { padding: 36px 18px 24px; }
+    h1 { font-size: 36px; line-height: 1.06; }
+    .deck { font-size: 17px; margin-bottom: 28px; }
+    .eyebrow { margin-bottom: 14px; }
+    .nav { margin-bottom: 22px; }
+
+    /* Hero call cards */
+    .hero-call { padding: 16px 0; gap: 14px; margin-bottom: 22px; }
+    .hero-call .cell .v { font-size: 22px; }
+    .hero-call .cell .sub { font-size: 12px; }
+
+    /* Hero seasonal chart — bump internal text. The SVG renders at
+       ~0.38× viewBox at iPhone widths, so 28px viewBox text is ~10.5px
+       on screen — small but legible. */
+    .hero svg text { font-size: 28px; }
+    .hero svg .anno { font-size: 30px; }
+
+    .lede { font-size: 15px; }
+
+    .zone-break { margin-top: 44px; padding: 0 18px; }
+    .ledger { padding: 36px 0 44px; }
+    .ledger-wrap { padding: 0 18px; }
+    .ledger-h { font-size: 26px; }
+    .ledger-sub { font-size: 15.5px; margin-bottom: 28px; }
+    .ledger-h-2 { margin-top: 44px; }
+
+    /* Lot-detail panel tighter, chart bigger inside */
+    .lot-detail { padding: 18px 16px 22px; gap: 18px; }
+    .lot-detail-headline { font-size: 24px; }
+    .lot-detail-because { font-size: 14px; }
+    .lot-detail-stats .s-v { font-size: 16px; }
+    .lot-detail-action { padding: 14px 18px; font-size: 12.5px; }
+    /* Drilldown SVG text. viewBox 520x270 → ~0.66× at iPhone width. */
+    .lot-detail-chart svg text { font-size: 26px !important; }
+    /* Preserve hierarchy: the "today" price chip stays the biggest */
+    .lot-detail-chart svg text[font-weight="500"] { font-size: 32px !important; }
+
+    /* Cash plan triplet stacks but stays comfortable */
+    .cash-cell { padding: 18px 16px 20px; }
+    .cash-v { font-size: 32px; }
+    .cash-d { font-size: 13px; }
+
+    /* Cash timeline SVG — viewBox 800x110 → ~0.43× scale at iPhone */
+    .cash-timeline svg text { font-size: 26px !important; }
+    /* Trough $ chip the biggest, dollar chips above each milestone next */
+    .cash-timeline svg text[font-style="italic"] { font-size: 30px !important; }
+
+    /* Closed book cards */
+    .closed-card { padding: 18px 16px 22px; gap: 14px; }
+    .closed-meta { font-size: 10px; letter-spacing: 0.12em; }
+    .closed-value { font-size: 32px; }
+    .closed-takeaway { font-size: 13px; }
+    .closed-card svg text { font-size: 22px !important; }
+    .vs-line { font-size: 12px; }
+
+    /* Trade trigger */
+    .trade-trigger { padding: 16px 11px; font-size: 11px; letter-spacing: 0.18em; }
+
+    .close { padding: 36px 18px 24px; }
+    .foot { padding: 0 18px 32px; font-size: 10px; }
+  }
+
+  @media (max-width: 380px) {
+    .cover { padding: 30px 14px 20px; }
+    .ledger-wrap { padding: 0 14px; }
+    h1 { font-size: 32px; }
+    .lot-row-name { font-size: 15px; }
+    .lot-row-name .lot-row-loc { font-size: 12.5px; }
+  }
+
+  /* ============ BACK OF BOOK ============ */
+  .close {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 56px 32px 36px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px; align-items: end;
+  }
+  @media (min-width: 720px) {
+    .close { padding: 64px 48px 56px; grid-template-columns: 1fr auto; gap: 24px; }
+  }
+  .close p {
+    font-family: "Fraunces", Georgia, serif;
+    font-style: italic; font-size: 18px; line-height: 1.5;
+    color: var(--slate); max-width: 580px; margin: 0;
+  }
+  .close p strong { font-style: normal; font-weight: 500; color: var(--ink); }
+  .wordmark {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 500; font-size: 22px; letter-spacing: -0.012em;
+  }
+  .wordmark .out { color: var(--sage-deep); font-style: italic; font-weight: 400; }
+  .foot {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 32px 48px;
+    font-size: 10.5px; color: var(--dust);
+    letter-spacing: 0.12em; text-transform: uppercase;
+    display: flex; justify-content: space-between; gap: 14px;
+    flex-wrap: wrap;
+  }
+  @media (min-width: 720px) { .foot { padding: 0 48px 48px; } }
+  /* ============ SOBER TYPOGRAPHY OVERRIDE ============
+     The earlier rules used Fraunces 400 italic for display, which
+     reads as editorial/elegant. For a decision-making dashboard with
+     a primary user in her 70s, italic display hurts readability and
+     the romance gets in the way of the answer. This block dials the
+     register down to DM Sans 500/600 roman, smaller sizes, and
+     reserves Fraunces only for the brand wordmark + the Yes badge.
+     Loaded last so it overrides specific earlier rules. */
+
+  /* Headlines — DM Sans medium, no italic, smaller */
+  h1, .ledger-h, .binary-verb, .detail-headline, .trade-h {
+    font-family: "DM Sans", -apple-system, sans-serif;
+    font-style: normal;
+    font-weight: 600;
+    letter-spacing: -0.012em;
+  }
+  h1 { font-size: 30px; line-height: 1.15; max-width: 720px; }
+  @media (min-width: 720px) { h1 { font-size: 36px; } }
+  .ledger-h { font-size: 22px; }
+  @media (min-width: 720px) { .ledger-h { font-size: 26px; } }
+  .binary-verb { font-size: 24px; }
+  @media (min-width: 720px) { .binary-verb { font-size: 28px; } }
+  .detail-headline { font-size: 20px; line-height: 1.25; }
+  @media (min-width: 720px) { .detail-headline { font-size: 23px; } }
+  .trade-h { font-size: 24px; }
+
+  /* Headline emphasis — sage color instead of italic */
+  h1 em, .ledger-h em, .binary-verb em, .detail-headline em, .trade-h em,
+  .cash-v em, .scenario-headline em, .hero-call .cell .v em {
+    font-style: normal;
+    color: var(--sage-deep);
+    font-weight: 600;
+  }
+
+  /* Decks & subs — DM Sans regular, slate */
+  .deck, .ledger-sub, .trade-sub {
+    font-family: "DM Sans", -apple-system, sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 15.5px;
+    line-height: 1.5;
+    color: var(--slate);
+    max-width: 620px;
+  }
+  @media (min-width: 720px) {
+    .deck { font-size: 16.5px; }
+    .ledger-sub { font-size: 15.5px; }
+  }
+
+  /* Lede paragraph — body weight, sage on emphasis */
+  .lede { font-size: 15px; line-height: 1.55; }
+  .lede em { font-style: normal; color: var(--sage-deep); font-weight: 500; }
+
+  /* Value numbers — DM Sans semibold tabular */
+  .hero-call .cell .v, .cash-v, .closed-value, .scenario-payoff,
+  .lot-row-val, .lot-detail-stats .s-v, .detail-stat .v,
+  .trade-bid, .trade-total-v, .slider-label .l-v,
+  .lot-detail-action, .lot-detail-headline {
+    font-family: "DM Sans", -apple-system, sans-serif;
+    font-style: normal;
+    font-weight: 600;
+    letter-spacing: -0.008em;
+  }
+  .hero-call .cell .v { font-size: 20px; }
+  @media (min-width: 720px) { .hero-call .cell .v { font-size: 22px; } }
+  .cash-v { font-size: 26px; }
+  @media (min-width: 720px) { .cash-v { font-size: 30px; } }
+  .closed-value { font-size: 24px; }
+  @media (min-width: 720px) { .closed-value { font-size: 28px; } }
+  .scenario-payoff { font-size: 22px; }
+  .lot-row-val { font-size: 16px; }
+  .detail-stat .v { font-size: 18px; }
+  .slider-label .l-v { font-size: 18px; }
+  .trade-bid { font-size: 22px; }
+  .trade-total-v { font-size: 26px; color: var(--sage-deep); }
+
+  /* Lot row name — sans, no italic, table-like */
+  .lot-row-name {
+    font-family: "DM Sans", -apple-system, sans-serif;
+    font-weight: 500;
+    font-size: 15px;
+    letter-spacing: 0;
+  }
+  .lot-row-name .lot-row-loc {
+    font-style: normal;
+    font-weight: 400;
+    color: var(--slate);
+    font-size: 13px;
+  }
+  .lot-row-pace {
+    font-family: "DM Sans", -apple-system, sans-serif;
+    font-style: normal;
+    font-size: 12.5px;
+  }
+  .lot-row-val.unpriced-val {
+    font-style: normal;
+    font-size: 13px;
+    color: var(--slate);
+  }
+
+  /* "Because" / takeaway / d lines — sans, slate, no italic */
+  .lot-detail-because, .closed-takeaway, .strike-because,
+  .scenario-because, .cash-d, .binary-reason, .trade-sub {
+    font-family: "DM Sans", -apple-system, sans-serif;
+    font-style: normal;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--slate);
+  }
+
+  /* Strike meta + scenario tag + closed meta */
+  .strike-meta, .scenario-tag, .closed-meta {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+  }
+
+  /* Scenario headline — sans, smaller */
+  .scenario-headline {
+    font-family: "DM Sans", -apple-system, sans-serif;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 17px;
+    letter-spacing: -0.005em;
+  }
+
+  /* Hero call sub label — sans */
+  .hero-call .cell .sub {
+    font-family: "DM Sans", -apple-system, sans-serif;
+    font-style: normal;
+  }
+
+  /* vs lines */
+  .vs-line {
+    font-family: "DM Sans", -apple-system, sans-serif;
+    font-style: normal;
+    font-size: 12px;
+  }
+
+  /* Binary chips — slightly tighter, smaller */
+  .binary-chip { font-size: 9.5px; letter-spacing: 0.10em; padding: 5px 8px; }
+
+  /* Slider value (price) */
+  .slider-label .l-v { color: var(--sage-deep); font-style: normal; }
+
+  /* Brand wordmark + binary "Yes" — keep Fraunces character but slimmer */
+  .nav .brand, .wordmark { font-weight: 500; }
+  .binary-word { font-weight: 500; font-style: normal; }
+
+  /* === LOTS GRID OVERRIDE ============
+     4 lots as a 2x2 compact card grid on desktop, 1-col on mobile. */
+  .lots-strip {
+    display: grid; grid-template-columns: 1fr; gap: 8px;
+    border-top: none; border-bottom: none; margin-bottom: 18px;
+  }
+  @media (min-width: 720px) {
+    .lots-strip { grid-template-columns: 1fr 1fr; gap: 14px; }
+  }
+  .lot-row {
+    display: grid !important;
+    grid-template-columns: 60px 1fr auto !important;
+    grid-template-rows: auto auto !important;
+    gap: 4px 14px !important;
+    padding: 14px 16px !important;
+    background: var(--cream) !important;
+    border: 0.5px solid var(--border) !important;
+    cursor: pointer; text-align: left; font: inherit; color: var(--ink);
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+  .lot-row:hover { background: var(--paper) !important; }
+  .lot-row.active {
+    background: var(--paper) !important;
+    border-color: var(--sage-deep) !important;
+    box-shadow: 0 0 0 1px var(--sage-deep) inset;
+  }
+  .lot-row-pill {
+    grid-column: 1; grid-row: 1 / span 2;
+    align-self: center;
+    min-width: 0 !important; width: 100%;
+    padding: 6px 4px !important;
+  }
+  .lot-row-name { grid-column: 2; grid-row: 1; }
+  .lot-row-val  { grid-column: 3; grid-row: 1; text-align: right; }
+  .lot-row-bu   { grid-column: 2; grid-row: 2; }
+  .lot-row-pace { grid-column: 3; grid-row: 2; text-align: right; }
+  .lot-row-arrow { display: none !important; }
+
+  /* === COVER TOP — H1 stack + market wire blotter side-by-side ===
+     On desktop: blotter is absolutely positioned so its height matches
+     the headline column exactly — the blotter then scrolls internally
+     for any overflow rather than pushing the page taller.
+     On mobile: stacks vertically (grid 1-col). */
+  .cover-top {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 32px;
+    margin-bottom: 36px;
+  }
+  @media (min-width: 720px) {
+    .cover-top {
+      display: block;
+      position: relative;
+    }
+    .cover-headline {
+      margin-right: 416px;   /* 360 blotter + 56 gap */
+      min-width: 0;
+    }
+    .blotter {
+      position: absolute;
+      top: 0; right: 0;
+      height: 100%;
+      width: 360px;
+    }
+  }
+
+  /* Blotter card */
+  .blotter {
+    background: var(--paper);
+    border: 0.5px solid var(--border);
+    padding: 16px 18px 6px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .blotter-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    border-bottom: 0.5px solid var(--border);
+    padding-bottom: 10px; margin-bottom: 4px;
+  }
+  .blotter-eyebrow {
+    font-family: "DM Sans", -apple-system, sans-serif;
+    font-size: 10.5px; font-weight: 600;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--ink);
+  }
+  .blotter-meta {
+    font-family: "DM Sans", -apple-system, sans-serif;
+    font-size: 10px; letter-spacing: 0.06em;
+    color: var(--dust); text-transform: uppercase;
+  }
+  .blotter-list {
+    list-style: none; padding: 0; margin: 0;
+    /* Fill available height in the flex column and scroll internally
+       so the card stays the height of the headline column. */
+    flex: 1 1 auto;
+    overflow-y: auto;
+    min-height: 0;
+    /* Subtle hairline scrollbar that fits the quiet aesthetic */
+    scrollbar-width: thin;
+    scrollbar-color: var(--rule) transparent;
+  }
+  .blotter-list::-webkit-scrollbar { width: 4px; }
+  .blotter-list::-webkit-scrollbar-track { background: transparent; }
+  .blotter-list::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 2px; }
+  .blotter-list::-webkit-scrollbar-thumb:hover { background: var(--dust); }
+  .blotter-item {
+    display: grid;
+    grid-template-columns: 56px 1fr 28px;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 0.5px solid var(--border);
+    align-items: baseline;
+  }
+  .blotter-item:last-child { border-bottom: 0; }
+  .blotter-tag {
+    font-family: "DM Sans", -apple-system, sans-serif;
+    font-size: 9px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    text-align: center;
+    padding: 3px 4px;
+    border: 0.5px solid var(--rule);
+    color: var(--slate);
+    align-self: start;
+  }
+  .blotter-tag.tag-corn  { color: var(--ink);       border-color: var(--ink); }
+  .blotter-tag.tag-soy   { color: var(--sage-deep); border-color: var(--sage); }
+  .blotter-tag.tag-macro { color: var(--slate);     border-color: var(--rule); }
+  .blotter-text {
+    font-family: "DM Sans", -apple-system, sans-serif;
+    font-size: 13px; line-height: 1.4;
+    color: var(--ink);
+  }
+  .blotter-time {
+    font-family: "DM Sans", -apple-system, sans-serif;
+    font-size: 10px; letter-spacing: 0.04em;
+    color: var(--dust);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Mobile sizing dial-back */
+  @media (max-width: 560px) {
+    h1 { font-size: 26px; }
+    .deck { font-size: 14.5px; margin-bottom: 22px; }
+    .lede { font-size: 14.5px; }
+    .binary-verb { font-size: 22px; }
+    .binary-word { font-size: 36px; }
+    .ledger-h { font-size: 20px; }
+    .ledger-sub { font-size: 14px; margin-bottom: 24px; }
+    .cash-v { font-size: 22px; }
+    .closed-value { font-size: 22px; }
+    .scenario-headline { font-size: 16px; }
+    .scenario-payoff { font-size: 19px; }
+    .hero-call .cell .v { font-size: 18px; }
+    .detail-headline, .lot-detail-headline { font-size: 19px; }
+    .trade-h { font-size: 21px; }
+    .lot-row-val { font-size: 15px; }
+    .lot-row-name { font-size: 14px; }
+    .lot-row-name .lot-row-loc { font-size: 12px; }
+    .lot-row-pace { font-size: 11.5px; }
+
+    /* Blotter on iPhone */
+    .cover-top { gap: 22px; margin-bottom: 24px; }
+    .blotter { padding: 14px 14px 4px; }
+    .blotter-item { grid-template-columns: 52px 1fr 26px; gap: 8px; padding: 9px 0; }
+    .blotter-text { font-size: 12.5px; line-height: 1.35; }
+  }
+
+
+  /* ============================================================
+     AUTH GATE — Garage Code
+     Static client-side gate. sessionStorage-backed; clears on tab close.
+     Code = "8467" (per Garage Code tip). Replace match in <script>.
+     ============================================================ */
+  .auth-gate {
+    position: fixed; inset: 0; z-index: 9999;
+    background: var(--cream);
+    display: flex; align-items: center; justify-content: center;
+    padding: 32px;
+    transition: opacity 0.32s ease;
+  }
+  .auth-gate.out { opacity: 0; pointer-events: none; }
+  .auth-card {
+    max-width: 380px; width: 100%;
+    text-align: center;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .auth-eyebrow {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 500; font-size: 18px;
+    letter-spacing: -0.01em; color: var(--ink);
+  }
+  .auth-eyebrow em {
+    color: var(--sage-deep); font-style: italic; font-weight: 400;
+  }
+  .auth-title {
+    font-family: "DM Sans", -apple-system, sans-serif;
+    font-weight: 600; font-size: 26px;
+    letter-spacing: -0.01em; color: var(--ink);
+    margin: 8px 0 0;
+  }
+  .auth-tip {
+    font-family: "Fraunces", Georgia, serif;
+    font-style: italic; font-size: 15px;
+    color: var(--slate); margin: 0 0 4px;
+  }
+  .auth-input {
+    display: block; margin: 0 auto;
+    width: 100%; max-width: 240px;
+    padding: 14px 18px;
+    border: 0.5px solid var(--rule); border-radius: 8px;
+    background: var(--paper);
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 36px; font-weight: 500;
+    text-align: center; letter-spacing: 0.34em;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none; appearance: none;
+  }
+  .auth-input:focus {
+    outline: 0;
+    border-color: var(--sage-deep);
+    box-shadow: 0 0 0 3px rgba(123,174,127,0.18);
+  }
+  .auth-error {
+    min-height: 18px;
+    font-family: "DM Sans", sans-serif;
+    font-size: 12px; color: #B35742;
+    letter-spacing: 0.04em;
+  }
+  @keyframes auth-shake {
+    0%,100% { transform: translateX(0); }
+    20%,60% { transform: translateX(-6px); }
+    40%,80% { transform: translateX(6px); }
+  }
+  .auth-gate.shake .auth-card { animation: auth-shake 0.34s ease both; }
+  body.auth-locked { overflow: hidden; }
+
+  /* ============================================================
+     DESKTOP WIDENING — let the page breathe on big monitors.
+     Mobile-first values stay below 720px; above that we open up
+     the cover / inside / close / foot containers from 960-1040
+     up to 1280px so the cover-top blotter has more room to its
+     left and the inside-grid two-column layout stretches. */
+  @media (min-width: 720px) {
+    .cover     { max-width: 1280px; }
+    .zone-break{ max-width: 1280px; }
+    .close     { max-width: 1280px; }
+    .foot      { max-width: 1280px; }
+  }
+  @media (min-width: 920px) {
+    .inside-grid {
+      max-width: 1280px;
+      grid-template-columns: minmax(0, 1fr) 360px;
+      column-gap: 56px;
+    }
+  }
+
+</style>
+</head>
+<body>
+
+<!-- ================== AUTH GATE (Garage Code) ================== -->
+<div class="auth-gate" id="auth-gate" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+  <div class="auth-card">
+    <span class="auth-eyebrow">freis <em>·</em> farm</span>
+    <h2 class="auth-title" id="auth-title">Garage code</h2>
+    <p class="auth-tip">Same four digits as the door.</p>
+    <input class="auth-input" id="auth-input" type="text" inputmode="numeric"
+           pattern="\d*" maxlength="4" autocomplete="off"
+           aria-label="Four-digit garage code" autofocus />
+    <div class="auth-error" id="auth-error" aria-live="polite"></div>
+  </div>
+</div>
+<script>
+(function() {
+  const KEY = 'freis-farm-garage';
+  const gate = document.getElementById('auth-gate');
+  if (!gate) return;
+  if (sessionStorage.getItem(KEY) === '1') { gate.remove(); return; }
+  document.body.classList.add('auth-locked');
+  const input = document.getElementById('auth-input');
+  const err   = document.getElementById('auth-error');
+  setTimeout(() => input?.focus(), 80);
+  input?.addEventListener('input', () => {
+    err.textContent = '';
+    input.value = input.value.replace(/\D/g, '');
+    if (input.value.length !== 4) return;
+    if (input.value === '8467') {
+      sessionStorage.setItem(KEY, '1');
+      gate.classList.add('out');
+      setTimeout(() => {
+        gate.remove();
+        document.body.classList.remove('auth-locked');
+      }, 350);
+    } else {
+      gate.classList.add('shake');
+      err.textContent = 'Wrong code. Try again.';
+      setTimeout(() => {
+        gate.classList.remove('shake');
+        input.value = '';
+        input.focus();
+      }, 400);
+    }
+  });
+})();
+</script>
+
+
+<!-- ================== FRONT OF BOOK ================== -->
+<section class="cover">
+
+  <div class="nav">
+    <a href="./" class="brand" aria-label="Freis Farm — Board of Trade">
+      <picture>
+        <source srcset="freisfarm-dark.png" media="(prefers-color-scheme: dark)">
+        <img src="freisfarm-light.png" alt="Freis Farm" class="brand-wordmark">
+      </picture>
+    </a>
+    <div class="nav-links">
+      <a href="./" class="here">Today's Call</a>
+      <a href="hedge.html">Hedge</a>
+      <a href="farm-ops.html">Farm Ops</a>
+    </div>
+  </div>
+
+  <!-- Cover top: H1 stack on the left, market wire blotter on the right.
+       The blotter is currently inlined with plausible Apr 2026 headlines;
+       wire to a real curated feed (USDA crop progress, FCStone, Reuters
+       ag wire, etc.) for production. Each row tagged CORN / SOY / MACRO. -->
+  <div class="cover-top">
+    <div class="cover-headline">
+      <p class="eyebrow">Grain · April 28, 2026</p>
+      <h1>Today's call</h1>
+      <p class="deck">Soy <em>+5pp</em> ahead of pace · corn on pace · $20,500 in May–June obligations.</p>
+
+      <!-- Three-cell hero call lives here so it stacks under the deck on
+           the LEFT side of the cover-top. Together with the H1 stack the
+           left column gets tall enough to balance the blotter on the
+           right (which auto-matches via top:0; bottom:0 absolute pos). -->
+      <div class="hero-call">
+        <div class="cell">
+          <div class="k">Inventory value</div>
+          <div class="v">$63,719 <em>at bid</em></div>
+          <div class="sub">9,115 bu corn @ $4.47 · 1,967 bu soy @ $11.68 · Ritchie Grain</div>
+        </div>
+        <div class="cell">
+          <div class="k">May–June bills</div>
+          <div class="v">$20,500</div>
+          <div class="sub">Real-estate tax · LDI fertilizer $10,500 · Ritchie input bill ~$10,000</div>
+        </div>
+        <div class="cell">
+          <div class="k">Pace position</div>
+          <div class="v">Corn <em>at pace</em> · Soy +5pp</div>
+          <div class="sub">Net dollar value of holding through June: corn ≈ nothing, soy ≈ −$420.</div>
+        </div>
+      </div>
+    </div>
+
+    <aside class="blotter" aria-label="Market wire — headlines material to corn or soybean prices">
+      <div class="blotter-head">
+        <span class="blotter-eyebrow">Market wire</span>
+        <span class="blotter-meta">Updated 2h ago</span>
+      </div>
+      <ul class="blotter-list">
+        <li class="blotter-item">
+          <span class="blotter-tag tag-corn">Corn</span>
+          <span class="blotter-text">USDA: 28% planted vs 5-yr avg 32%; planting window opens this week</span>
+          <span class="blotter-time">2h</span>
+        </li>
+        <li class="blotter-item">
+          <span class="blotter-tag tag-soy">Soy</span>
+          <span class="blotter-text">China books 240,000 MT US soy for July — first new-crop buy in 3 weeks</span>
+          <span class="blotter-time">4h</span>
+        </li>
+        <li class="blotter-item">
+          <span class="blotter-tag tag-corn">Corn</span>
+          <span class="blotter-text">Brazil safrinha estimate trimmed to 121M MT on Mato Grosso dryness</span>
+          <span class="blotter-time">6h</span>
+        </li>
+        <li class="blotter-item">
+          <span class="blotter-tag tag-macro">Macro</span>
+          <span class="blotter-text">Dollar index 102.8, weakest in 6 weeks as Fed minutes signal Q3 cut</span>
+          <span class="blotter-time">1d</span>
+        </li>
+        <li class="blotter-item">
+          <span class="blotter-tag tag-soy">Soy</span>
+          <span class="blotter-text">Argentina harvest 47% complete; on track for 50.5M MT crop</span>
+          <span class="blotter-time">1d</span>
+        </li>
+        <li class="blotter-item">
+          <span class="blotter-tag tag-macro">Calendar</span>
+          <span class="blotter-text">May 10 WASDE — first new-crop balance sheet of the year</span>
+          <span class="blotter-time">12d</span>
+        </li>
+      </ul>
+    </aside>
+  </div>
+
+  <!-- Hero chart: seasonal pace overlay. Editorial register: Fraunces
+       italic annotations drawn directly on the chart, sage marks for
+       today's actual price, ink/slate for the typical seasonal curves. -->
+  <figure class="hero">
+    <svg viewBox="0 0 900 360" role="img" aria-label="Seasonal pace overlay — corn and soybeans typical price index above the October low, with today's actual prices marked.">
+
+      <!-- ~~~ Defs/coords ~~~
+           x: 60..860 (12 months: Oct..Sep)
+           y: 320..40 (% above Oct low: 0% .. 14%)
+      -->
+
+      <!-- Range-frame axes -->
+      <line class="axis" x1="60" y1="320" x2="860" y2="320"/>
+      <line class="axis" x1="60" y1="320" x2="60"  y2="40"/>
+
+      <!-- Y-ticks (sparse) -->
+      <g>
+        <text x="52" y="324" text-anchor="end">0%</text>
+        <text x="52" y="244" text-anchor="end">+4%</text>
+        <text x="52" y="164" text-anchor="end">+8%</text>
+        <text x="52" y="84"  text-anchor="end">+12%</text>
+        <line x1="60" y1="240" x2="860" y2="240" stroke="#E2DDD5" stroke-width="0.3"/>
+        <line x1="60" y1="160" x2="860" y2="160" stroke="#E2DDD5" stroke-width="0.3"/>
+        <line x1="60" y1="80"  x2="860" y2="80"  stroke="#E2DDD5" stroke-width="0.3"/>
+      </g>
+
+      <!-- X-ticks (12 months) -->
+      <g>
+        <text x="60"   y="338" text-anchor="middle">Oct</text>
+        <text x="133"  y="338" text-anchor="middle">Nov</text>
+        <text x="206"  y="338" text-anchor="middle">Dec</text>
+        <text x="278"  y="338" text-anchor="middle">Jan</text>
+        <text x="351"  y="338" text-anchor="middle">Feb</text>
+        <text x="424"  y="338" text-anchor="middle">Mar</text>
+        <text x="497"  y="338" text-anchor="middle">Apr</text>
+        <text x="569"  y="338" text-anchor="middle">May</text>
+        <text x="642"  y="338" text-anchor="middle">Jun</text>
+        <text x="715"  y="338" text-anchor="middle">Jul</text>
+        <text x="788"  y="338" text-anchor="middle">Aug</text>
+        <text x="860"  y="338" text-anchor="middle">Sep</text>
+      </g>
+
+      <!-- May–June obligations band (sage tinted) — May 15 → Jun 15 -->
+      <rect x="605" y="40" width="73" height="280" fill="#7BAE7F" fill-opacity="0.18"/>
+      <line x1="605" y1="320" x2="605" y2="40" stroke="#6A9D6E" stroke-width="1.5" stroke-dasharray="3 3"/>
+      <line x1="678" y1="320" x2="678" y2="40" stroke="#6A9D6E" stroke-width="1.5" stroke-dasharray="3 3"/>
+
+      <!-- Corn typical seasonal: smooth path through (Oct=0, Nov=1.5, Dec=3,
+           Jan=4.5, Feb=6, Mar=7.5, Apr=9, May=10, Jun=11, Jul=9, Aug=6, Sep=2) -->
+      <!-- y = 320 - pct*20 ; x evenly spaced 60..860 step ~72.7 -->
+      <path class="series series-corn"
+            d="M 60 320
+               C 95 308, 110 304, 133 290
+               C 160 274, 180 264, 206 260
+               C 232 256, 254 244, 278 230
+               C 304 216, 326 204, 351 200
+               C 376 196, 400 184, 424 170
+               C 449 156, 472 148, 497 140
+               C 522 132, 546 128, 569 120
+               C 592 112, 618 104, 642 100
+               C 666  96, 692 116, 715 140
+               C 738 164, 762 184, 788 200
+               C 812 216, 838 256, 860 280"/>
+
+      <!-- Soy typical seasonal: (Oct=0, Nov=1, Dec=2.5, Jan=4, Feb=5, Mar=6,
+           Apr=7, May=9, Jun=11, Jul=12, Aug=9, Sep=4) -->
+      <path class="series series-soy"
+            d="M 60 320
+               C 95 312, 110 308, 133 300
+               C 160 290, 180 282, 206 270
+               C 232 260, 254 248, 278 240
+               C 304 232, 326 224, 351 220
+               C 376 216, 400 208, 424 200
+               C 449 192, 472 188, 497 180
+               C 522 172, 546 152, 569 140
+               C 592 128, 618 112, 642 100
+               C 666  90, 692  80, 715  80
+               C 738  80, 762 124, 788 140
+               C 812 156, 838 220, 860 240"/>
+
+      <!-- Today markers (Apr 28 → x ≈ 564). Drawn back-to-front:
+           wide outer halo → mid halo → inner halo → solid dot → label.
+           The sage radiance is heaviest on the soy dot — it's the
+           single most important data point on this chart. -->
+
+      <!-- Soy: outer / mid / inner halos -->
+      <circle cx="564" cy="74" r="28" fill="#7BAE7F" opacity="0.08"/>
+      <circle cx="564" cy="74" r="18" fill="#7BAE7F" opacity="0.16"/>
+      <circle cx="564" cy="74" r="11" fill="#7BAE7F" opacity="0.30"/>
+      <circle cx="564" cy="74" r="6.5" fill="#7BAE7F" stroke="#FAF7F2" stroke-width="2"/>
+
+      <!-- Corn: smaller halo, smaller dot — on pace, secondary signal -->
+      <circle cx="564" cy="140" r="14" fill="#7BAE7F" opacity="0.10"/>
+      <circle cx="564" cy="140" r="9"  fill="#7BAE7F" opacity="0.22"/>
+      <circle cx="564" cy="140" r="5"  fill="#7BAE7F" stroke="#FAF7F2" stroke-width="2"/>
+
+      <!-- Stamped price chips — fold price + status into one block,
+           anchored to the dots' empty side (LEFT, since dots sit in the
+           right half of the chart). DM Sans 600 keeps the sober register.
+           Drawn LAST so they sit above everything. -->
+
+      <!-- Soy chip: price + status, two lines, anchored end at x=510 -->
+      <text x="510" y="68"
+            text-anchor="end"
+            font-family="DM Sans, sans-serif"
+            font-weight="600" font-size="22" fill="#6A9D6E"
+            font-variant-numeric="tabular-nums">$11.68</text>
+      <text x="510" y="86"
+            text-anchor="end"
+            font-family="DM Sans, sans-serif"
+            font-weight="500" font-size="11"
+            letter-spacing="0.12em" fill="#6A9D6E">+5PP AHEAD OF PACE</text>
+
+      <!-- Corn chip: just the price, placed in the empty gap between
+           corn curve (y≈136 at x=510) and soy curve (y≈175 at x=510).
+           "On pace" doesn't need a label — the dot sitting ON the
+           corn curve says it. Drop the subtitle to gain clearance. -->
+      <text x="510" y="160"
+            text-anchor="end"
+            font-family="DM Sans, sans-serif"
+            font-weight="600" font-size="16" fill="#3D3A36"
+            font-variant-numeric="tabular-nums">$4.47</text>
+
+      <!-- May–June obligations label — moved DOWN to the band's empty
+           middle, well below the curves (curves cross the band at y≈100). -->
+      <text x="641" y="206"
+            text-anchor="middle"
+            font-family="DM Sans, sans-serif"
+            font-weight="600" font-size="18" fill="#6A9D6E"
+            font-variant-numeric="tabular-nums">$20,500</text>
+      <text x="641" y="224"
+            text-anchor="middle"
+            font-family="DM Sans, sans-serif"
+            font-weight="500" font-size="10" letter-spacing="0.14em" fill="#6A9D6E">MAY → JUNE</text>
+
+      <!-- Series legend -->
+      <g>
+        <line x1="60" y1="20" x2="86" y2="20" stroke="#3D3A36" stroke-width="1.6"/>
+        <text x="92" y="24">Corn — typical pace</text>
+        <line x1="240" y1="20" x2="266" y2="20" stroke="#7A756D" stroke-width="1.6" stroke-dasharray="5 3"/>
+        <text x="272" y="24">Soy — typical pace</text>
+        <circle cx="402" cy="20" r="4" fill="#7BAE7F"/>
+        <text x="412" y="24">Today</text>
+      </g>
+
+    </svg>
+  </figure>
+
+
+
+</section>
+
+<!-- ================== ZONE BREAK ================== -->
+<div class="zone-break">
+  <span>Inventory</span>
+</div>
+
+<!-- ================== LEDGER (v2 — strip + drilldown) ================== -->
+<section class="ledger">
+  <div class="ledger-wrap">
+
+    <h2 class="ledger-h">Open positions</h2>
+    <p class="ledger-sub">Tap any position for the chart and detail.</p>
+
+    <!-- The strip: 4 single-row summaries, each clickable -->
+    <div class="lots-strip" id="lots-strip">
+      <button class="lot-row active" data-lot="soy" type="button">
+        <span class="lot-row-pill pill-sell">Sell</span>
+        <span class="lot-row-name">Soybeans <span class="lot-row-loc">· Ritchie storage</span></span>
+        <span class="lot-row-bu">1,967 bu</span>
+        <span class="lot-row-val">$22,975</span>
+        <span class="lot-row-pace">+5pp ahead</span>
+        <span class="lot-row-arrow" aria-hidden="true">→</span>
+      </button>
+      <button class="lot-row" data-lot="corn" type="button">
+        <span class="lot-row-pill pill-hold">Hold</span>
+        <span class="lot-row-name">Corn <span class="lot-row-loc">· Ritchie storage</span></span>
+        <span class="lot-row-bu">9,115 bu</span>
+        <span class="lot-row-val">$40,744</span>
+        <span class="lot-row-pace">on pace</span>
+        <span class="lot-row-arrow" aria-hidden="true">→</span>
+      </button>
+      <button class="lot-row" data-lot="fwd-corn" type="button">
+        <span class="lot-row-pill pill-watch">Watch</span>
+        <span class="lot-row-name">Forward corn <span class="lot-row-loc">· NP01431 · Dec</span></span>
+        <span class="lot-row-bu">1,500 bu</span>
+        <span class="lot-row-val unpriced-val">unpriced</span>
+        <span class="lot-row-pace">$0.38 to trigger</span>
+        <span class="lot-row-arrow" aria-hidden="true">→</span>
+      </button>
+      <button class="lot-row" data-lot="fwd-soy" type="button">
+        <span class="lot-row-pill pill-watch">Watch</span>
+        <span class="lot-row-name">Forward soy <span class="lot-row-loc">· NP01451 · Nov</span></span>
+        <span class="lot-row-bu">500 bu</span>
+        <span class="lot-row-val unpriced-val">unpriced</span>
+        <span class="lot-row-pace">$0.27 to trigger</span>
+        <span class="lot-row-arrow" aria-hidden="true">→</span>
+      </button>
+    </div>
+
+    <!-- The detail panel — one lot at a time -->
+    <div class="lot-detail" id="lot-detail">
+      <!-- populated by JS -->
+    </div>
+
+    <!-- ────────── Cash plan ────────── -->
+    <h2 class="ledger-h ledger-h-2">Cash runway</h2>
+    <p class="ledger-sub">May 30 trough · June 1 recovery from the soy sale.</p>
+
+    <!-- Three big numbers: today, trough, recovery -->
+    <div class="cash-three">
+      <div class="cash-cell">
+        <div class="cash-k">Today, in the bank</div>
+        <div class="cash-v">$25,000</div>
+        <div class="cash-d">Cash on hand · Apr 28</div>
+      </div>
+      <div class="cash-arrow" aria-hidden="true">→</div>
+      <div class="cash-cell cash-cell-low">
+        <div class="cash-k">Lowest you'll go</div>
+        <div class="cash-v"><em>$9,500</em></div>
+        <div class="cash-d">May 30, after the fertilizer bill clears</div>
+      </div>
+      <div class="cash-arrow" aria-hidden="true">→</div>
+      <div class="cash-cell cash-cell-back">
+        <div class="cash-k">Back where you started</div>
+        <div class="cash-v">$22,475</div>
+        <div class="cash-d">Jun 15, after soy sale and Ritchie bill</div>
+      </div>
+    </div>
+
+    <!-- A simple visual timeline beneath -->
+    <div class="cash-timeline">
+      <svg viewBox="0 0 800 110" aria-label="Cash timeline from April 28 through June 15, with the trough at May 30 and recovery on June 1.">
+        <!-- Baseline -->
+        <line x1="40" y1="80" x2="760" y2="80" stroke="#C8C3BA" stroke-width="0.5"/>
+
+        <!-- Tick marks at each date -->
+        <g font-family="DM Sans, sans-serif" font-size="10.5" letter-spacing="0.06em" fill="#7A756D">
+          <text x="40"  y="100" text-anchor="middle">APR 28</text>
+          <text x="220" y="100" text-anchor="middle">MAY 15</text>
+          <text x="400" y="100" text-anchor="middle">MAY 30</text>
+          <text x="540" y="100" text-anchor="middle">JUN 1</text>
+          <text x="760" y="100" text-anchor="middle">JUN 15</text>
+        </g>
+
+        <!-- Connecting curve through the points -->
+        <path d="M 40 30 L 220 50 L 400 70 L 540 18 L 760 42"
+              fill="none" stroke="#3D3A36" stroke-width="2"/>
+        <!-- Faint area below the curve, sage tinted between the dip and recovery -->
+        <path d="M 40 30 L 220 50 L 400 70 L 540 18 L 760 42 L 760 80 L 40 80 Z"
+              fill="#7BAE7F" fill-opacity="0.06"/>
+
+        <!-- Dot at each milestone -->
+        <circle cx="40"  cy="30" r="6" fill="#3D3A36" stroke="#FFFDF7" stroke-width="2"/>
+        <circle cx="220" cy="50" r="5" fill="#3D3A36" stroke="#FFFDF7" stroke-width="2"/>
+
+        <!-- Trough — radiates -->
+        <circle cx="400" cy="70" r="22" fill="#7BAE7F" opacity="0.10"/>
+        <circle cx="400" cy="70" r="14" fill="#7BAE7F" opacity="0.22"/>
+        <circle cx="400" cy="70" r="8"  fill="#7BAE7F" stroke="#FFFDF7" stroke-width="2"/>
+
+        <circle cx="540" cy="18" r="6" fill="#3D3A36" stroke="#FFFDF7" stroke-width="2"/>
+        <circle cx="760" cy="42" r="6" fill="#3D3A36" stroke="#FFFDF7" stroke-width="2"/>
+
+        <!-- Dollar labels above each milestone -->
+        <g font-family="Fraunces, Georgia, serif" font-style="italic" font-weight="500" font-size="13" fill="#3D3A36">
+          <text x="40"  y="18" text-anchor="middle">$25k</text>
+          <text x="220" y="38" text-anchor="middle">$20k</text>
+          <text x="540" y="6"  text-anchor="middle">$32k</text>
+          <text x="760" y="30" text-anchor="middle">$22k</text>
+        </g>
+        <text x="400" y="58" text-anchor="middle"
+              font-family="Fraunces, Georgia, serif" font-style="italic" font-weight="500"
+              font-size="15" fill="#6A9D6E">$9.5k</text>
+
+        <!-- Event annotations below baseline -->
+        <text x="220" y="70" text-anchor="middle"
+              font-family="Fraunces, Georgia, serif" font-style="italic"
+              font-size="10.5" fill="#7A756D">tax −$5k</text>
+        <text x="540" y="60" text-anchor="middle"
+              font-family="Fraunces, Georgia, serif" font-style="italic" font-weight="500"
+              font-size="11" fill="#6A9D6E">soy +$22,975</text>
+      </svg>
+    </div>
+
+    <!-- ────────── Closed book ────────── -->
+    <h2 class="ledger-h ledger-h-2">Closed contracts</h2>
+    <p class="ledger-sub">Twelve sales · last marketing year · plotted against seasonal pace.</p>
+
+    <div class="closed-strip">
+
+      <article class="closed-card">
+        <div class="closed-meta">Soybeans · 6 contracts · 4,989 bu</div>
+        <div class="closed-value-row">
+          <div class="closed-value">$10.42<span class="unit">avg</span></div>
+          <div class="closed-vs-stack">
+            <div class="vs-line"><span class="vs-pos">+0.2%</span> vs Oct low</div>
+            <div class="vs-line"><span class="vs-neg">−10.8%</span> vs today</div>
+          </div>
+        </div>
+        <!-- Six contract dots vs seasonal pace -->
+        <svg viewBox="0 0 320 90" aria-label="Six soybean contract sale prices plotted against the typical seasonal pace.">
+          <!-- pace curve -->
+          <path d="M 0 78 C 30 76, 50 74, 70 70
+                   C 95 66, 115 60, 145 54
+                   C 175 48, 205 38, 230 32
+                   C 250 30, 270 30, 290 46
+                   C 305 56, 315 70, 320 76"
+                fill="none" stroke="#A8A39A" stroke-width="1" stroke-dasharray="3 3"/>
+          <line x1="0" y1="86" x2="320" y2="86" stroke="#C8C3BA" stroke-width="0.4"/>
+          <!-- Six contract dots — most at or above pace, sage halo on the best -->
+          <!-- Contract 1: Nov 2024, sold near Oct low -->
+          <circle cx="20"  cy="78" r="3" fill="#3D3A36"/>
+          <!-- Contract 2: Jan 2025 -->
+          <circle cx="80"  cy="68" r="3" fill="#3D3A36"/>
+          <!-- Contract 3: Mar 2025 — beat pace (sage halo, the win) -->
+          <circle cx="135" cy="42" r="9" fill="#7BAE7F" opacity="0.22"/>
+          <circle cx="135" cy="42" r="4" fill="#7BAE7F" stroke="#FAF7F2" stroke-width="1.5"/>
+          <!-- Contract 4: May 2025 -->
+          <circle cx="190" cy="48" r="3" fill="#3D3A36"/>
+          <!-- Contract 5: Jul 2025 -->
+          <circle cx="245" cy="40" r="3" fill="#3D3A36"/>
+          <!-- Contract 6: Sep 2025 -->
+          <circle cx="295" cy="60" r="3" fill="#3D3A36"/>
+          <!-- Today reference dot (where soy sits NOW) -->
+          <circle cx="155" cy="14" r="9" fill="#7BAE7F" opacity="0.18"/>
+          <circle cx="155" cy="14" r="4" fill="#7BAE7F" stroke="#FAF7F2" stroke-width="1.5"/>
+          <text x="170" y="18" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="11" fill="#6A9D6E">today $11.68</text>
+        </svg>
+        <div class="closed-takeaway">On time. The win to repeat.</div>
+      </article>
+
+      <article class="closed-card">
+        <div class="closed-meta">Corn · 6 contracts · 20,557 bu</div>
+        <div class="closed-value-row">
+          <div class="closed-value">$3.79<span class="unit">avg</span></div>
+          <div class="closed-vs-stack">
+            <div class="vs-line"><span class="vs-neg">−7.5%</span> vs Oct low</div>
+            <div class="vs-line"><span class="vs-neg">−15.2%</span> vs today</div>
+          </div>
+        </div>
+        <!-- Six corn contract dots — every one below pace -->
+        <svg viewBox="0 0 320 90" aria-label="Six corn contract sale prices plotted against the typical seasonal pace.">
+          <path d="M 0 78 C 30 74, 50 72, 70 68
+                   C 95 62, 115 56, 145 50
+                   C 175 44, 205 38, 230 34
+                   C 250 32, 270 42, 290 52
+                   C 305 62, 315 72, 320 76"
+                fill="none" stroke="#A8A39A" stroke-width="1" stroke-dasharray="3 3"/>
+          <line x1="0" y1="86" x2="320" y2="86" stroke="#C8C3BA" stroke-width="0.4"/>
+          <!-- All six corn dots BELOW the pace curve -->
+          <circle cx="20"  cy="82" r="3" fill="#3D3A36"/>
+          <circle cx="80"  cy="78" r="3" fill="#3D3A36"/>
+          <circle cx="135" cy="74" r="3" fill="#3D3A36"/>
+          <circle cx="190" cy="70" r="3" fill="#3D3A36"/>
+          <circle cx="245" cy="68" r="3" fill="#3D3A36"/>
+          <circle cx="295" cy="78" r="3" fill="#3D3A36"/>
+          <!-- Today reference -->
+          <circle cx="155" cy="36" r="9" fill="#7BAE7F" opacity="0.18"/>
+          <circle cx="155" cy="36" r="4" fill="#7BAE7F" stroke="#FAF7F2" stroke-width="1.5"/>
+          <text x="170" y="40" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="11" fill="#6A9D6E">today $4.47</text>
+        </svg>
+        <div class="closed-takeaway">Every contract below pace. Don't sell early next year.</div>
+      </article>
+
+    </div>
+
+  </div>
+</section>
+
+<!-- ================== TRADE ORDER WIDGET ================== -->
+<button class="trade-trigger" id="trade-trigger" type="button" aria-label="Open the trade order builder">
+  <span class="trade-trigger-rail" aria-hidden="true"></span>
+  <span class="trade-trigger-label">Draft an order</span>
+</button>
+
+<aside class="trade-drawer" id="trade-drawer" aria-hidden="true" role="dialog" aria-label="Build a draft order">
+  <div class="trade-head">
+    <div class="trade-eyebrow">Trade order · Draft</div>
+    <button class="trade-close" id="trade-close" type="button" aria-label="Close">×</button>
+  </div>
+
+  <h3 class="trade-h">Build a <em>draft</em> order.</h3>
+  <p class="trade-sub">Stack tranches. Confirm with a code we'll text to your phone.</p>
+
+  <!-- ====== STAGE 1: BUILD ====== -->
+  <div class="trade-stage" id="trade-stage-build">
+
+    <div class="trade-field">
+      <label class="trade-label">Crop</label>
+      <div class="crop-toggle" id="crop-toggle">
+        <button data-crop="soy"  class="active" type="button">Soybeans</button>
+        <button data-crop="corn" type="button">Corn</button>
+      </div>
+    </div>
+
+    <div class="trade-avail-strip">
+      <div>
+        <div class="trade-avail-k">Available · Ritchie</div>
+        <div class="trade-avail-v" id="trade-avail">1,967 bu</div>
+      </div>
+      <div>
+        <div class="trade-avail-k">Today's bid</div>
+        <div class="trade-avail-v"><span id="trade-bid">$11.68</span><span class="trade-bid-unit"> / bu</span></div>
+      </div>
+    </div>
+
+    <div class="trade-tranches" id="trade-tranches"></div>
+
+    <button type="button" class="trade-add" id="trade-add">+ Add tranche</button>
+
+    <div class="trade-total">
+      <div class="trade-total-k">Max proceeds</div>
+      <div class="trade-total-v" id="trade-total">$0</div>
+    </div>
+
+    <div class="trade-phone-line">
+      <span>Code goes to</span>
+      <strong>+1 (630) 247-9950</strong>
+    </div>
+
+    <div class="trade-error" id="trade-build-error"></div>
+
+    <button class="trade-cta" id="trade-send-code" type="button">
+      <span class="trade-cta-l">Send confirmation code</span>
+      <span class="trade-cta-num">2-step submit · stays a draft</span>
+    </button>
+  </div>
+
+  <!-- ====== STAGE 2: OTP ====== -->
+  <div class="trade-stage" id="trade-stage-otp" hidden>
+    <p class="trade-sub">Enter the 6-digit code we just texted to <strong>+1 (630) 247-9950</strong>.</p>
+
+    <div class="trade-field">
+      <label class="trade-label">Confirmation code</label>
+      <input class="trade-otp-input" type="text" id="trade-otp"
+             inputmode="numeric" pattern="\d{6}" maxlength="6"
+             autocomplete="one-time-code" placeholder="••••••" />
+    </div>
+
+    <div class="trade-otp-meta">
+      <span id="trade-otp-msg">Code expires in 5:00.</span>
+      <button type="button" class="trade-otp-resend" id="trade-otp-resend" disabled>Resend</button>
+    </div>
+
+    <div class="trade-error" id="trade-otp-error"></div>
+
+    <button class="trade-cta" id="trade-submit" type="button" disabled>
+      <span class="trade-cta-l">Submit draft order</span>
+      <span class="trade-cta-num" id="trade-submit-num">—</span>
+    </button>
+    <button type="button" class="trade-back" id="trade-back">← Edit tranches</button>
+  </div>
+
+  <!-- ====== STAGE 3: DONE ====== -->
+  <div class="trade-stage" id="trade-stage-done" hidden>
+    <div class="trade-done-mark">✓</div>
+    <h4 class="trade-done-h">Drafted.</h4>
+    <p class="trade-sub" style="text-align:center;">
+      Saved as a <em>draft</em>. It will not execute until you promote it to live.
+    </p>
+    <button class="trade-cta is-secondary" id="trade-done-close" type="button">
+      <span class="trade-cta-l">Close</span>
+    </button>
+  </div>
+
+  <!-- Drafts ledger (always shown) -->
+  <div class="trade-drafts" id="trade-drafts">
+    <div class="trade-drafts-h">Open drafts · <span id="trade-drafts-count">0</span></div>
+    <ul class="trade-drafts-list" id="trade-drafts-list">
+      <li><span class="trade-drafts-empty">No drafts yet.</span></li>
+    </ul>
+  </div>
+
+  <div class="trade-foot">
+    Drafts never reach Ritchie automatically · promote them in the dashboard when ready
+  </div>
+</aside>
+
+<div class="trade-scrim" id="trade-scrim" aria-hidden="true"></div>
+
+
+<!-- ================== BACK OF BOOK ================== -->
+<section class="close">
+  <div class="wordmark">freis<span class="out"> · farm</span></div>
+</section>
+<div class="foot">
+  <span>Internal Brief · Apr 2026</span>
+  <span>250 acres · Ritchie Grain · Bushel feed</span>
+</div>
+
+<script>
+/* ─────────────────────────────────────────────────────────────
+   LOT DATA + DETAIL RENDERING
+   ───────────────────────────────────────────────────────────── */
+const LOTS = {
+  soy: {
+    headline: 'Sell <em>1,967 bu</em> soy → $22,975',
+    because: 'Already at June pace. Holding from here gives back about $424 in expected value plus carry. The proceeds cover every May–June bill with $2,475 to spare.',
+    stats: [
+      ['Bid today', '$11.68 / bu'],
+      ['Carry / mo', '$79'],
+      ['Pace gap', '+5pp ahead'],
+      ['Net hold (Apr→Jun)', '−$424'],
+    ],
+    actionLabel: 'Lock the sale',
+    actionClass: '',
+    chart: chartSoyDetail,
+    trade: { crop: 'soy', bu: 1967, bid: 11.68, avail: 1967 },
+  },
+  corn: {
+    headline: 'Hold <em>9,115 bu</em> corn through Jun 30',
+    because: 'On the seasonal curve. Carry of $365 / mo is offset by an equal-sized expected price gain — net almost zero. Wait for the Acreage + Stocks print on June 30, then re-evaluate.',
+    stats: [
+      ['Bid today', '$4.47 / bu'],
+      ['Carry / mo', '$365'],
+      ['Pace gap', 'on pace'],
+      ['Net hold (Apr→Jun)', '+$18'],
+    ],
+    actionLabel: 'Set Jun 30 reminder',
+    actionClass: 'is-hold',
+    chart: chartCornDetail,
+    trade: { crop: 'corn', bu: 9115, bid: 4.47, avail: 9115 },
+  },
+  'fwd-corn': {
+    headline: 'Watch corn cash for <em>$4.85</em>',
+    because: 'Bushels are committed for December delivery; only the price is open. Lock it when corn cash crosses $4.85 — that is the third-tranche June peak.',
+    stats: [
+      ['Today cash', '$4.47 / bu'],
+      ['Trigger', '$4.85 / bu'],
+      ['Gap', '$0.38'],
+      ['Value at trigger', '+$570'],
+    ],
+    actionLabel: 'Pre-stage at $4.85',
+    actionClass: 'is-watch',
+    chart: chartFwdCornDetail,
+    trade: { crop: 'corn', bu: 1500, bid: 4.47, avail: 1500 },
+  },
+  'fwd-soy': {
+    headline: 'Watch soy cash for <em>$11.95</em>',
+    because: 'Bushels committed for November delivery; only the price is open. Lock it when soy cash crosses $11.95 — that is the third-tranche summer trigger.',
+    stats: [
+      ['Today cash', '$11.68 / bu'],
+      ['Trigger', '$11.95 / bu'],
+      ['Gap', '$0.27'],
+      ['Value at trigger', '+$135'],
+    ],
+    actionLabel: 'Pre-stage at $11.95',
+    actionClass: 'is-watch',
+    chart: chartFwdSoyDetail,
+    trade: { crop: 'soy', bu: 500, bid: 11.68, avail: 500 },
+  },
+};
+
+/* Detail-panel chart constructors. Each returns an inline SVG string at
+   a generous size (520×260 viewBox). Same encoding as the hero chart:
+   slate dashed = soy curve, ink = corn curve, sage radiating dot = today.
+   The seasonal curves run Oct..Sep, x: 30..510. */
+
+function paceCurve(crop) {
+  // Returns an SVG path d-string for the typical seasonal pace curve.
+  // Y maps: 0% → 220, 14% → 30 (so 13.6 px / pp).
+  if (crop === 'soy') {
+    return "M 30 220 C 75 215, 100 210, 130 200 C 162 190, 190 178, 220 168 C 250 158, 280 144, 308 132 C 332 122, 350 102, 380 90 C 408 80, 432 80, 460 122 C 480 156, 498 200, 510 210";
+  }
+  return "M 30 220 C 75 210, 100 206, 130 196 C 162 184, 190 172, 220 158 C 250 144, 280 132, 308 124 C 332 116, 350 110, 380 100 C 408 92, 432 132, 460 168 C 480 196, 498 220, 510 226";
+}
+
+function frame(today, todayPctText, opts={}) {
+  const { trigger, triggerPctText, todayLabel, color = '#6A9D6E' } = opts;
+  // X for "today" (Apr 28) → x=302 (in 30..510 range, Apr ≈ slot 7 of 12)
+  const tx = 302;
+  let triggerEl = '';
+  if (trigger != null) {
+    triggerEl = `
+      <line x1="${trigger}" y1="20" x2="${trigger}" y2="240"
+            stroke="#3D3A36" stroke-width="0.7" stroke-dasharray="4 3" opacity="0.55"/>
+      <text x="${trigger + 6}" y="34"
+            font-family="Fraunces, Georgia, serif" font-style="italic" font-size="12" fill="#3D3A36">
+        trigger ${triggerPctText || ''}
+      </text>`;
+  }
+  return `
+    <line x1="30" y1="240" x2="510" y2="240" stroke="#C8C3BA" stroke-width="0.5"/>
+    <text x="30"  y="256" font-family="DM Sans, sans-serif" font-size="9.5" letter-spacing="0.12em" fill="#7A756D">OCT</text>
+    <text x="270" y="256" font-family="DM Sans, sans-serif" font-size="9.5" letter-spacing="0.12em" fill="#7A756D" text-anchor="middle">APR</text>
+    <text x="510" y="256" font-family="DM Sans, sans-serif" font-size="9.5" letter-spacing="0.12em" fill="#7A756D" text-anchor="end">SEP</text>
+    ${triggerEl}
+    <circle cx="${tx}" cy="${today}" r="34" fill="#7BAE7F" opacity="0.07"/>
+    <circle cx="${tx}" cy="${today}" r="22" fill="#7BAE7F" opacity="0.16"/>
+    <circle cx="${tx}" cy="${today}" r="14" fill="#7BAE7F" opacity="0.30"/>
+    <circle cx="${tx}" cy="${today}" r="7"  fill="#7BAE7F" stroke="#FAF7F2" stroke-width="2"/>
+    <text x="${tx - 14}" y="${today + 5}" text-anchor="end"
+          font-family="Fraunces, Georgia, serif" font-style="italic" font-weight="500"
+          font-size="20" fill="${color}">${todayLabel}</text>
+    <text x="${tx - 14}" y="${today + 22}" text-anchor="end"
+          font-family="DM Sans, sans-serif" font-size="10" letter-spacing="0.12em" fill="${color}">${todayPctText}</text>`;
+}
+
+function chartSoyDetail() {
+  // Soy +12.3% above Oct low → y = 220 - 12.3*13.6 = 53
+  return `<svg viewBox="0 0 520 270" aria-label="Soybean seasonal pace, with today's price marked.">
+    <path d="${paceCurve('soy')}" fill="none" stroke="#A8A39A" stroke-width="1.2" stroke-dasharray="5 3"/>
+    ${frame(53, '+12.3% above Oct low', { todayLabel: '$11.68' })}
+    <text x="510" y="48" text-anchor="end" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="13" fill="#7A756D">soy seasonal pace</text>
+  </svg>`;
+}
+function chartCornDetail() {
+  // Corn +9% → y = 220 - 9*13.6 = 98
+  return `<svg viewBox="0 0 520 270" aria-label="Corn seasonal pace, with today's price marked.">
+    <path d="${paceCurve('corn')}" fill="none" stroke="#A8A39A" stroke-width="1.2"/>
+    ${frame(98, '+9% above Oct low', { todayLabel: '$4.47', color: '#3D3A36' })}
+    <text x="510" y="48" text-anchor="end" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="13" fill="#7A756D">corn seasonal pace</text>
+  </svg>`;
+}
+function chartFwdCornDetail() {
+  // Same pace curve, with trigger at +18.3% (≈ x=380 on the curve, where June peak hits)
+  return `<svg viewBox="0 0 520 270" aria-label="Forward corn — today's cash price vs. trigger.">
+    <path d="${paceCurve('corn')}" fill="none" stroke="#A8A39A" stroke-width="1.2"/>
+    ${frame(98, '$4.47 cash today', { todayLabel: '$4.47', color: '#3D3A36', trigger: 380, triggerPctText: '$4.85' })}
+    <text x="510" y="48" text-anchor="end" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="13" fill="#7A756D">corn pace · forward Dec '26</text>
+  </svg>`;
+}
+function chartFwdSoyDetail() {
+  return `<svg viewBox="0 0 520 270" aria-label="Forward soy — today's cash price vs. trigger.">
+    <path d="${paceCurve('soy')}" fill="none" stroke="#A8A39A" stroke-width="1.2" stroke-dasharray="5 3"/>
+    ${frame(53, '$11.68 cash today', { todayLabel: '$11.68', trigger: 360, triggerPctText: '$11.95' })}
+    <text x="510" y="48" text-anchor="end" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="13" fill="#7A756D">soy pace · forward Nov '26</text>
+  </svg>`;
+}
+
+function renderLot(key) {
+  const lot = LOTS[key];
+  const stats = lot.stats.map(([k,v]) => `
+    <div><div class="s-k">${k}</div><div class="s-v">${v}</div></div>
+  `).join('');
+  document.getElementById('lot-detail').innerHTML = `
+    <div class="lot-detail-chart">${lot.chart()}</div>
+    <div class="lot-detail-side">
+      <div class="lot-detail-headline">${lot.headline}</div>
+      <div class="lot-detail-because">${lot.because}</div>
+      <div class="lot-detail-stats">${stats}</div>
+      <button class="lot-detail-action ${lot.actionClass}" type="button" data-action="${key}">${lot.actionLabel}</button>
+    </div>`;
+  // Mark active row
+  document.querySelectorAll('#lots-strip .lot-row').forEach(r => {
+    r.classList.toggle('active', r.dataset.lot === key);
+  });
+  // Wire action button — for SELL, opens trade drawer pre-filled
+  const btn = document.querySelector('#lot-detail .lot-detail-action');
+  btn.addEventListener('click', () => {
+    if (lot.trade) prefillTrade(lot.trade);
+    openTrade();
+  });
+}
+
+document.getElementById('lots-strip').addEventListener('click', (e) => {
+  const row = e.target.closest('.lot-row');
+  if (!row) return;
+  renderLot(row.dataset.lot);
+});
+
+renderLot('soy');
+
+/* ─────────────────────────────────────────────────────────────
+   TRADE ORDER WIDGET — order builder + OTP submit (draft-only)
+
+   Two-step submission: build tranches → request SMS code → enter
+   code → submit. Worker side is stateless: HMAC binds {code, phone,
+   payload_hash, nonce, expires_at} so the server doesn't need a KV
+   to remember outstanding codes.
+
+   Set TRADE_API_BASE to the deployed Cloudflare Worker URL when
+   that side ships. Until then, the widget runs in stub mode: a
+   code is shown inline (in the OTP message slot) and submitted
+   orders are stashed in localStorage so the UX is testable
+   end-to-end before the worker exists.
+   ───────────────────────────────────────────────────────────── */
+const TRADE_API_BASE  = "";                      // e.g. "https://freis-farm.workers.dev"
+const TRADE_PHONE     = "+16302479950";          // whitelist target
+const TRADE_PHONE_FMT = "+1 (630) 247-9950";
+const ORDERS_JSON_URL = "orders.json";           // sibling of home.html under docs/
+
+const BIDS  = { soy: 11.68, corn: 4.47 };
+const AVAIL = { soy: 1967,  corn: 9115 };
+const CROP_LABEL = { soy: "Soy", corn: "Corn" };
+
+let tradeCrop = 'soy';
+let TRANCHES = [];       // [{bushels, type:'limit'|'market', limit_price, expiry}]
+let OTP = null;          // {nonce, hmac, expires_at, payload_hash}
+let OTP_TIMER = null;
+
+const round2   = (n) => Math.round(n * 100) / 100;
+const fmtMoney = (n) => '$' + Math.round(n).toLocaleString('en-US');
+const fmtBu    = (n) => Number(n).toLocaleString('en-US') + ' bu';
+
+function defaultTranche() {
+  const today = new Date();
+  const exp = new Date(today.getFullYear(), today.getMonth() + 3, today.getDate());
+  return {
+    bushels:     Math.min(500, AVAIL[tradeCrop]),
+    type:        'limit',
+    limit_price: round2(BIDS[tradeCrop] * 1.04),  // 4% above today's bid as a starter
+    expiry:      exp.toISOString().slice(0, 10),
+  };
+}
+
+/* ----- Render the tranche cards ----- */
+function renderTranches() {
+  const wrap = document.getElementById('trade-tranches');
+  wrap.innerHTML = '';
+  TRANCHES.forEach((t, i) => {
+    const isMarket = t.type === 'market';
+    const row = document.createElement('div');
+    row.className = 'trade-tranche';
+    row.innerHTML = `
+      <div class="trade-tranche-num">Tranche ${i + 1}</div>
+      ${TRANCHES.length > 1 ? `<button class="trade-tranche-x" type="button" data-rm="${i}" aria-label="Remove tranche">✕</button>` : ''}
+      <div class="tranche-pill-row" data-pills="${i}">
+        <button type="button" class="tranche-pill ${t.type === 'limit'  ? 'active' : ''}" data-type="limit">Limit</button>
+        <button type="button" class="tranche-pill ${t.type === 'market' ? 'active' : ''}" data-type="market">Market</button>
+      </div>
+      <div class="tranche-row">
+        <label>Bushels</label>
+        <input type="number" min="1" step="1" data-bu="${i}" value="${t.bushels}" />
+      </div>
+      <div class="tranche-row ${isMarket ? 'is-disabled' : ''}">
+        <label>${isMarket ? "Today's bid" : 'Limit price'}</label>
+        <input type="number" min="0" step="0.01" data-px="${i}"
+               value="${(isMarket ? BIDS[tradeCrop] : t.limit_price).toFixed(2)}"
+               ${isMarket ? 'readonly' : ''}/>
+      </div>
+      <div class="tranche-row ${isMarket ? 'is-disabled' : ''}">
+        <label>${isMarket ? 'Submit by' : 'Expires'}</label>
+        <input type="date" data-exp="${i}" value="${t.expiry}" ${isMarket ? 'readonly' : ''}/>
+      </div>
+    `;
+    wrap.appendChild(row);
+  });
+  updateTotal();
+  validateBuild();
+}
+
+function updateTotal() {
+  let total = 0;
+  TRANCHES.forEach(t => {
+    const px = t.type === 'market' ? BIDS[tradeCrop] : Number(t.limit_price);
+    total += (Number(t.bushels) || 0) * (px || 0);
+  });
+  document.getElementById('trade-total').textContent = fmtMoney(total);
+  const n = TRANCHES.length;
+  document.getElementById('trade-submit-num').textContent =
+    `${n} tranche${n === 1 ? '' : 's'} · ${fmtMoney(total)}`;
+}
+
+function validateBuild() {
+  const sumBu = TRANCHES.reduce((a, t) => a + (Number(t.bushels) || 0), 0);
+  const errEl = document.getElementById('trade-build-error');
+  const btn   = document.getElementById('trade-send-code');
+  let err = '';
+  if (sumBu <= 0) {
+    err = 'Enter at least one bushel.';
+  } else if (sumBu > AVAIL[tradeCrop]) {
+    err = `Tranches sum to ${fmtBu(sumBu)} — over the ${fmtBu(AVAIL[tradeCrop])} on hand at Ritchie.`;
+  } else {
+    for (const [i, t] of TRANCHES.entries()) {
+      if (t.type === 'limit') {
+        if (!t.limit_price || Number(t.limit_price) <= 0) { err = `Tranche ${i + 1}: set a limit price.`; break; }
+        if (!t.expiry) { err = `Tranche ${i + 1}: set an expiry date.`; break; }
+      }
+    }
+  }
+  errEl.textContent = err;
+  btn.disabled = !!err;
+}
+
+/* ----- Crop toggle ----- */
+document.getElementById('crop-toggle').addEventListener('click', (e) => {
+  const btn = e.target.closest('button');
+  if (!btn) return;
+  tradeCrop = btn.dataset.crop;
+  document.querySelectorAll('#crop-toggle button').forEach(b =>
+    b.classList.toggle('active', b === btn));
+  document.getElementById('trade-bid').textContent   = '$' + BIDS[tradeCrop].toFixed(2);
+  document.getElementById('trade-avail').textContent = fmtBu(AVAIL[tradeCrop]);
+  TRANCHES = [defaultTranche()];
+  renderTranches();
+});
+
+/* ----- Tranche edits (delegated) ----- */
+document.getElementById('trade-tranches').addEventListener('input', (e) => {
+  const t = e.target;
+  if (t.dataset.bu  !== undefined) TRANCHES[+t.dataset.bu].bushels     = Number(t.value);
+  else if (t.dataset.px  !== undefined) TRANCHES[+t.dataset.px].limit_price = Number(t.value);
+  else if (t.dataset.exp !== undefined) TRANCHES[+t.dataset.exp].expiry      = t.value;
+  updateTotal();
+  validateBuild();
+});
+
+document.getElementById('trade-tranches').addEventListener('click', (e) => {
+  const pill = e.target.closest('.tranche-pill');
+  if (pill) {
+    const i = +pill.parentElement.dataset.pills;
+    TRANCHES[i].type = pill.dataset.type;
+    if (TRANCHES[i].type === 'market') TRANCHES[i].limit_price = BIDS[tradeCrop];
+    renderTranches();
+    return;
+  }
+  const rm = e.target.closest('[data-rm]');
+  if (rm) {
+    TRANCHES.splice(+rm.dataset.rm, 1);
+    if (TRANCHES.length === 0) TRANCHES.push(defaultTranche());
+    renderTranches();
+  }
+});
+
+document.getElementById('trade-add').addEventListener('click', () => {
+  TRANCHES.push(defaultTranche());
+  renderTranches();
+});
+
+/* ----- Stage transitions ----- */
+function showStage(name) {
+  ['build', 'otp', 'done'].forEach(s => {
+    document.getElementById('trade-stage-' + s).hidden = (s !== name);
+  });
+}
+
+/* ----- Send code (stage 1 → 2) ----- */
+document.getElementById('trade-send-code').addEventListener('click', async () => {
+  const btn = document.getElementById('trade-send-code');
+  btn.disabled = true;
+  document.getElementById('trade-build-error').textContent = '';
+  try {
+    OTP = await orderApiStart(buildPayload());
+    document.getElementById('trade-otp').value = '';
+    document.getElementById('trade-otp-error').textContent = '';
+    document.getElementById('trade-submit').disabled = true;
+    showStage('otp');
+    startOtpCountdown(OTP.expires_at);
+    setTimeout(() => document.getElementById('trade-otp').focus(), 50);
+  } catch (err) {
+    document.getElementById('trade-build-error').textContent =
+      err.message || 'Could not send code. Try again.';
+  } finally {
+    btn.disabled = false;
+    validateBuild();  // re-enable if still valid
+  }
+});
+
+/* ----- OTP entry (stage 2) ----- */
+document.getElementById('trade-otp').addEventListener('input', (e) => {
+  const v = e.target.value.replace(/\D/g, '').slice(0, 6);
+  e.target.value = v;
+  document.getElementById('trade-submit').disabled = (v.length !== 6 || !OTP);
+});
+
+document.getElementById('trade-back').addEventListener('click', () => {
+  if (OTP_TIMER) clearInterval(OTP_TIMER);
+  OTP = null;
+  showStage('build');
+});
+
+document.getElementById('trade-otp-resend').addEventListener('click', async () => {
+  const btn = document.getElementById('trade-otp-resend');
+  btn.disabled = true;
+  try {
+    OTP = await orderApiStart(buildPayload());
+    document.getElementById('trade-otp').value = '';
+    document.getElementById('trade-submit').disabled = true;
+    document.getElementById('trade-otp-error').textContent = '';
+    startOtpCountdown(OTP.expires_at);
+  } catch (err) {
+    document.getElementById('trade-otp-error').textContent = err.message || 'Resend failed.';
+    btn.disabled = false;
+  }
+});
+
+document.getElementById('trade-submit').addEventListener('click', async () => {
+  const btn  = document.getElementById('trade-submit');
+  const code = document.getElementById('trade-otp').value;
+  btn.disabled = true;
+  document.getElementById('trade-otp-error').textContent = '';
+  try {
+    await orderApiSubmit(buildPayload(), code);
+    if (OTP_TIMER) clearInterval(OTP_TIMER);
+    OTP = null;
+    showStage('done');
+    setTimeout(loadDrafts, 4000);  // give the GH Actions write a few seconds
+  } catch (err) {
+    document.getElementById('trade-otp-error').textContent =
+      err.message || 'Code did not match.';
+    btn.disabled = (code.length !== 6);
+  }
+});
+
+document.getElementById('trade-done-close').addEventListener('click', () => {
+  closeTrade();
+  TRANCHES = [defaultTranche()];
+  renderTranches();
+  showStage('build');
+});
+
+/* ----- OTP countdown ----- */
+function startOtpCountdown(expiresAtIso) {
+  if (OTP_TIMER) clearInterval(OTP_TIMER);
+  const expEpoch  = new Date(expiresAtIso).getTime();
+  const msgEl     = document.getElementById('trade-otp-msg');
+  const resendBtn = document.getElementById('trade-otp-resend');
+  resendBtn.disabled = true;
+  function tick() {
+    const remain = Math.max(0, Math.floor((expEpoch - Date.now()) / 1000));
+    const m = Math.floor(remain / 60);
+    const s = remain % 60;
+    msgEl.textContent = remain > 0
+      ? `Code expires in ${m}:${s.toString().padStart(2, '0')}.`
+      : 'Code expired.';
+    if (remain <= 0) {
+      clearInterval(OTP_TIMER);
+      resendBtn.disabled = false;
+      document.getElementById('trade-submit').disabled = true;
+    } else if (remain <= 60) {
+      resendBtn.disabled = false;
+    }
+  }
+  tick();
+  OTP_TIMER = setInterval(tick, 1000);
+}
+
+/* ----- Payload + API ----- */
+function buildPayload() {
+  return {
+    submission_id: cryptoUuid(),
+    submitted_at:  new Date().toISOString(),
+    crop:          tradeCrop,
+    tranches: TRANCHES.map(t => ({
+      bushels:     Number(t.bushels),
+      type:        t.type,
+      limit_price: t.type === 'market' ? null : Number(t.limit_price),
+      expiry:      t.type === 'market' ? null : t.expiry,
+    })),
+  };
+}
+
+function cryptoUuid() {
+  if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+    const r = Math.random() * 16 | 0;
+    return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+  });
+}
+
+async function orderApiStart(payload) {
+  if (!TRADE_API_BASE) return localStubStart(payload);
+  const r = await fetch(TRADE_API_BASE + '/orders/start', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ phone: TRADE_PHONE, payload }),
+  });
+  if (!r.ok) {
+    const text = await r.text().catch(() => '');
+    throw new Error(text || ('Server refused: ' + r.status));
+  }
+  return r.json();  // {nonce, hmac, expires_at, payload_hash}
+}
+
+async function orderApiSubmit(payload, code) {
+  if (!TRADE_API_BASE) return localStubSubmit(payload, code);
+  const r = await fetch(TRADE_API_BASE + '/orders/submit', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      phone:        TRADE_PHONE,
+      payload,
+      code,
+      nonce:        OTP.nonce,
+      expires_at:   OTP.expires_at,
+      payload_hash: OTP.payload_hash,
+      hmac:         OTP.hmac,
+    }),
+  });
+  if (!r.ok) {
+    const text = await r.text().catch(() => '');
+    throw new Error(text || ('Server refused: ' + r.status));
+  }
+  return r.json();
+}
+
+/* ----- Local stub (no worker yet) ----- */
+function localStubStart(payload) {
+  const code  = String(Math.floor(100000 + Math.random() * 900000));
+  const exp   = new Date(Date.now() + 5 * 60 * 1000).toISOString();
+  const nonce = 'stub-' + Math.random().toString(36).slice(2, 10);
+  // Surface the code where the user would normally see the SMS, so the
+  // flow is testable locally. This branch is dead once TRADE_API_BASE is set.
+  setTimeout(() => {
+    const m = document.getElementById('trade-otp-msg');
+    if (m) m.innerHTML = `Stub mode · code is <strong>${code}</strong>. Expires in 5:00.`;
+  }, 80);
+  return Promise.resolve({
+    nonce,
+    expires_at:   exp,
+    payload_hash: 'stub',
+    hmac:         'stub:' + code,
+  });
+}
+
+function localStubSubmit(payload, code) {
+  if (!OTP || !OTP.hmac.startsWith('stub:')) throw new Error('No active code.');
+  if (code !== OTP.hmac.slice(5))            throw new Error('Code did not match.');
+  if (new Date(OTP.expires_at).getTime() < Date.now()) throw new Error('Code expired.');
+  const stored = JSON.parse(localStorage.getItem('freis_orders') || '[]');
+  payload.tranches.forEach(tr => {
+    stored.push({
+      id:            cryptoUuid(),
+      submission_id: payload.submission_id,
+      crop:          payload.crop,
+      type:          tr.type,
+      bushels:       tr.bushels,
+      limit_price:   tr.limit_price,
+      expiry:        tr.expiry,
+      status:        'draft',
+      created_at:    new Date().toISOString(),
+      source:        'stub',
+    });
+  });
+  localStorage.setItem('freis_orders', JSON.stringify(stored));
+  return Promise.resolve({ ok: true, mode: 'stub' });
+}
+
+/* ----- Drafts ledger (in-drawer) ----- */
+async function loadDrafts() {
+  let orders = [];
+  if (TRADE_API_BASE) {
+    try {
+      const r = await fetch(ORDERS_JSON_URL + '?t=' + Date.now());
+      if (r.ok) {
+        const data = await r.json();
+        orders = data.orders || [];
+      }
+    } catch (_) { /* offline OK */ }
+  } else {
+    orders = JSON.parse(localStorage.getItem('freis_orders') || '[]');
+  }
+  renderDrafts(orders.filter(o => o.status === 'draft'));
+}
+
+function renderDrafts(drafts) {
+  const list = document.getElementById('trade-drafts-list');
+  document.getElementById('trade-drafts-count').textContent = drafts.length;
+  if (drafts.length === 0) {
+    list.innerHTML = '<li><span class="trade-drafts-empty">No drafts yet.</span></li>';
+    return;
+  }
+  list.innerHTML = drafts.map(o => {
+    const crop = CROP_LABEL[o.crop] || o.crop;
+    const bu   = fmtBu(o.bushels);
+    const px   = o.type === 'market' ? "today's bid" : '$' + Number(o.limit_price).toFixed(2);
+    const exp  = o.expiry ? ` · exp ${o.expiry}` : '';
+    return `<li>
+      <div>
+        <div class="draft-line">${crop} · <strong>${bu}</strong> @ ${px}</div>
+        <div class="draft-meta">${o.type === 'market' ? 'Market' : 'Limit'}${exp}</div>
+      </div>
+      <div class="draft-status">Draft</div>
+    </li>`;
+  }).join('');
+}
+
+/* ----- Drawer open/close ----- */
+function openTrade() {
+  if (TRANCHES.length === 0) TRANCHES = [defaultTranche()];
+  renderTranches();
+  loadDrafts();
+  document.getElementById('trade-drawer').classList.add('open');
+  document.getElementById('trade-scrim').classList.add('open');
+  document.getElementById('trade-drawer').setAttribute('aria-hidden', 'false');
+}
+function closeTrade() {
+  document.getElementById('trade-drawer').classList.remove('open');
+  document.getElementById('trade-scrim').classList.remove('open');
+  document.getElementById('trade-drawer').setAttribute('aria-hidden', 'true');
+}
+
+/* ----- Pre-fill from lot detail panel ----- */
+function prefillTrade(t) {
+  if (t.crop && t.crop !== tradeCrop) {
+    tradeCrop = t.crop;
+    document.querySelectorAll('#crop-toggle button').forEach(b =>
+      b.classList.toggle('active', b.dataset.crop === t.crop));
+    document.getElementById('trade-bid').textContent   = '$' + BIDS[tradeCrop].toFixed(2);
+    document.getElementById('trade-avail').textContent = fmtBu(AVAIL[tradeCrop]);
+  }
+  // Lots that ship a bid different from today's bid are watch-triggers — pre-fill as Limit.
+  // Otherwise default to a Market tranche for the suggested bushels.
+  const todayBid = BIDS[tradeCrop];
+  const isWatch  = t.bid && Math.abs(t.bid - todayBid) > 0.01;
+  TRANCHES = [{
+    bushels:     t.bu,
+    type:        isWatch ? 'limit' : 'market',
+    limit_price: isWatch ? round2(t.bid) : todayBid,
+    expiry:      defaultTranche().expiry,
+  }];
+  renderTranches();
+}
+
+document.getElementById('trade-trigger').addEventListener('click', openTrade);
+document.getElementById('trade-close').addEventListener('click', closeTrade);
+document.getElementById('trade-scrim').addEventListener('click', closeTrade);
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' &&
+      document.getElementById('trade-drawer').classList.contains('open')) {
+    closeTrade();
+  }
+});
+
+/* ----- Initial render ----- */
+TRANCHES = [defaultTranche()];
+renderTranches();
+loadDrafts();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1837 @@
+<!DOCTYPE html>
+<!--
+  Freis Farm Board of Trade — hedge page (v2 prototype)
+  =================================================================
+  Same architecture as home.html (v2):
+    • cover with eyebrow + BINARY YES/NO indicator + headline
+    • hero call cards + editorial collar payoff chart
+    • zone break: "Mechanics"
+    • ledger: 2-row collar strip + drilldown panel that hosts the
+      interactive slider + Tufte payoff chart, then strike-position
+      cards and scenarios
+    • close wordmark
+    • slide-out trade widget on the right edge ("Adjust the hedge")
+
+  Self-contained. Vanilla JS, hand-rolled SVG.
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Freis Farm Board of Trade — Hedge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FAF7F2;
+    --paper: #FFFDF7;
+    --border: #E2DDD5;
+    --rule:   #C8C3BA;
+    --dust:   #A8A39A;
+    --slate:  #7A756D;
+    --ink:    #3D3A36;
+    --sage:      #7BAE7F;
+    --sage-deep: #6A9D6E;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--cream); color: var(--ink);
+    font-family: "DM Sans", -apple-system, sans-serif;
+    font-size: 15px; line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--sage-deep); text-decoration: none; border-bottom: 0.5px solid var(--rule); }
+  a:hover { border-bottom-color: var(--sage-deep); }
+
+  /* ============ FRONT OF BOOK ============ */
+  .cover { max-width: 960px; margin: 0 auto; padding: 56px 32px 32px; }
+  @media (min-width: 720px) { .cover { padding: 72px 48px 48px; } }
+  .nav {
+    display: flex; justify-content: space-between; align-items: center;
+    margin: 0 0 36px; gap: 18px;
+    border-bottom: 0.5px solid var(--border); padding-bottom: 14px;
+  }
+  .nav .brand {
+    display: inline-flex; align-items: center;
+    color: var(--ink); text-decoration: none; line-height: 1;
+  }
+  /* Corn wordmark — header brand asset.
+     Sized to fit alongside nav-links without dominating the page.
+     Single tight drop-shadow for subtle depth. */
+  .brand-wordmark {
+    display: block; height: 56px; width: auto;
+    image-rendering: -webkit-optimize-contrast;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.12));
+    transition: transform 180ms ease;
+  }
+  @media (min-width: 720px) { .brand-wordmark { height: 72px; } }
+  .nav .brand:hover .brand-wordmark { transform: translateY(-1px); }
+  .nav .brand .out { color: var(--sage-deep); font-style: italic; font-weight: 400; }
+  .nav-links {
+    display: flex; gap: 22px; font-size: 11px;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--slate);
+  }
+  .nav-links a { border: 0; color: var(--slate); }
+  .nav-links a.here { color: var(--ink); border-bottom: 0.5px solid var(--ink); padding-bottom: 2px; }
+
+  .eyebrow {
+    font-family: "DM Sans", sans-serif;
+    font-size: 11px; font-weight: 500;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--slate); margin: 0 0 24px;
+  }
+
+  /* ── BINARY YES/NO INDICATOR ── */
+  /* Status row — quiet inline indicator. Was a giant bullseye disc;
+     now a small colored dot + uppercase tag + plain-English reason.
+     Keeps .binary-yes / .binary-no class pattern so flipping state
+     just swaps a class. */
+  .binary {
+    border-top: 0.5px solid var(--border);
+    border-bottom: 0.5px solid var(--border);
+    padding: 18px 0 22px;
+    margin-bottom: 32px;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .binary-q {
+    font-family: "DM Sans", sans-serif;
+    font-size: 10.5px; font-weight: 500;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--slate);
+  }
+  .binary-status {
+    display: inline-flex; align-items: center; gap: 9px;
+    font-family: "DM Sans", sans-serif;
+    font-size: 10.5px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--slate);
+    margin: 0 0 2px;
+  }
+  .binary-status::before {
+    content: ""; display: inline-block;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--rule);
+  }
+  .binary-yes .binary-status { color: var(--sage-deep); }
+  .binary-yes .binary-status::before { background: var(--sage-deep); }
+  .binary-no  .binary-status { color: var(--ink); }
+  .binary-no  .binary-status::before {
+    background: transparent; border: 1px solid var(--ink);
+    width: 7px; height: 7px;
+  }
+
+  .binary-verb {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 400; font-size: 24px; line-height: 1.15;
+    letter-spacing: -0.014em; color: var(--ink); margin: 0;
+  }
+  @media (min-width: 720px) { .binary-verb { font-size: 28px; } }
+  .binary-verb em { font-style: italic; color: var(--sage-deep); }
+  .binary-reason {
+    font-family: "Fraunces", Georgia, serif;
+    font-style: italic; font-size: 15px; line-height: 1.5;
+    color: var(--slate); margin: 4px 0 0; max-width: 580px;
+  }
+  .binary-chips {
+    display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px;
+  }
+  .binary-chip {
+    font-family: "DM Sans", sans-serif;
+    font-size: 10px; font-weight: 500;
+    letter-spacing: 0.10em; text-transform: uppercase;
+    color: var(--slate);
+    padding: 4px 8px;
+    border: 0.5px solid var(--rule);
+  }
+  .binary-chip-on { color: var(--sage-deep); border-color: var(--sage); }
+
+  h1 {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 400; font-size: 44px; line-height: 1.04;
+    letter-spacing: -0.022em; margin: 0 0 22px;
+    color: var(--ink); max-width: 780px;
+  }
+  @media (min-width: 720px) { h1 { font-size: 52px; } }
+  h1 em { font-style: italic; font-weight: 400; color: var(--sage-deep); }
+  .deck {
+    font-family: "Fraunces", Georgia, serif;
+    font-style: italic; font-weight: 400;
+    font-size: 19px; line-height: 1.45;
+    color: var(--slate); margin: 0 0 36px; max-width: 640px;
+  }
+  @media (min-width: 720px) { .deck { font-size: 20px; } }
+
+  .hero-call {
+    display: grid; grid-template-columns: 1fr; gap: 14px;
+    margin: 0 0 30px;
+    border-top: 0.5px solid var(--border);
+    border-bottom: 0.5px solid var(--border);
+    padding: 18px 0;
+  }
+  @media (min-width: 720px) {
+    .hero-call { grid-template-columns: repeat(3, 1fr); gap: 28px; padding: 22px 0; }
+  }
+  .hero-call .cell .k {
+    font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--slate); margin: 0 0 4px;
+  }
+  .hero-call .cell .v {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 24px; font-weight: 400; letter-spacing: -0.01em;
+    color: var(--ink); font-variant-numeric: tabular-nums oldstyle-nums;
+    line-height: 1.1;
+  }
+  .hero-call .cell .v em { font-style: italic; color: var(--sage-deep); }
+  .hero-call .cell .sub { font-size: 12.5px; color: var(--slate); margin-top: 4px; line-height: 1.4; }
+
+  .hero { margin: 0 -8px 30px; }
+  .hero svg { width: 100%; height: auto; display: block; }
+  .hero svg text { font-family: "DM Sans", sans-serif; font-size: 11.5px; fill: var(--slate); }
+  .hero svg .anno { font-family: "Fraunces", Georgia, serif; font-style: italic; font-size: 12.5px; fill: var(--ink); }
+  .hero svg .anno-sage { fill: var(--sage-deep); }
+  .hero svg .axis { stroke: var(--ink); stroke-width: 0.75; fill: none; }
+  .hero svg .series { fill: none; stroke-width: 1.6; }
+  .hero svg .connector { stroke: var(--ink); stroke-width: 0.5; fill: none; }
+
+  .lede {
+    font-size: 16px; line-height: 1.62;
+    color: var(--ink); max-width: 640px; margin: 0 0 12px;
+  }
+  .lede em { color: var(--sage-deep); font-style: italic; }
+  .lede strong { font-weight: 500; color: var(--ink); }
+
+  /* Zone break */
+  .zone-break {
+    max-width: 960px; margin: 56px auto 0; padding: 0 32px;
+    display: grid; grid-template-columns: 1fr auto 1fr;
+    gap: 22px; align-items: center;
+  }
+  @media (min-width: 720px) { .zone-break { padding: 0 48px; margin-top: 72px; } }
+  .zone-break::before, .zone-break::after {
+    content: ""; height: 0.5px; background: var(--rule); display: block;
+  }
+  .zone-break span {
+    font-family: "DM Sans", sans-serif;
+    font-size: 10.5px; font-weight: 500;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--dust);
+  }
+
+  /* ============ LEDGER ============ */
+  .ledger { background: var(--paper); padding: 48px 0 56px; }
+  @media (min-width: 720px) { .ledger { padding: 64px 0 72px; } }
+  .ledger-wrap { max-width: 1040px; margin: 0 auto; padding: 0 32px; }
+  @media (min-width: 720px) { .ledger-wrap { padding: 0 48px; } }
+  .ledger-h {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 400; font-size: 30px; line-height: 1.1;
+    letter-spacing: -0.018em; color: var(--ink);
+    margin: 0 0 12px; max-width: 720px;
+  }
+  @media (min-width: 720px) { .ledger-h { font-size: 36px; } }
+  .ledger-h em { font-style: italic; color: var(--sage-deep); }
+  .ledger-h-2 { margin-top: 64px; }
+  .ledger-sub {
+    font-family: "Fraunces", Georgia, serif;
+    font-style: italic; font-size: 17px; line-height: 1.45;
+    color: var(--slate); margin: 0 0 36px; max-width: 620px;
+  }
+  @media (min-width: 720px) { .ledger-sub { font-size: 18px; margin-bottom: 44px; } }
+
+  /* Collar strip — same pattern as home.html lots-strip */
+  .lots-strip {
+    display: flex; flex-direction: column;
+    border-top: 0.5px solid var(--border);
+    border-bottom: 0.5px solid var(--border);
+    margin-bottom: 18px;
+  }
+  .lot-row {
+    display: grid;
+    grid-template-columns: 76px 1fr auto auto auto 18px;
+    gap: 14px; align-items: center;
+    padding: 16px 4px; background: transparent; border: 0;
+    border-bottom: 0.5px solid var(--border);
+    text-align: left; cursor: pointer;
+    font: inherit; color: var(--ink);
+    -webkit-tap-highlight-color: transparent;
+    transition: background 0.15s ease;
+    width: 100%;
+  }
+  .lot-row:last-child { border-bottom: 0; }
+  .lot-row:hover { background: var(--cream); }
+  .lot-row.active { background: var(--cream); }
+  .lot-row.active .lot-row-arrow { color: var(--sage-deep); transform: rotate(90deg); }
+
+  @media (max-width: 720px) {
+    .lot-row {
+      grid-template-columns: 68px 1fr auto;
+      grid-template-rows: auto auto;
+      gap: 4px 12px; padding: 14px 4px;
+    }
+    .lot-row-pill { grid-row: 1 / span 2; align-self: center; }
+    .lot-row-name { grid-column: 2; grid-row: 1; }
+    .lot-row-val  { grid-column: 3; grid-row: 1; text-align: right; }
+    .lot-row-bu   { grid-column: 2; grid-row: 2; font-size: 11.5px; color: var(--slate); }
+    .lot-row-pace { grid-column: 3; grid-row: 2; text-align: right; font-size: 11.5px; }
+    .lot-row-arrow { display: none; }
+  }
+
+  .lot-row-pill {
+    display: inline-block; text-align: center;
+    font-family: "DM Sans", sans-serif;
+    font-size: 9.5px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    padding: 6px 10px; min-width: 64px;
+  }
+  .pill-silent { background: transparent; color: var(--ink); border: 0.5px solid var(--ink); }
+  .pill-floor  { background: var(--sage-deep); color: var(--cream); }
+  .pill-cap    { background: var(--ink); color: var(--cream); }
+
+  .lot-row-name {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 17px; color: var(--ink); letter-spacing: -0.01em;
+  }
+  .lot-row-name .lot-row-loc {
+    font-style: italic; color: var(--slate); font-size: 14px;
+  }
+  .lot-row-bu {
+    font-family: "DM Sans", sans-serif; font-size: 12.5px;
+    color: var(--slate); letter-spacing: 0.04em;
+    font-variant-numeric: tabular-nums;
+  }
+  .lot-row-val {
+    font-family: "Fraunces", Georgia, serif; font-size: 19px;
+    color: var(--ink); font-variant-numeric: tabular-nums oldstyle-nums;
+    letter-spacing: -0.01em;
+  }
+  .lot-row-pace {
+    font-family: "Fraunces", Georgia, serif; font-style: italic;
+    font-size: 13.5px; color: var(--slate);
+  }
+  .lot-row-arrow {
+    color: var(--dust); font-size: 18px; line-height: 1;
+    transition: transform 0.15s ease, color 0.15s ease;
+  }
+
+  /* Drilldown panel — hosts the slider + chart for the selected collar */
+  .lot-detail {
+    background: var(--cream);
+    border: 0.5px solid var(--border);
+    padding: 24px 22px 28px;
+    margin-bottom: 18px;
+    display: flex; flex-direction: column; gap: 22px;
+  }
+  @media (min-width: 720px) {
+    .lot-detail { padding: 32px; gap: 28px; }
+  }
+
+  .detail-headline {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 26px; line-height: 1.15; letter-spacing: -0.015em;
+    color: var(--ink); font-variant-numeric: tabular-nums oldstyle-nums;
+    margin: 0;
+  }
+  @media (min-width: 720px) { .detail-headline { font-size: 30px; } }
+  .detail-headline em { font-style: italic; color: var(--sage-deep); }
+
+  /* Slider strip */
+  .slider-strip {
+    display: grid; grid-template-columns: 1fr; gap: 8px;
+    padding: 18px 0; border-top: 0.5px solid var(--border); border-bottom: 0.5px solid var(--border);
+  }
+  .slider-label {
+    display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
+  }
+  .slider-label .l-k {
+    font-family: "DM Sans", sans-serif;
+    font-size: 10.5px; font-weight: 500;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--slate);
+  }
+  .slider-label .l-v {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 24px; font-style: italic; color: var(--sage-deep);
+    font-variant-numeric: tabular-nums oldstyle-nums; letter-spacing: -0.012em;
+  }
+  input[type="range"] {
+    width: 100%; accent-color: var(--sage-deep);
+    height: 32px; margin: 0;
+    -webkit-appearance: none; appearance: none;
+    background: transparent;
+  }
+  input[type="range"]::-webkit-slider-runnable-track {
+    height: 4px; background: var(--rule); border-radius: 2px;
+  }
+  input[type="range"]::-moz-range-track {
+    height: 4px; background: var(--rule); border-radius: 2px;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 28px; height: 28px;
+    margin-top: -12px;
+    border-radius: 50%;
+    background: var(--sage-deep);
+    box-shadow: 0 0 0 4px rgba(123,174,127,0.18), 0 2px 8px rgba(58,61,54,0.18);
+    border: 2px solid var(--cream);
+    cursor: grab;
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 28px; height: 28px;
+    border-radius: 50%; background: var(--sage-deep);
+    box-shadow: 0 0 0 4px rgba(123,174,127,0.18);
+    border: 2px solid var(--cream); cursor: grab;
+  }
+  .slider-foot {
+    display: flex; justify-content: space-between;
+    font-family: "DM Sans", sans-serif; font-size: 10.5px;
+    color: var(--slate); letter-spacing: 0.04em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Payoff chart */
+  .payoff svg { display: block; width: 100%; height: auto; background: var(--paper); }
+
+  /* Stats trio */
+  .detail-stats {
+    display: grid; grid-template-columns: 1fr; gap: 18px;
+  }
+  @media (min-width: 720px) { .detail-stats { grid-template-columns: repeat(3, 1fr); gap: 24px; } }
+  .detail-stat {
+    border-top: 0.5px solid var(--border); padding-top: 12px;
+  }
+  .detail-stat .k {
+    font-family: "DM Sans", sans-serif;
+    font-size: 9.5px; font-weight: 500;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--slate); margin-bottom: 4px;
+  }
+  .detail-stat .v {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 24px; font-style: italic; color: var(--ink);
+    font-variant-numeric: tabular-nums oldstyle-nums;
+    line-height: 1.1;
+  }
+  .detail-stat .v.pos { color: var(--sage-deep); }
+  .detail-stat .v.neg { color: var(--ink); }
+  .detail-stat .d {
+    font-family: "Fraunces", Georgia, serif; font-style: italic;
+    font-size: 13px; color: var(--slate); margin-top: 4px;
+  }
+
+  /* "Where the strikes sit" — visual strike strip */
+  .strike-cards {
+    display: grid; grid-template-columns: 1fr; gap: 18px; margin-bottom: 28px;
+  }
+  @media (min-width: 720px) { .strike-cards { grid-template-columns: 1fr 1fr; gap: 28px; } }
+  .strike-card {
+    background: var(--cream); border: 0.5px solid var(--border);
+    padding: 22px 22px 26px;
+  }
+  .strike-meta {
+    font-family: "DM Sans", sans-serif;
+    font-size: 10.5px; font-weight: 500;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--slate); margin-bottom: 16px;
+  }
+  .strike-strip { margin-bottom: 14px; }
+  .strike-strip svg { display: block; width: 100%; height: auto; }
+  .strike-because {
+    font-family: "Fraunces", Georgia, serif; font-style: italic;
+    font-size: 14px; color: var(--slate); line-height: 1.45;
+    padding-top: 12px; border-top: 0.5px dotted var(--border);
+  }
+
+  /* Scenario cards — when the floor pays out */
+  .scenarios {
+    display: grid; grid-template-columns: 1fr; gap: 18px;
+  }
+  @media (min-width: 720px) { .scenarios { grid-template-columns: repeat(3, 1fr); gap: 24px; } }
+  .scenario {
+    background: var(--cream); border: 0.5px solid var(--border);
+    padding: 22px 22px 26px; display: flex; flex-direction: column; gap: 12px;
+  }
+  .scenario-tag {
+    font-family: "DM Sans", sans-serif;
+    font-size: 9.5px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--slate);
+  }
+  .scenario-headline {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 22px; line-height: 1.15; color: var(--ink);
+    letter-spacing: -0.012em; font-variant-numeric: tabular-nums oldstyle-nums;
+  }
+  .scenario-headline em { font-style: italic; color: var(--sage-deep); }
+  .scenario-payoff {
+    font-family: "Fraunces", Georgia, serif; font-style: italic;
+    font-size: 28px; color: var(--sage-deep);
+    font-variant-numeric: tabular-nums oldstyle-nums;
+  }
+  .scenario-payoff.neg { color: var(--ink); }
+  .scenario-because {
+    font-family: "Fraunces", Georgia, serif; font-style: italic;
+    font-size: 13.5px; color: var(--slate); line-height: 1.45;
+    padding-top: 8px; border-top: 0.5px dotted var(--border);
+  }
+
+  /* ============ BACK OF BOOK ============ */
+  .close {
+    max-width: 960px; margin: 0 auto;
+    padding: 56px 32px 36px;
+    display: grid; grid-template-columns: 1fr; gap: 24px; align-items: end;
+  }
+  @media (min-width: 720px) {
+    .close { padding: 64px 48px 56px; grid-template-columns: 1fr auto; }
+  }
+  .wordmark {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 500; font-size: 22px; letter-spacing: -0.012em;
+  }
+  .wordmark .out { color: var(--sage-deep); font-style: italic; font-weight: 400; }
+  .foot {
+    max-width: 960px; margin: 0 auto;
+    padding: 0 32px 48px;
+    font-size: 10.5px; color: var(--dust);
+    letter-spacing: 0.12em; text-transform: uppercase;
+    display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap;
+  }
+  @media (min-width: 720px) { .foot { padding: 0 48px 48px; } }
+
+  /* ============ TRADE WIDGET ============ */
+  .trade-trigger {
+    position: fixed; right: 0; top: 50%; transform: translateY(-50%);
+    background: var(--sage-deep); color: var(--cream); border: 0;
+    padding: 18px 12px;
+    font-family: "DM Sans", sans-serif;
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    cursor: pointer; writing-mode: vertical-rl;
+    box-shadow: 0 0 32px rgba(123, 174, 127, 0.35), 0 0 0 0.5px rgba(58,61,54,0.08);
+    z-index: 50; -webkit-tap-highlight-color: transparent;
+  }
+  .trade-drawer {
+    position: fixed; top: 0; right: 0; bottom: 0;
+    width: 380px; max-width: 92vw;
+    background: var(--cream);
+    border-left: 0.5px solid var(--border);
+    box-shadow: -24px 0 64px rgba(58,61,54,0.10);
+    transform: translateX(100%);
+    transition: transform 0.32s cubic-bezier(.22,.61,.36,1);
+    z-index: 60; overflow-y: auto;
+    padding: 28px 28px 36px;
+    display: flex; flex-direction: column; gap: 20px;
+  }
+  .trade-drawer.open { transform: translateX(0); }
+  @media (max-width: 560px) {
+    .trade-drawer {
+      width: 100vw; max-width: 100vw; bottom: 0; top: auto;
+      height: 88vh; right: 0;
+      transform: translateY(100%);
+      border-left: 0; border-top: 0.5px solid var(--border);
+    }
+    .trade-drawer.open { transform: translateY(0); }
+  }
+  .trade-scrim {
+    position: fixed; inset: 0;
+    background: rgba(58,61,54,0.30);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.25s ease; z-index: 55;
+  }
+  .trade-scrim.open { opacity: 1; pointer-events: auto; }
+  .trade-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    border-bottom: 0.5px solid var(--border); padding-bottom: 10px;
+  }
+  .trade-eyebrow {
+    font-family: "DM Sans", sans-serif;
+    font-size: 10.5px; font-weight: 500;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--slate);
+  }
+  .trade-close {
+    background: transparent; border: 0; cursor: pointer;
+    font-size: 26px; line-height: 1; color: var(--slate); padding: 0 4px;
+  }
+  .trade-close:hover { color: var(--ink); }
+  .trade-h {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 400; font-size: 32px; line-height: 1.1;
+    letter-spacing: -0.018em; color: var(--ink); margin: 4px 0 0;
+  }
+  .trade-h em { font-style: italic; color: var(--sage-deep); }
+  .trade-sub {
+    font-family: "Fraunces", Georgia, serif; font-style: italic;
+    font-size: 15px; color: var(--slate); margin: 0 0 10px;
+  }
+  .trade-field { display: flex; flex-direction: column; gap: 8px; }
+  .trade-label {
+    font-family: "DM Sans", sans-serif;
+    font-size: 10.5px; font-weight: 500;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--slate);
+  }
+  .crop-toggle { display: flex; gap: 0; border: 0.5px solid var(--rule); }
+  .crop-toggle button {
+    flex: 1 1 50%; background: transparent; border: 0;
+    padding: 11px 14px;
+    font-family: "DM Sans", sans-serif; font-size: 12px;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--slate);
+    cursor: pointer; border-right: 0.5px solid var(--rule);
+  }
+  .crop-toggle button:last-child { border-right: 0; }
+  .crop-toggle button.active { background: var(--ink); color: var(--cream); }
+
+  .roll-options {
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .roll-option {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 10px 12px;
+    border: 0.5px solid var(--rule); background: transparent;
+    font: inherit; color: var(--ink); cursor: pointer; text-align: left;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .roll-option:hover { background: var(--paper); }
+  .roll-option.active { border-color: var(--sage); background: rgba(123,174,127,0.06); }
+  .roll-option-l {
+    font-family: "Fraunces", Georgia, serif; font-size: 14px;
+    color: var(--ink);
+  }
+  .roll-option-r {
+    font-family: "DM Sans", sans-serif; font-size: 11px;
+    color: var(--slate); letter-spacing: 0.06em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .trade-cta {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    background: var(--sage-deep); color: var(--cream);
+    padding: 16px 18px; text-decoration: none; border: 0;
+    box-shadow: 0 0 32px rgba(123,174,127,0.35);
+  }
+  .trade-cta:hover { background: #5e8b62; }
+  .trade-cta-l {
+    font-family: "DM Sans", sans-serif; font-size: 12px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase;
+  }
+  .trade-cta-num {
+    font-family: "Fraunces", Georgia, serif; font-size: 19px;
+    font-style: italic; letter-spacing: -0.01em;
+    font-variant-numeric: tabular-nums oldstyle-nums;
+  }
+  .trade-foot {
+    font-family: "DM Sans", sans-serif; font-size: 10.5px;
+    color: var(--dust); letter-spacing: 0.06em;
+    text-align: center; line-height: 1.45;
+  }
+
+  /* ============ MOBILE (iPhone) ============
+     Inline SVG charts are sized via viewBox, so on a 375-pt iPhone the
+     SVG renders at ~2.5–3× scale-down. Internal text becomes unreadable
+     unless we bump it. CSS wins over SVG `font-size=""` presentation
+     attributes, so these rules cleanly override the inline values. */
+  @media (max-width: 560px) {
+    body { font-size: 14px; }
+    .cover { padding: 36px 18px 24px; }
+    h1 { font-size: 36px; line-height: 1.06; }
+    .deck { font-size: 17px; margin-bottom: 28px; }
+    .eyebrow { margin-bottom: 16px; }
+    .nav { margin-bottom: 22px; }
+
+    /* Binary indicator — scale down badge, keep voice */
+    .binary { padding: 22px 0 26px; gap: 18px; margin-bottom: 28px; }
+    .binary-badge { width: 132px; height: 132px; }
+    .binary-yes .binary-disc, .binary-no .binary-disc { width: 108px; height: 108px; }
+    .binary-word { font-size: 42px; }
+    .binary-verb { font-size: 28px; }
+    .binary-reason { font-size: 14.5px; }
+    .binary-chips { gap: 6px; }
+    .binary-chip { padding: 5px 8px; font-size: 9.5px; letter-spacing: 0.08em; }
+
+    /* Hero call cards — single column, tighter rhythm */
+    .hero-call { padding: 16px 0; gap: 14px; margin-bottom: 22px; }
+    .hero-call .cell .v { font-size: 22px; }
+    .hero-call .cell .sub { font-size: 12px; }
+
+    /* Hero chart — viewBox 900x320 renders at ~0.38× scale on iPhone.
+       32px viewBox → ~12px on screen. Fully legible. */
+    .hero svg text { font-size: 32px; }
+    .hero svg .anno { font-size: 36px; }
+
+    .lede { font-size: 15px; }
+
+    /* Zone break + ledger paddings tighten */
+    .zone-break { margin-top: 44px; padding: 0 18px; }
+    .ledger { padding: 36px 0 44px; }
+    .ledger-wrap { padding: 0 18px; }
+    .ledger-h { font-size: 26px; }
+    .ledger-sub { font-size: 15.5px; margin-bottom: 28px; }
+    .ledger-h-2 { margin-top: 44px; }
+
+    /* Lot-detail panel tighter */
+    .lot-detail { padding: 18px 16px 22px; gap: 18px; }
+    .detail-headline { font-size: 22px; }
+    .detail-stat .v { font-size: 22px; }
+    .slider-label .l-v { font-size: 22px; }
+
+    /* Strike strip charts — viewBox 520x90 renders at ~0.66× on iPhone */
+    .strike-strip svg text { font-size: 28px !important; }
+    /* Preserve hierarchy: today $-chip biggest */
+    .strike-strip svg text[font-weight="500"] { font-size: 34px !important; }
+    /* Slider thumb a touch larger on phone for confident finger drag */
+    input[type="range"] { height: 40px; }
+    input[type="range"]::-webkit-slider-thumb { width: 34px; height: 34px; margin-top: -15px; }
+    input[type="range"]::-moz-range-thumb { width: 34px; height: 34px; }
+    .strike-card { padding: 18px 16px 22px; }
+    .strike-meta { margin-bottom: 12px; font-size: 10px; letter-spacing: 0.12em; }
+    .strike-because { font-size: 13.5px; }
+
+    /* Scenario cards tighter */
+    .scenario { padding: 18px 16px 22px; gap: 10px; }
+    .scenario-headline { font-size: 20px; }
+    .scenario-payoff { font-size: 26px; }
+    .scenario-because { font-size: 13px; }
+
+    /* Trade trigger — slightly bigger tap target */
+    .trade-trigger { padding: 16px 11px; font-size: 11px; letter-spacing: 0.18em; }
+
+    .roll-option { padding: 14px 12px; }
+    .roll-option-l { font-size: 14.5px; }
+
+    /* Wordmark + foot more comfortable */
+    .close { padding: 36px 18px 24px; }
+    .foot { padding: 0 18px 32px; font-size: 10px; }
+  }
+
+  /* Even narrower (small iPhones in portrait) */
+  @media (max-width: 380px) {
+    .cover { padding: 30px 14px 20px; }
+    .ledger-wrap { padding: 0 14px; }
+    h1 { font-size: 32px; }
+    .binary-badge { width: 118px; height: 118px; }
+    .binary-yes .binary-disc, .binary-no .binary-disc { width: 96px; height: 96px; }
+    .binary-word { font-size: 38px; }
+    .binary-verb { font-size: 26px; }
+  }
+  /* ============ SOBER TYPOGRAPHY OVERRIDE ============
+     The earlier rules used Fraunces 400 italic for display, which
+     reads as editorial/elegant. For a decision-making dashboard with
+     a primary user in her 70s, italic display hurts readability and
+     the romance gets in the way of the answer. This block dials the
+     register down to DM Sans 500/600 roman, smaller sizes, and
+     reserves Fraunces only for the brand wordmark + the Yes badge.
+     Loaded last so it overrides specific earlier rules. */
+
+  /* Headlines — DM Sans medium, no italic, smaller */
+  h1, .ledger-h, .binary-verb, .detail-headline, .trade-h {
+    font-family: "DM Sans", -apple-system, sans-serif;
+    font-style: normal;
+    font-weight: 600;
+    letter-spacing: -0.012em;
+  }
+  h1 { font-size: 30px; line-height: 1.15; max-width: 720px; }
+  @media (min-width: 720px) { h1 { font-size: 36px; } }
+  .ledger-h { font-size: 22px; }
+  @media (min-width: 720px) { .ledger-h { font-size: 26px; } }
+  .binary-verb { font-size: 24px; }
+  @media (min-width: 720px) { .binary-verb { font-size: 28px; } }
+  .detail-headline { font-size: 20px; line-height: 1.25; }
+  @media (min-width: 720px) { .detail-headline { font-size: 23px; } }
+  .trade-h { font-size: 24px; }
+
+  /* Headline emphasis — sage color instead of italic */
+  h1 em, .ledger-h em, .binary-verb em, .detail-headline em, .trade-h em,
+  .cash-v em, .scenario-headline em, .hero-call .cell .v em {
+    font-style: normal;
+    color: var(--sage-deep);
+    font-weight: 600;
+  }
+
+  /* Decks & subs — DM Sans regular, slate */
+  .deck, .ledger-sub, .trade-sub {
+    font-family: "DM Sans", -apple-system, sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 15.5px;
+    line-height: 1.5;
+    color: var(--slate);
+    max-width: 620px;
+  }
+  @media (min-width: 720px) {
+    .deck { font-size: 16.5px; }
+    .ledger-sub { font-size: 15.5px; }
+  }
+
+  /* Lede paragraph — body weight, sage on emphasis */
+  .lede { font-size: 15px; line-height: 1.55; }
+  .lede em { font-style: normal; color: var(--sage-deep); font-weight: 500; }
+
+  /* Value numbers — DM Sans semibold tabular */
+  .hero-call .cell .v, .cash-v, .closed-value, .scenario-payoff,
+  .lot-row-val, .lot-detail-stats .s-v, .detail-stat .v,
+  .trade-bid, .trade-total-v, .slider-label .l-v,
+  .lot-detail-action, .lot-detail-headline {
+    font-family: "DM Sans", -apple-system, sans-serif;
+    font-style: normal;
+    font-weight: 600;
+    letter-spacing: -0.008em;
+  }
+  .hero-call .cell .v { font-size: 20px; }
+  @media (min-width: 720px) { .hero-call .cell .v { font-size: 22px; } }
+  .cash-v { font-size: 26px; }
+  @media (min-width: 720px) { .cash-v { font-size: 30px; } }
+  .closed-value { font-size: 24px; }
+  @media (min-width: 720px) { .closed-value { font-size: 28px; } }
+  .scenario-payoff { font-size: 22px; }
+  .lot-row-val { font-size: 16px; }
+  .detail-stat .v { font-size: 18px; }
+  .slider-label .l-v { font-size: 18px; }
+  .trade-bid { font-size: 22px; }
+  .trade-total-v { font-size: 26px; color: var(--sage-deep); }
+
+  /* Lot row name — sans, no italic, table-like */
+  .lot-row-name {
+    font-family: "DM Sans", -apple-system, sans-serif;
+    font-weight: 500;
+    font-size: 15px;
+    letter-spacing: 0;
+  }
+  .lot-row-name .lot-row-loc {
+    font-style: normal;
+    font-weight: 400;
+    color: var(--slate);
+    font-size: 13px;
+  }
+  .lot-row-pace {
+    font-family: "DM Sans", -apple-system, sans-serif;
+    font-style: normal;
+    font-size: 12.5px;
+  }
+  .lot-row-val.unpriced-val {
+    font-style: normal;
+    font-size: 13px;
+    color: var(--slate);
+  }
+
+  /* "Because" / takeaway / d lines — sans, slate, no italic */
+  .lot-detail-because, .closed-takeaway, .strike-because,
+  .scenario-because, .cash-d, .binary-reason, .trade-sub {
+    font-family: "DM Sans", -apple-system, sans-serif;
+    font-style: normal;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--slate);
+  }
+
+  /* Strike meta + scenario tag + closed meta */
+  .strike-meta, .scenario-tag, .closed-meta {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+  }
+
+  /* Scenario headline — sans, smaller */
+  .scenario-headline {
+    font-family: "DM Sans", -apple-system, sans-serif;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 17px;
+    letter-spacing: -0.005em;
+  }
+
+  /* Hero call sub label — sans */
+  .hero-call .cell .sub {
+    font-family: "DM Sans", -apple-system, sans-serif;
+    font-style: normal;
+  }
+
+  /* vs lines */
+  .vs-line {
+    font-family: "DM Sans", -apple-system, sans-serif;
+    font-style: normal;
+    font-size: 12px;
+  }
+
+  /* Binary chips — slightly tighter, smaller */
+  .binary-chip { font-size: 9.5px; letter-spacing: 0.10em; padding: 5px 8px; }
+
+  /* Slider value (price) */
+  .slider-label .l-v { color: var(--sage-deep); font-style: normal; }
+
+  /* Brand wordmark + binary "Yes" — keep Fraunces character but slimmer */
+  .nav .brand, .wordmark { font-weight: 500; }
+  .binary-word { font-weight: 500; font-style: normal; }
+
+  /* Mobile sizing dial-back */
+  @media (max-width: 560px) {
+    h1 { font-size: 26px; }
+    .deck { font-size: 14.5px; margin-bottom: 22px; }
+    .lede { font-size: 14.5px; }
+    .binary-verb { font-size: 22px; }
+    .binary-word { font-size: 36px; }
+    .ledger-h { font-size: 20px; }
+    .ledger-sub { font-size: 14px; margin-bottom: 24px; }
+    .cash-v { font-size: 22px; }
+    .closed-value { font-size: 22px; }
+    .scenario-headline { font-size: 16px; }
+    .scenario-payoff { font-size: 19px; }
+    .hero-call .cell .v { font-size: 18px; }
+    .detail-headline, .lot-detail-headline { font-size: 19px; }
+    .trade-h { font-size: 21px; }
+    .lot-row-val { font-size: 15px; }
+    .lot-row-name { font-size: 14px; }
+    .lot-row-name .lot-row-loc { font-size: 12px; }
+    .lot-row-pace { font-size: 11.5px; }
+  }
+
+  /* ============================================================
+     MOBILE-FIRST PATCH — additive, loaded last so it overrides.
+     Three jobs: status strip, mobile-first reflow, chart legibility.
+     ============================================================ */
+
+  @supports (padding: max(0px)) {
+    .cover, .inside-grid, .close, .foot, .zone-break {
+      padding-left: max(20px, env(safe-area-inset-left));
+      padding-right: max(20px, env(safe-area-inset-right));
+    }
+    @media (min-width: 720px) {
+      .cover, .inside-grid, .close, .foot, .zone-break {
+        padding-left: max(48px, env(safe-area-inset-left));
+        padding-right: max(48px, env(safe-area-inset-right));
+      }
+    }
+  }
+
+  /* ---- Status strip ---- */
+  .status-strip {
+    background: var(--paper);
+    border-bottom: 0.5px solid var(--border);
+    padding: 11px 20px;
+    font-size: 13px; line-height: 1.4;
+    color: var(--ink);
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    font-variant-numeric: tabular-nums oldstyle-nums;
+  }
+  .status-strip[data-tone="warn"]  { background: #FBF4E5; }
+  .status-strip[data-tone="alert"] { background: #F6E7E0; }
+  @media (min-width: 720px) {
+    .status-strip { padding: 12px 48px; font-size: 13.5px; gap: 14px; }
+  }
+  .status-strip .pulse {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--sage-deep); flex: 0 0 auto;
+  }
+  .status-strip[data-tone="warn"]  .pulse { background: #C99437; }
+  .status-strip[data-tone="alert"] .pulse { background: #B35742; }
+  .status-strip .label {
+    font-family: "DM Sans", sans-serif; font-size: 10px;
+    font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--slate); flex: 0 0 auto;
+  }
+  .status-strip .msg { flex: 1 1 220px; color: var(--ink); }
+  .status-strip .msg em {
+    font-family: "Fraunces", Georgia, serif; font-style: italic;
+    color: var(--sage-deep); font-weight: 400;
+  }
+  .status-strip .stamp {
+    font-family: "DM Sans", sans-serif; font-size: 10px;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--dust); flex: 0 0 auto; margin-left: auto;
+  }
+
+  /* ---- Mobile-first padding ---- */
+  .cover { padding: 28px 20px 28px; }
+  @media (min-width: 720px) { .cover { padding: 72px 48px 48px; } }
+  .zone-break { padding: 0 20px; margin: 44px auto 0; }
+  @media (min-width: 720px) { .zone-break { padding: 0 48px; margin-top: 72px; } }
+  .inside-grid { padding: 0 20px; }
+  @media (min-width: 720px) { .inside-grid { padding: 0 48px; } }
+  .inside { padding: 36px 0 44px; }
+  @media (min-width: 720px) { .inside { padding: 56px 0 64px; } }
+  .close { padding: 44px 20px 32px; }
+  @media (min-width: 720px) { .close { padding: 64px 48px 56px; } }
+  .foot { padding: 0 20px 32px; }
+  @media (min-width: 720px) { .foot { padding: 0 48px 48px; } }
+
+  /* ---- Nav ---- */
+  .nav { gap: 12px; flex-wrap: wrap; }
+  .nav-links { gap: 16px; flex-wrap: wrap; row-gap: 6px; }
+  .nav-links a { display: inline-flex; align-items: center; min-height: 44px; }
+  @media (min-width: 720px) {
+    .nav-links { row-gap: 0; }
+    .nav-links a { min-height: 0; }
+    .nav-links a.here { padding-bottom: 2px; }
+  }
+
+  /* ---- Hero call ---- */
+  @media (max-width: 719px) {
+    .hero-call { padding: 14px 0; gap: 12px; }
+    .hero-call .cell:first-child .v { font-size: 34px; }
+    .hero-call .cell:first-child {
+      padding-bottom: 12px;
+      border-bottom: 0.5px dotted var(--border);
+    }
+  }
+
+  /* ---- Charts at narrow widths: SPARKLINE MODE ----
+         Hide narrative in-chart Fraunces labels; keep axis ticks modest. */
+  @media (max-width: 600px) {
+    figure.hero { margin-left: -2px; margin-right: -2px; }
+    figure.hero svg text { font-size: 13px; }
+    figure.hero svg .anno { font-size: 12px; }
+    figure.hero svg text[font-family*="Fraunces"] { display: none; }
+  }
+
+  /* Strike cards: keep tighter, legible meta. */
+  @media (max-width: 600px) {
+    .strike-card .strike-strip svg text { font-size: 13px; }
+    .strike-card .strike-strip svg text[font-family*="Fraunces"] { display: none; }
+  }
+
+  /* ---- Lot rows: single-column stack on phones ---- */
+  @media (max-width: 560px) {
+    .lot-row {
+      grid-template-columns: 1fr auto !important;
+      column-gap: 12px; row-gap: 6px;
+      padding: 14px 0;
+    }
+    .lot-row > * { min-width: 0; }
+  }
+
+  /* ---- Trade drawer: full-screen sheet on phones ---- */
+  @media (max-width: 560px) {
+    .trade-drawer {
+      width: 100% !important;
+      max-width: 100% !important;
+      border-radius: 0;
+    }
+  }
+
+  /* ---- Inline asides: tiny parenthetical glossary inside any heading ---- */
+  .aside {
+    font-family: "DM Sans", sans-serif;
+    font-style: italic; font-weight: 400;
+    font-size: 0.78em; letter-spacing: 0;
+    color: var(--slate); text-transform: none;
+    margin-left: 4px;
+  }
+
+  /* ---- Trade trigger: rotated tab on desktop, sticky bottom pill on phones ---- */
+  @media (max-width: 720px) {
+    .trade-trigger {
+      position: fixed;
+      left: 12px; right: 12px; top: auto;
+      bottom: max(12px, env(safe-area-inset-bottom, 12px));
+      transform: none;
+      writing-mode: horizontal-tb;
+      padding: 16px 20px;
+      font-size: 13px; letter-spacing: 0.16em;
+      border-radius: 999px;
+      box-shadow: 0 6px 24px rgba(58,61,54,0.18), 0 0 0 0.5px rgba(58,61,54,0.08);
+      display: flex; align-items: center; justify-content: center;
+      min-height: 48px;
+    }
+    .trade-trigger-rail { display: none !important; }
+    body { padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px)); }
+  }
+
+
+  /* ============================================================
+     AUTH GATE — Garage Code
+     Static client-side gate. sessionStorage-backed; clears on tab close.
+     Code = "8467" (per Garage Code tip). Replace match in <script>.
+     ============================================================ */
+  .auth-gate {
+    position: fixed; inset: 0; z-index: 9999;
+    background: var(--cream);
+    display: flex; align-items: center; justify-content: center;
+    padding: 32px;
+    transition: opacity 0.32s ease;
+  }
+  .auth-gate.out { opacity: 0; pointer-events: none; }
+  .auth-card {
+    max-width: 380px; width: 100%;
+    text-align: center;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .auth-eyebrow {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 500; font-size: 18px;
+    letter-spacing: -0.01em; color: var(--ink);
+  }
+  .auth-eyebrow em {
+    color: var(--sage-deep); font-style: italic; font-weight: 400;
+  }
+  .auth-title {
+    font-family: "DM Sans", -apple-system, sans-serif;
+    font-weight: 600; font-size: 26px;
+    letter-spacing: -0.01em; color: var(--ink);
+    margin: 8px 0 0;
+  }
+  .auth-tip {
+    font-family: "Fraunces", Georgia, serif;
+    font-style: italic; font-size: 15px;
+    color: var(--slate); margin: 0 0 4px;
+  }
+  .auth-input {
+    display: block; margin: 0 auto;
+    width: 100%; max-width: 240px;
+    padding: 14px 18px;
+    border: 0.5px solid var(--rule); border-radius: 8px;
+    background: var(--paper);
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 36px; font-weight: 500;
+    text-align: center; letter-spacing: 0.34em;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none; appearance: none;
+  }
+  .auth-input:focus {
+    outline: 0;
+    border-color: var(--sage-deep);
+    box-shadow: 0 0 0 3px rgba(123,174,127,0.18);
+  }
+  .auth-error {
+    min-height: 18px;
+    font-family: "DM Sans", sans-serif;
+    font-size: 12px; color: #B35742;
+    letter-spacing: 0.04em;
+  }
+  @keyframes auth-shake {
+    0%,100% { transform: translateX(0); }
+    20%,60% { transform: translateX(-6px); }
+    40%,80% { transform: translateX(6px); }
+  }
+  .auth-gate.shake .auth-card { animation: auth-shake 0.34s ease both; }
+  body.auth-locked { overflow: hidden; }
+
+  /* ============================================================
+     PAGE-WIDTH PARITY WITH ROOT (index.html) — open up cover /
+     zone-break / close / foot containers from 960 to 1280 above
+     720px so the page sits at the same width as Today's Call. */
+  @media (min-width: 720px) {
+    .cover      { max-width: 1280px; }
+    .zone-break { max-width: 1280px; }
+    .ledger-wrap{ max-width: 1280px; }
+    .close      { max-width: 1280px; }
+    .foot       { max-width: 1280px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ================== AUTH GATE (Garage Code) ================== -->
+<div class="auth-gate" id="auth-gate" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+  <div class="auth-card">
+    <span class="auth-eyebrow">freis <em>·</em> farm</span>
+    <h2 class="auth-title" id="auth-title">Garage code</h2>
+    <p class="auth-tip">Same four digits as the door.</p>
+    <input class="auth-input" id="auth-input" type="text" inputmode="numeric"
+           pattern="\d*" maxlength="4" autocomplete="off"
+           aria-label="Four-digit garage code" autofocus />
+    <div class="auth-error" id="auth-error" aria-live="polite"></div>
+  </div>
+</div>
+<script>
+(function() {
+  const KEY = 'freis-farm-garage';
+  const gate = document.getElementById('auth-gate');
+  if (!gate) return;
+  if (sessionStorage.getItem(KEY) === '1') { gate.remove(); return; }
+  document.body.classList.add('auth-locked');
+  const input = document.getElementById('auth-input');
+  const err   = document.getElementById('auth-error');
+  setTimeout(() => input?.focus(), 80);
+  input?.addEventListener('input', () => {
+    err.textContent = '';
+    input.value = input.value.replace(/\D/g, '');
+    if (input.value.length !== 4) return;
+    if (input.value === '8467') {
+      sessionStorage.setItem(KEY, '1');
+      gate.classList.add('out');
+      setTimeout(() => {
+        gate.remove();
+        document.body.classList.remove('auth-locked');
+      }, 350);
+    } else {
+      gate.classList.add('shake');
+      err.textContent = 'Wrong code. Try again.';
+      setTimeout(() => {
+        gate.classList.remove('shake');
+        input.value = '';
+        input.focus();
+      }, 400);
+    }
+  });
+})();
+</script>
+
+
+<!-- ================== STATUS STRIP (mobile-first headline) ================== -->
+<aside class="status-strip" data-tone="warn" aria-live="polite">
+  <span class="pulse" aria-hidden="true"></span>
+  <span class="label">What-if</span>
+  <span class="msg">This page <em>models</em> a collar we don't actually have. Real position today: 1,500 bu corn / 500 bu soy in Ritchie's <em>Average Pricing</em> (averages each day's price across the contract — not a floor).</span>
+  <span class="stamp">Apr 28</span>
+</aside>
+
+<!-- ================== FRONT OF BOOK ================== -->
+<section class="cover">
+
+  <div class="nav">
+    <a href="./" class="brand" aria-label="Freis Farm — Board of Trade">
+      <picture>
+        <source srcset="freisfarm-dark.png" media="(prefers-color-scheme: dark)">
+        <img src="freisfarm-light.png" alt="Freis Farm" class="brand-wordmark">
+      </picture>
+    </a>
+    <div class="nav-links">
+      <a href="./">Today's Call</a>
+      <a href="hedge.html" class="here">Hedge</a>
+      <a href="farm-ops.html">Farm Ops</a>
+    </div>
+  </div>
+
+  <p class="eyebrow">Hedge · What-if model · April 28, 2026</p>
+
+  <!-- Quiet status row — small dot + plain-English reason.
+       Class flips to .binary-no when there's actually something to do. -->
+  <div class="binary binary-yes">
+    <div class="binary-q">If we bought this protection</div>
+    <div class="binary-status">Asleep</div>
+    <h2 class="binary-verb">Nothing would trigger today</h2>
+    <p class="binary-reason">In the model, corn and beans are both between the floor and the ceiling — so the protection stays asleep. It costs nothing to keep in place. (Reminder: this is a model. We haven't bought a collar; we'd have to call Ritchie or a broker to set one up.)</p>
+    <div class="binary-chips">
+      <span class="binary-chip binary-chip-on">Between floor &amp; ceiling</span>
+      <span class="binary-chip binary-chip-on">Free to hold (in the model)</span>
+      <span class="binary-chip">35,000 bu modeled</span>
+    </div>
+  </div>
+
+  <h1>What if we bought <em>price protection?</em></h1>
+
+  <p class="deck">A "collar" pairs a floor (a minimum price you can't fall below) with a ceiling (a maximum you can't rise above) — the ceiling pays for the floor, so it costs nothing up front. This page walks through what one would cover on next harvest, so you can decide whether it's worth a call to Ritchie.</p>
+
+  <div class="hero-call">
+    <div class="cell">
+      <div class="k">Bushels covered <span class="aside">(if we bought it)</span></div>
+      <div class="v">35,000</div>
+      <div class="sub">30,000 bu Dec '26 corn · 5,000 bu Nov '26 beans</div>
+    </div>
+    <div class="cell">
+      <div class="k">Worst-case payout</div>
+      <div class="v"><em>$39,000</em></div>
+      <div class="sub">What the floor would pay if prices crashed to $3.00 corn and $8.00 beans by harvest</div>
+    </div>
+    <div class="cell">
+      <div class="k">What it would cost</div>
+      <div class="v">$0</div>
+      <div class="sub">In a collar, selling the ceiling pays for the floor — net zero out-of-pocket</div>
+    </div>
+  </div>
+
+  <!-- Editorial hero collar payoff (corn, illustrative) -->
+  <figure class="hero">
+    <svg viewBox="0 0 900 320" role="img" aria-label="Collar payoff at expiry: dashed slate is unhedged, ink is hedged. The hedge floors below the put strike and caps above the call strike.">
+      <line class="axis" x1="80" y1="240" x2="860" y2="240"/>
+      <line class="axis" x1="80" y1="240" x2="80"  y2="40"/>
+
+      <text x="72" y="244" text-anchor="end">−$60k</text>
+      <text x="72" y="180" text-anchor="end">−$30k</text>
+      <text x="72" y="140" text-anchor="end">$0</text>
+      <text x="72" y="100" text-anchor="end">+$30k</text>
+      <text x="72" y="60"  text-anchor="end">+$60k</text>
+      <line stroke="#E2DDD5" stroke-width="0.3" x1="80" y1="180" x2="860" y2="180"/>
+      <line stroke="#E2DDD5" stroke-width="0.3" x1="80" y1="140" x2="860" y2="140"/>
+      <line stroke="#E2DDD5" stroke-width="0.3" x1="80" y1="100" x2="860" y2="100"/>
+      <line stroke="#E2DDD5" stroke-width="0.3" x1="80" y1="60"  x2="860" y2="60"/>
+
+      <text x="80"  y="258" text-anchor="middle">$3.00</text>
+      <text x="220" y="258" text-anchor="middle">$3.75</text>
+      <text x="360" y="258" text-anchor="middle">$4.30</text>
+      <text x="500" y="258" text-anchor="middle">$4.65</text>
+      <text x="660" y="258" text-anchor="middle">$5.00</text>
+      <text x="860" y="258" text-anchor="middle">$6.00</text>
+      <text x="470" y="290" text-anchor="middle" fill="#3D3A36">Dec '26 corn closing price ($ / bu)</text>
+
+      <!-- Floor and cap bands -->
+      <rect fill="#7BAE7F" fill-opacity="0.18" x="80"  y="40" width="280" height="200"/>
+      <rect fill="#3D3A36" fill-opacity="0.05" x="660" y="40" width="200" height="200"/>
+
+      <line stroke="#6A9D6E" stroke-width="1" stroke-dasharray="3 2" x1="360" y1="40" x2="360" y2="240"/>
+      <line stroke="#6A9D6E" stroke-width="1" stroke-dasharray="3 2" x1="660" y1="40" x2="660" y2="240"/>
+
+      <line stroke="#A8A39A" stroke-width="0.6" stroke-dasharray="2 2" x1="520" y1="40" x2="520" y2="240"/>
+
+      <!-- Unhedged & hedged paths -->
+      <path class="series" stroke="#7A756D" stroke-dasharray="5 3" d="M 80 220 L 860 60"/>
+      <path class="series" stroke="#3D3A36" d="M 80 192 L 360 192 L 660 84 L 860 84"/>
+      <path class="series" stroke="#7BAE7F" stroke-width="2" d="M 80 192 L 360 192"/>
+
+      <!-- Today marker — radiates -->
+      <circle cx="500" cy="129" r="22" fill="#7BAE7F" opacity="0.10"/>
+      <circle cx="500" cy="129" r="14" fill="#7BAE7F" opacity="0.22"/>
+      <circle cx="500" cy="129" r="7"  fill="#7BAE7F" stroke="#FAF7F2" stroke-width="2"/>
+
+      <!-- Legend -->
+      <g>
+        <line x1="80" y1="20" x2="106" y2="20" stroke="#7A756D" stroke-width="1.6" stroke-dasharray="5 3"/>
+        <text x="112" y="24">unprotected</text>
+        <line x1="220" y1="20" x2="246" y2="20" stroke="#3D3A36" stroke-width="1.6"/>
+        <text x="252" y="24">with collar · cash + protection</text>
+        <line x1="430" y1="20" x2="456" y2="20" stroke="#7BAE7F" stroke-width="2"/>
+        <text x="462" y="24">floor active</text>
+        <circle cx="600" cy="20" r="4" fill="#7BAE7F"/>
+        <text x="610" y="24">today</text>
+      </g>
+
+      <!-- Annotations -->
+      <line class="connector" x1="220" y1="192" x2="290" y2="170"/>
+      <text class="anno anno-sage" x="295" y="174">Floor — $4.30 minimum · 30,000 bu</text>
+      <line class="connector" x1="760" y1="84" x2="830" y2="60"/>
+      <text class="anno" x="830" y="64" text-anchor="end">Ceiling — $5.00 maximum</text>
+
+      <!-- Today price chip — drawn last -->
+      <text x="486" y="129" text-anchor="end"
+            font-family="Fraunces, Georgia, serif" font-style="italic" font-weight="500"
+            font-size="20" fill="#6A9D6E">$4.65</text>
+      <text x="486" y="146" text-anchor="end"
+            font-family="DM Sans, sans-serif" font-size="10" letter-spacing="0.12em" fill="#6A9D6E">TODAY · INSIDE THE SAFE RANGE</text>
+    </svg>
+  </figure>
+
+
+
+</section>
+
+<!-- ================== ZONE BREAK ================== -->
+<div class="zone-break">
+  <span>Mechanics</span>
+</div>
+
+<!-- ================== LEDGER ================== -->
+<section class="ledger">
+  <div class="ledger-wrap">
+
+    <h2 class="ledger-h">Two pieces of the model</h2>
+    <p class="ledger-sub">A separate collar (floor + ceiling) on each crop. Tap a crop, drag the price slider — see what we'd take home at every closing price <em>if we'd bought one</em>.</p>
+
+    <div class="lots-strip" id="hedge-strip">
+      <button class="lot-row active" data-collar="corn" type="button">
+        <span class="lot-row-pill pill-silent">Quiet</span>
+        <span class="lot-row-name">Corn safety net <span class="lot-row-loc">· Dec '26</span></span>
+        <span class="lot-row-bu">30,000 bu</span>
+        <span class="lot-row-val">$4.65</span>
+        <span class="lot-row-pace">$0.35 below the ceiling</span>
+        <span class="lot-row-arrow" aria-hidden="true">→</span>
+      </button>
+      <button class="lot-row" data-collar="soy" type="button">
+        <span class="lot-row-pill pill-silent">Quiet</span>
+        <span class="lot-row-name">Bean safety net <span class="lot-row-loc">· Nov '26</span></span>
+        <span class="lot-row-bu">5,000 bu</span>
+        <span class="lot-row-val">$11.73</span>
+        <span class="lot-row-pace">$0.27 below the ceiling</span>
+        <span class="lot-row-arrow" aria-hidden="true">→</span>
+      </button>
+    </div>
+
+    <div class="lot-detail" id="hedge-detail">
+      <h3 class="detail-headline" id="d-headline">—</h3>
+
+      <div class="slider-strip">
+        <div class="slider-label">
+          <span class="l-k">Settlement price at expiry</span>
+          <span class="l-v" id="d-price">$4.65</span>
+        </div>
+        <input type="range" id="d-slider" min="0" max="100" step="1" value="55" />
+        <div class="slider-foot">
+          <span id="d-min">$3.00</span>
+          <span id="d-max">$6.00</span>
+        </div>
+      </div>
+
+      <div class="payoff">
+        <svg id="d-chart" viewBox="0 0 900 580" preserveAspectRatio="xMidYMid meet"></svg>
+      </div>
+
+      <div class="detail-stats">
+        <div class="detail-stat">
+          <div class="k">Without a collar</div>
+          <div class="v" id="d-uh">—</div>
+          <div class="d" id="d-uh-d">— sell at whatever the market is</div>
+        </div>
+        <div class="detail-stat">
+          <div class="k">With the modeled collar</div>
+          <div class="v" id="d-hd">—</div>
+          <div class="d" id="d-hd-d">— floor catches the downside, ceiling caps the upside</div>
+        </div>
+        <div class="detail-stat">
+          <div class="k">What the collar adds</div>
+          <div class="v" id="d-delta">—</div>
+          <div class="d" id="d-delta-d">— gained from the floor, or upside given up to the ceiling</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Where the strikes sit ── -->
+    <h2 class="ledger-h ledger-h-2">Where the floor and ceiling sit</h2>
+    <p class="ledger-sub">Green band — if price ends below this, the floor pays the difference. Dark band — if price ends above this, we give up the gain to the ceiling. Dot is today.</p>
+
+    <div class="strike-cards">
+
+      <article class="strike-card">
+        <div class="strike-meta">Corn · Dec '26 · 30,000 bu</div>
+        <div class="strike-strip">
+          <svg viewBox="0 0 520 130" aria-label="Corn collar strike layout: floor at $4.30, today $4.65, cap at $5.00, against the $3.00 to $6.00 settlement range.">
+            <!-- Range axis -->
+            <line x1="20" y1="80" x2="500" y2="80" stroke="#C8C3BA" stroke-width="0.5"/>
+            <!-- $3 to $6 range. Each $0.30 ≈ 48px -->
+            <text x="20"  y="100" font-family="DM Sans, sans-serif" font-size="9.5" letter-spacing="0.1em" fill="#7A756D">$3.00</text>
+            <text x="500" y="100" font-family="DM Sans, sans-serif" font-size="9.5" letter-spacing="0.1em" fill="#7A756D" text-anchor="end">$6.00</text>
+            <!-- Floor band (sage) — from $3.00 (x=20) to $4.30 (x=228) -->
+            <rect x="20"  y="60" width="208" height="40" fill="#7BAE7F" fill-opacity="0.18"/>
+            <text x="124" y="50" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="11" fill="#6A9D6E" text-anchor="middle">floor catches us</text>
+            <!-- Cap band (ink) — from $5.00 (x=340) to $6.00 (x=500) -->
+            <rect x="340" y="60" width="160" height="40" fill="#3D3A36" fill-opacity="0.06"/>
+            <text x="420" y="50" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="11" fill="#3D3A36" text-anchor="middle">ceiling holds us back</text>
+            <!-- Strike marks -->
+            <line x1="228" y1="60" x2="228" y2="100" stroke="#6A9D6E" stroke-width="1.5"/>
+            <text x="228" y="118" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="12" fill="#6A9D6E" text-anchor="middle">$4.30</text>
+            <line x1="340" y1="60" x2="340" y2="100" stroke="#3D3A36" stroke-width="1.5"/>
+            <text x="340" y="118" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="12" fill="#3D3A36" text-anchor="middle">$5.00</text>
+            <!-- October low ref ($4.35 ≈ x=236) -->
+            <line x1="236" y1="60" x2="236" y2="100" stroke="#A8A39A" stroke-width="0.7" stroke-dasharray="3 2"/>
+            <!-- Today ($4.65 ≈ x=284) — radiating sage -->
+            <circle cx="284" cy="80" r="22" fill="#7BAE7F" opacity="0.10"/>
+            <circle cx="284" cy="80" r="14" fill="#7BAE7F" opacity="0.22"/>
+            <circle cx="284" cy="80" r="7"  fill="#7BAE7F" stroke="#FFFDF7" stroke-width="2"/>
+            <text x="284" y="32" font-family="Fraunces, Georgia, serif" font-style="italic" font-weight="500" font-size="16" fill="#6A9D6E" text-anchor="middle">$4.65</text>
+            <text x="284" y="46" font-family="DM Sans, sans-serif" font-size="9" letter-spacing="0.12em" fill="#6A9D6E" text-anchor="middle">TODAY</text>
+          </svg>
+        </div>
+<div class="strike-because">$0.35 of room either way before the modeled collar would do anything.</div>
+      </article>
+
+      <article class="strike-card">
+        <div class="strike-meta">Beans · Nov '26 · 5,000 bu</div>
+        <div class="strike-strip">
+          <svg viewBox="0 0 520 130" aria-label="Soy collar strike layout: floor at $10.75, today $11.73, cap at $12.00, against the $8.00 to $14.00 settlement range.">
+            <line x1="20" y1="80" x2="500" y2="80" stroke="#C8C3BA" stroke-width="0.5"/>
+            <text x="20"  y="100" font-family="DM Sans, sans-serif" font-size="9.5" letter-spacing="0.1em" fill="#7A756D">$8.00</text>
+            <text x="500" y="100" font-family="DM Sans, sans-serif" font-size="9.5" letter-spacing="0.1em" fill="#7A756D" text-anchor="end">$14.00</text>
+            <!-- $8 to $14 → $1 ≈ 80px. Floor at $10.75 (x=240); cap at $12 (x=340); today at $11.73 (x=319); ref at $10.80 (x=244) -->
+            <rect x="20"  y="60" width="220" height="40" fill="#7BAE7F" fill-opacity="0.18"/>
+            <text x="120" y="50" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="11" fill="#6A9D6E" text-anchor="middle">floor catches us</text>
+            <rect x="340" y="60" width="160" height="40" fill="#3D3A36" fill-opacity="0.06"/>
+            <text x="420" y="50" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="11" fill="#3D3A36" text-anchor="middle">ceiling holds us back</text>
+            <line x1="240" y1="60" x2="240" y2="100" stroke="#6A9D6E" stroke-width="1.5"/>
+            <text x="240" y="118" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="12" fill="#6A9D6E" text-anchor="middle">$10.75</text>
+            <line x1="340" y1="60" x2="340" y2="100" stroke="#3D3A36" stroke-width="1.5"/>
+            <text x="340" y="118" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="12" fill="#3D3A36" text-anchor="middle">$12.00</text>
+            <line x1="244" y1="60" x2="244" y2="100" stroke="#A8A39A" stroke-width="0.7" stroke-dasharray="3 2"/>
+            <circle cx="319" cy="80" r="22" fill="#7BAE7F" opacity="0.10"/>
+            <circle cx="319" cy="80" r="14" fill="#7BAE7F" opacity="0.22"/>
+            <circle cx="319" cy="80" r="7"  fill="#7BAE7F" stroke="#FFFDF7" stroke-width="2"/>
+            <text x="319" y="32" font-family="Fraunces, Georgia, serif" font-style="italic" font-weight="500" font-size="16" fill="#6A9D6E" text-anchor="middle">$11.73</text>
+            <text x="319" y="46" font-family="DM Sans, sans-serif" font-size="9" letter-spacing="0.12em" fill="#6A9D6E" text-anchor="middle">TODAY</text>
+          </svg>
+        </div>
+<div class="strike-because">Beans are $0.27 below where the ceiling would kick in — closer to the cap than corn is.</div>
+      </article>
+
+    </div>
+
+    <!-- ── Three scenarios ── -->
+    <h2 class="ledger-h ledger-h-2">What would happen at harvest</h2>
+    <p class="ledger-sub">Three corn closing prices and what the modeled collar would do at each.</p>
+
+    <div class="scenarios">
+
+      <article class="scenario">
+        <div class="scenario-tag">Best case · weather rally</div>
+        <div class="scenario-headline">Corn closes at <em>$5.50</em></div>
+        <div class="scenario-payoff neg">−$15,000</div>
+<div class="scenario-because">Ceiling kicks in; we'd give up $0.50/bu of upside on 30,000 bu. We'd have sold the cash crop at this price anyway, so we still come out ahead — just less than without the cap.</div>
+      </article>
+
+      <article class="scenario">
+        <div class="scenario-tag">Most likely · stays between floor &amp; ceiling</div>
+        <div class="scenario-headline">Corn closes at <em>$4.65</em></div>
+        <div class="scenario-payoff">$0</div>
+<div class="scenario-because">Collar stays asleep. We sell at the market price; nothing pays out, nothing given up.</div>
+      </article>
+
+      <article class="scenario">
+        <div class="scenario-tag">Worst case · harvest crash</div>
+        <div class="scenario-headline">Corn closes at <em>$3.50</em></div>
+        <div class="scenario-payoff">+$24,000</div>
+<div class="scenario-because">Floor kicks in. We'd collect $0.80/bu on 30,000 bu — exactly what the collar is for.</div>
+      </article>
+
+    </div>
+
+  </div>
+</section>
+
+<!-- ================== BACK OF BOOK ================== -->
+<section class="close">
+  <div class="wordmark">freis<span class="out"> · farm</span></div>
+</section>
+<div class="foot">
+  <span>Internal Brief · Apr 2026</span>
+  <span>What-if model · Not financial advice</span>
+</div>
+
+<!-- ================== TRADE ORDER WIDGET ================== -->
+<button class="trade-trigger" id="trade-trigger" type="button" aria-label="Open the model adjustment widget">
+  <span>Tune the model</span>
+</button>
+
+<aside class="trade-drawer" id="trade-drawer" aria-hidden="true" role="dialog" aria-label="Tune the collar model">
+  <div class="trade-head">
+    <div class="trade-eyebrow">Tune the model</div>
+    <button class="trade-close" id="trade-close" type="button" aria-label="Close">×</button>
+  </div>
+
+  <h3 class="trade-h">Tune the <em>what-if</em>.</h3>
+  <p class="trade-sub">Move a price level, change bushels — see how the modeled collar changes. (This doesn't place a real order.)</p>
+
+  <div class="trade-field">
+    <label class="trade-label">Crop</label>
+    <div class="crop-toggle" id="crop-toggle">
+      <button data-crop="corn" class="active" type="button">Corn (Dec '26)</button>
+      <button data-crop="soy" type="button">Beans (Nov '26)</button>
+    </div>
+  </div>
+
+  <div class="trade-field">
+    <label class="trade-label">Action</label>
+    <div class="roll-options" id="roll-options">
+      <button class="roll-option active" data-roll="hold" type="button">
+        <span class="roll-option-l">Do nothing</span>
+        <span class="roll-option-r">Recommended today</span>
+      </button>
+      <button class="roll-option" data-roll="up" type="button">
+        <span class="roll-option-l">Raise the floor</span>
+        <span class="roll-option-r">$4.30 → $4.50</span>
+      </button>
+      <button class="roll-option" data-roll="up-cap" type="button">
+        <span class="roll-option-l">Raise the ceiling</span>
+        <span class="roll-option-r">$5.00 → $5.25</span>
+      </button>
+      <button class="roll-option" data-roll="add" type="button">
+        <span class="roll-option-l">Add bushels</span>
+        <span class="roll-option-r">+5,000 bu</span>
+      </button>
+      <button class="roll-option" data-roll="close" type="button">
+        <span class="roll-option-l">Close it out</span>
+        <span class="roll-option-r">Unwind both sides</span>
+      </button>
+    </div>
+  </div>
+
+  <a class="trade-cta" href="tel:+13095559876">
+    <span class="trade-cta-l">Call broker to execute</span>
+    <span class="trade-cta-num">(309) 555-9876</span>
+  </a>
+
+  <div class="trade-foot">
+    Cost confirmed by broker before any change · Logged after the order fills
+  </div>
+</aside>
+
+<div class="trade-scrim" id="trade-scrim" aria-hidden="true"></div>
+
+<script>
+/* ─────────────────────────────────────────────────────────────
+   COLLAR DATA + PAYOFF MATH (preserved from prior hedge.html)
+   ───────────────────────────────────────────────────────────── */
+const COLLAR = {
+  corn: {
+    label: 'Corn (Dec 2026)', symbol: 'ZCZ26',
+    total_bu: 33000, hedged_bu: 30000, contracts: 6,
+    ref_price: 4.35, put_strike: 4.30, call_strike: 5.00,
+    today_cash: 4.65,
+    triggers: [
+      { label: 'T1 Feb–Mar', price: 4.74 },
+      { label: 'T2 Apr–May', price: 4.83 },
+      { label: 'T3 June peak', price: 4.87 },
+    ],
+    price_min: 3.00, price_max: 6.00,
+    headline: 'Corn safety net · floor <em>$4.30</em> · ceiling <em>$5.00</em> · 30,000 bu',
+  },
+  soy: {
+    label: 'Soybeans (Nov 2026)', symbol: 'ZSX26',
+    total_bu: 6700, hedged_bu: 5000, contracts: 1,
+    ref_price: 10.80, put_strike: 10.75, call_strike: 12.00,
+    today_cash: 11.73,
+    triggers: [
+      { label: 'T1 Feb–Mar', price: 11.56 },
+      { label: 'T2 Apr–May', price: 11.77 },
+      { label: 'T3 Jun–Jul', price: 11.88 },
+      { label: 'T4 Jul–Aug', price: 11.66 },
+    ],
+    price_min: 8.00, price_max: 14.00,
+    headline: 'Bean safety net · floor <em>$10.75</em> · ceiling <em>$12.00</em> · 5,000 bu',
+  }
+};
+let current = 'corn';
+
+function unhedgedPnL(p, s) { return (p - s.ref_price) * s.total_bu; }
+function hedgedPnL(p, s) {
+  const cash = (p - s.ref_price) * s.total_bu;
+  const putPay  = Math.max(s.put_strike - p, 0) * s.hedged_bu;
+  const callPay = -Math.max(p - s.call_strike, 0) * s.hedged_bu;
+  return cash + putPay + callPay;
+}
+function fmtUSD(v) {
+  const sign = v < 0 ? '−' : '';
+  const abs = Math.abs(v);
+  if (abs >= 1000) return sign + '$' + abs.toLocaleString('en-US', { maximumFractionDigits: 0 });
+  return sign + '$' + abs.toFixed(2);
+}
+function fmtUSDCompact(v) {
+  const sign = v < 0 ? '−' : '';
+  const abs = Math.abs(v);
+  if (abs >= 1_000_000) return sign + '$' + (abs / 1_000_000).toFixed(1) + 'M';
+  if (abs >= 10_000)   return sign + '$' + Math.round(abs / 1000) + 'k';
+  if (abs >= 1000)     return sign + '$' + (abs / 1000).toFixed(1) + 'k';
+  return sign + '$' + Math.round(abs);
+}
+function fmtPrice(v) { return '$' + v.toFixed(2); }
+
+function drawChart(s, curPrice) {
+  const svg = document.getElementById('d-chart');
+  svg.innerHTML = '';
+  const ns = 'http://www.w3.org/2000/svg';
+  const el = (tag, attrs, text) => {
+    const e = document.createElementNS(ns, tag);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    if (text !== undefined) e.textContent = text;
+    return e;
+  };
+
+  const narrow = window.matchMedia && window.matchMedia('(max-width: 559px)').matches;
+  const W = 900;
+  // Taller chart so floor/ceiling bands and the payoff lines have real room.
+  const H = narrow ? 800 : 580;
+  const margin = narrow
+    ? { top: 72, right: 32, bottom: 130, left: 160 }
+    : { top: 44, right: 36, bottom: 70, left: 96 };
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  const yFmt = narrow ? fmtUSDCompact : fmtUSD;
+  // Internal SVG fonts. On narrow viewports the SVG is scaled down ~3×;
+  // we compensate by drawing internal text much larger so labels stay
+  // legible. (At iPhone width 375px and viewBox 900, scale ≈ 0.42×.)
+  const FS = narrow
+    ? { tick: 32, axisTitle: 36, strike: 32 }
+    : { tick: 11, axisTitle: 12, strike: 12 };
+  const pw = W - margin.left - margin.right;
+  const ph = H - margin.top - margin.bottom;
+
+  // Sample
+  const xs = [];
+  const step = (s.price_max - s.price_min) / 200;
+  for (let p = s.price_min; p <= s.price_max + 1e-9; p += step) xs.push(p);
+  const uh = xs.map(p => unhedgedPnL(p, s));
+  const hd = xs.map(p => hedgedPnL(p, s));
+  const yMin = Math.min(...uh, ...hd);
+  const yMax = Math.max(...uh, ...hd);
+  const yPad = (yMax - yMin) * 0.08;
+  const y0 = yMin - yPad, y1 = yMax + yPad;
+  const xScale = p => margin.left + (p - s.price_min) / (s.price_max - s.price_min) * pw;
+  const yScale = v => margin.top + (1 - (v - y0) / (y1 - y0)) * ph;
+
+  // Bands
+  svg.appendChild(el('rect', {
+    x: xScale(s.price_min), y: margin.top,
+    width: xScale(s.put_strike) - xScale(s.price_min), height: ph,
+    fill: '#7BAE7F', 'fill-opacity': 0.13
+  }));
+  svg.appendChild(el('rect', {
+    x: xScale(s.call_strike), y: margin.top,
+    width: xScale(s.price_max) - xScale(s.call_strike), height: ph,
+    fill: '#3D3A36', 'fill-opacity': 0.05
+  }));
+
+  // Axes (range frame)
+  svg.appendChild(el('line', { x1: margin.left, y1: margin.top + ph, x2: margin.left + pw, y2: margin.top + ph, stroke: '#3D3A36', 'stroke-width': 0.5 }));
+  svg.appendChild(el('line', { x1: margin.left, y1: margin.top, x2: margin.left, y2: margin.top + ph, stroke: '#3D3A36', 'stroke-width': 0.5 }));
+
+  // Y rules + labels
+  const yTicks = narrow ? 4 : 5;
+  for (let i = 0; i <= yTicks; i++) {
+    const v = y0 + (y1 - y0) * i / yTicks;
+    const y = yScale(v);
+    svg.appendChild(el('line', { x1: margin.left, y1: y, x2: margin.left + pw, y2: y, stroke: '#E2DDD5', 'stroke-width': 0.3 }));
+    svg.appendChild(el('text', {
+      x: margin.left - 8, y: y + (FS.tick * 0.35), 'text-anchor': 'end',
+      'font-size': FS.tick, fill: '#7A756D',
+      'font-family': 'DM Sans, sans-serif',
+      'font-variant-numeric': 'tabular-nums'
+    }, yFmt(v)));
+  }
+  if (y0 < 0 && y1 > 0) {
+    const zy = yScale(0);
+    svg.appendChild(el('line', { x1: margin.left, y1: zy, x2: margin.left + pw, y2: zy, stroke: '#7A756D', 'stroke-width': 0.5, 'stroke-dasharray': '2 2' }));
+  }
+
+  // X axis ticks
+  const xTicks = narrow ? 4 : 6;
+  for (let i = 0; i <= xTicks; i++) {
+    const p = s.price_min + (s.price_max - s.price_min) * i / xTicks;
+    const x = xScale(p);
+    svg.appendChild(el('line', { x1: x, y1: margin.top + ph, x2: x, y2: margin.top + ph + 4, stroke: '#7A756D', 'stroke-width': 0.5 }));
+    svg.appendChild(el('text', {
+      x, y: margin.top + ph + (narrow ? 30 : 18), 'text-anchor': 'middle',
+      'font-size': FS.tick, fill: '#7A756D',
+      'font-family': 'DM Sans, sans-serif',
+      'font-variant-numeric': 'tabular-nums'
+    }, fmtPrice(p)));
+  }
+  svg.appendChild(el('text', {
+    x: margin.left + pw / 2, y: H - (narrow ? 14 : 12), 'text-anchor': 'middle',
+    'font-size': FS.axisTitle, fill: '#3D3A36',
+    'font-family': 'Fraunces, Georgia, serif', 'font-style': 'italic'
+  }, narrow ? 'Settlement price ($/bu)' : s.symbol + ' settlement price ($ / bu)'));
+
+  // Strike rules
+  const fX = xScale(s.put_strike);
+  const cX = xScale(s.call_strike);
+  svg.appendChild(el('line', { x1: fX, y1: margin.top, x2: fX, y2: margin.top + ph, stroke: '#6A9D6E', 'stroke-width': 0.8, 'stroke-dasharray': '3 2', opacity: 0.7 }));
+  svg.appendChild(el('line', { x1: cX, y1: margin.top, x2: cX, y2: margin.top + ph, stroke: '#3D3A36', 'stroke-width': 0.8, 'stroke-dasharray': '3 2', opacity: 0.55 }));
+
+  // Series paths
+  const pathFrom = (prices, fn) => prices.map((p, i) => (i === 0 ? 'M ' : 'L ') + xScale(p).toFixed(1) + ' ' + yScale(fn(p, s)).toFixed(1)).join(' ');
+  svg.appendChild(el('path', { d: pathFrom(xs, unhedgedPnL), fill: 'none', stroke: '#7A756D', 'stroke-width': 1.0, 'stroke-dasharray': '5 3' }));
+  svg.appendChild(el('path', { d: pathFrom(xs, hedgedPnL), fill: 'none', stroke: '#3D3A36', 'stroke-width': 1.4 }));
+  const floorXs = xs.filter(p => p <= s.put_strike);
+  if (floorXs.length > 1) {
+    svg.appendChild(el('path', { d: pathFrom(floorXs, hedgedPnL), fill: 'none', stroke: '#7BAE7F', 'stroke-width': 2.0 }));
+  }
+
+  // Current price marker — radiates
+  const curX = xScale(curPrice);
+  const curUH = unhedgedPnL(curPrice, s);
+  const curHD = hedgedPnL(curPrice, s);
+  svg.appendChild(el('line', { x1: curX, y1: margin.top, x2: curX, y2: margin.top + ph, stroke: '#3D3A36', 'stroke-width': 0.5, opacity: 0.4 }));
+  svg.appendChild(el('circle', { cx: curX, cy: yScale(curUH), r: 4, fill: '#FFFDF7', stroke: '#7A756D', 'stroke-width': 1.5 }));
+  // Hedged dot with halo
+  svg.appendChild(el('circle', { cx: curX, cy: yScale(curHD), r: 18, fill: '#7BAE7F', opacity: 0.10 }));
+  svg.appendChild(el('circle', { cx: curX, cy: yScale(curHD), r: 11, fill: '#7BAE7F', opacity: 0.22 }));
+  svg.appendChild(el('circle', { cx: curX, cy: yScale(curHD), r: 6, fill: '#7BAE7F', stroke: '#FFFDF7', 'stroke-width': 1.5 }));
+
+  // Strike labels (drawn last so they sit on top, never obstructed)
+  svg.appendChild(el('text', {
+    x: fX, y: margin.top - (narrow ? 14 : 8), 'text-anchor': 'middle',
+    'font-family': 'Fraunces, Georgia, serif', 'font-style': 'italic',
+    'font-size': FS.strike, fill: '#6A9D6E', 'font-weight': 500
+  }, 'floor ' + fmtPrice(s.put_strike)));
+  svg.appendChild(el('text', {
+    x: cX, y: margin.top - (narrow ? 14 : 8), 'text-anchor': 'middle',
+    'font-family': 'Fraunces, Georgia, serif', 'font-style': 'italic',
+    'font-size': FS.strike, fill: '#3D3A36', 'font-weight': 500
+  }, 'cap ' + fmtPrice(s.call_strike)));
+}
+
+function updateStats(s, price) {
+  const uh = unhedgedPnL(price, s);
+  const hd = hedgedPnL(price, s);
+  const delta = hd - uh;
+  const uhEl = document.getElementById('d-uh');
+  uhEl.textContent = fmtUSD(uh);
+  uhEl.className = 'v ' + (uh >= 0 ? 'pos' : 'neg');
+  const hdEl = document.getElementById('d-hd');
+  hdEl.textContent = fmtUSD(hd);
+  hdEl.className = 'v ' + (hd >= 0 ? 'pos' : 'neg');
+  const dEl = document.getElementById('d-delta');
+  dEl.textContent = (delta >= 0 ? '+' : '') + fmtUSD(delta);
+  dEl.className = 'v ' + (delta >= 0 ? 'pos' : 'neg');
+
+  let detail;
+  if (price < s.put_strike)      detail = 'Floor kicks in — collects ' + fmtUSD((s.put_strike - price) * s.hedged_bu) + ' on ' + s.hedged_bu.toLocaleString() + ' bu';
+  else if (price > s.call_strike) detail = 'Ceiling kicks in — gives up ' + fmtUSD((price - s.call_strike) * s.hedged_bu) + ' on ' + s.hedged_bu.toLocaleString() + ' bu';
+  else                            detail = 'Between floor and ceiling — collar asleep, cash sale at market';
+  document.getElementById('d-delta-d').textContent = detail;
+  document.getElementById('d-uh-d').textContent =
+    s.total_bu.toLocaleString() + ' bu at ' + fmtPrice(price) + ' (vs reference ' + fmtPrice(s.ref_price) + ')';
+  document.getElementById('d-hd-d').textContent =
+    'cash sale + modeled collar covering ' + s.hedged_bu.toLocaleString() + ' bu';
+}
+
+function sliderToPrice(val, s) { return s.price_min + (s.price_max - s.price_min) * (val / 100); }
+function priceToSlider(p, s)   { return Math.round((p - s.price_min) / (s.price_max - s.price_min) * 100); }
+
+function render() {
+  const s = COLLAR[current];
+  document.getElementById('d-headline').innerHTML = s.headline;
+  const slider = document.getElementById('d-slider');
+  const price = sliderToPrice(+slider.value, s);
+  document.getElementById('d-price').textContent = fmtPrice(price);
+  document.getElementById('d-min').textContent = fmtPrice(s.price_min);
+  document.getElementById('d-max').textContent = fmtPrice(s.price_max);
+  drawChart(s, price);
+  updateStats(s, price);
+}
+
+function selectCollar(key) {
+  current = key;
+  document.querySelectorAll('#hedge-strip .lot-row').forEach(r =>
+    r.classList.toggle('active', r.dataset.collar === key));
+  // Snap slider to the today_cash position when switching collars
+  const s = COLLAR[key];
+  document.getElementById('d-slider').value = priceToSlider(s.today_cash, s);
+  // Sync trade widget crop
+  document.querySelectorAll('#crop-toggle button').forEach(b =>
+    b.classList.toggle('active', b.dataset.crop === key));
+  render();
+}
+
+document.getElementById('hedge-strip').addEventListener('click', (e) => {
+  const row = e.target.closest('.lot-row');
+  if (!row) return;
+  selectCollar(row.dataset.collar);
+});
+document.getElementById('d-slider').addEventListener('input', render);
+
+selectCollar('corn');
+
+/* ─────────────────────────────────────────────────────────────
+   TRADE WIDGET
+   ───────────────────────────────────────────────────────────── */
+function openTrade() {
+  document.getElementById('trade-drawer').classList.add('open');
+  document.getElementById('trade-scrim').classList.add('open');
+  document.getElementById('trade-drawer').setAttribute('aria-hidden', 'false');
+}
+function closeTrade() {
+  document.getElementById('trade-drawer').classList.remove('open');
+  document.getElementById('trade-scrim').classList.remove('open');
+  document.getElementById('trade-drawer').setAttribute('aria-hidden', 'true');
+}
+document.getElementById('trade-trigger').addEventListener('click', openTrade);
+document.getElementById('trade-close').addEventListener('click', closeTrade);
+document.getElementById('trade-scrim').addEventListener('click', closeTrade);
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeTrade(); });
+
+document.getElementById('crop-toggle').addEventListener('click', (e) => {
+  const btn = e.target.closest('button');
+  if (!btn) return;
+  selectCollar(btn.dataset.crop);
+});
+document.getElementById('roll-options').addEventListener('click', (e) => {
+  const btn = e.target.closest('.roll-option');
+  if (!btn) return;
+  document.querySelectorAll('#roll-options .roll-option').forEach(b => b.classList.toggle('active', b === btn));
+});
+
+// Re-render on resize
+let raf = 0;
+window.addEventListener('resize', () => {
+  if (raf) cancelAnimationFrame(raf);
+  raf = requestAnimationFrame(() => { raf = 0; render(); });
+});
+</script>
+
+</body>
+</html>
