@@ -105,11 +105,56 @@ body.auth-locked { overflow: hidden; }
   outline: none;
 }
 .auth-input:focus { border-color: var(--sage-deep); }
+.auth-input-phone {
+  /* phone is wider + uses text alignment, not the centered code-input look */
+  width: 280px;
+  letter-spacing: 0;
+  text-align: left;
+  font-size: 18px;
+  padding: 12px 14px;
+  font-family: var(--font-text);
+}
+.auth-input-otp {
+  letter-spacing: 12px;
+  width: 240px;
+}
 .auth-error {
   font-size: 12px; color: var(--danger);
   margin-top: 12px; min-height: 16px;
   font-family: var(--font-mono);
 }
+.auth-submit {
+  display: block;
+  margin: 14px auto 0;
+  background: var(--ink-2);
+  color: var(--cream);
+  border: 0;
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-family: var(--font-text);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+}
+.auth-submit:hover:not(:disabled) { background: var(--sage-deep); }
+.auth-submit:disabled { opacity: 0.5; cursor: wait; }
+.auth-link {
+  display: block;
+  margin: 14px auto 0;
+  background: transparent;
+  border: 0;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 12px;
+  color: var(--slate);
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: var(--rule);
+  text-underline-offset: 3px;
+}
+.auth-link:hover { color: var(--ink-2); text-decoration-color: var(--sage-deep); }
+.auth-stage[hidden] { display: none; }
 
 /* ---------- nav ---------- */
 .shell-nav {
@@ -351,49 +396,260 @@ footer.shell-foot {
 </head>
 <body>
 
-<!-- AUTH GATE — Garage code, preserved across all pages -->
+<!-- AUTH GATE — Phone OTP (primary) or Garage code (fallback). 30-day session. -->
 <div class="auth-gate" id="auth-gate" role="dialog" aria-modal="true" aria-labelledby="auth-title">
   <div class="auth-card">
     <span class="auth-eyebrow">freis <em>·</em> farm</span>
-    <h2 class="auth-title" id="auth-title">Garage code</h2>
-    <p class="auth-tip">Same four digits as the door.</p>
-    <input class="auth-input" id="auth-input" type="text" inputmode="numeric"
-           pattern="\d*" maxlength="4" autocomplete="off"
-           aria-label="Four-digit garage code" autofocus />
-    <div class="auth-error" id="auth-error" aria-live="polite"></div>
+
+    <!-- Stage 1: Phone -->
+    <div class="auth-stage" data-stage="phone">
+      <h2 class="auth-title" id="auth-title">Sign in by text</h2>
+      <p class="auth-tip">We'll send you a 6-digit code.</p>
+      <input class="auth-input auth-input-phone" id="auth-phone" type="tel" inputmode="tel"
+             autocomplete="tel" placeholder="(630) 247-9950"
+             aria-label="Your phone number" />
+      <button type="button" class="auth-submit" id="auth-send-code">Send code</button>
+      <div class="auth-error" id="auth-error-phone" aria-live="polite"></div>
+      <button type="button" class="auth-link" data-go="garage">Use garage code instead</button>
+    </div>
+
+    <!-- Stage 2: OTP -->
+    <div class="auth-stage" data-stage="otp" hidden>
+      <h2 class="auth-title">Enter your code</h2>
+      <p class="auth-tip" id="auth-otp-tip">We sent a 6-digit code.</p>
+      <input class="auth-input auth-input-otp" id="auth-otp" type="text" inputmode="numeric"
+             pattern="\d*" maxlength="6" autocomplete="one-time-code"
+             aria-label="Six-digit code" />
+      <div class="auth-error" id="auth-error-otp" aria-live="polite"></div>
+      <button type="button" class="auth-link" id="auth-otp-resend">Send another code</button>
+      <button type="button" class="auth-link" data-go="phone">Use a different number</button>
+    </div>
+
+    <!-- Stage 3: Garage code (fallback) -->
+    <div class="auth-stage" data-stage="garage" hidden>
+      <h2 class="auth-title">Garage code</h2>
+      <p class="auth-tip">Same four digits as the door.</p>
+      <input class="auth-input" id="auth-garage" type="text" inputmode="numeric"
+             pattern="\d*" maxlength="4" autocomplete="off"
+             aria-label="Four-digit garage code" />
+      <div class="auth-error" id="auth-error-garage" aria-live="polite"></div>
+      <button type="button" class="auth-link" data-go="phone">Sign in by text instead</button>
+    </div>
   </div>
 </div>
+
 <script>
-(function() {
-  const KEY = 'freis-farm-garage';
+/* ─────────────────────────────────────────────────────────────
+   AUTH GATE — Phone OTP (primary) or Garage code (fallback)
+   ─────────────────────────────────────────────────────────────
+   Phone path:
+     POST /auth/sms-start   → bundle{nonce, expires_at, hmac}
+     POST /auth/sms-verify  → {token, expires_at} (30-day session)
+   Garage path:
+     POST /auth/login       → {token, expires_at} (30-day session)
+
+   Both paths land at the same localStorage shape so /auth/verify and
+   the unlock check don't care which method the user used.
+   ───────────────────────────────────────────────────────────── */
+window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.jnimbles03.workers.dev";
+(function () {
+  const STORAGE_KEY = 'freis-farm-auth-v2';
+  const TTL_FALLBACK_MS = 30 * 24 * 60 * 60 * 1000;
   const gate = document.getElementById('auth-gate');
   if (!gate) return;
-  if (sessionStorage.getItem(KEY) === '1') { gate.remove(); return; }
+
+  function readStored() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return null;
+      const obj = JSON.parse(raw);
+      if (!obj || !obj.token || !obj.expires_at) return null;
+      if (Date.parse(obj.expires_at) <= Date.now()) {
+        localStorage.removeItem(STORAGE_KEY);
+        return null;
+      }
+      return obj;
+    } catch { return null; }
+  }
+  function storeAuth(token, expires_at, phone) {
+    const blob = { token, expires_at };
+    if (phone) blob.phone = phone;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(blob));
+  }
+  function dismiss() {
+    gate.classList.add('out');
+    setTimeout(() => {
+      gate.remove();
+      document.body.classList.remove('auth-locked');
+    }, 350);
+  }
+  async function backgroundVerify(stored) {
+    if (!window.WORKER_BASE) return;
+    try {
+      const r = await fetch(window.WORKER_BASE + '/auth/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: stored.token, expires_at: stored.expires_at }),
+      });
+      const j = await r.json().catch(() => ({}));
+      if (j && j.ok === false) localStorage.removeItem(STORAGE_KEY);
+    } catch { /* offline — keep the local token */ }
+  }
+
+  // ── If local token still good, let them in immediately. ──
+  const stored = readStored();
+  if (stored) {
+    gate.remove();
+    backgroundVerify(stored);
+    return;
+  }
+
   document.body.classList.add('auth-locked');
-  const input = document.getElementById('auth-input');
-  const err   = document.getElementById('auth-error');
-  setTimeout(() => input?.focus(), 80);
-  input?.addEventListener('input', () => {
-    err.textContent = '';
-    input.value = input.value.replace(/\D/g, '');
-    if (input.value.length !== 4) return;
-    if (input.value === '8467') {
-      sessionStorage.setItem(KEY, '1');
-      gate.classList.add('out');
-      setTimeout(() => {
-        gate.remove();
-        document.body.classList.remove('auth-locked');
-      }, 350);
-    } else {
-      gate.classList.add('shake');
-      err.textContent = 'Wrong code. Try again.';
-      setTimeout(() => {
-        gate.classList.remove('shake');
-        input.value = '';
-        input.focus();
-      }, 400);
+
+  // ── Stage manager ──
+  const stages = {};
+  gate.querySelectorAll('.auth-stage').forEach(s => stages[s.dataset.stage] = s);
+  function go(name) {
+    Object.keys(stages).forEach(k => stages[k].hidden = (k !== name));
+    // focus first input in the new stage
+    setTimeout(() => stages[name].querySelector('input')?.focus(), 50);
+  }
+  gate.querySelectorAll('.auth-link[data-go]').forEach(b =>
+    b.addEventListener('click', () => go(b.dataset.go)));
+
+  // ── Helpers ──
+  function normalizePhone(raw) {
+    let s = (raw || '').replace(/[^\d+]/g, '');
+    if (!s) return '';
+    if (!s.startsWith('+')) {
+      // assume US if 10 or 11 digits
+      if (s.length === 10) s = '+1' + s;
+      else if (s.length === 11 && s.startsWith('1')) s = '+' + s;
+      else s = '+' + s;
     }
+    return /^\+\d{10,15}$/.test(s) ? s : '';
+  }
+  function shake(stage, errEl, msg) {
+    gate.classList.add('shake');
+    errEl.textContent = msg;
+    setTimeout(() => gate.classList.remove('shake'), 400);
+  }
+
+  // ── Phone-OTP path ──
+  let pendingPhone = null;
+  let pendingBundle = null;  // {nonce, expires_at, hmac}
+
+  async function sendCode() {
+    const errEl = document.getElementById('auth-error-phone');
+    errEl.textContent = '';
+    const raw = document.getElementById('auth-phone').value;
+    const phone = normalizePhone(raw);
+    if (!phone) return shake('phone', errEl, 'Enter a valid phone number.');
+    if (!window.WORKER_BASE) return shake('phone', errEl, 'SMS sign-in not configured.');
+    document.getElementById('auth-send-code').disabled = true;
+    try {
+      const r = await fetch(window.WORKER_BASE + '/auth/sms-start', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone }),
+      });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok || !j.ok) {
+        return shake('phone', errEl, j.error || 'Could not send code.');
+      }
+      pendingPhone = phone;
+      pendingBundle = { nonce: j.nonce, expires_at: j.expires_at, hmac: j.hmac };
+      document.getElementById('auth-otp-tip').textContent =
+        'Sent to ' + phone.replace(/^\+1(\d{3})(\d{3})(\d{4})$/, '($1) $2-$3') + '.';
+      go('otp');
+    } catch (e) {
+      shake('phone', errEl, 'Network error. Try again.');
+    } finally {
+      document.getElementById('auth-send-code').disabled = false;
+    }
+  }
+
+  async function verifyCode(code) {
+    const errEl = document.getElementById('auth-error-otp');
+    errEl.textContent = '';
+    if (!pendingBundle || !pendingPhone) return shake('otp', errEl, 'Session expired. Try again.');
+    try {
+      const r = await fetch(window.WORKER_BASE + '/auth/sms-verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          phone: pendingPhone,
+          code,
+          nonce: pendingBundle.nonce,
+          expires_at: pendingBundle.expires_at,
+          hmac: pendingBundle.hmac,
+        }),
+      });
+      const j = await r.json().catch(() => ({}));
+      if (r.ok && j.ok && j.token && j.expires_at) {
+        storeAuth(j.token, j.expires_at, pendingPhone);
+        dismiss();
+        return;
+      }
+      shake('otp', errEl, j.error || 'Wrong code. Try again.');
+      const inp = document.getElementById('auth-otp');
+      setTimeout(() => { inp.value = ''; inp.focus(); }, 400);
+    } catch {
+      shake('otp', errEl, 'Network error. Try again.');
+    }
+  }
+
+  document.getElementById('auth-send-code').addEventListener('click', sendCode);
+  document.getElementById('auth-phone').addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); sendCode(); }
   });
+  document.getElementById('auth-otp-resend').addEventListener('click', sendCode);
+  document.getElementById('auth-otp').addEventListener('input', e => {
+    document.getElementById('auth-error-otp').textContent = '';
+    e.target.value = e.target.value.replace(/\D/g, '');
+    if (e.target.value.length === 6) verifyCode(e.target.value);
+  });
+
+  // ── Garage-code path (fallback) ──
+  async function submitGarage(code) {
+    const errEl = document.getElementById('auth-error-garage');
+    errEl.textContent = '';
+    if (window.WORKER_BASE) {
+      try {
+        const r = await fetch(window.WORKER_BASE + '/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code }),
+        });
+        const j = await r.json().catch(() => ({}));
+        if (r.ok && j.ok && j.token && j.expires_at) {
+          storeAuth(j.token, j.expires_at);
+          dismiss();
+          return;
+        }
+        return shake('garage', errEl, r.status === 401 ? 'Wrong code. Try again.' : 'Login failed.');
+      } catch { /* fall through to stub */ }
+    }
+    // Offline / no-worker stub
+    if (code === '8467') {
+      storeAuth('stub-' + Date.now(), new Date(Date.now() + TTL_FALLBACK_MS).toISOString());
+      dismiss();
+    } else {
+      shake('garage', errEl, 'Wrong code. Try again.');
+    }
+    setTimeout(() => {
+      const inp = document.getElementById('auth-garage');
+      inp.value = ''; inp.focus();
+    }, 400);
+  }
+  document.getElementById('auth-garage').addEventListener('input', e => {
+    document.getElementById('auth-error-garage').textContent = '';
+    e.target.value = e.target.value.replace(/\D/g, '');
+    if (e.target.value.length === 4) submitGarage(e.target.value);
+  });
+
+  // ── Boot: show phone stage ──
+  go('phone');
 })();
 </script>
 

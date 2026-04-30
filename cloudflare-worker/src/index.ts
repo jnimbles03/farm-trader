@@ -1,4 +1,4 @@
-// Freis Farm Worker — TextBelt reply webhook + draft-order OTP submit.
+// Freis Farm Worker — TextBelt reply webhook + draft-order OTP submit + auth gate.
 //
 // Routes:
 //   GET  /                   health check
@@ -6,6 +6,15 @@
 //   POST /orders/start       mints 6-digit code, SMS to whitelisted phone,
 //                            returns HMAC-signed nonce/expiry. Stateless.
 //   POST /orders/submit      verifies HMAC + code, fires order_draft dispatch
+//   POST /auth/login         takes {code}, checks against GARAGE_CODE secret,
+//                            returns HMAC-signed token good for 30 days
+//   POST /auth/verify        takes {token, expires_at}, returns {ok}
+//   POST /auth/sms-start     takes {phone}, validates against AUTH_PHONES,
+//                            mints 6-digit OTP, sends via TextBelt, returns
+//                            HMAC-signed {nonce, expires_at, hmac}.
+//   POST /auth/sms-verify    takes {phone, code, nonce, expires_at, hmac},
+//                            verifies, returns 30-day session token (same
+//                            shape as /auth/login).
 //
 // HMAC binds {code | phone | payload_hash | nonce | expires_at} so the server
 // can verify a returning code without remembering anything between requests.
@@ -15,6 +24,9 @@
 // Required secrets (set via `wrangler secret put`):
 //   TEXTBELT_KEY  — paid TextBelt key; doubles as HMAC secret
 //   GITHUB_TOKEN  — fine-grained PAT, Contents + Actions r/w on farm-trader
+//   GARAGE_CODE   — 4-digit garage code that gates the dashboard (legacy)
+//   AUTH_PHONES   — comma-separated E.164 phones allowed to log in via SMS,
+//                   e.g. "+16302479950,+16305551234"
 //
 // Required vars (set in wrangler.toml under [vars]):
 //   GITHUB_REPO   — "owner/name", e.g. "jnimbles03/farm-trader"
@@ -23,7 +35,16 @@ export interface Env {
   TEXTBELT_KEY: string;
   GITHUB_TOKEN: string;
   GITHUB_REPO: string;
+  GARAGE_CODE:  string;
+  AUTH_PHONES:  string;
 }
+
+// Auth token TTL — how long a logged-in browser stays unlocked.
+const AUTH_TTL_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
+
+// SMS OTP TTL — same as the trade widget. Long enough to read + type 6 digits,
+// short enough that intercepted codes age out before they're useful.
+const AUTH_OTP_TTL_MS = 5 * 60 * 1000;
 
 interface TextBeltReply {
   textId?: string;
@@ -94,9 +115,234 @@ export default {
     if (url.pathname === "/orders/submit") {
       return ordersSubmit(req, env);
     }
+    if (url.pathname === "/auth/login") {
+      return authLogin(req, env);
+    }
+    if (url.pathname === "/auth/verify") {
+      return authVerify(req, env);
+    }
+    if (url.pathname === "/auth/sms-start") {
+      return authSmsStart(req, env);
+    }
+    if (url.pathname === "/auth/sms-verify") {
+      return authSmsVerify(req, env);
+    }
     return textbeltReply(req, env);
   },
 };
+
+// ---------------------------------------------------------------------------
+// /auth/sms-start — phone whitelist check, mint OTP, send SMS, return bundle
+// ---------------------------------------------------------------------------
+//
+// Body:    { "phone": "+16302479950" }
+// Result:  { "ok": true, "nonce": "<hex>", "expires_at": "<iso>", "hmac": "<hex>" }
+//          { "ok": false, "error": "..." }
+//
+// We reject unknown phones with the same generic error as a successful send
+// so an attacker probing AUTH_PHONES can't enumerate which numbers are
+// allowed. (We do log internally; production may want rate limiting.)
+//
+async function authSmsStart(req: Request, env: Env): Promise<Response> {
+  let body: { phone?: string };
+  try {
+    body = await req.json();
+  } catch {
+    return jsonResponse({ ok: false, error: "Bad JSON" }, { status: 400 });
+  }
+  const phone = normalizePhone(body.phone || "");
+  if (!phone) {
+    return jsonResponse({ ok: false, error: "Missing or malformed phone" }, { status: 400 });
+  }
+  const allowed = parsePhoneList(env.AUTH_PHONES || "");
+  if (allowed.length === 0) {
+    return jsonResponse({ ok: false, error: "Server not configured" }, { status: 500 });
+  }
+  // Generic "ok" response on whitelist miss to avoid number enumeration.
+  // We just don't actually send the SMS; the client will hit a verify failure.
+  if (!allowed.includes(phone)) {
+    console.log(`auth-sms: rejected phone ${phone}`);
+    // Still return a fake-looking bundle so the client UI flow stays uniform.
+    // Verify will reject because we won't sign anything real for this number.
+    const fakeNonce     = randomHex(16);
+    const fakeExpiresAt = new Date(Date.now() + AUTH_OTP_TTL_MS).toISOString();
+    return jsonResponse({
+      ok: true,
+      nonce:      fakeNonce,
+      expires_at: fakeExpiresAt,
+      // HMAC bound to a phone we'll never accept — verify will fail.
+      hmac:       await hmacHex(env.TEXTBELT_KEY, `auth-sms|${fakeNonce}|denied|${fakeExpiresAt}`),
+    });
+  }
+
+  const code      = mintCode();
+  const nonce     = randomHex(16);
+  const expiresAt = new Date(Date.now() + AUTH_OTP_TTL_MS).toISOString();
+  const hmac      = await hmacHex(
+    env.TEXTBELT_KEY,
+    `auth-sms|${code}|${phone}|${nonce}|${expiresAt}`,
+  );
+
+  const message = `Freis Farm: ${code} is your sign-in code. Expires in 5 min. Don't reply.`;
+  const sent = await sendTextBelt(env, phone, message);
+  if (!sent.ok) {
+    console.error(`auth-sms textbelt send failed: ${sent.error}`);
+    return jsonResponse({ ok: false, error: "SMS send failed" }, { status: 502 });
+  }
+
+  return jsonResponse({ ok: true, nonce, expires_at: expiresAt, hmac });
+}
+
+// ---------------------------------------------------------------------------
+// /auth/sms-verify — verify OTP + HMAC, mint 30-day session token
+// ---------------------------------------------------------------------------
+//
+// Body:    { "phone", "code", "nonce", "expires_at", "hmac" }
+// Result:  { "ok": true, "token": "<hex>", "expires_at": "<iso>" }
+//          { "ok": false, "error": "..." }
+//
+// On success we return the EXACT SAME token shape as /auth/login, so the
+// client path after this point (storage, /auth/verify, expiry) is identical
+// regardless of which login method was used.
+//
+async function authSmsVerify(req: Request, env: Env): Promise<Response> {
+  let body: {
+    phone?:      string;
+    code?:       string;
+    nonce?:      string;
+    expires_at?: string;
+    hmac?:       string;
+  };
+  try {
+    body = await req.json();
+  } catch {
+    return jsonResponse({ ok: false, error: "Bad JSON" }, { status: 400 });
+  }
+
+  const phone     = normalizePhone(body.phone || "");
+  const code      = (body.code       || "").trim();
+  const nonce     = (body.nonce      || "").trim();
+  const expiresAt = (body.expires_at || "").trim();
+  const hmac      = (body.hmac       || "").trim();
+  if (!phone || !code || !nonce || !expiresAt || !hmac) {
+    return jsonResponse({ ok: false, error: "Missing field" }, { status: 400 });
+  }
+
+  // OTP expired?
+  const t = Date.parse(expiresAt);
+  if (!Number.isFinite(t) || t <= Date.now()) {
+    return jsonResponse({ ok: false, error: "Code expired" }, { status: 401 });
+  }
+
+  // Phone still allowed?
+  const allowed = parsePhoneList(env.AUTH_PHONES || "");
+  if (!allowed.includes(phone)) {
+    return jsonResponse({ ok: false, error: "Phone not allowed" }, { status: 403 });
+  }
+
+  // HMAC matches what we'd have signed in /auth/sms-start?
+  const expected = await hmacHex(
+    env.TEXTBELT_KEY,
+    `auth-sms|${code}|${phone}|${nonce}|${expiresAt}`,
+  );
+  if (!timingSafeEqual(hmac, expected)) {
+    return jsonResponse({ ok: false, error: "Wrong code" }, { status: 401 });
+  }
+
+  // Mint the 30-day session token — SAME shape as /auth/login output.
+  const sessionExpiresAt = new Date(Date.now() + AUTH_TTL_MS).toISOString();
+  const token            = await hmacHex(env.TEXTBELT_KEY, "auth|" + sessionExpiresAt);
+  return jsonResponse({ ok: true, token, expires_at: sessionExpiresAt });
+}
+
+function parsePhoneList(raw: string): string[] {
+  return raw
+    .split(",")
+    .map(s => normalizePhone(s))
+    .filter(s => s.length > 0);
+}
+
+function normalizePhone(raw: string): string {
+  // Strip whitespace + hyphens + parens; require leading + and 10-15 digits.
+  const cleaned = (raw || "").replace(/[\s\-()]/g, "");
+  if (/^\+\d{10,15}$/.test(cleaned)) return cleaned;
+  return "";
+}
+
+// ---------------------------------------------------------------------------
+// /auth/login — exchange the garage code for a 30-day signed token
+// ---------------------------------------------------------------------------
+//
+// Body:    { "code": "1234" }
+// Result:  { "ok": true, "token": "<hex>", "expires_at": "<iso>" }   (200)
+//          { "ok": false, "error": "..." }                            (4xx)
+//
+// Token is HMAC-SHA256(TEXTBELT_KEY, "auth|" + expires_at). It is bound
+// only to the expiry instant — no user identity, no nonce — because the
+// garage code itself is the only secret that proves "you are allowed in".
+// Anyone holding a valid token is treated as authenticated until expiry.
+//
+async function authLogin(req: Request, env: Env): Promise<Response> {
+  let body: { code?: string };
+  try {
+    body = await req.json();
+  } catch {
+    return jsonResponse({ ok: false, error: "Bad JSON" }, { status: 400 });
+  }
+
+  const code = (body.code || "").trim();
+  if (!code) {
+    return jsonResponse({ ok: false, error: "Missing code" }, { status: 400 });
+  }
+
+  const expected = (env.GARAGE_CODE || "").trim();
+  if (!expected) {
+    // Misconfigured server — fail closed, don't leak that the secret is missing.
+    return jsonResponse({ ok: false, error: "Server not configured" }, { status: 500 });
+  }
+  if (!timingSafeEqual(code, expected)) {
+    // Generic message — don't tell attackers whether they're close.
+    return jsonResponse({ ok: false, error: "Wrong code" }, { status: 401 });
+  }
+
+  const expiresAt = new Date(Date.now() + AUTH_TTL_MS).toISOString();
+  const token     = await hmacHex(env.TEXTBELT_KEY, "auth|" + expiresAt);
+  return jsonResponse({ ok: true, token, expires_at: expiresAt });
+}
+
+// ---------------------------------------------------------------------------
+// /auth/verify — re-check a previously-issued token
+// ---------------------------------------------------------------------------
+//
+// Body:    { "token": "<hex>", "expires_at": "<iso>" }
+// Result:  { "ok": true | false }   (always 200; client decides what to do)
+//
+// Pure HMAC check + expiry check. No DB, no state.
+//
+async function authVerify(req: Request, env: Env): Promise<Response> {
+  let body: { token?: string; expires_at?: string };
+  try {
+    body = await req.json();
+  } catch {
+    return jsonResponse({ ok: false }, { status: 200 });
+  }
+  const token     = (body.token      || "").trim();
+  const expiresAt = (body.expires_at || "").trim();
+  if (!token || !expiresAt) {
+    return jsonResponse({ ok: false });
+  }
+  // Expired?
+  const t = Date.parse(expiresAt);
+  if (!Number.isFinite(t) || t <= Date.now()) {
+    return jsonResponse({ ok: false });
+  }
+  // HMAC matches?
+  const expected = await hmacHex(env.TEXTBELT_KEY, "auth|" + expiresAt);
+  if (!timingSafeEqual(token, expected)) {
+    return jsonResponse({ ok: false });
+  }
+  return jsonResponse({ ok: true });
+}
 
 // ---------------------------------------------------------------------------
 // /orders/start — mint OTP, send SMS, return signed bundle
