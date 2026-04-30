@@ -1,4 +1,15 @@
 {
+  "11251f": {
+    "message": "CORN: Sell 8,250 @ $4.75 ($39,188). 1d risk -$1,620. Reply Y or N.",
+    "recipients": {
+      "+16302479950": {
+        "vote": null
+      }
+    },
+    "sent_at": "2026-04-30T18:52:42.859275+00:00",
+    "signal_key": "sim|corn|Dec '26|SELL|4.7400|2026-04-30T18:52:42",
+    "status": "pending"
+  },
   "46061e": {
     "message": "FREIS FARM confirmation test \u2014 this is a drill, not a real signal. Reply 'Y 46061e' to confirm, 'N 46061e' to veto.",
     "recipients": {
