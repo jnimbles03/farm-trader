@@ -46,9 +46,9 @@
   .cover { max-width: 960px; margin: 0 auto; padding: 56px 32px 32px; }
   @media (min-width: 720px) { .cover { padding: 72px 48px 48px; } }
   .nav {
-    display: flex; justify-content: space-between; align-items: flex-end;
+    display: flex; justify-content: space-between; align-items: center;
     margin: 0 0 36px; gap: 18px;
-    border-bottom: 0.5px solid var(--border); padding-bottom: 16px;
+    border-bottom: 0.5px solid var(--border); padding-bottom: 14px;
   }
   /* Brand lockup — section-grid mark + Fraunces wordmark + small-caps tag.
      Mirrored from home.html so identity holds across tabs. */
@@ -451,21 +451,18 @@
   .foot { padding: 0 20px 32px; }
   @media (min-width: 720px) { .foot { padding: 0 48px 48px; } }
 
-  /* ---- Nav: tap-target hygiene + safe wrap ---- */
-  .nav { gap: 12px; flex-wrap: wrap; padding-bottom: 14px; }
-  .nav .brand { gap: 10px; }
-  .brand-mark { flex-basis: 38px; width: 38px; height: 38px; }
-  .brand-words { gap: 4px; }
-  .brand-tag { padding-top: 4px; letter-spacing: 0.20em; }
-  .nav-links { gap: 16px; flex-wrap: wrap; row-gap: 6px; }
-  .nav-links a {
-    display: inline-flex; align-items: center;
-    min-height: 44px;
-  }
-  @media (min-width: 720px) {
-    .nav-links { row-gap: 0; }
-    .nav-links a { min-height: 0; }
-    .nav-links a.here { padding-bottom: 2px; }
+  /* ---- Nav: tap-target hygiene + safe wrap (mobile only) ---- */
+  @media (max-width: 719px) {
+    .nav { gap: 12px; flex-wrap: wrap; padding-bottom: 14px; }
+    .nav .brand { gap: 10px; }
+    .brand-mark { flex-basis: 38px; width: 38px; height: 38px; }
+    .brand-words { gap: 4px; }
+    .brand-tag { padding-top: 4px; letter-spacing: 0.20em; }
+    .nav-links { gap: 16px; flex-wrap: wrap; row-gap: 6px; }
+    .nav-links a {
+      display: inline-flex; align-items: center;
+      min-height: 44px;
+    }
   }
 
   /* ---- Hero call: punch up the lead number on mobile ---- */
