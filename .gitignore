@@ -19,3 +19,10 @@ Thumbs.db
 
 # Archived hosting configs we're no longer using
 _archive/
+
+# Local secrets and caches
+.env.local
+docs/news.local-backup.json
+docs/bushel.json
+docs/bushel_raw.json
+scripts/.test_perm
