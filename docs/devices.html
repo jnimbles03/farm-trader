@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Freis Farm — device preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,500;1,400;1,500&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream:    #FAF7F2;
+  --paper:    #FFFDF7;
+  --paper-2:  #F4EFE5;
+  --border:   #E2DDD5;
+  --rule:     #C8C3BA;
+  --dust:     #A8A39A;
+  --slate:    #7A756D;
+  --ink:      #3D3A36;
+  --ink-2:    #1F1D1A;
+  --sage:     #7BAE7F;
+  --sage-deep:#5C8F60;
+  --sage-pale:#E5EDDD;
+
+  --font-display: "Fraunces", Georgia, serif;
+  --font-text:    "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono:    "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--font-text);
+  color: var(--ink);
+  background: linear-gradient(180deg, #F0EBDD 0%, var(--cream) 60%);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+.bar {
+  position: sticky; top: 0; z-index: 50;
+  background: var(--cream);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 24px;
+  display: flex; align-items: center; gap: 24px; flex-wrap: wrap;
+}
+.brand {
+  font-family: var(--font-display);
+  font-size: 18px; font-weight: 500;
+  color: var(--ink-2); letter-spacing: 0.4px;
+}
+.brand em { font-style: italic; font-weight: 400; color: var(--sage-deep); }
+.tabs { display: flex; gap: 4px; }
+.tab {
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px; font-weight: 500;
+  color: var(--slate);
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  font-family: var(--font-text);
+}
+.tab.active {
+  background: var(--paper);
+  color: var(--ink-2);
+  border-color: var(--border);
+}
+.meta {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 10px; color: var(--dust);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.page-eyebrow {
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 1.2px;
+  color: var(--dust);
+  text-transform: uppercase;
+  margin: 32px 0 6px;
+}
+.page-h {
+  text-align: center;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 32px;
+  color: var(--ink-2);
+  margin: 0 0 4px;
+  letter-spacing: -0.3px;
+}
+.page-h em { font-style: italic; font-weight: 500; color: var(--sage-deep); }
+.page-deck {
+  text-align: center;
+  font-family: var(--font-display);
+  font-style: italic;
+  color: var(--slate);
+  font-size: 14px;
+  margin: 0 0 28px;
+}
+
+.row {
+  display: flex;
+  gap: 32px;
+  padding: 0 32px 64px;
+  align-items: flex-start;
+  justify-content: center;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+}
+
+.frame {
+  display: flex; flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+.frame-l {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--dust);
+  margin-bottom: 12px;
+}
+.frame-l b { color: var(--ink-2); font-weight: 500; }
+
+/* iPhone — 14 Pro: 393 × 852 viewport. We use 390×844 (iPhone 14) for safety. */
+.iphone {
+  width: 412px;
+  height: 866px;
+  background: #1F1D1A;
+  border-radius: 56px;
+  padding: 11px;
+  box-shadow: 0 18px 50px rgba(0,0,0,0.18), inset 0 0 0 2px #2D2B27;
+  position: relative;
+}
+.iphone::before {
+  content: "";
+  position: absolute;
+  top: 14px; left: 50%; transform: translateX(-50%);
+  width: 110px; height: 30px;
+  background: #000;
+  border-radius: 18px;
+  z-index: 2;
+}
+.iphone-screen {
+  width: 100%; height: 100%;
+  border-radius: 46px;
+  overflow: hidden;
+  background: var(--cream);
+  position: relative;
+}
+.iphone-screen iframe {
+  width: 390px; height: 844px;
+  border: 0; display: block;
+  background: var(--cream);
+}
+
+/* iPad — iPad (10th gen): 820 × 1180 viewport */
+.ipad {
+  width: 858px;
+  height: 1218px;
+  background: #1F1D1A;
+  border-radius: 26px;
+  padding: 18px;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.20), inset 0 0 0 1.5px #2D2B27;
+  position: relative;
+}
+.ipad-screen {
+  width: 100%; height: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--cream);
+}
+.ipad-screen iframe {
+  width: 820px; height: 1180px;
+  border: 0; display: block;
+  background: var(--cream);
+}
+/* iPad camera dot */
+.ipad::before {
+  content: "";
+  position: absolute;
+  top: 10px; left: 50%; transform: translateX(-50%);
+  width: 6px; height: 6px;
+  background: #2D2B27;
+  border-radius: 50%;
+}
+
+/* Desktop — 1280 × 800 framed minimally */
+.desktop {
+  width: 1308px;
+  height: 828px;
+  background: #1F1D1A;
+  border-radius: 14px;
+  padding: 14px;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.20), inset 0 0 0 1.5px #2D2B27;
+  position: relative;
+}
+.desktop-bar {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 14px;
+  display: flex; align-items: center; gap: 6px;
+  padding-left: 14px;
+}
+.desktop-dot { width: 6px; height: 6px; border-radius: 50%; }
+.desktop-dot.r { background: #FF5F57; }
+.desktop-dot.y { background: #FEBC2E; }
+.desktop-dot.g { background: #28C840; }
+.desktop-screen {
+  width: 100%; height: 100%;
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--cream);
+}
+.desktop-screen iframe {
+  width: 1280px; height: 800px;
+  border: 0; display: block;
+  background: var(--cream);
+}
+
+.zoom-bar {
+  display: flex; align-items: center; gap: 12px;
+  margin-left: 16px;
+}
+.zoom-bar-l {
+  font-family: var(--font-mono); font-size: 9px;
+  text-transform: uppercase; letter-spacing: 0.6px;
+  color: var(--dust);
+}
+.zoom-pill {
+  background: var(--cream);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  color: var(--slate);
+}
+.zoom-pill.active { background: var(--ink-2); color: var(--cream); border-color: var(--ink-2); }
+.zoom-pill:hover:not(.active) { color: var(--ink-2); }
+
+.note {
+  font-family: var(--font-display);
+  font-style: italic;
+  color: var(--slate);
+  font-size: 12px;
+  text-align: center;
+  margin: 0 32px 12px;
+  line-height: 1.5;
+}
+.note code {
+  font-style: normal;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  background: var(--paper-2);
+  padding: 1px 5px;
+  border-radius: 2px;
+}
+
+/* Scaled wrapper — applies a CSS transform to shrink the frame so all three fit */
+.scale-wrap {
+  transform-origin: top center;
+  transition: transform 0.2s ease;
+}
+
+@media (max-width: 1500px) {
+  .row { gap: 24px; }
+}
+</style>
+</head>
+<body>
+
+<nav class="bar">
+  <div class="brand">Freis <em>Farm</em> · Device preview</div>
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-page="home.html">Today's Call</button>
+    <button class="tab" data-page="hedge.html">Hedge</button>
+    <button class="tab" data-page="farm-ops.html">Farm Ops</button>
+  </div>
+  <div class="zoom-bar">
+    <span class="zoom-bar-l">Scale</span>
+    <button class="zoom-pill" data-zoom="0.5">50%</button>
+    <button class="zoom-pill active" data-zoom="0.65">65%</button>
+    <button class="zoom-pill" data-zoom="0.85">85%</button>
+    <button class="zoom-pill" data-zoom="1">100%</button>
+  </div>
+  <div class="meta" id="meta">iPhone 14 · iPad · 1280 desktop</div>
+</nav>
+
+<p class="page-eyebrow" id="eye">Today's Call</p>
+<h1 class="page-h" id="title">Three viewports · <em>one design.</em></h1>
+<p class="page-deck">Real iframes — every interaction works inside the frame.</p>
+
+<p class="note">
+  If the frames render blank, your browser is blocking iframes from <code>file://</code> URLs.
+  Open <code>devices.html</code> by serving the folder over <code>python3 -m http.server</code>, or open
+  the pages directly: <a href="home.html">home.html</a> · <a href="hedge.html">hedge.html</a> · <a href="farm-ops.html">farm-ops.html</a>.
+</p>
+
+<div class="row" id="row">
+  <div class="frame">
+    <div class="frame-l"><b>iPhone 14</b> · 390 × 844</div>
+    <div class="scale-wrap" data-w="412" data-h="866">
+      <div class="iphone">
+        <div class="iphone-screen"><iframe id="iframe-iphone" src="home.html#iphone" loading="lazy" title="iPhone preview"></iframe></div>
+      </div>
+    </div>
+  </div>
+  <div class="frame">
+    <div class="frame-l"><b>iPad</b> · 820 × 1180 · portrait</div>
+    <div class="scale-wrap" data-w="858" data-h="1218">
+      <div class="ipad">
+        <div class="ipad-screen"><iframe id="iframe-ipad" src="home.html#ipad" loading="lazy" title="iPad preview"></iframe></div>
+      </div>
+    </div>
+  </div>
+  <div class="frame">
+    <div class="frame-l"><b>Desktop</b> · 1280 × 800</div>
+    <div class="scale-wrap" data-w="1308" data-h="828">
+      <div class="desktop">
+        <div class="desktop-bar">
+          <span class="desktop-dot r"></span>
+          <span class="desktop-dot y"></span>
+          <span class="desktop-dot g"></span>
+        </div>
+        <div class="desktop-screen"><iframe id="iframe-desktop" src="home.html#desktop" loading="lazy" title="Desktop preview"></iframe></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const tabs = document.querySelectorAll("#tabs .tab");
+  const titles = {
+    "home.html":     ["Today's Call", "Hold corn. Sell <em>~1,000 bu soy</em> by June 1."],
+    "hedge.html":    ["Hedge",        "What if we bought <em>price protection?</em>"],
+    "farm-ops.html": ["Farm Ops",     "The books, <em>at a glance.</em>"]
+  };
+  const eye = document.getElementById("eye");
+  const title = document.getElementById("title");
+  const ipx = document.getElementById("iframe-iphone");
+  const ipd = document.getElementById("iframe-ipad");
+  const dsk = document.getElementById("iframe-desktop");
+
+  tabs.forEach(t => t.addEventListener("click", () => {
+    tabs.forEach(x => x.classList.toggle("active", x === t));
+    const p = t.dataset.page;
+    eye.textContent = titles[p][0];
+    title.innerHTML = titles[p][1];
+    // bust cache so each switch reloads
+    ipx.src = p + "#iphone-" + Date.now();
+    ipd.src = p + "#ipad-"  + Date.now();
+    dsk.src = p + "#desktop-" + Date.now();
+  }));
+
+  // zoom
+  const wraps = document.querySelectorAll(".scale-wrap");
+  const zoomPills = document.querySelectorAll("[data-zoom]");
+  function setZoom(z) {
+    zoomPills.forEach(p => p.classList.toggle("active", parseFloat(p.dataset.zoom) === z));
+    wraps.forEach(w => {
+      const w0 = parseFloat(w.dataset.w);
+      const h0 = parseFloat(w.dataset.h);
+      w.style.transform = `scale(${z})`;
+      // collapse the empty space the scale leaves
+      w.style.width  = (w0 * z) + "px";
+      w.style.height = (h0 * z) + "px";
+    });
+  }
+  zoomPills.forEach(p => p.addEventListener("click", () => setZoom(parseFloat(p.dataset.zoom))));
+  setZoom(0.65);
+})();
+</script>
+
+</body>
+</html>
