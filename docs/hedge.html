@@ -58,24 +58,16 @@
     color: var(--ink); text-decoration: none; line-height: 1;
   }
   /* Corn wordmark — header brand asset.
-     Bigger size + layered drop shadows so the mark floats above the page. */
+     Sized to fit alongside nav-links without dominating the page.
+     Single tight drop-shadow for subtle depth. */
   .brand-wordmark {
-    display: block; height: 80px; width: auto;
-    filter:
-      drop-shadow(0 1px 1px rgba(38, 50, 30, 0.18))
-      drop-shadow(0 6px 14px rgba(38, 50, 30, 0.22))
-      drop-shadow(0 18px 34px rgba(38, 50, 30, 0.14));
-    transform: translateZ(0);
-    transition: transform 220ms ease, filter 220ms ease;
+    display: block; height: 56px; width: auto;
+    image-rendering: -webkit-optimize-contrast;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.12));
+    transition: transform 180ms ease;
   }
-  @media (min-width: 720px) { .brand-wordmark { height: 108px; } }
-  .nav .brand:hover .brand-wordmark {
-    transform: translateY(-2px);
-    filter:
-      drop-shadow(0 1px 1px rgba(38, 50, 30, 0.20))
-      drop-shadow(0 10px 20px rgba(38, 50, 30, 0.28))
-      drop-shadow(0 24px 42px rgba(38, 50, 30, 0.18));
-  }
+  @media (min-width: 720px) { .brand-wordmark { height: 72px; } }
+  .nav .brand:hover .brand-wordmark { transform: translateY(-1px); }
   .nav .brand .out { color: var(--sage-deep); font-style: italic; font-weight: 400; }
   .nav-links {
     display: flex; gap: 22px; font-size: 11px;

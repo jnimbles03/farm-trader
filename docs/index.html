@@ -65,30 +65,21 @@
     color: var(--ink); text-decoration: none; line-height: 1;
   }
   /* Corn wordmark — header brand asset.
-     Transparent PNG, large size, layered drop shadows to float above the page.
-     image-rendering hints + crisp scaling to keep edges sharp. */
+     Sized to fit alongside nav-links without dominating the page.
+     Single tight drop-shadow for subtle depth. */
   .brand-wordmark {
     display: block;
-    height: 112px;
+    height: 56px;
     width: auto;
     image-rendering: -webkit-optimize-contrast;
-    image-rendering: crisp-edges;
-    filter:
-      drop-shadow(0 1px 1px rgba(38, 50, 30, 0.18))
-      drop-shadow(0 8px 18px rgba(38, 50, 30, 0.24))
-      drop-shadow(0 22px 40px rgba(38, 50, 30, 0.16));
-    transform: translateZ(0);
-    transition: transform 220ms ease, filter 220ms ease;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.12));
+    transition: transform 180ms ease;
   }
   @media (min-width: 720px) {
-    .brand-wordmark { height: 156px; }
+    .brand-wordmark { height: 72px; }
   }
   .nav .brand:hover .brand-wordmark {
-    transform: translateY(-2px);
-    filter:
-      drop-shadow(0 1px 1px rgba(38, 50, 30, 0.20))
-      drop-shadow(0 12px 24px rgba(38, 50, 30, 0.30))
-      drop-shadow(0 28px 50px rgba(38, 50, 30, 0.20));
+    transform: translateY(-1px);
   }
   .nav .brand .out { color: var(--sage-deep); font-style: italic; font-weight: 400; }
   .nav-links {
