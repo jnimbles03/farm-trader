@@ -146,11 +146,26 @@ def _send(phone: str, message: str) -> bool:
 
 
 def _build_message(code: str) -> str:
+    """Build the SMS body.
+
+    NOTE: We deliberately do NOT include the 6-char hex slug in the SMS
+    body any more. Older versions of this script appended `Reply Y abc123
+    / N abc123.` as an aid for matching the reply back to the pending
+    record, but TextBelt's URL-content filter false-positives on short
+    hex slugs and rejects unwhitelisted accounts. We still STORE the slug
+    in pending state for internal tracking; collect_reply.find_pending_for_phone
+    handles the bare-Y/bare-N case via "latest pending for this phone"
+    correlation, which is unambiguous so long as we don't have multiple
+    overlapping pending alerts for the same number.
+
+    `code` is kept as a parameter for backwards-compatibility and so
+    callers stay structurally identical.
+    """
     total = SIM_LIVE * SIM_QUANTITY
     risk = int(round((abs(total) * 0.025 * 1.65) / 10) * 10)
     return (
-        f"⚠️ {SIM_COMMODITY.upper()}: Sell {SIM_QUANTITY:,} @ ${SIM_LIVE:.2f} "
-        f"(${total:,.0f}). 1d risk -${risk:,.0f}. Reply Y {code} / N {code}."
+        f"{SIM_COMMODITY.upper()}: Sell {SIM_QUANTITY:,} @ ${SIM_LIVE:.2f} "
+        f"(${total:,.0f}). 1d risk -${risk:,.0f}. Reply Y or N."
     )
 
 
