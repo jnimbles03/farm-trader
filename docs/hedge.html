@@ -1113,6 +1113,17 @@
   .auth-gate.shake .auth-card { animation: auth-shake 0.34s ease both; }
   body.auth-locked { overflow: hidden; }
 
+  /* ============================================================
+     PAGE-WIDTH PARITY WITH ROOT (index.html) — open up cover /
+     zone-break / close / foot containers from 960 to 1280 above
+     720px so the page sits at the same width as Today's Call. */
+  @media (min-width: 720px) {
+    .cover      { max-width: 1280px; }
+    .zone-break { max-width: 1280px; }
+    .ledger-wrap{ max-width: 1280px; }
+    .close      { max-width: 1280px; }
+    .foot       { max-width: 1280px; }
+  }
 </style>
 </head>
 <body>
