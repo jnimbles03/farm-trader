@@ -35,9 +35,9 @@
     "no": 0,
     "sent_at": "2026-05-01T14:35:55.990502+00:00",
     "signal_key": "solo|farm-test|group-confirmation|2026-05-01T14:35:55",
-    "status": "pending",
+    "status": "confirmed",
     "total": 1,
-    "yes": 0
+    "yes": 1
   },
   "e8e5c9": {
     "no": 0,

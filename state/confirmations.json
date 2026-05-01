@@ -127,14 +127,16 @@
     "recipients": {
       "+16302479950": {
         "name": "Patrick Meyer (solo)",
+        "raw": "YES",
+        "replied_at": "2026-05-01T14:40:38.535Z",
         "send_ok": true,
-        "vote": null
+        "vote": "Y"
       }
     },
     "required": [],
     "sent_at": "2026-05-01T14:35:55.990502+00:00",
     "signal_key": "solo|farm-test|group-confirmation|2026-05-01T14:35:55",
-    "status": "pending"
+    "status": "confirmed"
   },
   "e8e5c9": {
     "message": "CORN: Sell 8,250 @ $4.75 ($39,188). 1d risk -$1,620. Reply Y or N.",
