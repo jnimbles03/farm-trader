@@ -10,9 +10,9 @@
     "pulses": {},
     "recipients": {
       "+13126361666": {
-        "last_reminded_at": "2026-05-01T15:07:36.129422+00:00",
+        "last_reminded_at": "2026-05-01T15:35:08.415600+00:00",
         "name": "Dan Cooke",
-        "reminders_sent": 1,
+        "reminders_sent": 2,
         "send_ok": true,
         "vote": null
       },
@@ -31,9 +31,9 @@
         "vote": "Y"
       },
       "+17084203265": {
-        "last_reminded_at": "2026-05-01T15:07:36.129422+00:00",
+        "last_reminded_at": "2026-05-01T15:35:08.415600+00:00",
         "name": "Kevin Cooke",
-        "reminders_sent": 1,
+        "reminders_sent": 2,
         "send_ok": true,
         "vote": null
       },
@@ -105,9 +105,9 @@
     "pulses": {},
     "recipients": {
       "+16302479950": {
-        "last_reminded_at": "2026-05-01T15:07:36.129422+00:00",
+        "last_reminded_at": "2026-05-01T15:35:08.415600+00:00",
         "name": "Patrick Meyer (solo)",
-        "reminders_sent": 2,
+        "reminders_sent": 3,
         "send_ok": true,
         "vote": null
       }
