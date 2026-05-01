@@ -11,6 +11,17 @@ name: Farm test broadcast
 
 on:
   workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run — log what would send, no SMS, no state write"
+        type: boolean
+        required: false
+        default: true
+      solo:
+        description: "Solo — send only to Patrick (+1 630 247 9950)"
+        type: boolean
+        required: false
+        default: false
 
 concurrency:
   group: farm-test-broadcast
@@ -39,6 +50,8 @@ jobs:
         env:
           TEXTBELT_KEY:      ${{ secrets.TEXTBELT_KEY }}
           REPLY_WEBHOOK_URL: ${{ secrets.REPLY_WEBHOOK_URL }}
+          DRY_RUN:           ${{ inputs.dry_run }}
+          SOLO:              ${{ inputs.solo }}
         run: python scripts/send_farm_test_broadcast.py
 
       - name: Commit pending confirmation

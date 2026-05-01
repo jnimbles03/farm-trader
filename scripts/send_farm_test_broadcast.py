@@ -50,6 +50,16 @@ PUBLIC_CONF_FILE   = DOCS_DIR / "confirmations.json"
 TEXTBELT_KEY      = os.environ.get("TEXTBELT_KEY", "")
 REPLY_WEBHOOK_URL = os.environ.get("REPLY_WEBHOOK_URL", "")
 
+# Soft-test modes (set by workflow inputs).
+# DRY_RUN: log what would send, skip TextBelt POST and state write entirely.
+# SOLO:    restrict recipients to Patrick's number only.
+def _truthy(v: str) -> bool:
+    return v.strip().lower() in {"1", "true", "yes", "y", "on"}
+
+DRY_RUN = _truthy(os.environ.get("DRY_RUN", ""))
+SOLO    = _truthy(os.environ.get("SOLO", ""))
+SOLO_PHONE = "+16302479950"  # Patrick
+
 REQUIRED = [
     ("Maryann Meyer", "+16302122546"),
     ("Dan Cooke",     "+13126361666"),
@@ -160,24 +170,46 @@ def _send(phone: str, message: str) -> bool:
 # ---------------------------------------------------------------------------
 
 def main() -> int:
-    if not TEXTBELT_KEY:
+    # In dry-run we skip TextBelt entirely, so the key isn't required.
+    if not DRY_RUN and not TEXTBELT_KEY:
         log.error("TEXTBELT_KEY not set; aborting")
         return 1
-    if not REPLY_WEBHOOK_URL:
+    if not DRY_RUN and not REPLY_WEBHOOK_URL:
         log.warning(
             "REPLY_WEBHOOK_URL not set — replies will not be auto-recorded. "
             "Continuing anyway."
         )
 
-    recipients = REQUIRED + OPTIONAL
+    if SOLO:
+        recipients = [("Patrick Meyer (solo)", SOLO_PHONE)]
+        log.info("SOLO mode: sending only to Patrick (%s)", SOLO_PHONE)
+    else:
+        recipients = REQUIRED + OPTIONAL
+
+    if DRY_RUN:
+        log.info("=" * 60)
+        log.info("DRY RUN — no SMS will be sent, no state will be written")
+        log.info("=" * 60)
+
     log.info("message (%d chars):\n%s", len(MESSAGE), MESSAGE)
     log.info(
-        "recipients: %d required + %d optional = %d total",
-        len(REQUIRED), len(OPTIONAL), len(recipients),
+        "recipients: %d required + %d optional = %d total%s",
+        len(REQUIRED) if not SOLO else 0,
+        len(OPTIONAL) if not SOLO else 0,
+        len(recipients),
+        " (SOLO)" if SOLO else "",
     )
+    for name, phone in recipients:
+        log.info("  -> %-22s %s", name, phone)
+
+    if DRY_RUN:
+        log.info("dry-run complete; exiting 0 without sending or writing state")
+        return 0
 
     now = datetime.now(timezone.utc)
     signal_key = f"farm-test|group-confirmation|{now.strftime('%Y-%m-%dT%H:%M:%S')}"
+    if SOLO:
+        signal_key = "solo|" + signal_key
     sid = _short_id(signal_key, now)
 
     any_ok = False
@@ -187,9 +219,9 @@ def main() -> int:
         sent_status[phone] = ok
         if ok:
             any_ok = True
-            log.info("  [OK]   %-16s %s", name, phone)
+            log.info("  [OK]   %-22s %s", name, phone)
         else:
-            log.warning("  [FAIL] %-16s %s", name, phone)
+            log.warning("  [FAIL] %-22s %s", name, phone)
 
     if not any_ok:
         log.error("no recipient accepted; not recording pending state")
@@ -201,9 +233,9 @@ def main() -> int:
         "sent_at":    now.isoformat(),
         "message":    MESSAGE,
         "status":     "pending",
-        "kind":       "farm-test-broadcast",
-        "required":   [phone for _, phone in REQUIRED],
-        "optional":   [phone for _, phone in OPTIONAL],
+        "kind":       "farm-test-broadcast" + ("-solo" if SOLO else ""),
+        "required":   [phone for _, phone in (REQUIRED if not SOLO else [])],
+        "optional":   [phone for _, phone in (OPTIONAL if not SOLO else recipients)],
         "recipients": {
             phone: {"vote": None, "name": name, "send_ok": sent_status.get(phone, False)}
             for name, phone in recipients
