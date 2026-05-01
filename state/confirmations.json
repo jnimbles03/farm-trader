@@ -65,6 +65,24 @@
       "vote": "Y"
     }
   ],
+  "b6a7a1": {
+    "kind": "farm-test-broadcast-solo",
+    "message": "[FARM TEST] Group confirmation request \u2014 reply YES or Y to confirm. I'll let everyone know as confirmations come in.\n\nSample trade: SELL 1,000 bu Nov '26 soybeans @ $10.45 ($10,450). Daily @ Risk \u00b1$430.\n\nRequired: Maryann, Dan, Susan.\nOptional: Patrick, Kevin, Alison.\n\nOne-time test, thanks.",
+    "optional": [
+      "+16302479950"
+    ],
+    "recipients": {
+      "+16302479950": {
+        "name": "Patrick Meyer (solo)",
+        "send_ok": true,
+        "vote": null
+      }
+    },
+    "required": [],
+    "sent_at": "2026-05-01T14:35:55.990502+00:00",
+    "signal_key": "solo|farm-test|group-confirmation|2026-05-01T14:35:55",
+    "status": "pending"
+  },
   "e8e5c9": {
     "message": "CORN: Sell 8,250 @ $4.75 ($39,188). 1d risk -$1,620. Reply Y or N.",
     "recipients": {
