@@ -36,6 +36,7 @@ import logging
 import os
 import re
 import sys
+import time
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass, asdict
 from datetime import datetime, timedelta, timezone
@@ -1181,14 +1182,25 @@ def _save_confirmations(data: dict[str, Any]) -> None:
 
 
 def _record_outbound(sid: str, signal_key: str, message: str,
-                     recipients: list[str]) -> None:
-    """Stamp one outbound alert into confirmations.json as `pending`."""
+                     recipients: list[str],
+                     live_price: float | None = None,
+                     prior_fired_price: float | None = None) -> None:
+    """Stamp one outbound alert into confirmations.json as `pending`.
+
+    `live_price` is the price *at this firing* — what the SMS displays.
+    `prior_fired_price` is what the same signal_key showed the LAST
+    time it fired, or None on first fire. Both are stored so the
+    reminder sweep can show the user 'price now vs. when you last got
+    pinged' even though the signal hasn't re-fired.
+    """
     data = _load_confirmations()
     data[sid] = {
-        "signal_key": signal_key,
-        "sent_at":    datetime.now(timezone.utc).isoformat(),
-        "message":    message,
-        "status":     "pending",
+        "signal_key":        signal_key,
+        "sent_at":           datetime.now(timezone.utc).isoformat(),
+        "message":           message,
+        "status":            "pending",
+        "live_price":        live_price,
+        "prior_fired_price": prior_fired_price,
         "recipients": {p: {"vote": None} for p in recipients},
     }
     _save_confirmations(data)
@@ -1474,9 +1486,21 @@ def evaluate_signals(state: dict[str, dict[str, Any]]) -> tuple[list[dict[str, A
             verb = "SELL" if s.action == "SELL" else "BUY BACK"
             # [FARM] prefix is added centrally in _send_sms_textbelt;
             # don't repeat the brand here.
+            # If this same signal_key has fired before, surface the
+            # price at that prior firing so the user can see WHAT
+            # CHANGED since they last weighed in.
+            prior_price_tag = ""
+            if last_fired_price:
+                delta = live - last_fired_price
+                sign  = "+" if delta >= 0 else ""
+                prior_price_tag = (
+                    f" [prior alert ${last_fired_price:.2f}, "
+                    f"{sign}${delta:.2f}]"
+                )
             base_msg = (f"{verb} alert: "
                         f"{s.commodity.capitalize()} {month_abbr} {yr2} is at "
-                        f"${live:.2f} (target ${s.target_price:.2f})")
+                        f"${live:.2f} (target ${s.target_price:.2f})"
+                        f"{prior_price_tag}")
 
             # If the webhook is configured, record the outbound so the
             # inbound collector can match a plain Y/N reply against the
@@ -1486,8 +1510,16 @@ def evaluate_signals(state: dict[str, dict[str, Any]]) -> tuple[list[dict[str, A
             sid: str | None = None
             if REPLY_WEBHOOK_URL and recipients:
                 sid = _short_id(s.signal_key, now)
-                msg = base_msg + ", Reply Y to confirm, N to veto."
-                _record_outbound(sid, s.signal_key, msg, recipients)
+                # Idiot-proof reply prompt: state the code in caps so the
+                # user can see exactly what to type, and tell them to
+                # reply to THIS text. The short_id is what disambiguates
+                # if multiple alerts are pending at once.
+                msg = base_msg + ". Just reply Y or N."
+                _record_outbound(
+                    sid, s.signal_key, msg, recipients,
+                    live_price=round(live, 4),
+                    prior_fired_price=last_fired_price,
+                )
             else:
                 msg = base_msg + "."
 
@@ -1561,15 +1593,34 @@ def main() -> int:
         now = datetime.now(timezone.utc)
         fake_key = f"test|{now.strftime('%Y-%m-%dT%H-%M-%S')}|CONFIRM"
         sid = _short_id(fake_key, now)
-        msg = ("FREIS FARM confirmation test — this is a drill, not a "
-               "real signal. Reply Y to confirm, N to veto.")
-        _record_outbound(sid, fake_key, msg, recipients)
+        # Two messages, sent in clear sequence with a brief pause so
+        # they arrive in order on the recipient's phone. The sample
+        # alert is illustrative ONLY (no Y/N expected). The follow-up
+        # explains the program and asks a single, unambiguous yes/no.
+        sample = (
+            "EXAMPLE — not a real trade. This is what a real sale "
+            "alert will look like:\n"
+            "SELL alert: Soy Jul '26 at $11.97 (target $11.95). "
+            "Reply Y to approve, N to skip."
+        )
+        confirm = (
+            "Going forward, every crop sale will be sent like the "
+            "example above and posted to the new farm ops portal. "
+            "Did the example come through clearly? Reply Y for yes, "
+            "N for no."
+        )
+        # Only the confirmation message is recorded as a pending vote;
+        # the sample is fire-and-forget illustration.
+        _record_outbound(sid, fake_key, confirm, recipients)
         log.info("test-confirmation sid=%s recipients=%s",
                  sid, ", ".join(recipients))
-        ok = send_sms(msg, reply_webhook_url=REPLY_WEBHOOK_URL)
-        log.info("test-confirmation via textbelt: %s",
-                 "ALL ACCEPTED" if ok else "PARTIAL/FAIL")
-        return 0 if ok else 1
+        ok_sample  = send_sms(sample)  # no reply webhook — info only
+        time.sleep(2)                  # let the sample land first
+        ok_confirm = send_sms(confirm, reply_webhook_url=REPLY_WEBHOOK_URL)
+        log.info("test-confirmation via textbelt: sample=%s confirm=%s",
+                 "OK" if ok_sample  else "FAIL",
+                 "OK" if ok_confirm else "FAIL")
+        return 0 if (ok_sample and ok_confirm) else 1
 
     log.info("evaluate starting")
     state = load_state()

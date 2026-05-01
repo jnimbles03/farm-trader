@@ -97,27 +97,48 @@ def save_confirmations(data: dict) -> None:
     )
 
 
-# Match "Y", "YES", "N", "NO" (case-insensitive) optionally followed by a
-# 6-char hex short_id. Anything else falls through to the orphan bucket.
-_VOTE_RE = re.compile(r"^\s*(y|yes|n|no)\b\s*([a-f0-9]{6})?", re.IGNORECASE)
+# Match "Y", "YES", "N", "NO" (case-insensitive) optionally followed by:
+#   - a 6-char hex short_id (legacy / power-user path), OR
+#   - a commodity hint ("corn" / "soy" / "soybeans" / "beans"), OR
+#   - a 1-2 digit index ("1", "2") for "the Nth in the bounce list".
+# Anything else falls through to the orphan bucket.
+_VOTE_RE = re.compile(
+    r"^\s*(y|yes|n|no)\b"
+    r"(?:\s+(?:"
+    r"(?P<sid>[a-f0-9]{6})"
+    r"|(?P<commodity>corn|soybeans?|beans|soy)"
+    r"|(?P<index>\d{1,2})"
+    r"))?",
+    re.IGNORECASE,
+)
 
 
-def parse_reply(text: str) -> tuple[str | None, str | None]:
+def parse_reply(text: str) -> tuple[str | None, dict]:
+    """Return (vote, hint) where hint is a dict that may carry one of:
+        {"sid": "<6hex>"}, {"commodity": "corn"|"soy"}, {"index": int}
+    or be empty when the user just texted "Y" / "N"."""
     m = _VOTE_RE.match(text)
     if not m:
-        return None, None
+        return None, {}
     word = m.group(1).upper()
     vote = "Y" if word in ("Y", "YES") else "N"
-    sid = m.group(2).lower() if m.group(2) else None
-    return vote, sid
+    hint: dict = {}
+    if m.group("sid"):
+        hint["sid"] = m.group("sid").lower()
+    elif m.group("commodity"):
+        c = m.group("commodity").lower()
+        hint["commodity"] = "soy" if c.startswith(("soy", "bean")) else c
+    elif m.group("index"):
+        try:
+            hint["index"] = int(m.group("index"))
+        except ValueError:
+            pass
+    return vote, hint
 
 
-def find_pending_for_phone(data: dict, phone: str) -> str | None:
-    """Latest pending entry where this phone hasn't voted yet.
-
-    Used as a fallback when the recipient replies with just "Y" and no
-    short_id — we assume they mean the most recent outstanding prompt.
-    """
+def pending_for_phone(data: dict, phone: str) -> list[tuple[str, str]]:
+    """All pending (sid, sent_at) where this phone hasn't voted yet,
+    newest first."""
     candidates = []
     for sid, entry in data.items():
         if sid.startswith("_"):
@@ -127,10 +148,54 @@ def find_pending_for_phone(data: dict, phone: str) -> str | None:
         r = entry.get("recipients", {}).get(phone)
         if r is not None and r.get("vote") is None:
             candidates.append((sid, entry.get("sent_at", "")))
-    if not candidates:
-        return None
     candidates.sort(key=lambda x: x[1], reverse=True)
-    return candidates[0][0]
+    return candidates
+
+
+def find_pending_for_phone(data: dict, phone: str) -> str | None:
+    """Latest pending entry where this phone hasn't voted yet.
+
+    Used only when EXACTLY ONE alert is pending for the phone. If two
+    or more are pending, the caller should refuse to guess and bounce
+    a disambiguation SMS instead — see main().
+    """
+    cands = pending_for_phone(data, phone)
+    return cands[0][0] if cands else None
+
+
+def _send_bounce(phone: str, message: str) -> None:
+    """Send a one-shot SMS back to the replying phone (no webhook).
+
+    Used when an inbound Y/N is ambiguous and we need the user to
+    re-send with the explicit code. We deliberately don't attach a
+    replyWebhookUrl here so the user's *next* message routes through
+    the normal /reply path with their corrected text.
+    """
+    if not (TEXTBELT_KEY and phone):
+        log.warning("bounce SMS skipped — TEXTBELT_KEY or phone missing")
+        return
+    if not message.startswith("[FARM]"):
+        message = "[FARM] " + message
+    try:
+        r = httpx.post(
+            "https://textbelt.com/text",
+            data={"phone": phone, "message": message, "key": TEXTBELT_KEY},
+            timeout=15.0,
+        )
+        log.info("bounce[%s]: %s", phone, r.json())
+    except Exception as e:
+        log.exception("bounce send failed for %s: %s", phone, e)
+
+
+def _describe_pending(entry: dict, sid: str) -> str:
+    """Plain-English label for a pending alert: the signal_key + the
+    price we showed at firing. No code shown — codes are an internal
+    detail. Used inside the disambiguation bounce SMS."""
+    sig  = entry.get("signal_key", sid)
+    live = entry.get("live_price")
+    if isinstance(live, (int, float)):
+        return f"{sig} @ ${live:.2f}"
+    return sig
 
 
 def send_follow_up(phones: list[str], message: str) -> None:
@@ -169,7 +234,8 @@ def main() -> int:
              REPLY_PHONE, REPLY_TEXT, REPLY_RECEIVED_AT)
 
     data = load_confirmations()
-    vote, sid = parse_reply(REPLY_TEXT)
+    vote, hint = parse_reply(REPLY_TEXT)
+    sid: str | None = hint.get("sid")
 
     if vote is None:
         log.info("unrecognized reply; stashing in _orphans")
@@ -182,8 +248,8 @@ def main() -> int:
         return 0
 
     if sid is None:
-        sid = find_pending_for_phone(data, REPLY_PHONE)
-        if sid is None:
+        cands = pending_for_phone(data, REPLY_PHONE)
+        if not cands:
             log.info("no pending prompt for %s; stashing in _orphans",
                      REPLY_PHONE)
             data.setdefault("_orphans", []).append({
@@ -194,7 +260,130 @@ def main() -> int:
             })
             save_confirmations(data)
             return 0
-        log.info("inferred short_id=%s for %s", sid, REPLY_PHONE)
+
+        # Try a commodity hint ("Y corn") against the pending list.
+        if hint.get("commodity"):
+            want = hint["commodity"]
+            matches = [
+                (s, sa) for s, sa in cands
+                if (data[s].get("signal_key","").split("|")[:1] or [""])[0]
+                   .lower() == want
+            ]
+            if len(matches) == 1:
+                sid = matches[0][0]
+                log.info("matched %s pending for %s by commodity=%s",
+                         sid, REPLY_PHONE, want)
+            elif len(matches) > 1:
+                # Multiple of the same commodity — ask for an index.
+                _send_bounce(
+                    REPLY_PHONE,
+                    f"Got '{vote} {want}' but you have {len(matches)} "
+                    f"{want} alerts open. Reply '{vote} 1' or '{vote} 2' "
+                    f"for the one you mean. " +
+                    "; ".join(
+                        f"{i+1}) {_describe_pending(data[s], s)}"
+                        for i, (s, _) in enumerate(matches)
+                    )
+                )
+                data.setdefault("_orphans", []).append({
+                    "phone": REPLY_PHONE, "text": REPLY_TEXT,
+                    "received_at": REPLY_RECEIVED_AT, "vote": vote,
+                    "reason": "ambiguous_commodity",
+                })
+                save_confirmations(data)
+                return 0
+            else:
+                # Commodity not in the pending list.
+                _send_bounce(
+                    REPLY_PHONE,
+                    f"Got '{vote} {want}' but no {want} alert is open. "
+                    f"Open: " +
+                    "; ".join(
+                        _describe_pending(data[s], s) for s, _ in cands
+                    )
+                )
+                data.setdefault("_orphans", []).append({
+                    "phone": REPLY_PHONE, "text": REPLY_TEXT,
+                    "received_at": REPLY_RECEIVED_AT, "vote": vote,
+                    "reason": "commodity_not_pending",
+                })
+                save_confirmations(data)
+                return 0
+
+        # Try a numeric-index hint ("Y 1") against the pending list.
+        if sid is None and hint.get("index"):
+            i = hint["index"]
+            if 1 <= i <= len(cands):
+                sid = cands[i - 1][0]
+                log.info("matched %s pending for %s by index=%d",
+                         sid, REPLY_PHONE, i)
+            else:
+                _send_bounce(
+                    REPLY_PHONE,
+                    f"Got '{vote} {i}' but only {len(cands)} alerts open. "
+                    f"Reply '{vote} 1' through '{vote} {len(cands)}'."
+                )
+                data.setdefault("_orphans", []).append({
+                    "phone": REPLY_PHONE, "text": REPLY_TEXT,
+                    "received_at": REPLY_RECEIVED_AT, "vote": vote,
+                    "reason": "index_out_of_range",
+                })
+                save_confirmations(data)
+                return 0
+
+        if sid is None and len(cands) > 1:
+            # Two or more outstanding alerts for this phone and the
+            # user replied with no code. Refuse to guess — historically
+            # this routed to the newest, which is wrong half the time.
+            # Bounce a disambiguation SMS that names every pending
+            # alert by code + signal + price.
+            log.warning(
+                "ambiguous reply from %s: %d pending; bouncing for code",
+                REPLY_PHONE, len(cands),
+            )
+            # Plain-English disambiguation: list the trades, ask which.
+            # No codes — the user just texts back e.g. "Y corn" or
+            # "N soy" and the next pass matches by commodity in the
+            # signal_key. Falling back to "reply YES1 or YES2" if both
+            # are the same commodity.
+            same_commodity = (
+                len({(data[s].get("signal_key","").split("|")[:1] or [""])[0]
+                     for s, _ in cands}) == 1
+            )
+            if same_commodity:
+                bounce = (
+                    f"Got '{vote}' but you have {len(cands)} alerts open. "
+                    f"Reply '{vote} 1' or '{vote} 2' for the trade you mean. "
+                    + "; ".join(
+                        f"{i+1}) {_describe_pending(data[s], s)}"
+                        for i, (s, _) in enumerate(cands)
+                    )
+                )
+            else:
+                bounce = (
+                    f"Got '{vote}' but you have {len(cands)} alerts open. "
+                    f"Reply '{vote} corn' or '{vote} soy' for the one you "
+                    f"mean. Open: "
+                    + "; ".join(
+                        _describe_pending(data[s], s) for s, _ in cands
+                    )
+                )
+            _send_bounce(REPLY_PHONE, bounce)
+            data.setdefault("_orphans", []).append({
+                "phone":       REPLY_PHONE,
+                "text":        REPLY_TEXT,
+                "received_at": REPLY_RECEIVED_AT,
+                "vote":        vote,
+                "reason":      "ambiguous_no_sid",
+                "pending_sids": [s for s, _ in cands],
+            })
+            save_confirmations(data)
+            return 0
+        # Single pending and no hint needed → use it.
+        if sid is None:
+            sid = cands[0][0]
+            log.info("inferred short_id=%s for %s (only one pending)",
+                     sid, REPLY_PHONE)
 
     entry = data.get(sid)
     if not entry:

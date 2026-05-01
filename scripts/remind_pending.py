@@ -164,7 +164,7 @@ def _last4(phone: str) -> str:
     return digits[-4:] if len(digits) >= 4 else phone
 
 
-def _reminder_message(entry: dict, pending_phones: list[str]) -> str:
+def _reminder_message(entry: dict, pending_phones: list[str], sid: str) -> str:
     """Context-carrying group-reminder text.
 
     Sent to ALL recipients on the alert (not just the holdouts), so the
@@ -178,25 +178,46 @@ def _reminder_message(entry: dict, pending_phones: list[str]) -> str:
     bushels, tranche) survive — truncating mid-"Tranche" would be worse
     than letting the SMS run to 2 segments.
 
+    The short_id (sid) is included verbatim in the reply instructions so
+    a plain "Y" can never be misrouted to a different pending alert.
+
     Cap at 300 chars as a guardrail against a pathologically long
-    original. Real alerts are ~115 chars; reminder wrapper adds ~50.
+    original. Real alerts are ~115 chars; reminder wrapper adds ~70.
     """
     original = entry.get("message", "")
     snippet = original.strip().splitlines()[0] if original else ""
+    # Strip the original "Reply..." or "Just reply..." tail so the
+    # reminder doesn't double up reply instructions. Keep everything
+    # BEFORE the first call-to-action — that preserves the price +
+    # target + prior-alert context without echoing it twice.
+    for cue in (". Just reply ", ". Reply "):
+        cut = snippet.find(cue)
+        if cut != -1:
+            snippet = snippet[:cut + 1]  # keep the period
+            break
     if len(snippet) > 300:
         snippet = snippet[:297].rstrip() + "..."
     pending_tag = (
         ", ".join(f"...{_last4(p)}" for p in pending_phones) or "?"
     )
+    reply_hint = "Just reply Y or N."
+    # The snippet already carries the price at firing (evaluate.py bakes
+    # "$X.XX (target $Y.YY) [prior alert $Z.ZZ, +$D.DD]" into the alert),
+    # so we don't repeat it here. We only fall back to a price tag if
+    # there's no snippet (degenerate case).
     if snippet:
         return (
-            f"FREIS FARM reminder — still need Y/N from {pending_tag}: "
-            f"{snippet}"
+            f"FREIS FARM reminder — still need from {pending_tag}: "
+            f"{snippet}  {reply_hint}"
         )
     sig_key = entry.get("signal_key", "")
+    live = entry.get("live_price")
+    price_tag = ""
+    if isinstance(live, (int, float)):
+        price_tag = f" Price at alert: ${live:.2f}."
     return (
-        f"FREIS FARM reminder — still need Y/N from {pending_tag} "
-        f"on {sig_key}"
+        f"FREIS FARM reminder — still need from {pending_tag} "
+        f"on {sig_key}.{price_tag}  {reply_hint}"
     )
 
 
@@ -251,7 +272,7 @@ def main() -> int:
         pending_phones = [
             p for p, r in recipients.items() if r.get("vote") is None
         ]
-        message = _reminder_message(entry, pending_phones)
+        message = _reminder_message(entry, pending_phones, sid)
 
         # Step 3 — fan out to EVERY recipient on the alert, not just
         # the non-responders. People who already voted Y/N still want

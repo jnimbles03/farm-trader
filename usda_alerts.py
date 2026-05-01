@@ -284,7 +284,8 @@ def format_preview_sms(report: dict, plan: dict) -> str:
         f"{label} preview — {when}\n"
         f"WHY: surprise vs trade estimate is what moves the market\n"
         f"WATCH: " + "; ".join(est_lines) + "\n"
-        f"Alert at release with surprise + predicted move."
+        f"Alert at release with surprise + predicted move.\n"
+        f"INFO ONLY — do not reply."
     )
     return body
 
@@ -327,7 +328,8 @@ def format_release_sms(report: dict, plan: dict) -> str:
         f"{label}: {sur_str}\n"
         f"WHY: {'bearish supply surprise' if any(s['pct']>0 and s.get('kind') in ('yield','ending_stocks','production') for s in top) else 'bullish supply surprise' if any(s['pct']<0 and s.get('kind') in ('yield','ending_stocks','production') for s in top) else 'demand-side shift'}, next 1-2 sessions\n"
         f"EXPECT: {move_corn} / {move_soy}\n"
-        f"CONF: {conf} — {falsifier}"
+        f"CONF: {conf} — {falsifier}\n"
+        f"INFO ONLY — do not reply."
     )
     return body
 
