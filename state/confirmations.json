@@ -32,6 +32,24 @@
     "signal_key": "sim|corn|Dec '26|SELL|4.7400|2026-04-30T22:51:05",
     "status": "confirmed"
   },
+  "7587d1": {
+    "kind": "farm-test-broadcast-solo",
+    "message": "[FARM TEST] Group confirmation request \u2014 reply YES or Y to confirm. I'll let everyone know as confirmations come in.\n\nSample trade: SELL 1,000 bu Nov '26 soybeans @ $10.45 ($10,450). Daily @ Risk \u00b1$430.\n\nRequired: Maryann, Dan, Susan.\nOptional: Patrick, Kevin, Alison.\n\nOne-time test, thanks.",
+    "optional": [
+      "+16302479950"
+    ],
+    "recipients": {
+      "+16302479950": {
+        "name": "Patrick Meyer (solo)",
+        "send_ok": true,
+        "vote": null
+      }
+    },
+    "required": [],
+    "sent_at": "2026-05-01T14:20:42.618588+00:00",
+    "signal_key": "solo|farm-test|group-confirmation|2026-05-01T14:20:42",
+    "status": "pending"
+  },
   "_orphans": [
     {
       "phone": "+16302479950",
