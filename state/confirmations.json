@@ -46,9 +46,11 @@
       "+17087109387": {
         "last_reminded_at": "2026-05-01T15:07:36.129422+00:00",
         "name": "Sue Lindeen",
+        "raw": "Y",
         "reminders_sent": 1,
+        "replied_at": "2026-05-01T15:13:46.704Z",
         "send_ok": true,
-        "vote": null
+        "vote": "Y"
       }
     },
     "required": [
