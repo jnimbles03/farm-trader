@@ -91,7 +91,9 @@
     ],
     "recipients": {
       "+16302479950": {
+        "last_reminded_at": "2026-05-01T14:38:59.415827+00:00",
         "name": "Patrick Meyer (solo)",
+        "reminders_sent": 1,
         "send_ok": true,
         "vote": null
       }
