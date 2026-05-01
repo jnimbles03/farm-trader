@@ -17,8 +17,10 @@
     "recipients": {
       "+16302122546": {
         "last_reminded_at": "2026-05-01T13:36:28.393881+00:00",
+        "raw": "Y",
         "reminders_sent": 1,
-        "vote": null
+        "replied_at": "2026-05-01T13:46:40.473Z",
+        "vote": "Y"
       },
       "+16302479950": {
         "raw": "Y",
@@ -28,7 +30,7 @@
     },
     "sent_at": "2026-04-30T22:51:05.914462+00:00",
     "signal_key": "sim|corn|Dec '26|SELL|4.7400|2026-04-30T22:51:05",
-    "status": "pending"
+    "status": "confirmed"
   },
   "_orphans": [
     {
