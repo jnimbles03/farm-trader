@@ -15,8 +15,10 @@
       },
       "+16302122546": {
         "name": "Maryann Meyer",
+        "raw": "Y",
+        "replied_at": "2026-05-01T14:41:00.618Z",
         "send_ok": true,
-        "vote": null
+        "vote": "Y"
       },
       "+16302479950": {
         "name": "Patrick Meyer",
