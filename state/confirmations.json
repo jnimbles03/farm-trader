@@ -12,9 +12,11 @@
       "+13126361666": {
         "last_reminded_at": "2026-05-01T16:30:56.520961+00:00",
         "name": "Dan Cooke",
+        "raw": "Y",
         "reminders_sent": 4,
+        "replied_at": "2026-05-01T16:43:13.320Z",
         "send_ok": true,
-        "vote": null
+        "vote": "Y"
       },
       "+16302122546": {
         "name": "Maryann Meyer",
