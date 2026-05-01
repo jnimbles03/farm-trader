@@ -34,8 +34,10 @@
       },
       "+17087109385": {
         "name": "Alison Lindeen",
+        "raw": "Y",
+        "replied_at": "2026-05-01T14:49:26.572Z",
         "send_ok": true,
-        "vote": null
+        "vote": "Y"
       },
       "+17087109387": {
         "name": "Sue Lindeen",
