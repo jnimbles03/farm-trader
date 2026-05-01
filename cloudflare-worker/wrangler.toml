@@ -3,11 +3,19 @@ main = "src/index.ts"
 compatibility_date = "2026-04-01"
 
 # Required secrets — set with `wrangler secret put NAME`:
-#   TEXTBELT_KEY   same paid key used by evaluate.py; used to HMAC-verify
-#                  that inbound POSTs actually came from TextBelt
-#   GITHUB_TOKEN   fine-grained PAT scoped to jnimbles03/farm-trader with
-#                  "Contents: read/write" + "Actions: read/write" so the
-#                  worker can fire a repository_dispatch event
+#   TEXTBELT_KEY        same paid key used by evaluate.py; used to HMAC-
+#                       verify that inbound POSTs actually came from TextBelt
+#   GITHUB_TOKEN        fine-grained PAT scoped to jnimbles03/farm-trader with
+#                       "Contents: read/write" + "Actions: read/write" so the
+#                       worker can fire a repository_dispatch event
+#   GARAGE_CODE         legacy 4-digit dashboard PIN
+#   AUTH_PHONES         comma-separated E.164 phones allowed to log in via SMS
+#   ANTHROPIC_API_KEY   Claude API key for the /advisor route. Get one at
+#                       console.anthropic.com → Settings → API Keys.
 
 [vars]
 GITHUB_REPO = "jnimbles03/farm-trader"
+# Public location of the daily-built advisor context bundle. The /advisor
+# route fetches this on demand (cached 5 min in the Worker). If you move
+# the bundle (e.g. to R2 or a different Pages path), update here.
+ADVISOR_CONTEXT_URL = "https://jnimbles03.github.io/farm-trader/advisor/advisor_context.json"

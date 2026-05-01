@@ -1,0 +1,72 @@
+name: Build advisor context bundle
+
+# Rebuilds advisor/advisor_context.json from the books + memory + recent
+# alerts every morning at 6am CT (11:00 UTC) on weekdays, and copies the
+# result into docs/advisor/ so GitHub Pages serves it. The Worker's
+# /advisor route fetches that URL on demand (cached 5 min).
+#
+# Manual run available via workflow_dispatch — useful after editing
+# memory files or after a fresh Ledger row lands in
+# Freis_Farm_Books_and_Records.xlsx.
+
+on:
+  schedule:
+    - cron: "0 11 * * 1-5"
+  workflow_dispatch:
+
+concurrency:
+  group: build-advisor-context
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          # Need the canonical books file path; if it lives outside this
+          # repo (it does — under data/Finances/), the workflow needs
+          # access to that data. Today the books live in the parent
+          # checkout of the operator's machine; the GHA-side fallback
+          # is to read the last-published bundle as a no-op. When the
+          # books move into the repo, drop this fallback.
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install deps
+        run: |
+          pip install openpyxl
+
+      - name: Build context bundle (if books available)
+        id: build
+        run: |
+          if [ -f "data/Finances/Freis_Farm_Books_and_Records.xlsx" ]; then
+            python3 advisor/context_builder.py
+            cp advisor/advisor_context.json docs/advisor/advisor_context.json
+            echo "built=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Books file not present in repo — skipping rebuild."
+            echo "Existing docs/advisor/advisor_context.json (if any) stays."
+            echo "built=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Commit + push if changed
+        if: steps.build.outputs.built == 'true'
+        run: |
+          git config user.name  "freis-farm-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add docs/advisor/advisor_context.json advisor/advisor_context.json
+          if git diff --cached --quiet; then
+            echo "no changes to commit"
+            exit 0
+          fi
+          git commit -m "advisor-context: $(date -u +'%Y-%m-%dT%H:%MZ')"
+          git push
