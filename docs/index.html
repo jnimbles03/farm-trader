@@ -1132,6 +1132,56 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
 .advisor-msg .advisor-bubble hr {
   border: none; border-top: 1px solid var(--border); margin: 10px 0;
 }
+/* ---- Headline-first / collapsible-sections layout for advisor replies.
+   The lede is the answer in plain prose. Each .advisor-section is a
+   <details> the user can open to see math / sources / next steps. */
+.advisor-msg .advisor-bubble .advisor-lede {
+  margin: 0 0 4px;
+}
+.advisor-msg .advisor-bubble .advisor-lede > *:first-child { margin-top: 0; }
+.advisor-msg .advisor-bubble .advisor-lede > *:last-child  { margin-bottom: 0; }
+.advisor-msg .advisor-bubble details.advisor-section {
+  margin-top: 8px;
+  border-top: 1px solid var(--border);
+}
+.advisor-msg .advisor-bubble details.advisor-section:first-of-type {
+  margin-top: 10px;
+}
+.advisor-msg .advisor-bubble details.advisor-section > summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 7px 0 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--sage-deep);
+  user-select: none;
+}
+.advisor-msg .advisor-bubble details.advisor-section > summary::-webkit-details-marker { display: none; }
+.advisor-msg .advisor-bubble details.advisor-section > summary:hover { color: var(--ink-2); }
+.advisor-msg .advisor-bubble .advisor-section-chev {
+  width: 8px; height: 8px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform .15s ease;
+  margin-bottom: 2px;
+  opacity: .7;
+}
+.advisor-msg .advisor-bubble details.advisor-section[open] > summary .advisor-section-chev {
+  transform: rotate(-135deg);
+  margin-bottom: -2px;
+}
+.advisor-msg .advisor-bubble .advisor-section-body {
+  padding: 2px 0 6px;
+}
+.advisor-msg .advisor-bubble .advisor-section-body > *:first-child { margin-top: 0; }
+.advisor-msg .advisor-bubble .advisor-section-body > *:last-child  { margin-bottom: 0; }
 .advisor-msg .advisor-meta {
   font-family: "JetBrains Mono", monospace;
   font-size: 9.5px; color: var(--dust); letter-spacing: .3px;
@@ -2214,6 +2264,144 @@ loadDrafts();
     return out.join('\n');
   }
 
+  // ---- Section detection: turn the rendered reply into
+  // headline (visible) + collapsible <details> sections.
+  // Lede stays open at the top so the answer is never buried.
+  const SECTION_LABELS = [
+    'math','reasoning','source','sources','citation','citations',
+    'data','next step','next steps','tradeoff','tradeoffs','caveat','caveats'
+  ];
+  function summaryFromLabel(raw) {
+    const t = raw.trim().replace(/[:—\-\s]+$/, '');
+    return t.charAt(0).toUpperCase() + t.slice(1);
+  }
+  // Returns { label, restHtml } if `p` begins with a canonical label,
+  // else null. Handles both <strong>Label:</strong>… and plain "Label: …".
+  function detectLabelInParagraph(p) {
+    const first = p.firstChild;
+    if (first && first.nodeType === 1 &&
+        first.tagName === 'STRONG' &&
+        /:\s*$/.test(first.textContent || '')) {
+      const label = (first.textContent || '').replace(/:\s*$/, '').trim();
+      if (SECTION_LABELS.includes(label.toLowerCase())) {
+        const clone = p.cloneNode(true);
+        clone.removeChild(clone.firstChild);
+        // strip a leading text-node space
+        if (clone.firstChild && clone.firstChild.nodeType === 3) {
+          clone.firstChild.textContent =
+            clone.firstChild.textContent.replace(/^\s+/, '');
+        }
+        return { label, restHtml: clone.innerHTML };
+      }
+    }
+    if (first && first.nodeType === 3) {
+      const m = (first.textContent || '').match(
+        /^\s*(Math|Reasoning|Source|Sources|Citation|Citations|Data|Next step|Next steps|Tradeoff|Tradeoffs|Caveat|Caveats)\s*:\s*/i
+      );
+      if (m) {
+        const clone = p.cloneNode(true);
+        clone.firstChild.textContent =
+          clone.firstChild.textContent.slice(m[0].length);
+        return { label: m[1], restHtml: clone.innerHTML };
+      }
+    }
+    return null;
+  }
+  function splitIntoSections(html) {
+    const tmp = document.createElement('div');
+    tmp.innerHTML = html;
+    const lede = [];
+    const sections = [];   // [{label, bodyHtml}]
+    let current = null;    // section being filled
+    for (const node of Array.from(tmp.childNodes)) {
+      if (node.nodeType !== 1) {
+        // text/whitespace → pass through to wherever we are
+        const html = node.textContent || '';
+        if (current) current.bodyHtml += html;
+        else if (sections.length === 0) lede.push(html);
+        continue;
+      }
+      const tag = node.tagName;
+      // Heading → start a new section
+      if (tag === 'H1' || tag === 'H2' || tag === 'H3') {
+        current = { label: node.textContent || 'More', bodyHtml: '' };
+        sections.push(current);
+        continue;
+      }
+      // Paragraph that *starts* with a canonical label → start a section
+      if (tag === 'P') {
+        const hit = detectLabelInParagraph(node);
+        if (hit) {
+          current = { label: summaryFromLabel(hit.label), bodyHtml: '' };
+          sections.push(current);
+          if (hit.restHtml.trim()) {
+            current.bodyHtml += `<p>${hit.restHtml}</p>`;
+          }
+          continue;
+        }
+        // Paragraph that *ends* with "Label:" — split it.
+        // The prefix stays as lede/current-section prose; the label
+        // opens a new section that captures the following blocks
+        // (typically a <ul> with the math, or another paragraph).
+        const tailMatch = (node.textContent || '').match(
+          /^([\s\S]*?)\b(Math|Reasoning|Source|Sources|Citation|Citations|Data|Next step|Next steps|Tradeoff|Tradeoffs|Caveat|Caveats)\s*:\s*$/i
+        );
+        if (tailMatch && tailMatch[1].trim().length > 0) {
+          const prefix = tailMatch[1].replace(/[\s—\-]+$/, '').trim();
+          if (prefix) {
+            const html = `<p>${escapeHtml(prefix)}</p>`;
+            if (current) current.bodyHtml += html;
+            else         lede.push(html);
+          }
+          current = { label: summaryFromLabel(tailMatch[2]), bodyHtml: '' };
+          sections.push(current);
+          continue;
+        }
+      }
+      // Otherwise: append to current section, or to lede if none yet.
+      const html = node.outerHTML;
+      if (current) current.bodyHtml += html;
+      else         lede.push(html);
+    }
+    // If there's no lede at all, hoist the first sentence of section 1
+    // up so the user sees an answer before having to click anything.
+    if (lede.length === 0 && sections.length > 0) {
+      const s = sections[0];
+      const m = s.bodyHtml.match(/^<p>([\s\S]*?)<\/p>([\s\S]*)$/i);
+      if (m) {
+        const firstP = m[1];
+        const rest   = m[2];
+        const sentMatch = firstP.match(/^([^.!?]*[.!?])\s*([\s\S]*)$/);
+        if (sentMatch && sentMatch[1].trim().length > 0) {
+          lede.push(`<p>${sentMatch[1].trim()}</p>`);
+          const remainder = sentMatch[2].trim();
+          s.bodyHtml = (remainder ? `<p>${remainder}</p>` : '') + rest;
+          if (!s.bodyHtml.trim()) sections.shift();
+        }
+      }
+    }
+    return { ledeHtml: lede.join(''), sections };
+  }
+  function renderAssistantHtml(text) {
+    const rendered = renderMd(text);
+    const { ledeHtml, sections } = splitIntoSections(rendered);
+    if (sections.length === 0) return rendered;
+    const parts = [];
+    if (ledeHtml.trim()) {
+      parts.push(`<div class="advisor-lede">${ledeHtml}</div>`);
+    }
+    for (const s of sections) {
+      const label = s.label && s.label.trim() ? s.label : 'More';
+      parts.push(
+        `<details class="advisor-section">` +
+          `<summary><span class="advisor-section-label">${escapeHtml(label)}</span><span class="advisor-section-chev" aria-hidden="true"></span></summary>` +
+          `<div class="advisor-section-body">${s.bodyHtml}</div>` +
+        `</details>`
+      );
+    }
+    return parts.join('');
+  }
+
   // ---- DOM helpers
   function clearEmpty() { if (empty && empty.parentNode) empty.remove(); }
   function addMsg(role, text, metaText) {
@@ -2226,7 +2414,7 @@ loadDrafts();
       (metaText ? `<div class="advisor-meta">${escapeHtml(metaText)}</div>` : '');
     const bubble = wrap.querySelector('.advisor-bubble');
     if (role === 'user') bubble.textContent = text;
-    else                 bubble.innerHTML  = renderMd(text);
+    else                 bubble.innerHTML  = renderAssistantHtml(text);
     stream.appendChild(wrap);
     scrollBottom();
     return wrap;
