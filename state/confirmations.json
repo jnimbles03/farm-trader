@@ -107,15 +107,17 @@
       "+16302479950": {
         "last_reminded_at": "2026-05-01T16:02:54.121667+00:00",
         "name": "Patrick Meyer (solo)",
+        "raw": "Y",
         "reminders_sent": 4,
+        "replied_at": "2026-05-01T16:04:42.754Z",
         "send_ok": true,
-        "vote": null
+        "vote": "Y"
       }
     },
     "required": [],
     "sent_at": "2026-05-01T14:20:42.618588+00:00",
     "signal_key": "solo|farm-test|group-confirmation|2026-05-01T14:20:42",
-    "status": "pending"
+    "status": "confirmed"
   },
   "_orphans": [
     {
