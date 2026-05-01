@@ -1,4 +1,12 @@
 {
+  "40b8d1": {
+    "no": 0,
+    "sent_at": "2026-05-01T14:37:12.183447+00:00",
+    "signal_key": "farm-test|group-confirmation|2026-05-01T14:37:12",
+    "status": "pending",
+    "total": 6,
+    "yes": 0
+  },
   "46061e": {
     "no": 0,
     "sent_at": "2026-04-22T04:03:14.657736+00:00",

@@ -1,4 +1,53 @@
 {
+  "40b8d1": {
+    "kind": "farm-test-broadcast",
+    "message": "[FARM TEST] Group confirmation request \u2014 reply YES or Y to confirm. I'll let everyone know as confirmations come in.\n\nSample trade: SELL 1,000 bu Nov '26 soybeans @ $10.45 ($10,450). Daily @ Risk \u00b1$430.\n\nRequired: Maryann, Dan, Susan.\nOptional: Patrick, Kevin, Alison.\n\nOne-time test, thanks.",
+    "optional": [
+      "+16302479950",
+      "+17084203265",
+      "+17087109385"
+    ],
+    "recipients": {
+      "+13126361666": {
+        "name": "Dan Cooke",
+        "send_ok": true,
+        "vote": null
+      },
+      "+16302122546": {
+        "name": "Maryann Meyer",
+        "send_ok": true,
+        "vote": null
+      },
+      "+16302479950": {
+        "name": "Patrick Meyer",
+        "send_ok": true,
+        "vote": null
+      },
+      "+17084203265": {
+        "name": "Kevin Cooke",
+        "send_ok": true,
+        "vote": null
+      },
+      "+17087109385": {
+        "name": "Alison Lindeen",
+        "send_ok": true,
+        "vote": null
+      },
+      "+17087109387": {
+        "name": "Sue Lindeen",
+        "send_ok": true,
+        "vote": null
+      }
+    },
+    "required": [
+      "+16302122546",
+      "+13126361666",
+      "+17087109387"
+    ],
+    "sent_at": "2026-05-01T14:37:12.183447+00:00",
+    "signal_key": "farm-test|group-confirmation|2026-05-01T14:37:12",
+    "status": "pending"
+  },
   "46061e": {
     "message": "FREIS FARM confirmation test \u2014 this is a drill, not a real signal. Reply 'Y 46061e' to confirm, 'N 46061e' to veto.",
     "recipients": {
