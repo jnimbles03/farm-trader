@@ -659,7 +659,6 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
     <a href="./" class="shell-tab here">Today's Call</a>
     <a href="hedge.html" class="shell-tab">Hedge</a>
     <a href="farm-ops.html" class="shell-tab">Farm Ops</a>
-    <a href="advisor.html" class="shell-tab">Advisor</a>
   </div>
   <div class="shell-meta">APR 30, 2026 · CT</div>
 </nav>
@@ -893,7 +892,8 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
 /* ===== TRADE ORDER WIDGET ===== */
 /* ============ TRADE ORDER WIDGET ============ */
   .trade-trigger {
-    position: fixed; right: 0; top: 50%; transform: translateY(-50%);
+    position: fixed; right: 0; top: calc(50% + 92px);
+    transform: translateY(-50%);
     background: var(--sage-deep); color: var(--cream);
     border: 0; padding: 18px 12px;
     font-family: "DM Sans", sans-serif;
@@ -904,8 +904,34 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
     box-shadow: 0 0 32px rgba(123, 174, 127, 0.35), 0 0 0 0.5px rgba(58,61,54,0.08);
     z-index: 50;
     -webkit-tap-highlight-color: transparent;
+    border-radius: 4px 0 0 4px;
   }
 .trade-trigger-rail { display: none; }
+/* ---- Advisor trigger: same shape as trade trigger, sage-pale fill,
+   sits directly above it on the right edge. ---- */
+.advisor-trigger {
+  position: fixed; right: 0; top: calc(50% - 92px);
+  transform: translateY(-50%);
+  background: var(--paper); color: var(--ink-2);
+  border: 0.5px solid var(--border); border-right: 0;
+  padding: 18px 12px;
+  font-family: "DM Sans", sans-serif;
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  cursor: pointer;
+  writing-mode: vertical-rl;
+  box-shadow: 0 0 32px rgba(58,61,54,0.07);
+  z-index: 50;
+  -webkit-tap-highlight-color: transparent;
+  border-radius: 4px 0 0 4px;
+}
+.advisor-trigger:hover { background: var(--sage-pale); }
+.advisor-trigger .advisor-trigger-dot {
+  display: inline-block;
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--sage); margin-bottom: 6px;
+  writing-mode: horizontal-tb;
+}
 .trade-drawer {
     position: fixed; top: 0; right: 0; bottom: 0;
     width: 380px; max-width: 92vw;
@@ -938,6 +964,228 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
     z-index: 55;
   }
 .trade-scrim.open { opacity: 1; pointer-events: auto; }
+
+/* ====== ADVISOR DRAWER ======
+   Same envelope as the trade drawer (slide from right, scrim, mobile
+   slide-from-bottom) but wider — chat needs room for tables. */
+.advisor-drawer {
+  position: fixed; top: 0; right: 0; bottom: 0;
+  width: 520px; max-width: 96vw;
+  background: var(--cream);
+  border-left: 0.5px solid var(--border);
+  box-shadow: -24px 0 64px rgba(58,61,54,0.10);
+  transform: translateX(100%);
+  transition: transform 0.32s cubic-bezier(.22,.61,.36,1);
+  z-index: 60;
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+.advisor-drawer.open { transform: translateX(0); }
+@media (max-width: 560px) {
+  .advisor-drawer {
+    width: 100vw; max-width: 100vw;
+    bottom: 0; top: auto; height: 92vh; right: 0;
+    transform: translateY(100%);
+    border-left: 0; border-top: 0.5px solid var(--border);
+    border-radius: 14px 14px 0 0;
+  }
+  .advisor-drawer.open { transform: translateY(0); }
+}
+.advisor-head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  border-bottom: 0.5px solid var(--border);
+  padding: 22px 24px 14px;
+  flex-shrink: 0;
+}
+.advisor-eyebrow {
+  font-family: "DM Sans", sans-serif;
+  font-size: 10.5px; font-weight: 500;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--slate);
+}
+.advisor-eyebrow em { font-style: normal; color: var(--sage-deep); }
+.advisor-close {
+  background: transparent; border: 0; cursor: pointer;
+  font-size: 26px; line-height: 1; color: var(--slate);
+  padding: 0 4px;
+}
+.advisor-intro {
+  padding: 14px 24px 8px;
+  flex-shrink: 0;
+}
+.advisor-h {
+  font-family: "Fraunces", serif;
+  font-weight: 500; font-size: 22px;
+  color: var(--ink-2);
+  margin: 0 0 4px;
+  letter-spacing: -0.2px;
+}
+.advisor-h em { font-style: italic; color: var(--sage-deep); font-weight: 400; }
+.advisor-sub {
+  font-family: "Fraunces", serif; font-style: italic;
+  font-size: 13px; color: var(--slate);
+  margin: 0;
+}
+.advisor-toolbar {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 24px 0;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px; text-transform: uppercase; letter-spacing: 1px;
+  color: var(--slate);
+  flex-shrink: 0;
+}
+.advisor-toolbar select {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px; text-transform: uppercase; letter-spacing: 1px;
+  background: var(--paper); color: var(--ink);
+  border: 1px solid var(--border); border-radius: 4px;
+  padding: 3px 7px;
+}
+.advisor-toolbar button {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px;
+  background: none; color: var(--slate);
+  border: 1px solid var(--border); border-radius: 4px;
+  padding: 3px 9px; cursor: pointer;
+}
+.advisor-toolbar button:hover { color: var(--ink-2); border-color: var(--rule); }
+.advisor-stream {
+  flex: 1; overflow-y: auto;
+  padding: 18px 24px 12px;
+  display: flex; flex-direction: column; gap: 18px;
+  scroll-behavior: smooth;
+}
+.advisor-empty {
+  font-family: "Fraunces", serif; font-style: italic;
+  color: var(--slate); padding: 24px 0; text-align: center;
+}
+.advisor-empty .advisor-suggest {
+  display: block; margin-top: 14px;
+  font-family: "JetBrains Mono", monospace; font-style: normal;
+  font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px;
+  color: var(--dust);
+}
+.advisor-suggest-list {
+  display: flex; flex-direction: column; gap: 6px;
+  margin-top: 10px;
+}
+.advisor-suggest-list button {
+  font-family: "DM Sans", sans-serif; font-size: 12px;
+  background: var(--paper); color: var(--ink);
+  border: 1px solid var(--border); border-radius: 16px;
+  padding: 7px 12px; cursor: pointer; text-align: left;
+}
+.advisor-suggest-list button:hover {
+  border-color: var(--sage); color: var(--ink-2);
+}
+.advisor-msg { display: flex; flex-direction: column; gap: 5px; }
+.advisor-msg .advisor-byline {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 9.5px; text-transform: uppercase;
+  letter-spacing: 1.2px; color: var(--dust);
+}
+.advisor-msg.you .advisor-byline { color: var(--sage-deep); }
+.advisor-msg .advisor-bubble {
+  background: var(--paper); border: 1px solid var(--border);
+  border-radius: 8px; padding: 12px 14px;
+  font-size: 13.5px; line-height: 1.55;
+  color: var(--ink); word-wrap: break-word;
+}
+.advisor-msg.you .advisor-bubble {
+  background: var(--sage-pale); border-color: #d3e0c4;
+}
+.advisor-msg .advisor-bubble p { margin: 0 0 8px; }
+.advisor-msg .advisor-bubble p:last-child { margin-bottom: 0; }
+.advisor-msg .advisor-bubble h1,
+.advisor-msg .advisor-bubble h2,
+.advisor-msg .advisor-bubble h3 {
+  font-family: "Fraunces", serif; font-weight: 500;
+  margin: 10px 0 6px; color: var(--ink-2);
+}
+.advisor-msg .advisor-bubble h1 { font-size: 16px; }
+.advisor-msg .advisor-bubble h2 { font-size: 14.5px; }
+.advisor-msg .advisor-bubble h3 { font-size: 13px; }
+.advisor-msg .advisor-bubble strong { color: var(--ink-2); font-weight: 600; }
+.advisor-msg .advisor-bubble em { font-style: italic; }
+.advisor-msg .advisor-bubble code {
+  font-family: "JetBrains Mono", monospace; font-size: 11.5px;
+  background: var(--paper-2); padding: 1px 5px; border-radius: 3px;
+}
+.advisor-msg .advisor-bubble pre {
+  background: var(--paper-2); padding: 9px 11px; border-radius: 4px;
+  overflow-x: auto;
+}
+.advisor-msg .advisor-bubble pre code { background: none; padding: 0; }
+.advisor-msg .advisor-bubble ul,
+.advisor-msg .advisor-bubble ol { margin: 5px 0 8px 18px; padding: 0; }
+.advisor-msg .advisor-bubble li { margin: 1px 0; }
+.advisor-msg .advisor-bubble table {
+  border-collapse: collapse; margin: 8px 0;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11.5px; width: 100%;
+}
+.advisor-msg .advisor-bubble th,
+.advisor-msg .advisor-bubble td {
+  border: 1px solid var(--border); padding: 5px 8px; text-align: left;
+}
+.advisor-msg .advisor-bubble th { background: var(--paper-2); font-weight: 500; }
+.advisor-msg .advisor-bubble hr {
+  border: none; border-top: 1px solid var(--border); margin: 10px 0;
+}
+.advisor-msg .advisor-meta {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 9.5px; color: var(--dust); letter-spacing: .3px;
+}
+.advisor-thinking {
+  font-family: "Fraunces", serif; font-style: italic;
+  color: var(--slate); display: flex; align-items: center; gap: 8px;
+}
+.advisor-thinking .advisor-dots {
+  display: inline-block; width: 22px;
+  font-family: "JetBrains Mono", monospace; color: var(--sage-deep);
+}
+.advisor-thinking .advisor-dots::after {
+  content: ""; animation: advisor-dots 1.4s steps(4, end) infinite;
+}
+@keyframes advisor-dots {
+  0%   { content: ""; }
+  25%  { content: "."; }
+  50%  { content: ".."; }
+  75%  { content: "..."; }
+  100% { content: ""; }
+}
+.advisor-composer {
+  border-top: 0.5px solid var(--border);
+  padding: 14px 24px 18px;
+  flex-shrink: 0; background: var(--cream);
+}
+.advisor-composer-inner {
+  display: flex; gap: 8px; align-items: flex-end;
+  background: var(--paper);
+  border: 1px solid var(--border); border-radius: 10px;
+  padding: 8px 10px;
+}
+.advisor-composer-inner textarea {
+  flex: 1; min-height: 22px; max-height: 160px;
+  resize: none; border: none; outline: none;
+  font-family: "DM Sans", sans-serif; font-size: 13.5px;
+  background: transparent; color: var(--ink);
+  padding: 5px 4px;
+}
+.advisor-composer-inner textarea::placeholder { color: var(--dust); }
+.advisor-send {
+  font-family: "DM Sans", sans-serif; font-weight: 600; font-size: 12px;
+  background: var(--sage-deep); color: var(--paper);
+  border: none; border-radius: 6px; cursor: pointer;
+  padding: 7px 14px;
+}
+.advisor-send:hover  { background: var(--ink-2); }
+.advisor-send[disabled] { opacity: .5; cursor: not-allowed; }
+.advisor-hint {
+  text-align: center; margin-top: 6px;
+  font-family: "JetBrains Mono", monospace; font-size: 9.5px;
+  letter-spacing: 1px; text-transform: uppercase; color: var(--dust);
+}
 .trade-head {
     display: flex; justify-content: space-between; align-items: baseline;
     border-bottom: 0.5px solid var(--border); padding-bottom: 10px;
@@ -1215,6 +1463,54 @@ button.trade-cta { cursor: pointer; }
     color: var(--slate);
   }
 </style>
+
+<!-- ================== ADVISOR WIDGET ================== -->
+<button class="advisor-trigger" id="advisor-trigger" type="button"
+        aria-label="Open the trade advisor chat">
+  <span class="advisor-trigger-dot" aria-hidden="true"></span>
+  Ask the advisor
+</button>
+
+<aside class="advisor-drawer" id="advisor-drawer" aria-hidden="true"
+       role="dialog" aria-label="Trade advisor chat">
+  <div class="advisor-head">
+    <div class="advisor-eyebrow">Freis <em>Farm</em> · Advisor</div>
+    <button class="advisor-close" id="advisor-close" type="button"
+            aria-label="Close">×</button>
+  </div>
+
+  <div class="advisor-intro">
+    <h3 class="advisor-h">Think it through.</h3>
+    <p class="advisor-sub">Grounded in your books, recent news, and Ritchie's actual storage rates from your invoices.</p>
+  </div>
+
+  <div class="advisor-toolbar">
+    <span>Channel:</span>
+    <select id="advisor-channel">
+      <option value="web" selected>Web</option>
+      <option value="sms">SMS preview</option>
+    </select>
+    <button id="advisor-clear" type="button">Clear</button>
+  </div>
+
+  <div class="advisor-stream" id="advisor-stream">
+    <div class="advisor-empty" id="advisor-empty">
+      <div>Plain-language answers, ledger-grounded math, citations to the sheet.</div>
+      <span class="advisor-suggest">Try one of these</span>
+      <div class="advisor-suggest-list" id="advisor-suggest-list"></div>
+    </div>
+  </div>
+
+  <div class="advisor-composer">
+    <div class="advisor-composer-inner">
+      <textarea id="advisor-input" rows="1"
+        placeholder="Ask anything — e.g. 'May/June soy 11.95, target 11.98 or wait?'"
+      ></textarea>
+      <button id="advisor-send" class="advisor-send" type="button">Ask</button>
+    </div>
+    <div class="advisor-hint">⌘+Return sends · /deep = Opus · /quick = Haiku</div>
+  </div>
+</aside>
 
 <!-- ================== TRADE ORDER WIDGET ================== -->
 <button class="trade-trigger" id="trade-trigger" type="button" aria-label="Open the trade order builder">
@@ -1784,6 +2080,308 @@ document.addEventListener('keydown', (e) => {
 TRANCHES = [defaultTranche()];
 renderTranches();
 loadDrafts();
+</script>
+
+<script>
+/* ─────────────────────────────────────────────────────────────
+   ADVISOR DRAWER
+   POSTs to /advisor with the saved auth token + last 20 turns.
+   Single round-trip per turn (no streaming). Reuses the trade
+   widget's scrim so only one drawer is open at a time.
+   ───────────────────────────────────────────────────────────── */
+(function () {
+  const SUGGESTIONS = [
+    "May/June soy 11.95 — worth a target on June 11.98 or wait?",
+    "How does my soy basis right now compare to the last 5 Mays?",
+    "Should I prepay Lattering or hold corn through summer?",
+    "Walk me through the books — my 2025 net result.",
+  ];
+  const HISTORY_KEY = 'freis-advisor-thread-v1';
+  const AUTH_KEY    = 'freis-farm-auth-v2';
+  const HISTORY_MAX = 20;
+
+  const $ = id => document.getElementById(id);
+  const stream    = $('advisor-stream');
+  const empty     = $('advisor-empty');
+  const input     = $('advisor-input');
+  const sendBtn   = $('advisor-send');
+  const channelSel= $('advisor-channel');
+  const drawer    = $('advisor-drawer');
+  const trigger   = $('advisor-trigger');
+  const closeBtn  = $('advisor-close');
+  const clearBtn  = $('advisor-clear');
+  const scrim     = $('trade-scrim');
+
+  // ---- thread persistence
+  function loadThread() {
+    try {
+      const raw = localStorage.getItem(HISTORY_KEY);
+      if (!raw) return [];
+      const arr = JSON.parse(raw);
+      return Array.isArray(arr) ? arr.slice(-HISTORY_MAX) : [];
+    } catch { return []; }
+  }
+  function saveThread(arr) {
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(arr.slice(-HISTORY_MAX)));
+  }
+  function readAuth() {
+    try {
+      const raw = localStorage.getItem(AUTH_KEY);
+      if (!raw) return null;
+      const obj = JSON.parse(raw);
+      if (!obj || !obj.token || !obj.expires_at) return null;
+      if (Date.parse(obj.expires_at) <= Date.now()) return null;
+      return obj;
+    } catch { return null; }
+  }
+  let history = loadThread();
+
+  // ---- markdown → HTML, minimal but covers what the advisor returns.
+  function escapeHtml(s) {
+    return s.replace(/[&<>"]/g, c => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'
+    }[c]));
+  }
+  function inlineMd(s) {
+    s = s.replace(/`([^`]+)`/g, (_, c) => `<code>${escapeHtml(c)}</code>`);
+    s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    s = s.replace(/(^|[^\*])\*([^*\n]+)\*/g, '$1<em>$2</em>');
+    return s;
+  }
+  function renderMd(src) {
+    const lines = src.replace(/\r\n?/g, '\n').split('\n');
+    const out = []; let i = 0;
+    while (i < lines.length) {
+      const line = lines[i];
+      if (/^```/.test(line)) {
+        const buf = []; i++;
+        while (i < lines.length && !/^```/.test(lines[i])) {
+          buf.push(escapeHtml(lines[i])); i++;
+        }
+        i++;
+        out.push(`<pre><code>${buf.join('\n')}</code></pre>`);
+        continue;
+      }
+      const h = line.match(/^(#{1,3})\s+(.*)$/);
+      if (h) {
+        out.push(`<h${h[1].length}>${inlineMd(escapeHtml(h[2]))}</h${h[1].length}>`);
+        i++; continue;
+      }
+      if (/^-{3,}$/.test(line)) { out.push('<hr>'); i++; continue; }
+      if (/^\s*\|/.test(line) && i + 1 < lines.length &&
+          /^\s*\|?\s*[-: ]+\|/.test(lines[i+1])) {
+        const head = line.replace(/^\s*\|/, '').replace(/\|\s*$/, '').split('|').map(c => c.trim());
+        i += 2;
+        const rows = [];
+        while (i < lines.length && /^\s*\|/.test(lines[i])) {
+          const r = lines[i].replace(/^\s*\|/, '').replace(/\|\s*$/, '').split('|').map(c => c.trim());
+          rows.push(r); i++;
+        }
+        out.push(
+          '<table><thead><tr>' +
+          head.map(c => `<th>${inlineMd(escapeHtml(c))}</th>`).join('') +
+          '</tr></thead><tbody>' +
+          rows.map(r => '<tr>' + r.map(c => `<td>${inlineMd(escapeHtml(c))}</td>`).join('') + '</tr>').join('') +
+          '</tbody></table>'
+        );
+        continue;
+      }
+      if (/^\s*[-\*]\s+/.test(line)) {
+        const items = [];
+        while (i < lines.length && /^\s*[-\*]\s+/.test(lines[i])) {
+          items.push(lines[i].replace(/^\s*[-\*]\s+/, '')); i++;
+        }
+        out.push('<ul>' + items.map(it => `<li>${inlineMd(escapeHtml(it))}</li>`).join('') + '</ul>');
+        continue;
+      }
+      if (/^\s*\d+\.\s+/.test(line)) {
+        const items = [];
+        while (i < lines.length && /^\s*\d+\.\s+/.test(lines[i])) {
+          items.push(lines[i].replace(/^\s*\d+\.\s+/, '')); i++;
+        }
+        out.push('<ol>' + items.map(it => `<li>${inlineMd(escapeHtml(it))}</li>`).join('') + '</ol>');
+        continue;
+      }
+      if (line.trim() === '') { i++; continue; }
+      const buf = [];
+      while (i < lines.length && lines[i].trim() !== '' &&
+             !/^(#{1,3}\s|[-*]\s|\d+\.\s|```|-{3,}$)/.test(lines[i]) &&
+             !/^\s*\|/.test(lines[i])) {
+        buf.push(lines[i]); i++;
+      }
+      out.push(`<p>${inlineMd(escapeHtml(buf.join(' ')))}</p>`);
+    }
+    return out.join('\n');
+  }
+
+  // ---- DOM helpers
+  function clearEmpty() { if (empty && empty.parentNode) empty.remove(); }
+  function addMsg(role, text, metaText) {
+    clearEmpty();
+    const wrap = document.createElement('div');
+    wrap.className = 'advisor-msg ' + (role === 'user' ? 'you' : 'them');
+    wrap.innerHTML =
+      `<div class="advisor-byline">${role === 'user' ? 'You' : 'Advisor'}</div>` +
+      `<div class="advisor-bubble"></div>` +
+      (metaText ? `<div class="advisor-meta">${escapeHtml(metaText)}</div>` : '');
+    const bubble = wrap.querySelector('.advisor-bubble');
+    if (role === 'user') bubble.textContent = text;
+    else                 bubble.innerHTML  = renderMd(text);
+    stream.appendChild(wrap);
+    scrollBottom();
+    return wrap;
+  }
+  function addThinking() {
+    clearEmpty();
+    const wrap = document.createElement('div');
+    wrap.className = 'advisor-msg them';
+    wrap.id = 'advisor-thinking-row';
+    wrap.innerHTML =
+      `<div class="advisor-byline">Advisor</div>` +
+      `<div class="advisor-bubble"><span class="advisor-thinking">Thinking<span class="advisor-dots"></span></span></div>`;
+    stream.appendChild(wrap);
+    scrollBottom();
+    return wrap;
+  }
+  function removeThinking() {
+    const t = document.getElementById('advisor-thinking-row');
+    if (t) t.remove();
+  }
+  function scrollBottom() {
+    setTimeout(() => { stream.scrollTop = stream.scrollHeight; }, 10);
+  }
+
+  function renderSuggestions() {
+    const host = $('advisor-suggest-list');
+    if (!host) return;
+    host.innerHTML = '';
+    for (const s of SUGGESTIONS) {
+      const b = document.createElement('button');
+      b.textContent = s; b.type = 'button';
+      b.addEventListener('click', () => { input.value = s; input.focus(); });
+      host.appendChild(b);
+    }
+  }
+
+  // ---- send a turn
+  async function sendTurn() {
+    const auth = readAuth();
+    if (!auth) {
+      // User isn't signed in — the dashboard's auth gate will reappear
+      // on next page load.
+      addMsg('assistant', '*Session expired. Reload the page to sign back in.*');
+      return;
+    }
+    const q = input.value.trim();
+    if (!q) return;
+    input.value = ''; input.style.height = 'auto';
+    sendBtn.disabled = true;
+
+    addMsg('user', q);
+    history.push({ role: 'user', content: q });
+    saveThread(history);
+
+    addThinking();
+    let r, err = null;
+    try {
+      const res = await fetch(window.WORKER_BASE + '/advisor', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          question:   q,
+          channel:    channelSel.value,
+          token:      auth.token,
+          expires_at: auth.expires_at,
+          history:    history.slice(0, -1),
+        }),
+      });
+      r = await res.json();
+      if (!res.ok) err = r && r.error ? r.error : `HTTP ${res.status}`;
+    } catch (e) {
+      err = e.message || 'Network error';
+    }
+    removeThinking();
+    if (err) {
+      addMsg('assistant', `*Couldn't reach the advisor.* ${err}`);
+      sendBtn.disabled = false; input.focus();
+      return;
+    }
+    if (!r.ok) {
+      addMsg('assistant', `*Advisor error:* ${r.error || 'unknown'}`);
+      if (/auth/i.test(r.error || '')) localStorage.removeItem(AUTH_KEY);
+      sendBtn.disabled = false; input.focus();
+      return;
+    }
+    const metaLine = `${r.model} · ${r.tokens.in} in · ${r.tokens.out} out · $${r.cost_usd.toFixed(4)}`;
+    addMsg('assistant', r.reply, metaLine);
+    history.push({ role: 'assistant', content: r.reply });
+    saveThread(history);
+    sendBtn.disabled = false; input.focus();
+  }
+
+  // ---- composer wiring
+  sendBtn.addEventListener('click', sendTurn);
+  input.addEventListener('keydown', (ev) => {
+    if (ev.key === 'Enter' && (ev.metaKey || ev.ctrlKey)) {
+      ev.preventDefault(); sendTurn();
+    }
+  });
+  input.addEventListener('input', () => {
+    input.style.height = 'auto';
+    input.style.height = Math.min(input.scrollHeight, 160) + 'px';
+  });
+
+  clearBtn.addEventListener('click', () => {
+    if (!confirm('Clear the entire conversation?')) return;
+    history = []; saveThread(history);
+    stream.innerHTML = '';
+    const e = document.createElement('div');
+    e.className = 'advisor-empty'; e.id = 'advisor-empty';
+    e.innerHTML =
+      '<div>Plain-language answers, ledger-grounded math, citations to the sheet.</div>' +
+      '<span class="advisor-suggest">Try one of these</span>' +
+      '<div class="advisor-suggest-list" id="advisor-suggest-list"></div>';
+    stream.appendChild(e);
+    renderSuggestions();
+  });
+
+  // ---- open / close
+  function openAdvisor() {
+    drawer.classList.add('open');
+    drawer.setAttribute('aria-hidden', 'false');
+    if (scrim) scrim.classList.add('open');
+    // First open with no history → render suggestions and replay any saved thread.
+    if (history.length && stream.querySelectorAll('.advisor-msg').length === 0) {
+      clearEmpty();
+      for (const t of history) {
+        addMsg(t.role === 'user' ? 'user' : 'assistant', t.content);
+      }
+    } else if (!history.length) {
+      renderSuggestions();
+    }
+    setTimeout(() => input.focus(), 50);
+  }
+  function closeAdvisor() {
+    drawer.classList.remove('open');
+    drawer.setAttribute('aria-hidden', 'true');
+    // Only drop the scrim if the trade drawer isn't also open.
+    const tradeOpen = document.getElementById('trade-drawer')
+      && document.getElementById('trade-drawer').classList.contains('open');
+    if (!tradeOpen && scrim) scrim.classList.remove('open');
+  }
+  trigger.addEventListener('click', openAdvisor);
+  closeBtn.addEventListener('click', closeAdvisor);
+  if (scrim) scrim.addEventListener('click', () => {
+    // Scrim click should close whichever drawer is open. Trade
+    // widget already binds this; we add the advisor's bind too.
+    if (drawer.classList.contains('open')) closeAdvisor();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && drawer.classList.contains('open')) {
+      closeAdvisor();
+    }
+  });
+})();
 </script>
 
 </body>
