@@ -35,9 +35,11 @@
       "+17084203265": {
         "last_reminded_at": "2026-05-01T16:30:56.520961+00:00",
         "name": "Kevin Cooke",
+        "raw": "Y",
         "reminders_sent": 4,
+        "replied_at": "2026-05-01T16:49:04.458Z",
         "send_ok": true,
-        "vote": null
+        "vote": "Y"
       },
       "+17087109385": {
         "name": "Alison Lindeen",
@@ -63,7 +65,7 @@
     ],
     "sent_at": "2026-05-01T14:37:12.183447+00:00",
     "signal_key": "farm-test|group-confirmation|2026-05-01T14:37:12",
-    "status": "pending"
+    "status": "confirmed"
   },
   "46061e": {
     "message": "FREIS FARM confirmation test \u2014 this is a drill, not a real signal. Reply 'Y 46061e' to confirm, 'N 46061e' to veto.",
