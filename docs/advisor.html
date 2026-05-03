@@ -1,0 +1,830 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#FAF7F2">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Advisor">
+<title>Freis Farm — Advisor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream:    #FAF7F2;
+  --paper:    #FFFDF7;
+  --paper-2:  #F4EFE5;
+  --border:   #E2DDD5;
+  --rule:     #C8C3BA;
+  --dust:     #A8A39A;
+  --slate:    #7A756D;
+  --ink:      #3D3A36;
+  --ink-2:    #1F1D1A;
+  --sage:      #7BAE7F;
+  --sage-deep: #5C8F60;
+  --sage-pale: #E5EDDD;
+  --danger:    #9C3D3D;
+  --font-display: "Fraunces", Georgia, serif;
+  --font-text:    "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono:    "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-top:    env(safe-area-inset-top, 0px);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; height: 100%; }
+body {
+  font-family: var(--font-text);
+  color: var(--ink);
+  background: var(--cream);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overscroll-behavior-y: none;
+}
+body.auth-locked { overflow: hidden; }
+
+/* ---------- auth gate (same shape as home.html) ---------- */
+.auth-gate {
+  position: fixed; inset: 0; z-index: 1000;
+  background: var(--cream);
+  display: grid; place-items: center;
+  transition: opacity .35s ease;
+  padding: 16px;
+}
+.auth-gate.out { opacity: 0; pointer-events: none; }
+.auth-gate.shake .auth-card { animation: shake .4s ease; }
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  50% { transform: translateX(6px); }
+  75% { transform: translateX(-3px); }
+}
+.auth-card {
+  text-align: center;
+  padding: 36px 28px;
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  width: 100%;
+  max-width: 360px;
+}
+.auth-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px;
+  color: var(--dust);
+}
+.auth-eyebrow em { font-style: normal; color: var(--sage-deep); }
+.auth-title {
+  font-family: var(--font-display);
+  font-weight: 500; font-size: 26px;
+  color: var(--ink-2);
+  margin: 12px 0 6px;
+  letter-spacing: -0.2px;
+}
+.auth-tip {
+  font-family: var(--font-display); font-style: italic;
+  color: var(--slate);
+  margin: 0 0 18px;
+  font-size: 14px;
+}
+.auth-input {
+  width: 100%; max-width: 240px;
+  padding: 12px 16px;
+  font-family: var(--font-mono);
+  font-size: 22px;
+  text-align: center;
+  letter-spacing: 8px;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  background: var(--cream);
+  color: var(--ink-2);
+  outline: none;
+}
+.auth-input:focus { border-color: var(--sage-deep); }
+.auth-input-phone {
+  width: 100%; max-width: 280px;
+  letter-spacing: 0;
+  text-align: left;
+  font-size: 17px;
+  padding: 12px 14px;
+  font-family: var(--font-text);
+}
+.auth-input-otp { letter-spacing: 12px; max-width: 240px; }
+.auth-error {
+  font-size: 12px; color: var(--danger);
+  margin-top: 10px; min-height: 16px;
+  font-family: var(--font-mono);
+}
+.auth-submit {
+  display: block;
+  margin: 14px auto 0;
+  background: var(--ink-2);
+  color: var(--cream);
+  border: 0;
+  border-radius: 6px;
+  padding: 12px 22px;
+  font-family: var(--font-text);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  min-height: 44px;
+}
+.auth-submit:hover:not(:disabled) { background: var(--sage-deep); }
+.auth-submit:disabled { opacity: 0.5; cursor: wait; }
+.auth-link {
+  display: block;
+  margin: 14px auto 0;
+  background: transparent;
+  border: 0;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 13px;
+  color: var(--slate);
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: var(--rule);
+  text-underline-offset: 3px;
+  padding: 8px 12px;
+}
+.auth-link:hover { color: var(--ink-2); text-decoration-color: var(--sage-deep); }
+.auth-stage[hidden] { display: none; }
+
+/* ---------- app shell ---------- */
+.app {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  height: 100dvh;
+  height: 100vh; /* fallback */
+}
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: calc(10px + var(--safe-top)) 16px 10px;
+  background: var(--cream);
+  border-bottom: 1px solid var(--border);
+}
+.topbar-title {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 18px;
+  color: var(--ink-2);
+  letter-spacing: -0.1px;
+}
+.topbar-title em { font-style: italic; color: var(--sage-deep); font-weight: 400; }
+.topbar-actions {
+  display: flex; gap: 4px;
+}
+.topbar-btn {
+  background: transparent;
+  border: 0;
+  color: var(--slate);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  padding: 8px 10px;
+  cursor: pointer;
+  border-radius: 4px;
+  min-height: 36px;
+}
+.topbar-btn:hover { color: var(--ink-2); background: var(--paper-2); }
+
+/* ---------- chat stream ---------- */
+.stream {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 14px 14px 8px;
+  display: flex; flex-direction: column; gap: 14px;
+  scroll-behavior: smooth;
+}
+.empty {
+  font-family: var(--font-display); font-style: italic;
+  color: var(--slate); text-align: center;
+  padding: 28px 8px;
+}
+.empty .empty-tag {
+  display: block; margin-top: 14px;
+  font-family: var(--font-mono); font-style: normal;
+  font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px;
+  color: var(--dust);
+}
+.suggest-list {
+  display: flex; flex-direction: column; gap: 6px;
+  margin-top: 10px;
+}
+.suggest-list button {
+  font-family: var(--font-text); font-size: 13px;
+  background: var(--paper); color: var(--ink);
+  border: 1px solid var(--border); border-radius: 16px;
+  padding: 9px 14px; cursor: pointer; text-align: left;
+  font-style: normal;
+}
+.suggest-list button:hover {
+  border-color: var(--sage); color: var(--ink-2);
+}
+
+.msg { display: flex; flex-direction: column; gap: 4px; max-width: 92%; }
+.msg.you { align-self: flex-end; }
+.msg.them { align-self: flex-start; }
+.byline {
+  font-family: var(--font-mono);
+  font-size: 9.5px; text-transform: uppercase;
+  letter-spacing: 1.2px; color: var(--dust);
+  padding: 0 4px;
+}
+.msg.you .byline { color: var(--sage-deep); text-align: right; }
+.bubble {
+  background: var(--paper); border: 1px solid var(--border);
+  border-radius: 14px; padding: 10px 13px;
+  font-size: 14.5px; line-height: 1.55;
+  color: var(--ink); word-wrap: break-word;
+}
+.msg.you .bubble {
+  background: var(--sage-pale); border-color: #d3e0c4;
+  border-bottom-right-radius: 4px;
+}
+.msg.them .bubble {
+  border-bottom-left-radius: 4px;
+}
+.bubble p { margin: 0 0 8px; }
+.bubble p:last-child { margin-bottom: 0; }
+.bubble h1, .bubble h2, .bubble h3 {
+  font-family: var(--font-display); font-weight: 500;
+  margin: 10px 0 6px; color: var(--ink-2);
+}
+.bubble h1 { font-size: 16px; }
+.bubble h2 { font-size: 15px; }
+.bubble h3 { font-size: 14px; }
+.bubble strong { color: var(--ink-2); font-weight: 600; }
+.bubble em { font-style: italic; }
+.bubble code {
+  font-family: var(--font-mono); font-size: 12px;
+  background: var(--paper-2); padding: 1px 5px; border-radius: 3px;
+}
+.bubble pre {
+  background: var(--paper-2); padding: 9px 11px; border-radius: 6px;
+  overflow-x: auto;
+}
+.bubble pre code { background: none; padding: 0; }
+.bubble ul, .bubble ol { margin: 4px 0 8px 18px; padding: 0; }
+.bubble li { margin: 1px 0; }
+.bubble hr {
+  border: none; border-top: 1px solid var(--border); margin: 10px 0;
+}
+.meta {
+  font-family: var(--font-mono); font-size: 9.5px;
+  color: var(--dust); padding: 0 6px;
+}
+.thinking { color: var(--slate); font-style: italic; }
+.thinking .dots::after {
+  content: ""; animation: dots 1.4s steps(4, end) infinite;
+}
+@keyframes dots {
+  0%   { content: ""; }
+  25%  { content: "."; }
+  50%  { content: ".."; }
+  75%  { content: "..."; }
+  100% { content: ""; }
+}
+
+/* ---------- composer (sticky bottom) ---------- */
+.composer {
+  background: var(--cream);
+  border-top: 1px solid var(--border);
+  padding: 8px 10px calc(8px + var(--safe-bottom));
+  display: flex; gap: 8px; align-items: flex-end;
+}
+.composer textarea {
+  flex: 1;
+  min-height: 40px;
+  max-height: 160px;
+  resize: none;
+  border: 1px solid var(--rule);
+  border-radius: 18px;
+  padding: 10px 14px;
+  font-family: var(--font-text);
+  font-size: 16px; /* >=16px keeps iOS from auto-zooming on focus */
+  line-height: 1.4;
+  background: var(--paper);
+  color: var(--ink);
+  outline: none;
+  -webkit-appearance: none;
+}
+.composer textarea:focus { border-color: var(--sage-deep); }
+.send-btn {
+  background: var(--ink-2);
+  color: var(--cream);
+  border: 0;
+  border-radius: 50%;
+  width: 40px; height: 40px;
+  cursor: pointer;
+  font-family: var(--font-text); font-size: 18px;
+  display: grid; place-items: center;
+  flex-shrink: 0;
+}
+.send-btn:disabled { opacity: 0.4; cursor: wait; }
+.send-btn:hover:not(:disabled) { background: var(--sage-deep); }
+.send-btn svg { width: 18px; height: 18px; fill: currentColor; }
+</style>
+</head>
+<body class="auth-locked">
+
+<!-- AUTH GATE — Phone OTP (primary) or Garage code (fallback). 30-day session. -->
+<div class="auth-gate" id="auth-gate" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+  <div class="auth-card">
+    <span class="auth-eyebrow">freis <em>·</em> farm <em>·</em> advisor</span>
+
+    <div class="auth-stage" data-stage="phone">
+      <h2 class="auth-title" id="auth-title">Sign in by text</h2>
+      <p class="auth-tip">We'll send you a 6-digit code.</p>
+      <input class="auth-input auth-input-phone" id="auth-phone" type="tel" inputmode="tel"
+             autocomplete="tel" placeholder="(630) 247-9950"
+             aria-label="Your phone number" />
+      <button type="button" class="auth-submit" id="auth-send-code">Send code</button>
+      <div class="auth-error" id="auth-error-phone" aria-live="polite"></div>
+      <button type="button" class="auth-link" data-go="garage">Use garage code instead</button>
+    </div>
+
+    <div class="auth-stage" data-stage="otp" hidden>
+      <h2 class="auth-title">Enter your code</h2>
+      <p class="auth-tip" id="auth-otp-tip">We sent a 6-digit code.</p>
+      <input class="auth-input auth-input-otp" id="auth-otp" type="text" inputmode="numeric"
+             pattern="\d*" maxlength="6" autocomplete="one-time-code"
+             aria-label="Six-digit code" />
+      <div class="auth-error" id="auth-error-otp" aria-live="polite"></div>
+      <button type="button" class="auth-link" id="auth-otp-resend">Send another code</button>
+      <button type="button" class="auth-link" data-go="phone">Use a different number</button>
+    </div>
+
+    <div class="auth-stage" data-stage="garage" hidden>
+      <h2 class="auth-title">Garage code</h2>
+      <p class="auth-tip">Same four digits as the door.</p>
+      <input class="auth-input" id="auth-garage" type="text" inputmode="numeric"
+             pattern="\d*" maxlength="4" autocomplete="off"
+             aria-label="Four-digit garage code" />
+      <div class="auth-error" id="auth-error-garage" aria-live="polite"></div>
+      <button type="button" class="auth-link" data-go="phone">Sign in by text instead</button>
+    </div>
+  </div>
+</div>
+
+<div class="app">
+  <header class="topbar">
+    <div class="topbar-title">Freis <em>Advisor</em></div>
+    <div class="topbar-actions">
+      <button class="topbar-btn" id="btn-clear" type="button">Clear</button>
+    </div>
+  </header>
+
+  <main class="stream" id="stream">
+    <div class="empty" id="empty">
+      <div>Plain-language answers, ledger-grounded math.</div>
+      <span class="empty-tag">Try one of these</span>
+      <div class="suggest-list" id="suggest-list"></div>
+    </div>
+  </main>
+
+  <form class="composer" id="composer" autocomplete="off">
+    <textarea id="input" rows="1"
+              placeholder="Ask about crops, sales, storage, basis…"
+              aria-label="Your question"></textarea>
+    <button class="send-btn" id="send" type="submit" aria-label="Send">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5l18-8-8 18-2-7-8-3z"/></svg>
+    </button>
+  </form>
+</div>
+
+<script>
+window.WORKER_BASE = "https://freis-farm-sms-reply.freis.workers.dev";
+
+/* ─────────────────────────────────────────────────────────────
+   AUTH GATE — same flow as home.html. Shares the
+   `freis-farm-auth-v2` localStorage key with the rest of the
+   dashboard, so signing in here also signs you in there.
+   ───────────────────────────────────────────────────────────── */
+(function () {
+  const STORAGE_KEY = 'freis-farm-auth-v2';
+  const TTL_FALLBACK_MS = 30 * 24 * 60 * 60 * 1000;
+  const gate = document.getElementById('auth-gate');
+  if (!gate) return;
+
+  function readStored() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return null;
+      const obj = JSON.parse(raw);
+      if (!obj || !obj.token || !obj.expires_at) return null;
+      if (Date.parse(obj.expires_at) <= Date.now()) {
+        localStorage.removeItem(STORAGE_KEY);
+        return null;
+      }
+      return obj;
+    } catch { return null; }
+  }
+  function storeAuth(token, expires_at, phone) {
+    const blob = { token, expires_at };
+    if (phone) blob.phone = phone;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(blob));
+  }
+  function dismiss() {
+    gate.classList.add('out');
+    setTimeout(() => {
+      gate.remove();
+      document.body.classList.remove('auth-locked');
+      document.getElementById('input')?.focus();
+    }, 350);
+  }
+  async function backgroundVerify(stored) {
+    try {
+      const r = await fetch(window.WORKER_BASE + '/auth/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: stored.token, expires_at: stored.expires_at }),
+      });
+      const j = await r.json().catch(() => ({}));
+      if (j && j.ok === false) localStorage.removeItem(STORAGE_KEY);
+    } catch { /* offline — keep the local token */ }
+  }
+
+  const stored = readStored();
+  if (stored) {
+    gate.remove();
+    document.body.classList.remove('auth-locked');
+    backgroundVerify(stored);
+    return;
+  }
+
+  const stages = {};
+  gate.querySelectorAll('.auth-stage').forEach(s => stages[s.dataset.stage] = s);
+  function go(name) {
+    Object.keys(stages).forEach(k => stages[k].hidden = (k !== name));
+    setTimeout(() => stages[name].querySelector('input')?.focus(), 50);
+  }
+  gate.querySelectorAll('.auth-link[data-go]').forEach(b =>
+    b.addEventListener('click', () => go(b.dataset.go)));
+
+  function normalizePhone(raw) {
+    let s = (raw || '').replace(/[^\d+]/g, '');
+    if (!s) return '';
+    if (!s.startsWith('+')) {
+      if (s.length === 10) s = '+1' + s;
+      else if (s.length === 11 && s.startsWith('1')) s = '+' + s;
+      else s = '+' + s;
+    }
+    return /^\+\d{10,15}$/.test(s) ? s : '';
+  }
+  function shake(stage, errEl, msg) {
+    gate.classList.add('shake');
+    errEl.textContent = msg;
+    setTimeout(() => gate.classList.remove('shake'), 400);
+  }
+
+  let pendingPhone = null;
+  let pendingBundle = null;
+
+  async function sendCode() {
+    const errEl = document.getElementById('auth-error-phone');
+    errEl.textContent = '';
+    const phone = normalizePhone(document.getElementById('auth-phone').value);
+    if (!phone) return shake('phone', errEl, 'Enter a valid phone number.');
+    const btn = document.getElementById('auth-send-code');
+    btn.disabled = true;
+    try {
+      const r = await fetch(window.WORKER_BASE + '/auth/sms-start', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone }),
+      });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok || !j.ok) return shake('phone', errEl, j.error || 'Could not send code.');
+      pendingPhone = phone;
+      pendingBundle = { nonce: j.nonce, expires_at: j.expires_at, hmac: j.hmac };
+      document.getElementById('auth-otp-tip').textContent =
+        'Sent to ' + phone.replace(/^\+1(\d{3})(\d{3})(\d{4})$/, '($1) $2-$3') + '.';
+      go('otp');
+    } catch {
+      shake('phone', errEl, 'Network error. Try again.');
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  async function verifyCode(code) {
+    const errEl = document.getElementById('auth-error-otp');
+    errEl.textContent = '';
+    if (!pendingBundle || !pendingPhone) return shake('otp', errEl, 'Session expired. Try again.');
+    try {
+      const r = await fetch(window.WORKER_BASE + '/auth/sms-verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          phone: pendingPhone, code,
+          nonce: pendingBundle.nonce,
+          expires_at: pendingBundle.expires_at,
+          hmac: pendingBundle.hmac,
+        }),
+      });
+      const j = await r.json().catch(() => ({}));
+      if (r.ok && j.ok && j.token && j.expires_at) {
+        storeAuth(j.token, j.expires_at, pendingPhone);
+        dismiss();
+        return;
+      }
+      shake('otp', errEl, j.error || 'Wrong code. Try again.');
+      const inp = document.getElementById('auth-otp');
+      setTimeout(() => { inp.value = ''; inp.focus(); }, 400);
+    } catch {
+      shake('otp', errEl, 'Network error. Try again.');
+    }
+  }
+
+  document.getElementById('auth-send-code').addEventListener('click', sendCode);
+  document.getElementById('auth-phone').addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); sendCode(); }
+  });
+  document.getElementById('auth-otp-resend').addEventListener('click', sendCode);
+  document.getElementById('auth-otp').addEventListener('input', e => {
+    document.getElementById('auth-error-otp').textContent = '';
+    e.target.value = e.target.value.replace(/\D/g, '');
+    if (e.target.value.length === 6) verifyCode(e.target.value);
+  });
+
+  async function submitGarage(code) {
+    const errEl = document.getElementById('auth-error-garage');
+    errEl.textContent = '';
+    try {
+      const r = await fetch(window.WORKER_BASE + '/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code }),
+      });
+      const j = await r.json().catch(() => ({}));
+      if (r.ok && j.ok && j.token && j.expires_at) {
+        storeAuth(j.token, j.expires_at);
+        dismiss();
+        return;
+      }
+      return shake('garage', errEl, r.status === 401 ? 'Wrong code. Try again.' : 'Login failed.');
+    } catch {
+      if (code === '8467') {
+        storeAuth('stub-' + Date.now(), new Date(Date.now() + TTL_FALLBACK_MS).toISOString());
+        dismiss();
+      } else {
+        shake('garage', errEl, 'Wrong code. Try again.');
+      }
+    }
+    setTimeout(() => {
+      const inp = document.getElementById('auth-garage');
+      inp.value = ''; inp.focus();
+    }, 400);
+  }
+  document.getElementById('auth-garage').addEventListener('input', e => {
+    document.getElementById('auth-error-garage').textContent = '';
+    e.target.value = e.target.value.replace(/\D/g, '');
+    if (e.target.value.length === 4) submitGarage(e.target.value);
+  });
+
+  go('phone');
+})();
+
+/* ─────────────────────────────────────────────────────────────
+   ADVISOR CHAT — single-file, mobile-first.
+   POSTs to /advisor with the saved auth token + last 20 turns.
+   Channel is fixed to "web" so replies come back in markdown.
+   Same thread storage key as the dashboard drawer, so the
+   conversation survives across pages.
+   ───────────────────────────────────────────────────────────── */
+(function () {
+  const SUGGESTIONS = [
+    "Should I sell more soy before June 1, or hold?",
+    "What's my corn position right now?",
+    "Walk me through 2025 P&L.",
+    "Storage is costing me how much per month?",
+  ];
+  const HISTORY_KEY = 'freis-advisor-thread-v1';
+  const AUTH_KEY    = 'freis-farm-auth-v2';
+  const HISTORY_MAX = 20;
+
+  const $ = id => document.getElementById(id);
+  const stream  = $('stream');
+  const empty   = $('empty');
+  const input   = $('input');
+  const sendBtn = $('send');
+  const form    = $('composer');
+  const clearBtn= $('btn-clear');
+
+  function loadThread() {
+    try {
+      const raw = localStorage.getItem(HISTORY_KEY);
+      if (!raw) return [];
+      const arr = JSON.parse(raw);
+      return Array.isArray(arr) ? arr.slice(-HISTORY_MAX) : [];
+    } catch { return []; }
+  }
+  function saveThread(arr) {
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(arr.slice(-HISTORY_MAX)));
+  }
+  function readAuth() {
+    try {
+      const raw = localStorage.getItem(AUTH_KEY);
+      if (!raw) return null;
+      const obj = JSON.parse(raw);
+      if (!obj || !obj.token || !obj.expires_at) return null;
+      if (Date.parse(obj.expires_at) <= Date.now()) return null;
+      return obj;
+    } catch { return null; }
+  }
+  let history = loadThread();
+
+  function escapeHtml(s) {
+    return s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  }
+  function inlineMd(s) {
+    s = s.replace(/`([^`]+)`/g, (_, c) => `<code>${escapeHtml(c)}</code>`);
+    s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    s = s.replace(/(^|[^\*])\*([^*\n]+)\*/g, '$1<em>$2</em>');
+    return s;
+  }
+  function renderMd(src) {
+    const lines = src.replace(/\r\n?/g, '\n').split('\n');
+    const out = []; let i = 0;
+    while (i < lines.length) {
+      const line = lines[i];
+      if (/^```/.test(line)) {
+        const buf = []; i++;
+        while (i < lines.length && !/^```/.test(lines[i])) { buf.push(escapeHtml(lines[i])); i++; }
+        i++;
+        out.push(`<pre><code>${buf.join('\n')}</code></pre>`);
+        continue;
+      }
+      const h = line.match(/^(#{1,3})\s+(.*)$/);
+      if (h) { out.push(`<h${h[1].length}>${inlineMd(escapeHtml(h[2]))}</h${h[1].length}>`); i++; continue; }
+      if (/^-{3,}$/.test(line)) { out.push('<hr>'); i++; continue; }
+      if (/^\s*[-\*]\s+/.test(line)) {
+        const items = [];
+        while (i < lines.length && /^\s*[-\*]\s+/.test(lines[i])) {
+          items.push(lines[i].replace(/^\s*[-\*]\s+/, '')); i++;
+        }
+        out.push('<ul>' + items.map(it => `<li>${inlineMd(escapeHtml(it))}</li>`).join('') + '</ul>');
+        continue;
+      }
+      if (/^\s*\d+\.\s+/.test(line)) {
+        const items = [];
+        while (i < lines.length && /^\s*\d+\.\s+/.test(lines[i])) {
+          items.push(lines[i].replace(/^\s*\d+\.\s+/, '')); i++;
+        }
+        out.push('<ol>' + items.map(it => `<li>${inlineMd(escapeHtml(it))}</li>`).join('') + '</ol>');
+        continue;
+      }
+      if (line.trim() === '') { i++; continue; }
+      const buf = [];
+      while (i < lines.length && lines[i].trim() !== '' &&
+             !/^(#{1,3}\s|[-*]\s|\d+\.\s|```|-{3,}$)/.test(lines[i])) {
+        buf.push(lines[i]); i++;
+      }
+      out.push(`<p>${inlineMd(escapeHtml(buf.join(' ')))}</p>`);
+    }
+    return out.join('\n');
+  }
+
+  function clearEmpty() { if (empty && empty.parentNode) empty.remove(); }
+  function addMsg(role, text) {
+    clearEmpty();
+    const wrap = document.createElement('div');
+    wrap.className = 'msg ' + (role === 'user' ? 'you' : 'them');
+    wrap.innerHTML =
+      `<div class="byline">${role === 'user' ? 'You' : 'Advisor'}</div>` +
+      `<div class="bubble"></div>`;
+    const bubble = wrap.querySelector('.bubble');
+    if (role === 'user') bubble.textContent = text;
+    else                 bubble.innerHTML  = renderMd(text);
+    stream.appendChild(wrap);
+    scrollBottom();
+    return wrap;
+  }
+  function addThinking() {
+    clearEmpty();
+    const wrap = document.createElement('div');
+    wrap.className = 'msg them';
+    wrap.id = 'thinking-row';
+    wrap.innerHTML =
+      `<div class="byline">Advisor</div>` +
+      `<div class="bubble"><span class="thinking">Thinking<span class="dots"></span></span></div>`;
+    stream.appendChild(wrap);
+    scrollBottom();
+    return wrap;
+  }
+  function removeThinking() {
+    const t = document.getElementById('thinking-row');
+    if (t) t.remove();
+  }
+  function scrollBottom() {
+    setTimeout(() => { stream.scrollTop = stream.scrollHeight; }, 10);
+  }
+
+  function renderSuggestions() {
+    const host = $('suggest-list');
+    if (!host) return;
+    host.innerHTML = '';
+    for (const s of SUGGESTIONS) {
+      const b = document.createElement('button');
+      b.textContent = s; b.type = 'button';
+      b.addEventListener('click', () => { input.value = s; input.focus(); autoresize(); });
+      host.appendChild(b);
+    }
+  }
+
+  // Replay any saved thread.
+  if (history.length) {
+    clearEmpty();
+    for (const t of history) addMsg(t.role === 'user' ? 'user' : 'assistant', t.content);
+  } else {
+    renderSuggestions();
+  }
+
+  async function sendTurn() {
+    const auth = readAuth();
+    if (!auth) {
+      addMsg('assistant', '*Session expired. Reload the page to sign back in.*');
+      return;
+    }
+    const q = input.value.trim();
+    if (!q) return;
+    input.value = ''; autoresize();
+    sendBtn.disabled = true;
+
+    addMsg('user', q);
+    history.push({ role: 'user', content: q });
+    saveThread(history);
+
+    addThinking();
+    let r, err = null;
+    try {
+      const res = await fetch(window.WORKER_BASE + '/advisor', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          question:   q,
+          channel:    'web',
+          token:      auth.token,
+          expires_at: auth.expires_at,
+          history:    history.slice(0, -1),
+        }),
+      });
+      r = await res.json();
+      if (!res.ok) err = r && r.error ? r.error : `HTTP ${res.status}`;
+    } catch (e) {
+      err = e.message || 'Network error';
+    }
+    removeThinking();
+    if (err) {
+      addMsg('assistant', `*Couldn't reach the advisor.* ${err}`);
+      sendBtn.disabled = false; input.focus();
+      return;
+    }
+    if (!r.ok) {
+      addMsg('assistant', `*Advisor error:* ${r.error || 'unknown'}`);
+      if (/auth/i.test(r.error || '')) localStorage.removeItem(AUTH_KEY);
+      sendBtn.disabled = false; input.focus();
+      return;
+    }
+    addMsg('assistant', r.reply);
+    history.push({ role: 'assistant', content: r.reply });
+    saveThread(history);
+    sendBtn.disabled = false; input.focus();
+  }
+
+  function autoresize() {
+    input.style.height = 'auto';
+    input.style.height = Math.min(input.scrollHeight, 160) + 'px';
+  }
+
+  form.addEventListener('submit', (e) => { e.preventDefault(); sendTurn(); });
+  input.addEventListener('input', autoresize);
+  input.addEventListener('keydown', (ev) => {
+    // Cmd/Ctrl+Enter sends; bare Enter inserts a newline (mobile-friendly).
+    if (ev.key === 'Enter' && (ev.metaKey || ev.ctrlKey)) {
+      ev.preventDefault(); sendTurn();
+    }
+  });
+
+  clearBtn.addEventListener('click', () => {
+    if (!confirm('Clear the entire conversation?')) return;
+    history = []; saveThread(history);
+    stream.innerHTML = '';
+    const e = document.createElement('div');
+    e.className = 'empty'; e.id = 'empty';
+    e.innerHTML =
+      '<div>Plain-language answers, ledger-grounded math.</div>' +
+      '<span class="empty-tag">Try one of these</span>' +
+      '<div class="suggest-list" id="suggest-list"></div>';
+    stream.appendChild(e);
+    renderSuggestions();
+  });
+})();
+</script>
+</body>
+</html>

@@ -94,7 +94,7 @@ function textResponse(body: string, init: ResponseInit = {}): Response {
 }
 
 export default {
-  async fetch(req: Request, env: Env): Promise<Response> {
+  async fetch(req: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(req.url);
 
     // CORS preflight
@@ -135,7 +135,7 @@ export default {
     if (url.pathname === "/advisor") {
       return advisorAsk(req, env);
     }
-    return textbeltReply(req, env);
+    return textbeltReply(req, env, ctx);
   },
 };
 
@@ -391,7 +391,7 @@ async function advisorAsk(req: Request, env: Env): Promise<Response> {
     return jsonResponse({ ok: false, error: "Bad JSON" }, { status: 400 });
   }
 
-  // 1. Auth — reuse the HMAC token issued by /auth/login or /auth/sms-verify.
+  // Auth — reuse the HMAC token issued by /auth/login or /auth/sms-verify.
   const token     = (body.token       || "").trim();
   const expiresAt = (body.expires_at  || "").trim();
   if (!token || !expiresAt) {
@@ -406,24 +406,52 @@ async function advisorAsk(req: Request, env: Env): Promise<Response> {
     return jsonResponse({ ok: false, error: "Bad auth" }, { status: 401 });
   }
 
-  // 2. Validate input.
-  const rawQ = (body.question || "").trim();
+  const channel: "sms" | "web" = body.channel === "sms" ? "sms" : "web";
+  const history = Array.isArray(body.history) ? body.history.slice(-20) : [];
+  const result  = await runAdvisor(env, body.question || "", history, channel);
+  if (!result.ok) {
+    return jsonResponse({ ok: false, error: result.error }, { status: result.status });
+  }
+  return jsonResponse({
+    ok:       true,
+    reply:    result.reply,
+    model:    result.model,
+    channel,
+    tokens:   result.tokens,
+    cost_usd: result.costUsd,
+  });
+}
+
+// ---------------------------------------------------------------------------
+// runAdvisor — pure helper that owns prompt assembly + Anthropic call.
+// Used by both /advisor (HTTP, web/sms channel) and the inbound-SMS router.
+// ---------------------------------------------------------------------------
+
+type AdvisorRunResult =
+  | { ok: true; reply: string; model: string; tokens: { in: number; out: number }; costUsd: number }
+  | { ok: false; error: string; status: number };
+
+async function runAdvisor(
+  env: Env,
+  rawUserText: string,
+  history: Array<{ role: "user" | "assistant"; content: string }>,
+  channel: "sms" | "web",
+): Promise<AdvisorRunResult> {
+  const rawQ = (rawUserText || "").trim();
   if (!rawQ) {
-    return jsonResponse({ ok: false, error: "Empty question" }, { status: 400 });
+    return { ok: false, error: "Empty question", status: 400 };
   }
   if (rawQ.length > 1000) {
-    return jsonResponse({ ok: false, error: "Question too long (>1000 chars)" }, { status: 400 });
+    return { ok: false, error: "Question too long (>1000 chars)", status: 400 };
   }
-  const channel: "sms" | "web" = body.channel === "sms" ? "sms" : "web";
 
-  // 3. Strip prompt-injection-flavored phrases from the user's text.
-  // Light hygiene — the prompt is robust, but pre-strip the obvious.
+  // Strip prompt-injection-flavored phrases from the user's text.
   const cleanQ = rawQ
     .replace(/ignore (all |the )?(previous|prior|above) (instructions?|rules?|prompts?)/gi, "")
     .replace(/system prompt:?/gi, "")
     .trim();
 
-  // 4. Detect /deep or /quick prefix → choose model.
+  // /deep or /quick prefix → model select.
   let model = ADVISOR_DEFAULT_MODEL;
   let userText = cleanQ;
   if (/^\s*\/deep\b/i.test(cleanQ)) {
@@ -434,20 +462,16 @@ async function advisorAsk(req: Request, env: Env): Promise<Response> {
     userText = cleanQ.replace(/^\s*\/quick\b\s*/i, "").trim();
   }
   if (!userText) {
-    return jsonResponse({ ok: false, error: "Empty after prefix" }, { status: 400 });
+    return { ok: false, error: "Empty after prefix", status: 400 };
   }
 
-  // 5. Pull the context bundle (cached 5 min in the Worker's Cache API).
   let contextJson = "{}";
   try {
     contextJson = await fetchAdvisorContext(env);
   } catch (e) {
     console.error(`advisor: context fetch failed: ${(e as Error).message}`);
-    // Still answer — the persona instructs the model to decline if data
-    // is missing rather than make things up.
   }
 
-  // 6. Assemble the system prompt.
   const channelTail = `\n\n## Active channel for this turn\n\n\`${channel}\`\n`;
   const systemPrompt =
     ADVISOR_PERSONA +
@@ -456,8 +480,6 @@ async function advisorAsk(req: Request, env: Env): Promise<Response> {
     "\n```\n" +
     channelTail;
 
-  // 7. Build messages array (history + this turn).
-  const history = Array.isArray(body.history) ? body.history.slice(-20) : [];
   const messages = [
     ...history
       .filter(h => (h.role === "user" || h.role === "assistant") && h.content)
@@ -465,7 +487,6 @@ async function advisorAsk(req: Request, env: Env): Promise<Response> {
     { role: "user" as const, content: userText },
   ];
 
-  // 8. Call Anthropic. One retry on transient failure, then fall back to Haiku.
   let resp: AnthropicMessageResponse | null = null;
   let usedModel = model;
   for (let attempt = 0; attempt < 2; attempt++) {
@@ -475,15 +496,12 @@ async function advisorAsk(req: Request, env: Env): Promise<Response> {
     } catch (e) {
       console.error(`advisor: ${usedModel} attempt ${attempt} failed: ${(e as Error).message}`);
       if (attempt === 0 && usedModel !== ADVISOR_QUICK_MODEL) {
-        usedModel = ADVISOR_QUICK_MODEL;  // graceful degrade
+        usedModel = ADVISOR_QUICK_MODEL;
       }
     }
   }
   if (!resp) {
-    return jsonResponse(
-      { ok: false, error: "Advisor unreachable. Try again in a minute." },
-      { status: 502 },
-    );
+    return { ok: false, error: "Advisor unreachable. Try again in a minute.", status: 502 };
   }
 
   const reply = resp.content
@@ -491,8 +509,8 @@ async function advisorAsk(req: Request, env: Env): Promise<Response> {
     .map(b => b.text as string)
     .join("");
 
-  // 9. SMS hard-truncate guardrail. Persona aims for 320, but if a
-  // model overflows we cap at 480 (≈3 SMS segments).
+  // SMS hard-truncate guardrail. Persona aims for 320, but if the model
+  // overflows we cap at 480 (~3 SMS segments).
   let outText = reply;
   if (channel === "sms" && outText.length > 480) {
     outText = outText.slice(0, 477) + "...";
@@ -505,14 +523,13 @@ async function advisorAsk(req: Request, env: Env): Promise<Response> {
     (inTok  * price.in  / 1_000_000) +
     (outTok * price.out / 1_000_000);
 
-  return jsonResponse({
-    ok:       true,
-    reply:    outText,
-    model:    usedModel,
-    channel,
-    tokens:   { in: inTok, out: outTok },
-    cost_usd: Number(costUsd.toFixed(4)),
-  });
+  return {
+    ok:      true,
+    reply:   outText,
+    model:   usedModel,
+    tokens:  { in: inTok, out: outTok },
+    costUsd: Number(costUsd.toFixed(4)),
+  };
 }
 
 /**
@@ -815,7 +832,14 @@ async function ordersSubmit(req: Request, env: Env): Promise<Response> {
 // /  — TextBelt inbound reply webhook (unchanged behavior)
 // ---------------------------------------------------------------------------
 
-async function textbeltReply(req: Request, env: Env): Promise<Response> {
+// Vote pattern — must match scripts/collect_reply.py:_VOTE_RE so confirmation
+// votes (Y / YES / N / NO ± hint) keep flowing to the existing GitHub Action
+// instead of being routed to the advisor.
+const VOTE_RE = /^\s*(y|yes|n|no)\b/i;
+
+async function textbeltReply(
+  req: Request, env: Env, ctx: ExecutionContext,
+): Promise<Response> {
   const rawBody = await req.text();
 
   const timestamp = req.headers.get("X-textbelt-timestamp");
@@ -837,6 +861,21 @@ async function textbeltReply(req: Request, env: Env): Promise<Response> {
   const { fromNumber, text } = payload;
   if (!fromNumber || typeof text !== "string") {
     return new Response("Missing fromNumber or text", { status: 400 });
+  }
+
+  // Router: confirmation vote → existing GitHub dispatch flow.
+  // Anything else from a whitelisted phone → advisor SMS path. Anything
+  // else from an unknown phone → existing dispatch flow (preserves the
+  // orphan bucket so we still see what came in).
+  const isVote   = VOTE_RE.test(text);
+  const allowed  = parsePhoneList(env.AUTH_PHONES || "");
+  const fromNorm = normalizePhone(fromNumber);
+  if (!isVote && fromNorm && allowed.includes(fromNorm)) {
+    // Reply 200 to TextBelt immediately so it doesn't retry; do the
+    // Anthropic + outbound TextBelt round trip in the background.
+    ctx.waitUntil(handleAdvisorSms(env, fromNumber, text));
+    console.log(`queued advisor SMS for ${fromNumber}: ${text.slice(0, 40)}`);
+    return new Response("OK\n", { status: 200 });
   }
 
   const dispatch = await fetch(
@@ -869,6 +908,32 @@ async function textbeltReply(req: Request, env: Env): Promise<Response> {
 
   console.log(`queued sms_reply for ${fromNumber}: ${text.slice(0, 40)}`);
   return new Response("OK\n", { status: 200 });
+}
+
+// Inbound-SMS advisor handler. Calls runAdvisor with channel "sms" so the
+// persona answers in plain-text-≤320 form, then SMSes the reply back to the
+// sender. No history (each SMS is a one-off — workers are stateless and we
+// don't want to pay for a KV namespace for v1).
+async function handleAdvisorSms(
+  env: Env, fromNumber: string, text: string,
+): Promise<void> {
+  const result = await runAdvisor(env, text, [], "sms");
+  const outMessage = result.ok
+    ? result.reply
+    : `Advisor: ${result.error}`;
+  const sent = await sendTextBelt(env, fromNumber, outMessage);
+  if (!sent.ok) {
+    console.error(`advisor SMS reply to ${fromNumber} failed: ${sent.error}`);
+    return;
+  }
+  if (result.ok) {
+    console.log(
+      `advisor SMS reply sent to ${fromNumber} ` +
+      `(${result.model}, ${result.tokens.in}+${result.tokens.out} tok, $${result.costUsd})`,
+    );
+  } else {
+    console.log(`advisor SMS error reply sent to ${fromNumber}: ${result.error}`);
+  }
 }
 
 // ---------------------------------------------------------------------------
