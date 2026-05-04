@@ -1,0 +1,83 @@
+name: Mirror admin recipients to git
+
+# Cloudflare Worker fires repository_dispatch event_type=recipients_update
+# every time the admin saves the recipients roster through the dashboard.
+# This workflow writes the new list to data/recipients.json so we have a
+# version-controlled audit trail of who was on the broadcast list at any
+# given commit. The worker's KV (admin:recipients:v1) is the live
+# source-of-truth — this file is for accountability, not for runtime reads.
+
+on:
+  repository_dispatch:
+    types: [recipients_update]
+
+concurrency:
+  group: recipients-audit
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Write recipients.json from dispatch payload
+        env:
+          RECIPIENTS_JSON: ${{ toJson(github.event.client_payload.recipients) }}
+          UPDATED_AT:      ${{ github.event.client_payload.updated_at }}
+        run: |
+          mkdir -p data
+          python3 - <<'PY'
+          import json, os, datetime
+          recipients = json.loads(os.environ.get("RECIPIENTS_JSON") or "[]")
+          updated_at = os.environ.get("UPDATED_AT") or datetime.datetime.utcnow().isoformat() + "Z"
+          payload = {
+              "_doc": (
+                  "Audit mirror of admin recipients. Live source-of-truth is "
+                  "Cloudflare KV (admin:recipients:v1). The recipients-audit "
+                  "workflow rewrites this file every time the admin saves "
+                  "changes through the dashboard. Hand-edits here are "
+                  "ignored unless you also write them into KV via "
+                  "`wrangler kv key put admin:recipients:v1 --binding=FARM_KV @file`."
+              ),
+              "_required_quorum": (
+                  "Live trade confirmations clear when ALL required recipients "
+                  "reply with a Y-class message (yes/y/ok/go/confirm/...). One "
+                  "required N-class reply marks the run rejected."
+              ),
+              "updated_at": updated_at,
+              "recipients": recipients,
+          }
+          with open("data/recipients.json", "w") as f:
+              json.dump(payload, f, indent=2, sort_keys=False)
+              f.write("\n")
+          PY
+
+      - name: Commit + push if changed
+        run: |
+          git config user.name  "freis-farm-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add data/recipients.json
+          if git diff --cached --quiet; then
+            echo "no changes — KV save was a no-op"
+            exit 0
+          fi
+          # Short-form recipient roster in the commit body for grep-ability.
+          summary=$(python3 -c "
+          import json
+          with open('data/recipients.json') as f:
+              data = json.load(f)
+          rows = data.get('recipients', [])
+          for r in rows:
+              flag = '*' if r.get('required') else ' '
+              print(f\"  {flag} {r.get('name','?'):<22} {r.get('phone','')}\")
+          ")
+          git commit -m "recipients: roster updated $(date -u +'%Y-%m-%dT%H:%MZ')
+
+          $summary
+          "
+          git push

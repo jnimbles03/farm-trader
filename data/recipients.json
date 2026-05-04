@@ -1,0 +1,10 @@
+{
+  "_doc": "Audit mirror of admin recipients. Live source-of-truth is Cloudflare KV (admin:recipients:v1). The recipients-update workflow rewrites this file every time the admin saves changes through the dashboard. Hand-edits here are ignored unless you also write them into KV via `wrangler kv key put admin:recipients:v1 --binding=FARM_KV @recipients.json`.",
+  "_required_quorum": "Live trade confirmations clear when ALL three required recipients reply with a Y-class message (yes/y/ok/go/confirm/...). One required N-class reply (no/n/hold/...) marks the run rejected.",
+  "updated_at": "2026-05-04T00:00:00Z",
+  "recipients": [
+    { "name": "Dan Cooke",     "phone": "", "required": true },
+    { "name": "Susan Lindeen", "phone": "", "required": true },
+    { "name": "Maryann Meyer", "phone": "", "required": true }
+  ]
+}

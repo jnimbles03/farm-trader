@@ -2,7 +2,12 @@
 //
 // Routes:
 //   GET  /                   health check
-//   POST /                   TextBelt inbound webhook → fires sms_reply dispatch
+//   POST /                   TextBelt inbound webhook. If from a whitelisted
+//                            phone (AUTH_PHONES) and message starts with "?",
+//                            routes the question to the Advisor and SMS's
+//                            the reply back. Otherwise fires the legacy
+//                            sms_reply repository_dispatch (Y/N reminder
+//                            replies, etc.).
 //   POST /orders/start       mints 6-digit code, SMS to whitelisted phone,
 //                            returns HMAC-signed nonce/expiry. Stateless.
 //   POST /orders/submit      verifies HMAC + code, fires order_draft dispatch
@@ -42,7 +47,32 @@ export interface Env {
   //   https://jnimbles03.github.io/farm-trader/advisor/advisor_context.json
   // Falls back to a hardcoded path if unset.
   ADVISOR_CONTEXT_URL: string;
+  // KV namespace for admin recipients + run state. See wrangler.toml for
+  // the binding (`FARM_KV`). Created via:
+  //   npx wrangler kv:namespace create FARM_KV
+  FARM_KV: KVNamespace;
 }
+
+// ---------------------------------------------------------------------------
+// Admin constants
+// ---------------------------------------------------------------------------
+//
+// Only this exact phone can log into /admin/* routes. Hardcoded — there is
+// only one admin and a typo'd env var should not silently widen access.
+const ADMIN_PHONE = "+16302479950";
+// Admin sessions are short-lived. Re-OTP every 24h to keep blast radius tight
+// in case the admin token leaks. Distinct from the 30-day dashboard auth.
+const ADMIN_TTL_MS     = 24 * 60 * 60 * 1000;
+const ADMIN_OTP_TTL_MS = 5 * 60 * 1000;
+// Quorum for a CTA broadcast = these three replied YES (or anything non-N).
+// Stored on the run snapshot at send-time so that editing recipients later
+// does not retroactively change quorum status of past runs.
+const DEFAULT_REQUIRED_NAMES = ["Dan Cooke", "Susan Lindeen", "Maryann Meyer"];
+// KV keys
+const KV_RECIPIENTS    = "admin:recipients:v1";   // [{name, phone, required}]
+const KV_RUNS_INDEX    = "admin:runs:index:v1";   // [run_id, ...] newest first, capped 200
+const KV_RUN_PREFIX    = "admin:run:";            // admin:run:<id> → Run JSON
+const KV_PHONE_RUN_IX  = "admin:phone-run:";      // admin:phone-run:<phone> → run_id of latest CTA they're on
 
 // Auth token TTL — how long a logged-in browser stays unlocked.
 const AUTH_TTL_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
@@ -134,6 +164,35 @@ export default {
     }
     if (url.pathname === "/advisor") {
       return advisorAsk(req, env);
+    }
+    // ---------------- Admin routes (single admin: ADMIN_PHONE) ----------------
+    if (url.pathname === "/admin/sms-start") {
+      return adminSmsStart(req, env);
+    }
+    if (url.pathname === "/admin/sms-verify") {
+      return adminSmsVerify(req, env);
+    }
+    if (url.pathname === "/admin/state") {
+      return adminState(req, env);
+    }
+    if (url.pathname === "/admin/recipients") {
+      return adminRecipients(req, env);
+    }
+    if (url.pathname === "/admin/broadcast/start") {
+      return adminBroadcastStart(req, env);
+    }
+    if (url.pathname === "/admin/broadcast/submit") {
+      return adminBroadcastSubmit(req, env);
+    }
+    if (url.pathname === "/admin/broadcast/test") {
+      return adminBroadcastTest(req, env);
+    }
+    // GET /admin/runs/<id> handled here (single dynamic segment, parsed inline)
+    if (url.pathname.startsWith("/admin/runs/")) {
+      return adminRunDetail(req, env, url.pathname.slice("/admin/runs/".length));
+    }
+    if (url.pathname === "/admin/runs") {
+      return adminRunsList(req, env);
     }
     return textbeltReply(req, env);
   },
@@ -457,14 +516,48 @@ async function advisorAsk(req: Request, env: Env): Promise<Response> {
   }
   const channel: "sms" | "web" = body.channel === "sms" ? "sms" : "web";
 
-  // 3. Strip prompt-injection-flavored phrases from the user's text.
-  // Light hygiene — the prompt is robust, but pre-strip the obvious.
-  const cleanQ = rawQ
+  const history = Array.isArray(body.history) ? body.history.slice(-20) : [];
+
+  const result = await runAdvisor(env, {
+    question: rawQ,
+    channel,
+    history,
+  });
+  if (!result.ok) {
+    return jsonResponse({ ok: false, error: result.error }, { status: result.status });
+  }
+
+  return jsonResponse({
+    ok:       true,
+    reply:    result.reply,
+    model:    result.model,
+    channel,
+    tokens:   result.tokens,
+    cost_usd: result.cost_usd,
+  });
+}
+
+// Internal Advisor runner — used by both /advisor (HTTP) and the SMS inbound
+// route. Auth/whitelist is the caller's responsibility; this function only
+// deals with cleaning input, pulling context, calling Claude, and returning
+// the reply (with SMS truncation if channel === "sms").
+interface RunAdvisorInput {
+  question: string;
+  channel:  "sms" | "web";
+  history:  Array<{ role: "user" | "assistant"; content: string }>;
+}
+type RunAdvisorResult =
+  | { ok: true;  reply: string; model: string; tokens: { in: number; out: number }; cost_usd: number }
+  | { ok: false; status: number; error: string };
+
+async function runAdvisor(env: Env, input: RunAdvisorInput): Promise<RunAdvisorResult> {
+  // 1. Strip prompt-injection-flavored phrases from the user's text.
+  const cleanQ = input.question
     .replace(/ignore (all |the )?(previous|prior|above) (instructions?|rules?|prompts?)/gi, "")
     .replace(/system prompt:?/gi, "")
     .trim();
 
-  // 4. Detect /deep or /quick prefix → choose model.
+  // 2. Detect /deep or /quick prefix → choose model.
   let model = ADVISOR_DEFAULT_MODEL;
   let userText = cleanQ;
   if (/^\s*\/deep\b/i.test(cleanQ)) {
@@ -475,21 +568,21 @@ async function advisorAsk(req: Request, env: Env): Promise<Response> {
     userText = cleanQ.replace(/^\s*\/quick\b\s*/i, "").trim();
   }
   if (!userText) {
-    return jsonResponse({ ok: false, error: "Empty after prefix" }, { status: 400 });
+    return { ok: false, status: 400, error: "Empty after prefix" };
   }
 
-  // 5. Pull the context bundle (cached 5 min in the Worker's Cache API).
+  // 3. Pull the context bundle (cached 5 min in the Worker's Cache API).
   let contextJson = "{}";
   try {
     contextJson = await fetchAdvisorContext(env);
   } catch (e) {
     console.error(`advisor: context fetch failed: ${(e as Error).message}`);
-    // Still answer — the persona instructs the model to decline if data
-    // is missing rather than make things up.
+    // Still answer — the persona tells the model to decline if data is
+    // missing rather than make things up.
   }
 
-  // 6. Assemble the system prompt.
-  const channelTail = `\n\n## Active channel for this turn\n\n\`${channel}\`\n`;
+  // 4. Assemble the system prompt.
+  const channelTail = `\n\n## Active channel for this turn\n\n\`${input.channel}\`\n`;
   const systemPrompt =
     ADVISOR_PERSONA +
     "\n\n## Farm context bundle\n\n```json\n" +
@@ -497,16 +590,15 @@ async function advisorAsk(req: Request, env: Env): Promise<Response> {
     "\n```\n" +
     channelTail;
 
-  // 7. Build messages array (history + this turn).
-  const history = Array.isArray(body.history) ? body.history.slice(-20) : [];
+  // 5. Build messages array (history + this turn).
   const messages = [
-    ...history
+    ...input.history
       .filter(h => (h.role === "user" || h.role === "assistant") && h.content)
       .map(h => ({ role: h.role, content: String(h.content).slice(0, 4000) })),
     { role: "user" as const, content: userText },
   ];
 
-  // 8. Call Anthropic. One retry on transient failure, then fall back to Haiku.
+  // 6. Call Anthropic. One retry on transient failure, then fall back to Haiku.
   let resp: AnthropicMessageResponse | null = null;
   let usedModel = model;
   for (let attempt = 0; attempt < 2; attempt++) {
@@ -521,10 +613,7 @@ async function advisorAsk(req: Request, env: Env): Promise<Response> {
     }
   }
   if (!resp) {
-    return jsonResponse(
-      { ok: false, error: "Advisor unreachable. Try again in a minute." },
-      { status: 502 },
-    );
+    return { ok: false, status: 502, error: "Advisor unreachable. Try again in a minute." };
   }
 
   const reply = resp.content
@@ -532,10 +621,10 @@ async function advisorAsk(req: Request, env: Env): Promise<Response> {
     .map(b => b.text as string)
     .join("");
 
-  // 9. SMS hard-truncate guardrail. Persona aims for 320, but if a
+  // 7. SMS hard-truncate guardrail. Persona aims for 320, but if a
   // model overflows we cap at 480 (≈3 SMS segments).
   let outText = reply;
-  if (channel === "sms" && outText.length > 480) {
+  if (input.channel === "sms" && outText.length > 480) {
     outText = outText.slice(0, 477) + "...";
   }
 
@@ -546,14 +635,13 @@ async function advisorAsk(req: Request, env: Env): Promise<Response> {
     (inTok  * price.in  / 1_000_000) +
     (outTok * price.out / 1_000_000);
 
-  return jsonResponse({
+  return {
     ok:       true,
     reply:    outText,
     model:    usedModel,
-    channel,
     tokens:   { in: inTok, out: outTok },
     cost_usd: Number(costUsd.toFixed(4)),
-  });
+  };
 }
 
 /**
@@ -880,6 +968,57 @@ async function textbeltReply(req: Request, env: Env): Promise<Response> {
     return new Response("Missing fromNumber or text", { status: 400 });
   }
 
+  // Advisor opt-in: an inbound text from a whitelisted phone that starts
+  // with "?" is forwarded to the Advisor and the reply is SMS'd back.
+  // Anything else (reminder Y/N replies, etc.) keeps the legacy behavior
+  // of dispatching to GitHub for the existing sms_reply workflow.
+  const fromNorm = normalizePhone(fromNumber);
+  const whitelist = parsePhoneList(env.AUTH_PHONES || "");
+  const isWhitelisted = !!fromNorm && whitelist.includes(fromNorm);
+  const trimmed = text.trim();
+  const isAdvisorAsk = isWhitelisted && trimmed.startsWith("?");
+
+  // -- Admin CTA reply attribution -----------------------------------------
+  // Before the Advisor / legacy dispatch branches, check if this inbound is
+  // a reply from someone we're currently waiting on for a CTA. If yes,
+  // record it on the run; do NOT short-circuit — we still let the legacy
+  // sms_reply path run so existing remind workflows keep working.
+  try {
+    if (fromNorm) {
+      await recordCtaReplyIfActive(env, fromNorm, text);
+    }
+  } catch (e) {
+    console.error(`cta-attrib failed: ${(e as Error).message}`);
+  }
+
+  if (isAdvisorAsk) {
+    const question = trimmed.slice(1).trim();
+    if (!question) {
+      await sendTextBelt(env, fromNumber,
+        "Advisor: send a question after the '?' (e.g. ?should I price 500 bu beans this week?)");
+      return new Response("OK\n", { status: 200 });
+    }
+    if (question.length > 1000) {
+      await sendTextBelt(env, fromNumber, "Advisor: question too long (>1000 chars).");
+      return new Response("OK\n", { status: 200 });
+    }
+    const result = await runAdvisor(env, {
+      question,
+      channel: "sms",
+      history: [],
+    });
+    const replyText = result.ok
+      ? result.reply
+      : `Advisor: ${result.error}`;
+    const send = await sendTextBelt(env, fromNumber, replyText);
+    if (!send.ok) {
+      console.error(`advisor sms reply failed: ${send.error}`);
+    } else if (result.ok) {
+      console.log(`advisor sms reply ok (${result.model}, $${result.cost_usd})`);
+    }
+    return new Response("OK\n", { status: 200 });
+  }
+
   const dispatch = await fetch(
     `https://api.github.com/repos/${env.GITHUB_REPO}/dispatches`,
     {
@@ -1021,4 +1160,674 @@ async function sendTextBelt(
   } catch (e) {
     return { ok: false, error: (e as Error).message };
   }
+}
+
+// =============================================================================
+// ADMIN — trade orchestration via SMS, single-admin (ADMIN_PHONE).
+// =============================================================================
+//
+// Trust model:
+//   - Login mints an ADMIN token, HMAC-bound to ADMIN_PHONE + expiry. A
+//     regular dashboard auth token (HMAC namespace "auth|") will NOT
+//     authenticate against /admin/* — different namespace, different
+//     check.
+//   - Every admin POST re-verifies the token server-side. The page being
+//     visible client-side does not grant any privilege.
+//   - LIVE broadcasts require a fresh OTP delivered to ADMIN_PHONE
+//     (start → submit), same pattern as /orders/start /orders/submit.
+//     This means even a stolen admin token cannot send a real SMS without
+//     also intercepting the OTP SMS.
+//   - TEST broadcasts skip the OTP and only send to ADMIN_PHONE. They
+//     never touch the recipients list. Safe to spam.
+//
+// Storage:
+//   - Recipients live in KV (admin:recipients:v1). Source-of-truth for
+//     the live system. A repository_dispatch event fires on every save
+//     to mirror to git for audit trail (admin-broadcast.yml workflow).
+//   - Runs live in KV as admin:run:<id>, indexed by admin:runs:index:v1
+//     (capped 200). For inbound reply attribution we also keep a
+//     phone→run-id pointer (admin:phone-run:<phone>) that points to the
+//     most recent CTA run that phone was on; we walk newest-first within
+//     the recent index and attribute to any still-pending run.
+//
+// Run shape (KV admin:run:<id>):
+//   {
+//     id, created_at, mode: "test"|"live",
+//     type: "bulletin"|"cta",
+//     message,
+//     trade?: { crop, bushels, target_price, delivery, current_bid? },
+//     recipients: [
+//       { name, phone, required, sent_ok, sent_error?, replied_at?,
+//         reply_text?, reply_norm? }   // reply_norm: "yes"|"no"|null
+//     ],
+//     required_phones: [...],   // snapshot at send time
+//     status: "pending"|"quorum_met"|"rejected"|"complete"|"failed"
+//   }
+// =============================================================================
+
+interface Recipient {
+  name:     string;
+  phone:    string;          // E.164
+  required: boolean;         // for CTA quorum
+}
+
+interface RunRecipient extends Recipient {
+  sent_ok:     boolean;
+  sent_error?: string;
+  replied_at?: string;
+  reply_text?: string;
+  reply_norm?: "yes" | "no" | null;
+}
+
+interface AdminRun {
+  id:               string;
+  created_at:       string;
+  mode:             "test" | "live";
+  type:             "bulletin" | "cta";
+  message:          string;
+  trade?: {
+    crop:          string;
+    bushels:       number;
+    target_price?: number;
+    delivery?:     string;
+    current_bid?:  number;
+  };
+  recipients:       RunRecipient[];
+  required_phones:  string[];
+  status:           "pending" | "quorum_met" | "rejected" | "complete" | "failed";
+}
+
+// ---------- token plumbing ----------
+
+async function adminTokenSign(env: Env, expiresAt: string): Promise<string> {
+  // Distinct HMAC namespace from the regular auth token. Binds to
+  // ADMIN_PHONE so the token isn't transferable across phones if AUTH_PHONES
+  // ever grows.
+  return hmacHex(env.TEXTBELT_KEY, `admin|${ADMIN_PHONE}|${expiresAt}`);
+}
+
+async function requireAdmin(req: Request, env: Env): Promise<{ ok: true } | { ok: false; resp: Response }> {
+  // Pull token from Authorization: Bearer or from JSON body { admin_token, admin_expires_at }.
+  let token = "";
+  let expiresAt = "";
+  const authHeader = req.headers.get("Authorization") || "";
+  if (authHeader.toLowerCase().startsWith("bearer ")) {
+    // Compact form: "Bearer <token>|<expires_at>"
+    const v = authHeader.slice(7).trim();
+    const idx = v.indexOf("|");
+    if (idx > 0) {
+      token = v.slice(0, idx);
+      expiresAt = v.slice(idx + 1);
+    }
+  }
+  // If we couldn't parse from header, try JSON body — but only if body has
+  // not been read yet (req.bodyUsed check). We pass the parsed body back
+  // via a side channel using a custom property; simpler is to require the
+  // header form. The dashboard always uses the header form.
+  if (!token || !expiresAt) {
+    return { ok: false, resp: jsonResponse({ ok: false, error: "Missing admin auth" }, { status: 401 }) };
+  }
+  const t = Date.parse(expiresAt);
+  if (!Number.isFinite(t) || t <= Date.now()) {
+    return { ok: false, resp: jsonResponse({ ok: false, error: "Admin auth expired" }, { status: 401 }) };
+  }
+  const expected = await adminTokenSign(env, expiresAt);
+  if (!timingSafeEqual(token, expected)) {
+    return { ok: false, resp: jsonResponse({ ok: false, error: "Bad admin auth" }, { status: 401 }) };
+  }
+  return { ok: true };
+}
+
+// ---------- /admin/sms-start, /admin/sms-verify ----------
+
+async function adminSmsStart(req: Request, env: Env): Promise<Response> {
+  // No body required — the destination phone is hardcoded. We accept a
+  // body for symmetry with /auth/sms-start but ignore the contents.
+  try { await req.json(); } catch {}
+  const code      = mintCode();
+  const nonce     = randomHex(16);
+  const expiresAt = new Date(Date.now() + ADMIN_OTP_TTL_MS).toISOString();
+  const hmac      = await hmacHex(
+    env.TEXTBELT_KEY,
+    `admin-sms|${code}|${ADMIN_PHONE}|${nonce}|${expiresAt}`,
+  );
+  const message = `Freis Farm ADMIN: ${code} unlocks the orchestration console for 24 hours. Don't reply.`;
+  const sent = await sendTextBelt(env, ADMIN_PHONE, message);
+  if (!sent.ok) {
+    console.error(`admin-sms send failed: ${sent.error}`);
+    return jsonResponse({ ok: false, error: "SMS send failed" }, { status: 502 });
+  }
+  return jsonResponse({ ok: true, nonce, expires_at: expiresAt, hmac });
+}
+
+async function adminSmsVerify(req: Request, env: Env): Promise<Response> {
+  let body: { code?: string; nonce?: string; expires_at?: string; hmac?: string };
+  try {
+    body = await req.json();
+  } catch {
+    return jsonResponse({ ok: false, error: "Bad JSON" }, { status: 400 });
+  }
+  const code      = (body.code       || "").trim();
+  const nonce     = (body.nonce      || "").trim();
+  const expiresAt = (body.expires_at || "").trim();
+  const hmac      = (body.hmac       || "").trim();
+  if (!code || !nonce || !expiresAt || !hmac) {
+    return jsonResponse({ ok: false, error: "Missing field" }, { status: 400 });
+  }
+  const t = Date.parse(expiresAt);
+  if (!Number.isFinite(t) || t <= Date.now()) {
+    return jsonResponse({ ok: false, error: "Code expired" }, { status: 401 });
+  }
+  const expected = await hmacHex(
+    env.TEXTBELT_KEY,
+    `admin-sms|${code}|${ADMIN_PHONE}|${nonce}|${expiresAt}`,
+  );
+  if (!timingSafeEqual(hmac, expected)) {
+    return jsonResponse({ ok: false, error: "Wrong code" }, { status: 401 });
+  }
+  const sessionExpiresAt = new Date(Date.now() + ADMIN_TTL_MS).toISOString();
+  const adminToken       = await adminTokenSign(env, sessionExpiresAt);
+  return jsonResponse({
+    ok:               true,
+    admin_token:      adminToken,
+    admin_expires_at: sessionExpiresAt,
+  });
+}
+
+// ---------- /admin/state — one-shot bootstrap (recipients + recent runs + inventory) ----------
+
+async function adminState(req: Request, env: Env): Promise<Response> {
+  const auth = await requireAdmin(req, env);
+  if (!auth.ok) return auth.resp;
+
+  const recipients = await loadRecipients(env);
+  const runs       = await loadRecentRuns(env, 25);
+  const inventory  = await loadInventory(env);
+
+  return jsonResponse({
+    ok:           true,
+    admin_phone:  ADMIN_PHONE,
+    recipients,
+    recent_runs:  runs,
+    inventory,
+  });
+}
+
+// ---------- /admin/recipients — GET (via state) and POST (save) ----------
+
+async function adminRecipients(req: Request, env: Env): Promise<Response> {
+  const auth = await requireAdmin(req, env);
+  if (!auth.ok) return auth.resp;
+
+  if (req.method !== "POST") {
+    // We expose recipients via /admin/state; require POST here.
+    return jsonResponse({ ok: false, error: "POST only" }, { status: 405 });
+  }
+  let body: { recipients?: Recipient[] };
+  try {
+    body = await req.json();
+  } catch {
+    return jsonResponse({ ok: false, error: "Bad JSON" }, { status: 400 });
+  }
+  if (!Array.isArray(body.recipients)) {
+    return jsonResponse({ ok: false, error: "recipients must be an array" }, { status: 400 });
+  }
+
+  // Validate + normalize
+  const cleaned: Recipient[] = [];
+  for (const r of body.recipients) {
+    const name  = String(r?.name || "").trim().slice(0, 80);
+    const phone = normalizePhone(String(r?.phone || ""));
+    if (!name || !phone) continue;  // silently drop invalid rows
+    cleaned.push({ name, phone, required: !!r?.required });
+  }
+
+  await env.FARM_KV.put(KV_RECIPIENTS, JSON.stringify(cleaned));
+
+  // Mirror to git as audit log. Best effort — failure here doesn't block
+  // the save (KV is the source of truth).
+  try {
+    await fireRecipientsAudit(env, cleaned);
+  } catch (e) {
+    console.error(`recipients audit dispatch failed: ${(e as Error).message}`);
+  }
+
+  return jsonResponse({ ok: true, recipients: cleaned });
+}
+
+async function loadRecipients(env: Env): Promise<Recipient[]> {
+  const raw = await env.FARM_KV.get(KV_RECIPIENTS);
+  if (!raw) {
+    // First-run seed: the three required names with empty phones, so the
+    // admin UI prompts to fill them in instead of starting from a blank slate.
+    return DEFAULT_REQUIRED_NAMES.map(name => ({ name, phone: "", required: true }));
+  }
+  try {
+    const arr = JSON.parse(raw) as Recipient[];
+    return Array.isArray(arr) ? arr : [];
+  } catch {
+    return [];
+  }
+}
+
+async function fireRecipientsAudit(env: Env, recipients: Recipient[]): Promise<void> {
+  await fetch(`https://api.github.com/repos/${env.GITHUB_REPO}/dispatches`, {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${env.GITHUB_TOKEN}`,
+      "Accept":        "application/vnd.github+json",
+      "Content-Type":  "application/json",
+      "User-Agent":    "freis-farm-admin-worker",
+    },
+    body: JSON.stringify({
+      event_type: "recipients_update",
+      client_payload: {
+        recipients,
+        updated_at: new Date().toISOString(),
+      },
+    }),
+  });
+}
+
+// ---------- /admin/broadcast/{start,submit,test} ----------
+
+interface BroadcastDraft {
+  type:    "bulletin" | "cta";
+  message: string;
+  trade?:  AdminRun["trade"];
+  // phone strings into the recipients list; we look up name+required from KV
+  recipient_phones: string[];
+}
+
+function validateDraft(b: any): { ok: true; draft: BroadcastDraft } | { ok: false; error: string } {
+  if (!b || typeof b !== "object") return { ok: false, error: "Bad draft" };
+  const type = b.type;
+  if (type !== "bulletin" && type !== "cta") return { ok: false, error: "type must be bulletin|cta" };
+  const message = String(b.message || "").trim();
+  if (!message) return { ok: false, error: "message empty" };
+  if (message.length > 480) return { ok: false, error: "message too long (>480)" };
+  const phones: string[] = Array.isArray(b.recipient_phones)
+    ? b.recipient_phones.map((p: any) => normalizePhone(String(p))).filter((p: string) => p.length > 0)
+    : [];
+  if (phones.length === 0) return { ok: false, error: "no recipients" };
+  let trade: AdminRun["trade"] | undefined = undefined;
+  if (b.trade && typeof b.trade === "object") {
+    const t = b.trade;
+    trade = {
+      crop:         String(t.crop || ""),
+      bushels:      Number(t.bushels) || 0,
+      target_price: t.target_price !== undefined && t.target_price !== null ? Number(t.target_price) : undefined,
+      delivery:     t.delivery ? String(t.delivery) : undefined,
+      current_bid:  t.current_bid !== undefined && t.current_bid !== null ? Number(t.current_bid) : undefined,
+    };
+  }
+  return { ok: true, draft: { type, message, trade, recipient_phones: phones } };
+}
+
+async function adminBroadcastStart(req: Request, env: Env): Promise<Response> {
+  // LIVE preflight: mints an OTP, sends to ADMIN_PHONE, returns bundle.
+  // The submit step replays the bundle + the typed code.
+  const auth = await requireAdmin(req, env);
+  if (!auth.ok) return auth.resp;
+
+  let body: any;
+  try { body = await req.json(); }
+  catch { return jsonResponse({ ok: false, error: "Bad JSON" }, { status: 400 }); }
+
+  const v = validateDraft(body);
+  if (!v.ok) return jsonResponse({ ok: false, error: v.error }, { status: 400 });
+
+  const payloadJson = canonicalJson(v.draft);
+  const payloadHash = await sha256Hex(payloadJson);
+  const code        = mintCode();
+  const nonce       = randomHex(16);
+  const expiresAt   = new Date(Date.now() + OTP_TTL_MS).toISOString();
+  const hmac        = await hmacHex(
+    env.TEXTBELT_KEY,
+    `admin-bx|${code}|${payloadHash}|${nonce}|${expiresAt}`,
+  );
+
+  // SMS body summarizes the broadcast so the admin sees what they're confirming.
+  const summary = describeBroadcast(v.draft);
+  const message = `Freis Farm ADMIN: code ${code} sends a LIVE ${v.draft.type.toUpperCase()} — ${summary}. Expires in 5 min. Code is for the dashboard.`;
+  const sent = await sendTextBelt(env, ADMIN_PHONE, message);
+  if (!sent.ok) {
+    return jsonResponse({ ok: false, error: "OTP send failed" }, { status: 502 });
+  }
+  return jsonResponse({
+    ok:           true,
+    nonce,
+    expires_at:   expiresAt,
+    payload_hash: payloadHash,
+    hmac,
+  });
+}
+
+async function adminBroadcastSubmit(req: Request, env: Env): Promise<Response> {
+  const auth = await requireAdmin(req, env);
+  if (!auth.ok) return auth.resp;
+
+  let body: any;
+  try { body = await req.json(); }
+  catch { return jsonResponse({ ok: false, error: "Bad JSON" }, { status: 400 }); }
+
+  const v = validateDraft(body.draft);
+  if (!v.ok) return jsonResponse({ ok: false, error: v.error }, { status: 400 });
+
+  const code         = String(body.code || "").trim();
+  const nonce        = String(body.nonce || "").trim();
+  const expiresAt    = String(body.expires_at || "").trim();
+  const payloadHash  = String(body.payload_hash || "").trim();
+  const hmac         = String(body.hmac || "").trim();
+  if (!code || !nonce || !expiresAt || !payloadHash || !hmac) {
+    return jsonResponse({ ok: false, error: "Missing OTP fields" }, { status: 400 });
+  }
+  if (new Date(expiresAt).getTime() < Date.now()) {
+    return jsonResponse({ ok: false, error: "Code expired" }, { status: 401 });
+  }
+  // Re-canonicalize draft and confirm the bundle was signed for THIS draft.
+  const recomputedHash = await sha256Hex(canonicalJson(v.draft));
+  if (!timingSafeEqual(recomputedHash, payloadHash)) {
+    return jsonResponse({ ok: false, error: "Draft changed after OTP" }, { status: 401 });
+  }
+  const expectedHmac = await hmacHex(
+    env.TEXTBELT_KEY,
+    `admin-bx|${code}|${payloadHash}|${nonce}|${expiresAt}`,
+  );
+  if (!timingSafeEqual(expectedHmac, hmac)) {
+    return jsonResponse({ ok: false, error: "Wrong code" }, { status: 401 });
+  }
+
+  // Build the run, send each SMS, persist.
+  const run = await executeBroadcast(env, v.draft, "live");
+  return jsonResponse({ ok: true, run });
+}
+
+async function adminBroadcastTest(req: Request, env: Env): Promise<Response> {
+  // TEST mode: send only to ADMIN_PHONE, with a [TEST] prefix and the same
+  // body the recipients would have seen. The recipient list in the draft
+  // is ignored — just shown back so the admin can see who would have got it
+  // in a live send.
+  const auth = await requireAdmin(req, env);
+  if (!auth.ok) return auth.resp;
+
+  let body: any;
+  try { body = await req.json(); }
+  catch { return jsonResponse({ ok: false, error: "Bad JSON" }, { status: 400 }); }
+
+  const v = validateDraft(body);
+  if (!v.ok) return jsonResponse({ ok: false, error: v.error }, { status: 400 });
+
+  const run = await executeBroadcast(env, v.draft, "test");
+  return jsonResponse({ ok: true, run });
+}
+
+// ---------- /admin/runs (list + detail) ----------
+
+async function adminRunsList(req: Request, env: Env): Promise<Response> {
+  const auth = await requireAdmin(req, env);
+  if (!auth.ok) return auth.resp;
+  const runs = await loadRecentRuns(env, 50);
+  return jsonResponse({ ok: true, runs });
+}
+
+async function adminRunDetail(req: Request, env: Env, id: string): Promise<Response> {
+  const auth = await requireAdmin(req, env);
+  if (!auth.ok) return auth.resp;
+  if (!/^[a-z0-9-]+$/i.test(id)) {
+    return jsonResponse({ ok: false, error: "Bad id" }, { status: 400 });
+  }
+  const run = await loadRun(env, id);
+  if (!run) return jsonResponse({ ok: false, error: "Not found" }, { status: 404 });
+  return jsonResponse({ ok: true, run });
+}
+
+// ---------- broadcast execution ----------
+
+function describeBroadcast(d: BroadcastDraft): string {
+  if (d.type === "cta" && d.trade) {
+    const t = d.trade;
+    const px = typeof t.target_price === "number" ? `$${t.target_price.toFixed(2)}` : "limit";
+    return `${t.bushels.toLocaleString()} bu ${t.crop} @ ${px}${t.delivery ? " " + t.delivery : ""} → ${d.recipient_phones.length} ppl`;
+  }
+  return `${d.type.toUpperCase()} → ${d.recipient_phones.length} ppl`;
+}
+
+async function executeBroadcast(env: Env, d: BroadcastDraft, mode: "test" | "live"): Promise<AdminRun> {
+  const id         = "r_" + Date.now().toString(36) + "_" + randomHex(3);
+  const created_at = new Date().toISOString();
+
+  // Resolve recipient names + required flags from the saved roster. If a
+  // phone isn't in the roster (free-typed), we still send but mark name=""
+  // and required=false. Live UI shouldn't allow this but the worker is
+  // defensive.
+  const roster = await loadRecipients(env);
+  const byPhone = new Map(roster.map(r => [r.phone, r]));
+
+  const sendList: { name: string; phone: string; required: boolean }[] =
+    d.recipient_phones.map(phone => {
+      const m = byPhone.get(phone);
+      return {
+        name:     m ? m.name : "",
+        phone,
+        required: m ? m.required : false,
+      };
+    });
+
+  // For TEST mode, only send to ADMIN_PHONE. The recipients list is recorded
+  // for visibility but each row is marked sent_ok=false / sent_error="(test)".
+  // We do send ONE SMS to ADMIN_PHONE so the admin sees what would arrive.
+  if (mode === "test") {
+    const testMsg = `[TEST] ${composeOutboundMessage(d, sendList)}`;
+    const sent = await sendTextBelt(env, ADMIN_PHONE, testMsg);
+    const recipients: RunRecipient[] = sendList.map(r => ({
+      ...r,
+      sent_ok:    false,
+      sent_error: "(test mode — not actually sent)",
+    }));
+    const run: AdminRun = {
+      id, created_at, mode, type: d.type,
+      message: testMsg,
+      trade:   d.trade,
+      recipients,
+      required_phones: recipients.filter(r => r.required).map(r => r.phone),
+      status: "complete",
+    };
+    if (!sent.ok) run.status = "failed";
+    await persistRun(env, run);
+    return run;
+  }
+
+  // LIVE: send each SMS sequentially. Workers have a CPU budget but at
+  // <50 recipients this is comfortably under it.
+  const recipients: RunRecipient[] = [];
+  for (const r of sendList) {
+    const msg  = composeOutboundMessage(d, sendList, r);
+    const sent = await sendTextBelt(env, r.phone, msg);
+    recipients.push({
+      ...r,
+      sent_ok:    sent.ok,
+      sent_error: sent.ok ? undefined : sent.error,
+    });
+  }
+
+  const required_phones = recipients.filter(r => r.required && r.sent_ok).map(r => r.phone);
+
+  const run: AdminRun = {
+    id, created_at, mode, type: d.type,
+    message:   composeOutboundMessage(d, sendList),
+    trade:     d.trade,
+    recipients,
+    required_phones,
+    // Bulletins complete on send (no replies expected). CTAs stay pending
+    // until quorum or admin closes them.
+    status: d.type === "bulletin" ? "complete" : "pending",
+  };
+  await persistRun(env, run);
+
+  // Reverse-index each phone → run so inbound replies attribute fast.
+  // Only for CTAs — bulletins don't expect replies.
+  if (d.type === "cta") {
+    await Promise.all(recipients
+      .filter(r => r.sent_ok)
+      .map(r => env.FARM_KV.put(KV_PHONE_RUN_IX + r.phone, run.id, { expirationTtl: 7 * 24 * 60 * 60 })));
+  }
+
+  return run;
+}
+
+function composeOutboundMessage(
+  d: BroadcastDraft,
+  _list: { name: string; phone: string; required: boolean }[],
+  _recipient?: { name: string; phone: string; required: boolean },
+): string {
+  // Currently message is the same for everyone. We pass `_recipient` in
+  // case we want to personalize ("Hi Dan, ...") later — leaving the hook.
+  if (d.type === "cta" && d.trade) {
+    const t = d.trade;
+    const px = typeof t.target_price === "number" ? `$${t.target_price.toFixed(2)}` : "limit";
+    const head = `Freis Farm: ${t.bushels.toLocaleString()} bu ${t.crop} @ ${px}${t.delivery ? " " + t.delivery : ""}.`;
+    const body = d.message;
+    return `${head} ${body} Reply Y to confirm or N to hold.`;
+  }
+  if (d.type === "cta") {
+    return `Freis Farm: ${d.message} Reply Y to confirm or N to hold.`;
+  }
+  return `Freis Farm: ${d.message}`;
+}
+
+// ---------- run persistence + reply attribution ----------
+
+async function persistRun(env: Env, run: AdminRun): Promise<void> {
+  await env.FARM_KV.put(KV_RUN_PREFIX + run.id, JSON.stringify(run));
+  // Update index (newest first, capped 200)
+  const ixRaw = await env.FARM_KV.get(KV_RUNS_INDEX);
+  let index: string[] = [];
+  if (ixRaw) {
+    try { index = JSON.parse(ixRaw) as string[]; } catch { index = []; }
+  }
+  index = [run.id, ...index.filter(x => x !== run.id)].slice(0, 200);
+  await env.FARM_KV.put(KV_RUNS_INDEX, JSON.stringify(index));
+}
+
+async function loadRun(env: Env, id: string): Promise<AdminRun | null> {
+  const raw = await env.FARM_KV.get(KV_RUN_PREFIX + id);
+  if (!raw) return null;
+  try { return JSON.parse(raw) as AdminRun; } catch { return null; }
+}
+
+async function loadRecentRuns(env: Env, n: number): Promise<AdminRun[]> {
+  const ixRaw = await env.FARM_KV.get(KV_RUNS_INDEX);
+  if (!ixRaw) return [];
+  let index: string[] = [];
+  try { index = JSON.parse(ixRaw) as string[]; } catch { return []; }
+  const slice = index.slice(0, n);
+  const runs = await Promise.all(slice.map(id => loadRun(env, id)));
+  return runs.filter((r): r is AdminRun => r !== null);
+}
+
+async function recordCtaReplyIfActive(env: Env, fromPhone: string, text: string): Promise<void> {
+  // Check phone→run pointer. If present and that run is still pending CTA,
+  // attribute the reply.
+  const runId = await env.FARM_KV.get(KV_PHONE_RUN_IX + fromPhone);
+  if (!runId) return;
+  const run = await loadRun(env, runId);
+  if (!run || run.type !== "cta" || run.status !== "pending") return;
+  const idx = run.recipients.findIndex(r => r.phone === fromPhone);
+  if (idx < 0) return;
+  // Only the first reply counts. If someone replies twice, log the second
+  // but don't overwrite — admin can see both via run detail in v2.
+  if (run.recipients[idx].replied_at) return;
+
+  const norm = normalizeYesNo(text);
+  run.recipients[idx].replied_at = new Date().toISOString();
+  run.recipients[idx].reply_text = (text || "").slice(0, 200);
+  run.recipients[idx].reply_norm = norm;
+
+  // Recompute status against required_phones snapshot.
+  const requiredSet = new Set(run.required_phones);
+  const requiredReplies = run.recipients.filter(r => requiredSet.has(r.phone) && r.replied_at);
+  const anyRequiredNo   = requiredReplies.some(r => r.reply_norm === "no");
+  const allRequiredReplied = requiredReplies.length === requiredSet.size && requiredSet.size > 0;
+  if (anyRequiredNo) {
+    run.status = "rejected";
+  } else if (allRequiredReplied) {
+    run.status = "quorum_met";
+  } // else stays pending
+
+  await env.FARM_KV.put(KV_RUN_PREFIX + run.id, JSON.stringify(run));
+}
+
+function normalizeYesNo(text: string): "yes" | "no" | null {
+  const s = (text || "").trim().toLowerCase();
+  if (!s) return null;
+  // Liberal yes detection (so "yes please", "y", "ok", "go", "confirm" all count).
+  if (/^(y|yes|yep|yeah|ok|okay|go|confirm|confirmed|sure|do it|approved)\b/.test(s)) return "yes";
+  if (/^(n|no|nope|hold|wait|stop|cancel|reject|skip)\b/.test(s)) return "no";
+  return null;
+}
+
+// ---------- inventory feed (read-only proxy of advisor context) ----------
+
+interface InventoryRow {
+  crop:        "corn" | "soy";
+  bu_on_hand:  number;
+  current_bid?: number;
+  bid_month?:  string;
+  source?:     string;
+  basis?:      number | null;
+}
+
+async function loadInventory(env: Env): Promise<InventoryRow[]> {
+  // Source-of-truth: docs/bushel.json published by the Akron scraper. Has
+  // both bushels-on-hand AND live cash bids + futures basis. We hit the
+  // GitHub Pages copy so we don't need a GH API token here. Cached 5 min
+  // in the Worker's Cache API to keep load light during heavy admin use.
+  const url = "https://jnimbles03.github.io/farm-trader/bushel.json";
+  const cacheKey = new Request(url + "?inv-cache=v1");
+  const cache = caches.default;
+
+  let raw: string;
+  const cached = await cache.match(cacheKey);
+  if (cached) {
+    raw = await cached.text();
+  } else {
+    try {
+      const r = await fetch(url, { headers: { "User-Agent": "freis-farm-admin-worker" } });
+      if (!r.ok) return [];
+      raw = await r.text();
+      await cache.put(cacheKey, new Response(raw, {
+        headers: { "Content-Type": "application/json", "Cache-Control": "public, max-age=300" },
+      }));
+    } catch {
+      return [];
+    }
+  }
+
+  let data: any = {};
+  try { data = JSON.parse(raw); } catch { return []; }
+
+  const cornBu = Number(data?.bushelsOnHand?.corn?.bushels ?? 0);
+  const soyBu  = Number(data?.bushelsOnHand?.soybeans?.bushels ?? 0);
+  const cornBid = data?.bids?.corn || {};
+  const soyBid  = data?.bids?.soybeans || {};
+
+  return [
+    {
+      crop:        "corn",
+      bu_on_hand:  Number.isFinite(cornBu) ? cornBu : 0,
+      current_bid: typeof cornBid.price === "number" ? cornBid.price : undefined,
+      bid_month:   cornBid.period || undefined,
+      basis:       typeof cornBid.basis === "number" ? cornBid.basis : null,
+      source:      "Akron via bushel.json",
+    },
+    {
+      crop:        "soy",
+      bu_on_hand:  Number.isFinite(soyBu) ? soyBu : 0,
+      current_bid: typeof soyBid.price === "number" ? soyBid.price : undefined,
+      bid_month:   soyBid.period || undefined,
+      basis:       typeof soyBid.basis === "number" ? soyBid.basis : null,
+      source:      "Akron via bushel.json",
+    },
+  ];
 }

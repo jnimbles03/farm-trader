@@ -1,0 +1,1746 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Freis Farm — Admin · Trade orchestration</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* =========================================================
+   FREIS FARM — UNIFIED SHELL (Direction A) — verbatim from
+   hedge.html. Keep in sync via build_pages.py.
+   ========================================================= */
+:root {
+  --cream:    #FAF7F2;
+  --paper:    #FFFDF7;
+  --paper-2:  #F4EFE5;
+  --border:   #E2DDD5;
+  --rule:     #C8C3BA;
+  --dust:     #A8A39A;
+  --slate:    #7A756D;
+  --ink:      #3D3A36;
+  --ink-2:    #1F1D1A;
+
+  --sage:      #7BAE7F;
+  --sage-deep: #5C8F60;
+  --sage-pale: #E5EDDD;
+  --soy:       #C8A968;
+  --corn:      #5C8F60;
+  --warn:      #B5651D;
+  --danger:    #9C3D3D;
+
+  --font-display: "Fraunces", Georgia, serif;
+  --font-text:    "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono:    "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--font-text);
+  color: var(--ink);
+  background: var(--cream);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+body.auth-locked { overflow: hidden; }
+
+/* ---------- auth gate (shared) ---------- */
+.auth-gate {
+  position: fixed; inset: 0; z-index: 1000;
+  background: var(--cream);
+  display: grid; place-items: center;
+  transition: opacity .35s ease;
+}
+.auth-gate.out { opacity: 0; pointer-events: none; }
+.auth-gate.shake .auth-card { animation: shake .4s ease; }
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  50% { transform: translateX(6px); }
+  75% { transform: translateX(-3px); }
+}
+.auth-card {
+  text-align: center;
+  padding: 40px 48px;
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  min-width: 320px;
+}
+.auth-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px;
+  color: var(--dust);
+}
+.auth-eyebrow em { font-style: normal; color: var(--sage-deep); }
+.auth-title {
+  font-family: var(--font-display);
+  font-weight: 500; font-size: 28px;
+  color: var(--ink-2);
+  margin: 12px 0 8px;
+  letter-spacing: -0.2px;
+}
+.auth-tip {
+  font-family: var(--font-display); font-style: italic;
+  color: var(--slate);
+  margin: 0 0 20px;
+  font-size: 14px;
+}
+.auth-input {
+  width: 200px;
+  padding: 12px 16px;
+  font-family: var(--font-mono);
+  font-size: 24px;
+  text-align: center;
+  letter-spacing: 8px;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: var(--cream);
+  color: var(--ink-2);
+  outline: none;
+}
+.auth-input:focus { border-color: var(--sage-deep); }
+.auth-input-phone {
+  width: 280px;
+  letter-spacing: 0;
+  text-align: left;
+  font-size: 18px;
+  padding: 12px 14px;
+  font-family: var(--font-text);
+}
+.auth-input-otp { letter-spacing: 12px; width: 240px; }
+.auth-error {
+  font-size: 12px; color: var(--danger);
+  margin-top: 12px; min-height: 16px;
+  font-family: var(--font-mono);
+}
+.auth-submit {
+  display: block;
+  margin: 14px auto 0;
+  background: var(--ink-2);
+  color: var(--cream);
+  border: 0;
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-family: var(--font-text);
+  font-size: 13px; font-weight: 500;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+}
+.auth-submit:hover:not(:disabled) { background: var(--sage-deep); }
+.auth-submit:disabled { opacity: 0.5; cursor: wait; }
+.auth-link {
+  display: block;
+  margin: 14px auto 0;
+  background: transparent; border: 0;
+  font-family: var(--font-display); font-style: italic;
+  font-size: 12px; color: var(--slate);
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: var(--rule);
+  text-underline-offset: 3px;
+}
+.auth-link:hover { color: var(--ink-2); text-decoration-color: var(--sage-deep); }
+.auth-stage[hidden] { display: none; }
+
+/* ---------- nav ---------- */
+.shell-nav {
+  position: sticky; top: 0; z-index: 50;
+  background: var(--cream);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 32px;
+  display: flex; align-items: center; gap: 32px;
+}
+.shell-brand {
+  display: inline-flex; align-items: center; gap: 10px;
+  text-decoration: none;
+  font-family: var(--font-display);
+  font-size: 18px; font-weight: 500;
+  color: var(--ink-2);
+  letter-spacing: 0.4px;
+}
+.shell-brand em { font-style: italic; font-weight: 400; color: var(--sage-deep); }
+.shell-tabs { display: flex; gap: 4px; margin-left: auto; }
+.shell-tab {
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px; font-weight: 500;
+  color: var(--slate);
+  background: transparent;
+  border: 1px solid transparent;
+  text-decoration: none;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+.shell-tab.here {
+  background: var(--paper);
+  color: var(--ink-2);
+  border-color: var(--border);
+}
+.shell-tab.danger.here {
+  background: #FBEEEA;
+  color: var(--danger);
+  border-color: #E8C9C0;
+}
+.shell-tab:hover:not(.here) { color: var(--ink); }
+.shell-meta {
+  font-family: var(--font-mono);
+  font-size: 11px; color: var(--dust);
+  letter-spacing: 0.5px;
+}
+
+footer.shell-foot {
+  padding: 24px 32px 32px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--dust);
+  text-align: center;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+/* =========================================================
+   ADMIN PAGE — orchestration console
+   ========================================================= */
+.adm-shell { padding: 24px 32px 48px; max-width: 1180px; margin: 0 auto; }
+
+/* Mode strip — Test vs Live */
+.adm-mode {
+  display: flex; align-items: center; gap: 16px;
+  padding: 14px 18px; margin-bottom: 18px;
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+.adm-mode-label {
+  font-family: var(--font-mono); font-size: 10px;
+  text-transform: uppercase; letter-spacing: 0.8px;
+  color: var(--dust);
+}
+.adm-toggle {
+  display: inline-flex; border: 1px solid var(--rule); border-radius: 999px; padding: 2px;
+  background: var(--cream);
+}
+.adm-toggle button {
+  border: 0; background: transparent;
+  padding: 6px 16px; border-radius: 999px;
+  font-family: var(--font-text); font-size: 12px; font-weight: 500;
+  color: var(--slate); cursor: pointer;
+  letter-spacing: 0.4px; text-transform: uppercase;
+}
+.adm-toggle button.on.test {
+  background: var(--ink-2); color: var(--cream);
+}
+.adm-toggle button.on.live {
+  background: var(--danger); color: var(--cream);
+}
+.adm-mode-tip {
+  font-family: var(--font-display); font-style: italic;
+  font-size: 13px; color: var(--slate); margin-left: auto;
+}
+.adm-mode-tip b { font-style: normal; color: var(--ink-2); font-weight: 500; }
+
+/* Cards & layout */
+.adm-grid {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 18px;
+}
+.adm-card {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 18px 20px;
+}
+.adm-card h3 {
+  font-family: var(--font-display);
+  font-weight: 500; font-size: 18px;
+  color: var(--ink-2);
+  margin: 0 0 4px;
+  letter-spacing: -0.2px;
+}
+.adm-card .adm-card-tip {
+  font-family: var(--font-display); font-style: italic;
+  font-size: 12px; color: var(--slate);
+  margin: 0 0 14px;
+}
+.adm-section { margin-top: 18px; }
+.adm-section.full { grid-column: 1 / -1; }
+
+/* Recipients table */
+.recipients {
+  width: 100%; border-collapse: collapse;
+  font-family: var(--font-text); font-size: 13px;
+  margin-top: 4px;
+}
+.recipients th {
+  text-align: left;
+  font-family: var(--font-text);
+  font-weight: 500; font-size: 10px;
+  text-transform: uppercase; letter-spacing: 0.6px;
+  color: var(--dust);
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--rule);
+}
+.recipients td {
+  padding: 8px 8px;
+  border-bottom: 1px dotted var(--rule);
+}
+.recipients tr:last-child td { border-bottom: 0; }
+.recipients input[type="text"], .recipients input[type="tel"] {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--cream);
+  color: var(--ink-2);
+  font-family: var(--font-text);
+  font-size: 13px;
+}
+.recipients input.phone-input { font-family: var(--font-mono); font-size: 12px; }
+.recipients input:focus { border-color: var(--sage-deep); outline: 0; }
+.recipients .req-cell { text-align: center; width: 80px; }
+.recipients .req-cell input { transform: scale(1.15); cursor: pointer; }
+.recipients .row-del {
+  background: transparent; border: 0;
+  color: var(--dust); font-family: var(--font-mono);
+  font-size: 14px; cursor: pointer; padding: 0 6px;
+}
+.recipients .row-del:hover { color: var(--danger); }
+.recipients tr.locked td:first-child::before {
+  content: "★ ";
+  color: var(--sage-deep); font-size: 12px;
+}
+
+.adm-row-actions {
+  margin-top: 12px; display: flex; gap: 8px; align-items: center;
+}
+.btn {
+  font-family: var(--font-text); font-weight: 500; font-size: 12px;
+  letter-spacing: 0.3px;
+  padding: 8px 16px; border-radius: 4px;
+  border: 1px solid var(--rule);
+  background: var(--cream);
+  color: var(--ink);
+  cursor: pointer;
+}
+.btn:hover:not(:disabled) { border-color: var(--sage-deep); color: var(--ink-2); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn.primary {
+  background: var(--ink-2); color: var(--cream); border-color: var(--ink-2);
+}
+.btn.primary:hover:not(:disabled) { background: var(--sage-deep); border-color: var(--sage-deep); color: var(--cream); }
+.btn.danger {
+  background: var(--danger); color: var(--cream); border-color: var(--danger);
+}
+.btn.danger:hover:not(:disabled) { filter: brightness(0.92); color: var(--cream); }
+.btn.ghost {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--slate);
+  padding: 6px 10px;
+}
+.btn.ghost:hover:not(:disabled) { color: var(--ink-2); }
+
+.adm-toast {
+  font-family: var(--font-mono); font-size: 11px;
+  color: var(--sage-deep);
+  margin-left: auto;
+  opacity: 0; transition: opacity .25s ease;
+}
+.adm-toast.show { opacity: 1; }
+.adm-toast.error { color: var(--danger); }
+
+/* Composer */
+.compose-row {
+  display: flex; gap: 14px; align-items: center;
+  margin-bottom: 12px;
+}
+.compose-row label {
+  font-family: var(--font-mono); font-size: 10px;
+  text-transform: uppercase; letter-spacing: 0.8px;
+  color: var(--dust);
+}
+.compose-radios { display: inline-flex; gap: 6px; }
+.compose-radios button {
+  border: 1px solid var(--rule);
+  background: var(--cream);
+  color: var(--slate);
+  font-family: var(--font-text); font-size: 12px; font-weight: 500;
+  padding: 6px 14px; border-radius: 999px;
+  cursor: pointer;
+  letter-spacing: 0.3px; text-transform: uppercase;
+}
+.compose-radios button.on {
+  background: var(--ink-2); color: var(--cream); border-color: var(--ink-2);
+}
+.compose-text {
+  width: 100%;
+  min-height: 80px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--cream);
+  color: var(--ink-2);
+  font-family: var(--font-text);
+  font-size: 13px;
+  resize: vertical;
+}
+.compose-text:focus { border-color: var(--sage-deep); outline: 0; }
+.compose-meta {
+  font-family: var(--font-mono); font-size: 10px;
+  color: var(--dust);
+  margin-top: 4px;
+  display: flex; justify-content: space-between;
+}
+
+/* Trade picker (only shown for CTA) */
+.trade-picker {
+  border: 1px dashed var(--border);
+  border-radius: 4px;
+  padding: 12px 14px;
+  background: var(--paper-2);
+  margin-top: 12px;
+}
+.trade-row {
+  display: grid;
+  grid-template-columns: 90px 1fr 90px 1fr;
+  gap: 10px 16px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.trade-row:last-child { margin-bottom: 0; }
+.trade-row label {
+  font-family: var(--font-mono); font-size: 10px;
+  text-transform: uppercase; letter-spacing: 0.6px;
+  color: var(--dust);
+}
+.trade-row input, .trade-row select {
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--cream);
+  color: var(--ink-2);
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+.trade-row input:focus, .trade-row select:focus { border-color: var(--sage-deep); outline: 0; }
+.trade-cap {
+  font-family: var(--font-display); font-style: italic;
+  font-size: 11px; color: var(--slate);
+  grid-column: 2 / 5;
+  margin-top: -2px;
+}
+.trade-cap b { font-style: normal; font-family: var(--font-mono); color: var(--ink-2); font-weight: 500; }
+
+/* Recipient picker (multi-select inside composer) */
+.recip-picker {
+  margin-top: 14px;
+  border-top: 1px dotted var(--rule);
+  padding-top: 12px;
+}
+.recip-picker-head {
+  font-family: var(--font-mono); font-size: 10px;
+  text-transform: uppercase; letter-spacing: 0.8px;
+  color: var(--dust); margin-bottom: 6px;
+  display: flex; gap: 12px; align-items: center;
+}
+.recip-picker-head a {
+  font-family: var(--font-display); font-style: italic;
+  font-size: 11px; color: var(--slate); cursor: pointer;
+  text-decoration: underline; text-decoration-color: var(--rule);
+}
+.recip-picker-head a:hover { color: var(--ink-2); }
+.recip-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 16px;
+  font-family: var(--font-text); font-size: 13px;
+}
+.recip-list label {
+  display: flex; align-items: center; gap: 8px;
+  padding: 4px 0;
+  cursor: pointer;
+}
+.recip-list label input { transform: scale(1.05); }
+.recip-list .who {
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.recip-list .who .star {
+  font-size: 10px; color: var(--sage-deep);
+}
+.recip-list .who .ph {
+  font-family: var(--font-mono); font-size: 11px; color: var(--slate);
+}
+.recip-list .who.disabled { color: var(--dust); }
+
+/* Send block */
+.send-block {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+  display: flex; gap: 12px; align-items: center;
+}
+.send-summary {
+  font-family: var(--font-display); font-style: italic;
+  font-size: 13px; color: var(--slate); flex: 1;
+}
+.send-summary b { font-style: normal; color: var(--ink-2); font-weight: 500; }
+
+/* Active runs panel */
+.runs-list { list-style: none; padding: 0; margin: 0; }
+.runs-list li {
+  padding: 10px 0;
+  border-bottom: 1px dotted var(--rule);
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px;
+  align-items: baseline;
+}
+.runs-list li:last-child { border-bottom: 0; }
+.run-tag {
+  font-family: var(--font-mono); font-size: 9px;
+  text-transform: uppercase; letter-spacing: 0.6px;
+  padding: 2px 6px; border-radius: 3px; white-space: nowrap;
+}
+.run-tag.cta       { background: var(--sage-pale); color: var(--sage-deep); }
+.run-tag.bulletin  { background: var(--paper-2);   color: var(--slate); }
+.run-tag.test      { background: #EAEFF6; color: #4A6075; }
+.run-tag.live      { background: #FBEEEA; color: var(--danger); }
+.run-tag.status-pending     { background: #F1E8CE; color: var(--warn); }
+.run-tag.status-quorum_met  { background: var(--sage-pale); color: var(--sage-deep); }
+.run-tag.status-rejected    { background: #FBEEEA; color: var(--danger); }
+.run-tag.status-complete    { background: var(--paper-2); color: var(--slate); }
+.run-tag.status-failed      { background: #FBEEEA; color: var(--danger); }
+.run-summary { font-size: 13px; color: var(--ink); line-height: 1.4; }
+.run-summary b { color: var(--ink-2); font-weight: 500; }
+.run-time { font-family: var(--font-mono); font-size: 10px; color: var(--dust); }
+.runs-empty {
+  font-family: var(--font-display); font-style: italic;
+  color: var(--slate); font-size: 13px; padding: 16px 0; text-align: center;
+}
+
+/* Run detail modal */
+.run-modal-bg {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(31,29,26,0.45);
+  display: none; align-items: center; justify-content: center;
+}
+.run-modal-bg.show { display: flex; }
+.run-modal {
+  width: min(720px, 92vw);
+  max-height: 86vh; overflow-y: auto;
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 22px 26px;
+}
+.run-modal h3 {
+  margin: 0 0 6px;
+  font-family: var(--font-display); font-weight: 500; font-size: 22px;
+  color: var(--ink-2); letter-spacing: -0.2px;
+}
+.run-modal .run-meta {
+  font-family: var(--font-mono); font-size: 10px;
+  text-transform: uppercase; letter-spacing: 0.8px;
+  color: var(--dust); margin-bottom: 14px;
+}
+.run-modal pre.msg-preview {
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 12px 14px;
+  font-family: var(--font-mono); font-size: 12px;
+  white-space: pre-wrap;
+  color: var(--ink);
+  margin: 4px 0 18px;
+}
+.run-recip-table {
+  width: 100%; border-collapse: collapse;
+  font-family: var(--font-text); font-size: 13px;
+}
+.run-recip-table th {
+  text-align: left;
+  font-size: 10px; text-transform: uppercase; letter-spacing: 0.6px;
+  color: var(--dust);
+  padding: 6px 8px; border-bottom: 1px solid var(--rule);
+}
+.run-recip-table td {
+  padding: 8px 8px;
+  border-bottom: 1px dotted var(--rule);
+  vertical-align: top;
+}
+.run-recip-table .reply-yes { color: var(--sage-deep); font-weight: 500; }
+.run-recip-table .reply-no  { color: var(--danger); font-weight: 500; }
+.run-recip-table .reply-pending { color: var(--dust); font-style: italic; }
+.run-modal-foot {
+  margin-top: 18px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+
+/* Live OTP confirm modal */
+.confirm-bg {
+  position: fixed; inset: 0; z-index: 250;
+  background: rgba(31,29,26,0.55);
+  display: none; align-items: center; justify-content: center;
+}
+.confirm-bg.show { display: flex; }
+.confirm-card {
+  width: min(420px, 92vw);
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 24px 28px;
+  text-align: center;
+}
+.confirm-card h3 {
+  font-family: var(--font-display); font-weight: 500;
+  font-size: 22px; color: var(--ink-2);
+  margin: 0 0 6px; letter-spacing: -0.2px;
+}
+.confirm-card p.tip {
+  font-family: var(--font-display); font-style: italic;
+  color: var(--slate);
+  margin: 0 0 18px; font-size: 13px;
+}
+.confirm-card .summary {
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 10px 12px;
+  font-family: var(--font-mono); font-size: 11px;
+  color: var(--ink-2);
+  margin-bottom: 16px;
+  text-align: left;
+}
+.confirm-card .err {
+  font-family: var(--font-mono); font-size: 11px;
+  color: var(--danger);
+  min-height: 16px; margin-top: 10px;
+}
+.confirm-card .row { display: flex; gap: 10px; justify-content: center; margin-top: 14px; }
+
+@media (max-width: 980px) {
+  .adm-grid { grid-template-columns: 1fr; }
+  .recip-list { grid-template-columns: 1fr; }
+  .trade-row { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 700px) {
+  .shell-nav { padding: 12px 16px; gap: 12px; flex-wrap: wrap; }
+  .shell-meta { display: none; }
+  .adm-shell { padding: 16px; }
+  .adm-mode { flex-wrap: wrap; gap: 10px; }
+  .adm-mode-tip { width: 100%; margin-left: 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     STAGE 1: Regular 30-day auth gate (same as hedge.html)
+     ============================================================ -->
+<div class="auth-gate" id="auth-gate" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+  <div class="auth-card">
+    <span class="auth-eyebrow">freis <em>·</em> farm <em>·</em> admin</span>
+
+    <div class="auth-stage" data-stage="phone">
+      <h2 class="auth-title" id="auth-title">Sign in by text</h2>
+      <p class="auth-tip">We'll send you a 6-digit code.</p>
+      <input class="auth-input auth-input-phone" id="auth-phone" type="tel" inputmode="tel"
+             autocomplete="tel" placeholder="(630) 247-9950"
+             aria-label="Your phone number" />
+      <button type="button" class="auth-submit" id="auth-send-code">Send code</button>
+      <div class="auth-error" id="auth-error-phone" aria-live="polite"></div>
+      <button type="button" class="auth-link" data-go="garage">Use garage code instead</button>
+    </div>
+
+    <div class="auth-stage" data-stage="otp" hidden>
+      <h2 class="auth-title">Enter your code</h2>
+      <p class="auth-tip" id="auth-otp-tip">We sent a 6-digit code.</p>
+      <input class="auth-input auth-input-otp" id="auth-otp" type="text" inputmode="numeric"
+             pattern="\d*" maxlength="6" autocomplete="one-time-code"
+             aria-label="Six-digit code" />
+      <div class="auth-error" id="auth-error-otp" aria-live="polite"></div>
+      <button type="button" class="auth-link" id="auth-otp-resend">Send another code</button>
+      <button type="button" class="auth-link" data-go="phone">Use a different number</button>
+    </div>
+
+    <div class="auth-stage" data-stage="garage" hidden>
+      <h2 class="auth-title">Garage code</h2>
+      <p class="auth-tip">Same four digits as the door.</p>
+      <input class="auth-input" id="auth-garage" type="text" inputmode="numeric"
+             pattern="\d*" maxlength="4" autocomplete="off"
+             aria-label="Four-digit garage code" />
+      <div class="auth-error" id="auth-error-garage" aria-live="polite"></div>
+      <button type="button" class="auth-link" data-go="phone">Sign in by text instead</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     STAGE 2: Admin OTP gate. Shown ONLY after the regular gate
+     dismisses, and only if no fresh admin token in localStorage.
+     ============================================================ -->
+<div class="auth-gate" id="admin-gate" role="dialog" aria-modal="true" aria-labelledby="admin-title" hidden>
+  <div class="auth-card">
+    <span class="auth-eyebrow">admin <em>·</em> orchestration</span>
+
+    <div class="auth-stage" data-admin-stage="prompt">
+      <h2 class="auth-title" id="admin-title">Admin sign-in</h2>
+      <p class="auth-tip">A 24-hour code goes to your phone on record.</p>
+      <button type="button" class="auth-submit" id="admin-send">Send admin code</button>
+      <div class="auth-error" id="admin-err-prompt" aria-live="polite"></div>
+      <button type="button" class="auth-link" id="admin-back">Back to dashboard</button>
+    </div>
+
+    <div class="auth-stage" data-admin-stage="otp" hidden>
+      <h2 class="auth-title">Enter admin code</h2>
+      <p class="auth-tip">Sent to your admin phone — expires in 5 minutes.</p>
+      <input class="auth-input auth-input-otp" id="admin-otp" type="text" inputmode="numeric"
+             pattern="\d*" maxlength="6" autocomplete="one-time-code"
+             aria-label="Six-digit admin code" />
+      <div class="auth-error" id="admin-err-otp" aria-live="polite"></div>
+      <button type="button" class="auth-link" id="admin-resend">Send another code</button>
+      <button type="button" class="auth-link" id="admin-back-2">Back to dashboard</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ─────────────────────────────────────────────────────────────
+   AUTH GATE — Phone OTP (primary) or Garage code (fallback)
+   Identical to hedge.html so both stay on the same session.
+   ───────────────────────────────────────────────────────────── */
+window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.workers.dev";
+
+(function () {
+  const STORAGE_KEY = 'freis-farm-auth-v2';
+  const TTL_FALLBACK_MS = 30 * 24 * 60 * 60 * 1000;
+  const gate = document.getElementById('auth-gate');
+  if (!gate) return;
+
+  function readStored() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return null;
+      const obj = JSON.parse(raw);
+      if (!obj || !obj.token || !obj.expires_at) return null;
+      if (Date.parse(obj.expires_at) <= Date.now()) {
+        localStorage.removeItem(STORAGE_KEY);
+        return null;
+      }
+      return obj;
+    } catch { return null; }
+  }
+  function storeAuth(token, expires_at, phone) {
+    const blob = { token, expires_at };
+    if (phone) blob.phone = phone;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(blob));
+  }
+  function dismiss() {
+    gate.classList.add('out');
+    setTimeout(() => {
+      gate.remove();
+      document.body.classList.remove('auth-locked');
+      // Hand off to the admin gate
+      window.startAdminGate && window.startAdminGate();
+    }, 350);
+  }
+  async function backgroundVerify(stored) {
+    if (!window.WORKER_BASE) return;
+    try {
+      const r = await fetch(window.WORKER_BASE + '/auth/verify', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: stored.token, expires_at: stored.expires_at }),
+      });
+      const j = await r.json().catch(() => ({}));
+      if (j && j.ok === false) localStorage.removeItem(STORAGE_KEY);
+    } catch { /* offline */ }
+  }
+
+  const stored = readStored();
+  if (stored) {
+    gate.remove();
+    backgroundVerify(stored);
+    setTimeout(() => window.startAdminGate && window.startAdminGate(), 0);
+    return;
+  }
+
+  document.body.classList.add('auth-locked');
+  const stages = {};
+  gate.querySelectorAll('.auth-stage').forEach(s => stages[s.dataset.stage] = s);
+  function go(name) {
+    Object.keys(stages).forEach(k => stages[k].hidden = (k !== name));
+    setTimeout(() => stages[name].querySelector('input')?.focus(), 50);
+  }
+  gate.querySelectorAll('.auth-link[data-go]').forEach(b =>
+    b.addEventListener('click', () => go(b.dataset.go)));
+
+  function normalizePhone(raw) {
+    let s = (raw || '').replace(/[^\d+]/g, '');
+    if (!s) return '';
+    if (!s.startsWith('+')) {
+      if (s.length === 10) s = '+1' + s;
+      else if (s.length === 11 && s.startsWith('1')) s = '+' + s;
+      else s = '+' + s;
+    }
+    return /^\+\d{10,15}$/.test(s) ? s : '';
+  }
+  function shake(_, errEl, msg) {
+    gate.classList.add('shake');
+    errEl.textContent = msg;
+    setTimeout(() => gate.classList.remove('shake'), 400);
+  }
+
+  let pendingPhone = null, pendingBundle = null;
+  async function sendCode() {
+    const errEl = document.getElementById('auth-error-phone');
+    errEl.textContent = '';
+    const phone = normalizePhone(document.getElementById('auth-phone').value);
+    if (!phone) return shake('phone', errEl, 'Enter a valid phone number.');
+    document.getElementById('auth-send-code').disabled = true;
+    try {
+      const r = await fetch(window.WORKER_BASE + '/auth/sms-start', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone }),
+      });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok || !j.ok) return shake('phone', errEl, j.error || 'Could not send code.');
+      pendingPhone = phone;
+      pendingBundle = { nonce: j.nonce, expires_at: j.expires_at, hmac: j.hmac };
+      document.getElementById('auth-otp-tip').textContent =
+        'Sent to ' + phone.replace(/^\+1(\d{3})(\d{3})(\d{4})$/, '($1) $2-$3') + '.';
+      go('otp');
+    } catch { shake('phone', errEl, 'Network error. Try again.'); }
+    finally { document.getElementById('auth-send-code').disabled = false; }
+  }
+  async function verifyCode(code) {
+    const errEl = document.getElementById('auth-error-otp');
+    errEl.textContent = '';
+    if (!pendingBundle) return shake('otp', errEl, 'Session expired. Try again.');
+    try {
+      const r = await fetch(window.WORKER_BASE + '/auth/sms-verify', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          phone: pendingPhone, code,
+          nonce: pendingBundle.nonce, expires_at: pendingBundle.expires_at, hmac: pendingBundle.hmac,
+        }),
+      });
+      const j = await r.json().catch(() => ({}));
+      if (r.ok && j.ok && j.token && j.expires_at) {
+        storeAuth(j.token, j.expires_at, pendingPhone);
+        dismiss(); return;
+      }
+      shake('otp', errEl, j.error || 'Wrong code. Try again.');
+      const inp = document.getElementById('auth-otp');
+      setTimeout(() => { inp.value = ''; inp.focus(); }, 400);
+    } catch { shake('otp', errEl, 'Network error. Try again.'); }
+  }
+
+  document.getElementById('auth-send-code').addEventListener('click', sendCode);
+  document.getElementById('auth-phone').addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); sendCode(); }
+  });
+  document.getElementById('auth-otp-resend').addEventListener('click', sendCode);
+  document.getElementById('auth-otp').addEventListener('input', e => {
+    document.getElementById('auth-error-otp').textContent = '';
+    e.target.value = e.target.value.replace(/\D/g, '');
+    if (e.target.value.length === 6) verifyCode(e.target.value);
+  });
+
+  async function submitGarage(code) {
+    const errEl = document.getElementById('auth-error-garage');
+    errEl.textContent = '';
+    try {
+      const r = await fetch(window.WORKER_BASE + '/auth/login', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code }),
+      });
+      const j = await r.json().catch(() => ({}));
+      if (r.ok && j.ok && j.token && j.expires_at) {
+        storeAuth(j.token, j.expires_at);
+        dismiss(); return;
+      }
+      shake('garage', errEl, r.status === 401 ? 'Wrong code. Try again.' : 'Login failed.');
+    } catch { shake('garage', errEl, 'Network error. Try again.'); }
+    setTimeout(() => {
+      const inp = document.getElementById('auth-garage');
+      inp.value = ''; inp.focus();
+    }, 400);
+  }
+  document.getElementById('auth-garage').addEventListener('input', e => {
+    document.getElementById('auth-error-garage').textContent = '';
+    e.target.value = e.target.value.replace(/\D/g, '');
+    if (e.target.value.length === 4) submitGarage(e.target.value);
+  });
+  go('phone');
+})();
+
+/* ─────────────────────────────────────────────────────────────
+   ADMIN GATE — short-lived 24h token bound to ADMIN_PHONE
+   ───────────────────────────────────────────────────────────── */
+(function () {
+  const ADMIN_KEY = 'freis-farm-admin-v1';
+  const adminGate = document.getElementById('admin-gate');
+  if (!adminGate) return;
+
+  function readAdmin() {
+    try {
+      const raw = localStorage.getItem(ADMIN_KEY);
+      if (!raw) return null;
+      const o = JSON.parse(raw);
+      if (!o || !o.admin_token || !o.admin_expires_at) return null;
+      if (Date.parse(o.admin_expires_at) <= Date.now()) {
+        localStorage.removeItem(ADMIN_KEY); return null;
+      }
+      return o;
+    } catch { return null; }
+  }
+  function storeAdmin(t, ex) {
+    localStorage.setItem(ADMIN_KEY, JSON.stringify({ admin_token: t, admin_expires_at: ex }));
+  }
+  window.__adminAuth = readAdmin;
+  window.__adminClear = () => localStorage.removeItem(ADMIN_KEY);
+
+  function show() {
+    adminGate.hidden = false;
+    document.body.classList.add('auth-locked');
+  }
+  function hide() {
+    adminGate.classList.add('out');
+    setTimeout(() => {
+      adminGate.remove();
+      document.body.classList.remove('auth-locked');
+      window.__adminReady && window.__adminReady();
+    }, 350);
+  }
+
+  const stages = {};
+  adminGate.querySelectorAll('.auth-stage').forEach(s => stages[s.dataset.adminStage] = s);
+  function go(name) {
+    Object.keys(stages).forEach(k => stages[k].hidden = (k !== name));
+    setTimeout(() => stages[name].querySelector('input')?.focus(), 50);
+  }
+
+  let pendingBundle = null;
+
+  async function sendCode() {
+    const err = document.getElementById('admin-err-prompt');
+    err.textContent = '';
+    document.getElementById('admin-send').disabled = true;
+    try {
+      const r = await fetch(window.WORKER_BASE + '/admin/sms-start', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}',
+      });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok || !j.ok) {
+        err.textContent = j.error || 'Could not send admin code.';
+        adminGate.classList.add('shake'); setTimeout(()=>adminGate.classList.remove('shake'), 400);
+        return;
+      }
+      pendingBundle = { nonce: j.nonce, expires_at: j.expires_at, hmac: j.hmac };
+      go('otp');
+    } catch (e) {
+      err.textContent = 'Network error. Try again.';
+    } finally {
+      document.getElementById('admin-send').disabled = false;
+    }
+  }
+
+  async function verify(code) {
+    const err = document.getElementById('admin-err-otp');
+    err.textContent = '';
+    if (!pendingBundle) { err.textContent = 'Session expired.'; return; }
+    try {
+      const r = await fetch(window.WORKER_BASE + '/admin/sms-verify', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          code, nonce: pendingBundle.nonce,
+          expires_at: pendingBundle.expires_at, hmac: pendingBundle.hmac,
+        }),
+      });
+      const j = await r.json().catch(() => ({}));
+      if (r.ok && j.ok && j.admin_token) {
+        storeAdmin(j.admin_token, j.admin_expires_at);
+        hide(); return;
+      }
+      err.textContent = j.error || 'Wrong code.';
+      adminGate.classList.add('shake'); setTimeout(()=>adminGate.classList.remove('shake'), 400);
+      const inp = document.getElementById('admin-otp');
+      setTimeout(() => { inp.value = ''; inp.focus(); }, 400);
+    } catch {
+      err.textContent = 'Network error. Try again.';
+    }
+  }
+
+  document.getElementById('admin-send').addEventListener('click', sendCode);
+  document.getElementById('admin-resend').addEventListener('click', sendCode);
+  document.getElementById('admin-back').addEventListener('click', () => location.href = './');
+  document.getElementById('admin-back-2').addEventListener('click', () => location.href = './');
+  document.getElementById('admin-otp').addEventListener('input', e => {
+    document.getElementById('admin-err-otp').textContent = '';
+    e.target.value = e.target.value.replace(/\D/g, '');
+    if (e.target.value.length === 6) verify(e.target.value);
+  });
+
+  // Public entrypoint — called by the regular auth gate after it dismisses.
+  window.startAdminGate = function () {
+    const a = readAdmin();
+    if (a) {
+      adminGate.remove();
+      window.__adminReady && window.__adminReady();
+      return;
+    }
+    show();
+    go('prompt');
+  };
+})();
+</script>
+
+<nav class="shell-nav">
+  <a href="./" class="shell-brand">Freis <em>Farm</em></a>
+  <div class="shell-tabs">
+    <a href="./" class="shell-tab">Today's Call</a>
+    <a href="hedge.html" class="shell-tab">Hedge</a>
+    <a href="farm-ops.html" class="shell-tab">Farm Ops</a>
+    <a href="admin.html" class="shell-tab danger here">Admin</a>
+  </div>
+  <div class="shell-meta" id="admin-meta">ADMIN · LOCKED</div>
+</nav>
+
+<!-- ============================================================
+     ADMIN BODY
+     ============================================================ -->
+<main class="adm-shell" id="adm-shell" hidden>
+
+  <!-- Test/Live mode strip -->
+  <div class="adm-mode" role="region" aria-label="Send mode">
+    <span class="adm-mode-label">Mode</span>
+    <div class="adm-toggle" role="tablist" id="mode-toggle">
+      <button type="button" class="on test" data-mode="test" role="tab" aria-selected="true">Test</button>
+      <button type="button" class="live"     data-mode="live" role="tab" aria-selected="false">Live</button>
+    </div>
+    <div class="adm-mode-tip" id="mode-tip">
+      <b>Test</b> sends only to your admin phone with a [TEST] prefix. Recipients are not contacted.
+    </div>
+  </div>
+
+  <div class="adm-grid">
+
+    <!-- Composer -->
+    <section class="adm-card">
+      <h3>Compose broadcast</h3>
+      <p class="adm-card-tip">Bulletin = one-way news. CTA = trade confirmation requiring a Y/N quorum from required recipients.</p>
+
+      <div class="compose-row">
+        <label>Type</label>
+        <div class="compose-radios" id="type-toggle">
+          <button type="button" class="on" data-type="bulletin">Bulletin</button>
+          <button type="button"           data-type="cta">CTA</button>
+        </div>
+      </div>
+
+      <textarea class="compose-text" id="compose-text"
+                placeholder="What do you want them to know? (e.g. 'Heads up: May corn closed +12¢ today on the WASDE surprise.')"
+                maxlength="400"></textarea>
+      <div class="compose-meta">
+        <span id="char-count">0 / 400</span>
+        <span id="seg-count">~ 1 SMS segment</span>
+      </div>
+
+      <!-- Trade picker (CTA only) -->
+      <div class="trade-picker" id="trade-picker" hidden>
+        <div class="trade-row">
+          <label for="t-crop">Crop</label>
+          <select id="t-crop">
+            <option value="corn">Corn</option>
+            <option value="soy">Soy</option>
+          </select>
+          <label for="t-bushels">Bushels</label>
+          <input id="t-bushels" type="number" min="0" step="50" placeholder="1000" />
+        </div>
+        <div class="trade-cap" id="t-cap">On hand: <b>—</b></div>
+
+        <div class="trade-row">
+          <label for="t-price">Target $</label>
+          <input id="t-price" type="number" min="0" step="0.01" placeholder="4.45" />
+          <label for="t-delivery">Delivery</label>
+          <input id="t-delivery" type="text" placeholder="Cash · May" />
+        </div>
+        <div class="trade-cap" id="t-bid">Current bid: <b>—</b></div>
+      </div>
+
+      <!-- Recipient picker -->
+      <div class="recip-picker">
+        <div class="recip-picker-head">
+          <span>Recipients</span>
+          <a id="pick-all">Select all</a>
+          <a id="pick-required">Required only</a>
+          <a id="pick-none">Clear</a>
+        </div>
+        <div class="recip-list" id="recip-list"></div>
+      </div>
+
+      <!-- Send -->
+      <div class="send-block">
+        <div class="send-summary" id="send-summary">Choose Bulletin or CTA, write a message, pick recipients.</div>
+        <button class="btn primary" id="send-btn" disabled>Send Test</button>
+      </div>
+      <div id="send-err" style="margin-top:8px;color:var(--danger);font-family:var(--font-mono);font-size:11px;min-height:14px;"></div>
+    </section>
+
+    <!-- Active runs -->
+    <section class="adm-card">
+      <h3>Recent broadcasts</h3>
+      <p class="adm-card-tip">Last 25 sends. Click any row to see full reply state.</p>
+      <ul class="runs-list" id="runs-list">
+        <li class="runs-empty">Loading…</li>
+      </ul>
+      <div class="adm-row-actions">
+        <button type="button" class="btn ghost" id="runs-refresh">Refresh</button>
+        <span class="adm-toast" id="runs-toast"></span>
+      </div>
+    </section>
+
+    <!-- Recipients editor (full width) -->
+    <section class="adm-card adm-section full">
+      <h3>Recipients roster</h3>
+      <p class="adm-card-tip">★ marks the three required for a live trade-confirmation quorum (Dan, Susan, Maryann). They cannot be removed; their phone is editable. Other people are optional — add or remove as needed.</p>
+      <table class="recipients">
+        <thead>
+          <tr>
+            <th style="width:30%;">Name</th>
+            <th style="width:35%;">Phone</th>
+            <th class="req-cell">Required</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="recip-tbody"></tbody>
+      </table>
+      <div class="adm-row-actions">
+        <button type="button" class="btn" id="recip-add">+ Add person</button>
+        <button type="button" class="btn primary" id="recip-save">Save roster</button>
+        <span class="adm-toast" id="recip-toast"></span>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<!-- Run detail modal -->
+<div class="run-modal-bg" id="run-modal-bg" aria-hidden="true">
+  <div class="run-modal" role="dialog" aria-modal="true">
+    <h3 id="run-modal-title">Broadcast detail</h3>
+    <div class="run-meta" id="run-modal-meta"></div>
+    <pre class="msg-preview" id="run-modal-msg"></pre>
+    <table class="run-recip-table">
+      <thead>
+        <tr>
+          <th>Recipient</th>
+          <th>Sent</th>
+          <th>Reply</th>
+        </tr>
+      </thead>
+      <tbody id="run-modal-tbody"></tbody>
+    </table>
+    <div class="run-modal-foot">
+      <span class="adm-toast" id="run-modal-toast">Auto-refreshing…</span>
+      <button type="button" class="btn" id="run-modal-close">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Live OTP confirm modal -->
+<div class="confirm-bg" id="confirm-bg" aria-hidden="true">
+  <div class="confirm-card">
+    <h3>Confirm LIVE send</h3>
+    <p class="tip">A 6-digit code is being sent to your admin phone. Enter it to release this broadcast to the recipients.</p>
+    <div class="summary" id="confirm-summary"></div>
+    <input class="auth-input auth-input-otp" id="confirm-otp" type="text" inputmode="numeric"
+           pattern="\d*" maxlength="6" autocomplete="one-time-code" />
+    <div class="err" id="confirm-err"></div>
+    <div class="row">
+      <button type="button" class="btn ghost" id="confirm-cancel">Cancel</button>
+      <button type="button" class="btn" id="confirm-resend">Resend code</button>
+    </div>
+  </div>
+</div>
+
+<footer class="shell-foot">FREIS FARM · ADMIN ORCHESTRATION · MAY 4 2026</footer>
+
+<script>
+/* ─────────────────────────────────────────────────────────────
+   ADMIN APP — recipients, composer, broadcast, runs
+   ───────────────────────────────────────────────────────────── */
+(function () {
+  const WORKER = window.WORKER_BASE;
+  const $ = sel => document.querySelector(sel);
+  const $$ = sel => Array.from(document.querySelectorAll(sel));
+
+  // State
+  let MODE  = 'test';          // 'test' | 'live'
+  let TYPE  = 'bulletin';      // 'bulletin' | 'cta'
+  let RECIPIENTS = [];         // editable roster (server side after save)
+  let INVENTORY  = [];         // [{crop,bu_on_hand,current_bid,bid_month}]
+  let RUNS       = [];         // recent runs from /admin/state
+  let SELECTED_PHONES = new Set();  // recipients ticked in composer
+  let OPEN_RUN_ID = null;      // currently-open run modal
+
+  function adminAuth() { return window.__adminAuth(); }
+  function adminHeaders(extra) {
+    const a = adminAuth();
+    if (!a) return null;
+    return Object.assign({
+      'Authorization': 'Bearer ' + a.admin_token + '|' + a.admin_expires_at,
+      'Content-Type':  'application/json',
+    }, extra || {});
+  }
+  async function api(path, body) {
+    const h = adminHeaders();
+    if (!h) { window.__adminClear(); location.reload(); return null; }
+    const r = await fetch(WORKER + path, {
+      method: body ? 'POST' : 'GET',
+      headers: h,
+      body: body ? JSON.stringify(body) : undefined,
+    });
+    if (r.status === 401) {
+      window.__adminClear(); location.reload(); return null;
+    }
+    return r.json().catch(() => ({ ok: false, error: 'Bad response' }));
+  }
+
+  function toast(el, msg, isError) {
+    el.textContent = msg;
+    el.classList.toggle('error', !!isError);
+    el.classList.add('show');
+    clearTimeout(el._tt);
+    el._tt = setTimeout(() => el.classList.remove('show'), 2400);
+  }
+
+  // ── Load /admin/state ─────────────────────────────────────────
+  async function bootstrap() {
+    $('#admin-meta').textContent = 'ADMIN · LOADING';
+    const j = await api('/admin/state');
+    if (!j || !j.ok) {
+      $('#admin-meta').textContent = 'ADMIN · ERROR';
+      return;
+    }
+    RECIPIENTS = j.recipients || [];
+    INVENTORY  = j.inventory  || [];
+    RUNS       = j.recent_runs || [];
+    renderRecipients();
+    renderRecipPicker();
+    renderRuns();
+    renderInventory();
+    const a = adminAuth();
+    if (a) {
+      const exp = new Date(a.admin_expires_at);
+      $('#admin-meta').textContent =
+        'ADMIN · UNTIL ' + exp.toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}).toUpperCase();
+    }
+  }
+
+  // ── Recipients table ─────────────────────────────────────────
+  const REQUIRED_LOCK_NAMES = new Set(['Dan Cooke','Susan Lindeen','Maryann Meyer']);
+
+  function renderRecipients() {
+    const tbody = $('#recip-tbody');
+    tbody.innerHTML = '';
+    // Sort: required-locked names first (alphabetical), then everyone else
+    // alphabetical by name.
+    const list = RECIPIENTS.slice().sort((a, b) => {
+      const aLock = REQUIRED_LOCK_NAMES.has(a.name) ? 0 : 1;
+      const bLock = REQUIRED_LOCK_NAMES.has(b.name) ? 0 : 1;
+      if (aLock !== bLock) return aLock - bLock;
+      return (a.name || '').localeCompare(b.name || '');
+    });
+    list.forEach((r, idxInSort) => {
+      const tr = document.createElement('tr');
+      const locked = REQUIRED_LOCK_NAMES.has(r.name);
+      if (locked) tr.classList.add('locked');
+      const realIdx = RECIPIENTS.indexOf(r);
+      tr.innerHTML = `
+        <td>
+          <input type="text" class="name-input" value="${escapeAttr(r.name)}"
+                 ${locked ? 'readonly aria-readonly="true"' : ''}
+                 placeholder="Name" />
+        </td>
+        <td>
+          <input type="tel" class="phone-input" value="${escapeAttr(r.phone)}"
+                 placeholder="+13125551212" />
+        </td>
+        <td class="req-cell">
+          <input type="checkbox" class="req-cb" ${r.required ? 'checked' : ''}
+                 ${locked ? 'disabled aria-disabled="true" title="Quorum requires these three"' : ''} />
+        </td>
+        <td>
+          ${locked ? '' : '<button type="button" class="row-del" title="Remove">×</button>'}
+        </td>
+      `;
+      tr.querySelector('.name-input').addEventListener('input', e => RECIPIENTS[realIdx].name = e.target.value);
+      tr.querySelector('.phone-input').addEventListener('input', e => RECIPIENTS[realIdx].phone = e.target.value);
+      tr.querySelector('.req-cb').addEventListener('change', e => RECIPIENTS[realIdx].required = e.target.checked);
+      const del = tr.querySelector('.row-del');
+      if (del) del.addEventListener('click', () => {
+        RECIPIENTS.splice(realIdx, 1);
+        renderRecipients();
+        renderRecipPicker();
+      });
+      tbody.appendChild(tr);
+    });
+  }
+  function escapeAttr(s) { return String(s ?? '').replace(/"/g, '&quot;'); }
+
+  $('#recip-add').addEventListener('click', () => {
+    RECIPIENTS.push({ name: '', phone: '', required: false });
+    renderRecipients();
+    renderRecipPicker();
+    setTimeout(() => {
+      const inputs = $$('#recip-tbody .name-input');
+      inputs[inputs.length - 1]?.focus();
+    }, 0);
+  });
+
+  $('#recip-save').addEventListener('click', async () => {
+    const cleaned = RECIPIENTS
+      .map(r => ({ name: (r.name||'').trim(), phone: normalizePhone(r.phone), required: !!r.required }))
+      .filter(r => r.name && r.phone);
+    if (cleaned.length === 0) {
+      toast($('#recip-toast'), 'Add at least one row with name + phone.', true);
+      return;
+    }
+    $('#recip-save').disabled = true;
+    try {
+      const j = await api('/admin/recipients', { recipients: cleaned });
+      if (j && j.ok) {
+        RECIPIENTS = j.recipients;
+        renderRecipients();
+        renderRecipPicker();
+        toast($('#recip-toast'), 'Roster saved + mirrored to git.');
+      } else {
+        toast($('#recip-toast'), (j && j.error) || 'Save failed.', true);
+      }
+    } finally { $('#recip-save').disabled = false; }
+  });
+
+  // ── Recipient picker (composer) ──────────────────────────────
+  function renderRecipPicker() {
+    const wrap = $('#recip-list');
+    wrap.innerHTML = '';
+    const valid = RECIPIENTS.filter(r => r.name && normalizePhone(r.phone));
+    if (valid.length === 0) {
+      wrap.innerHTML = '<div style="grid-column:1/-1;color:var(--slate);font-style:italic;font-family:var(--font-display);font-size:13px;">No recipients yet — add some in the roster below.</div>';
+      return;
+    }
+    valid.forEach(r => {
+      const phone = normalizePhone(r.phone);
+      const id = 'rp-' + phone.replace(/[^0-9]/g, '');
+      const lbl = document.createElement('label');
+      lbl.innerHTML = `
+        <input type="checkbox" id="${id}" data-phone="${phone}" ${SELECTED_PHONES.has(phone) ? 'checked' : ''} />
+        <span class="who">
+          ${r.required ? '<span class="star">★</span>' : ''}
+          <span>${escapeAttr(r.name)}</span>
+          <span class="ph">${escapeAttr(formatPhone(phone))}</span>
+        </span>
+      `;
+      lbl.querySelector('input').addEventListener('change', e => {
+        if (e.target.checked) SELECTED_PHONES.add(phone);
+        else SELECTED_PHONES.delete(phone);
+        updateSendUI();
+      });
+      wrap.appendChild(lbl);
+    });
+  }
+  $('#pick-all').addEventListener('click', () => {
+    SELECTED_PHONES = new Set(RECIPIENTS.filter(r => normalizePhone(r.phone)).map(r => normalizePhone(r.phone)));
+    renderRecipPicker(); updateSendUI();
+  });
+  $('#pick-required').addEventListener('click', () => {
+    SELECTED_PHONES = new Set(RECIPIENTS.filter(r => r.required && normalizePhone(r.phone)).map(r => normalizePhone(r.phone)));
+    renderRecipPicker(); updateSendUI();
+  });
+  $('#pick-none').addEventListener('click', () => {
+    SELECTED_PHONES.clear(); renderRecipPicker(); updateSendUI();
+  });
+
+  // ── Mode + type toggles ──────────────────────────────────────
+  $$('#mode-toggle button').forEach(b => b.addEventListener('click', () => {
+    MODE = b.dataset.mode;
+    $$('#mode-toggle button').forEach(x => {
+      x.classList.toggle('on', x === b);
+      x.classList.toggle('test', x.dataset.mode === 'test');
+      x.classList.toggle('live', x.dataset.mode === 'live');
+      x.setAttribute('aria-selected', x === b ? 'true' : 'false');
+    });
+    $('#mode-tip').innerHTML = MODE === 'test'
+      ? '<b>Test</b> sends only to your admin phone with a [TEST] prefix. Recipients are not contacted.'
+      : '<b>Live</b> sends to every selected recipient. A 6-digit OTP confirms before release.';
+    updateSendUI();
+  }));
+
+  $$('#type-toggle button').forEach(b => b.addEventListener('click', () => {
+    TYPE = b.dataset.type;
+    $$('#type-toggle button').forEach(x => x.classList.toggle('on', x === b));
+    $('#trade-picker').hidden = (TYPE !== 'cta');
+    updateSendUI();
+  }));
+
+  // ── Compose text ─────────────────────────────────────────────
+  $('#compose-text').addEventListener('input', e => {
+    const len = e.target.value.length;
+    $('#char-count').textContent = len + ' / 400';
+    // Rough: GSM-7 is 160/segment; UCS-2 is 70. Em-dash → UCS-2.
+    const ucs2 = /[—•…“”‘’]/.test(e.target.value);
+    const seg  = ucs2 ? Math.max(1, Math.ceil(len / 70)) : Math.max(1, Math.ceil(len / 160));
+    $('#seg-count').textContent = `~ ${seg} SMS segment${seg === 1 ? '' : 's'}` + (ucs2 ? ' (UCS-2)' : '');
+    updateSendUI();
+  });
+
+  // ── Inventory display in trade picker ────────────────────────
+  function renderInventory() {
+    refreshTradeCaptions();
+  }
+  function refreshTradeCaptions() {
+    const crop = $('#t-crop').value;
+    const inv = INVENTORY.find(i => i.crop === crop);
+    if (!inv) {
+      $('#t-cap').innerHTML = 'On hand: <b>—</b>';
+      $('#t-bid').innerHTML = 'Current bid: <b>—</b>';
+      return;
+    }
+    $('#t-cap').innerHTML = `On hand: <b>${inv.bu_on_hand.toLocaleString()} bu</b> ${crop}`;
+    $('#t-bid').innerHTML = inv.current_bid
+      ? `Current bid: <b>$${inv.current_bid.toFixed(2)}</b>${inv.bid_month ? ' · ' + escapeAttr(inv.bid_month) : ''}`
+      : 'Current bid: <b>not in feed</b>';
+    if (!$('#t-bushels').value && inv.bu_on_hand > 0) {
+      // suggest a default if the field is empty
+      const suggest = Math.min(1000, inv.bu_on_hand);
+      $('#t-bushels').placeholder = String(suggest);
+    }
+    if (!$('#t-price').value && inv.current_bid) {
+      $('#t-price').placeholder = inv.current_bid.toFixed(2);
+    }
+  }
+  $('#t-crop').addEventListener('change', refreshTradeCaptions);
+  $('#t-bushels').addEventListener('input', updateSendUI);
+  $('#t-price').addEventListener('input', updateSendUI);
+  $('#t-delivery').addEventListener('input', updateSendUI);
+
+  // ── Update send button + summary ─────────────────────────────
+  function updateSendUI() {
+    const msg = $('#compose-text').value.trim();
+    const hasMsg = msg.length > 0;
+    const hasRecipients = SELECTED_PHONES.size > 0;
+    const tradeOk = TYPE !== 'cta' || (
+      $('#t-crop').value &&
+      Number($('#t-bushels').value) > 0 &&
+      Number($('#t-price').value) > 0
+    );
+    const ok = hasMsg && hasRecipients && tradeOk;
+
+    const btn = $('#send-btn');
+    btn.disabled = !ok;
+    btn.className = 'btn ' + (MODE === 'live' ? 'danger' : 'primary');
+    btn.textContent = (MODE === 'live' ? 'Send LIVE' : 'Send Test') + ' · ' + (TYPE === 'cta' ? 'CTA' : 'Bulletin');
+
+    const requiredSel = RECIPIENTS.filter(r => r.required && SELECTED_PHONES.has(normalizePhone(r.phone))).length;
+    const totalRequired = RECIPIENTS.filter(r => r.required && normalizePhone(r.phone)).length;
+    const sumParts = [];
+    sumParts.push(`<b>${SELECTED_PHONES.size}</b> recipient${SELECTED_PHONES.size === 1 ? '' : 's'}`);
+    if (TYPE === 'cta') {
+      sumParts.push(`required quorum: <b>${requiredSel}/${totalRequired}</b>`);
+    }
+    if (TYPE === 'cta' && tradeOk) {
+      sumParts.push(`${Number($('#t-bushels').value).toLocaleString()} bu ${$('#t-crop').value} @ $${Number($('#t-price').value).toFixed(2)}`);
+    }
+    $('#send-summary').innerHTML = ok ? sumParts.join(' · ') : 'Choose recipients and a message to enable Send.';
+  }
+
+  // ── Send flow ────────────────────────────────────────────────
+  function buildDraft() {
+    const draft = {
+      type:    TYPE,
+      message: $('#compose-text').value.trim(),
+      recipient_phones: Array.from(SELECTED_PHONES),
+    };
+    if (TYPE === 'cta') {
+      draft.trade = {
+        crop:         $('#t-crop').value,
+        bushels:      Number($('#t-bushels').value),
+        target_price: Number($('#t-price').value),
+        delivery:     $('#t-delivery').value.trim() || undefined,
+      };
+      const inv = INVENTORY.find(i => i.crop === draft.trade.crop);
+      if (inv && inv.current_bid) draft.trade.current_bid = inv.current_bid;
+    }
+    return draft;
+  }
+
+  $('#send-btn').addEventListener('click', async () => {
+    const errEl = $('#send-err');
+    errEl.textContent = '';
+    const draft = buildDraft();
+    if (MODE === 'test') {
+      // Direct send — only goes to admin phone.
+      $('#send-btn').disabled = true;
+      try {
+        const j = await api('/admin/broadcast/test', draft);
+        if (j && j.ok) {
+          $('#compose-text').value = '';
+          $('#char-count').textContent = '0 / 400';
+          await refreshRuns();
+          toast($('#runs-toast'), 'Test sent to admin phone.');
+        } else {
+          errEl.textContent = (j && j.error) || 'Test send failed.';
+        }
+      } finally {
+        $('#send-btn').disabled = false;
+        updateSendUI();
+      }
+    } else {
+      // LIVE: open OTP modal, hit /admin/broadcast/start
+      openConfirm(draft);
+    }
+  });
+
+  // ── LIVE confirm modal ────────────────────────────────────────
+  let pendingDraft = null;
+  let pendingOtp   = null;  // {nonce, expires_at, payload_hash, hmac}
+
+  async function openConfirm(draft) {
+    pendingDraft = draft;
+    pendingOtp   = null;
+    $('#confirm-err').textContent = '';
+    $('#confirm-otp').value = '';
+    $('#confirm-summary').textContent = describeDraft(draft);
+    $('#confirm-bg').classList.add('show');
+    $('#confirm-bg').setAttribute('aria-hidden', 'false');
+    setTimeout(() => $('#confirm-otp').focus(), 50);
+    // Fire OTP send
+    await requestOtp(draft);
+  }
+  async function requestOtp(draft) {
+    const j = await api('/admin/broadcast/start', draft);
+    if (j && j.ok) {
+      pendingOtp = {
+        nonce: j.nonce, expires_at: j.expires_at,
+        payload_hash: j.payload_hash, hmac: j.hmac,
+      };
+    } else {
+      $('#confirm-err').textContent = (j && j.error) || 'Could not send OTP.';
+    }
+  }
+  function closeConfirm() {
+    $('#confirm-bg').classList.remove('show');
+    $('#confirm-bg').setAttribute('aria-hidden', 'true');
+    pendingDraft = null; pendingOtp = null;
+  }
+  $('#confirm-cancel').addEventListener('click', closeConfirm);
+  $('#confirm-resend').addEventListener('click', async () => {
+    if (!pendingDraft) return;
+    $('#confirm-err').textContent = '';
+    await requestOtp(pendingDraft);
+  });
+  $('#confirm-otp').addEventListener('input', async e => {
+    $('#confirm-err').textContent = '';
+    e.target.value = e.target.value.replace(/\D/g, '');
+    if (e.target.value.length !== 6) return;
+    if (!pendingDraft || !pendingOtp) {
+      $('#confirm-err').textContent = 'Session expired — cancel and retry.';
+      return;
+    }
+    const code = e.target.value;
+    e.target.disabled = true;
+    try {
+      const j = await api('/admin/broadcast/submit', {
+        draft: pendingDraft,
+        code,
+        nonce:        pendingOtp.nonce,
+        expires_at:   pendingOtp.expires_at,
+        payload_hash: pendingOtp.payload_hash,
+        hmac:         pendingOtp.hmac,
+      });
+      if (j && j.ok) {
+        closeConfirm();
+        $('#compose-text').value = '';
+        $('#char-count').textContent = '0 / 400';
+        await refreshRuns();
+        toast($('#runs-toast'), 'Live broadcast sent.');
+        if (j.run && j.run.id) openRunModal(j.run.id);
+      } else {
+        $('#confirm-err').textContent = (j && j.error) || 'Submit failed.';
+        setTimeout(() => { e.target.value = ''; e.target.disabled = false; e.target.focus(); }, 400);
+        return;
+      }
+    } catch (err) {
+      $('#confirm-err').textContent = 'Network error.';
+    } finally {
+      e.target.disabled = false;
+    }
+  });
+
+  function describeDraft(d) {
+    if (d.type === 'cta' && d.trade) {
+      const t = d.trade;
+      return `CTA · ${t.bushels.toLocaleString()} bu ${t.crop} @ $${t.target_price.toFixed(2)}${t.delivery ? ' · ' + t.delivery : ''} → ${d.recipient_phones.length} ppl`;
+    }
+    return `${d.type.toUpperCase()} → ${d.recipient_phones.length} ppl`;
+  }
+
+  // ── Runs list + detail ────────────────────────────────────────
+  async function refreshRuns() {
+    const j = await api('/admin/runs');
+    if (j && j.ok) { RUNS = j.runs; renderRuns(); }
+  }
+  $('#runs-refresh').addEventListener('click', refreshRuns);
+
+  function renderRuns() {
+    const ul = $('#runs-list');
+    ul.innerHTML = '';
+    if (!RUNS || RUNS.length === 0) {
+      ul.innerHTML = '<li class="runs-empty">No broadcasts yet.</li>';
+      return;
+    }
+    RUNS.forEach(r => {
+      const li = document.createElement('li');
+      li.style.cursor = 'pointer';
+      const who = r.recipients ? r.recipients.length : 0;
+      const replied = r.recipients ? r.recipients.filter(x => x.replied_at).length : 0;
+      const requiredReplied = r.required_phones && r.recipients
+        ? r.recipients.filter(x => r.required_phones.includes(x.phone) && x.replied_at).length
+        : 0;
+      const requiredTotal = r.required_phones ? r.required_phones.length : 0;
+      const tradeBit = (r.type === 'cta' && r.trade)
+        ? `${r.trade.bushels.toLocaleString()} bu ${r.trade.crop} @ $${(r.trade.target_price ?? 0).toFixed(2)}`
+        : (r.message || '').slice(0, 80);
+      li.innerHTML = `
+        <span>
+          <span class="run-tag ${r.type}">${r.type.toUpperCase()}</span>
+          <span class="run-tag ${r.mode}">${r.mode.toUpperCase()}</span>
+          <span class="run-tag status-${r.status}">${r.status.replace('_',' ')}</span>
+        </span>
+        <span class="run-summary">
+          <b>${escapeAttr(tradeBit)}</b><br>
+          ${who} sent · ${replied} replied${r.type === 'cta' && requiredTotal ? ` · required <b>${requiredReplied}/${requiredTotal}</b>` : ''}
+        </span>
+        <span class="run-time">${formatTime(r.created_at)}</span>
+      `;
+      li.addEventListener('click', () => openRunModal(r.id));
+      ul.appendChild(li);
+    });
+  }
+
+  async function openRunModal(id) {
+    OPEN_RUN_ID = id;
+    $('#run-modal-bg').classList.add('show');
+    $('#run-modal-bg').setAttribute('aria-hidden', 'false');
+    $('#run-modal-title').textContent = 'Broadcast detail';
+    $('#run-modal-meta').textContent = 'Loading…';
+    $('#run-modal-msg').textContent  = '';
+    $('#run-modal-tbody').innerHTML  = '';
+    await loadRunDetail();
+  }
+  function closeRunModal() {
+    $('#run-modal-bg').classList.remove('show');
+    $('#run-modal-bg').setAttribute('aria-hidden', 'true');
+    OPEN_RUN_ID = null;
+  }
+  $('#run-modal-close').addEventListener('click', closeRunModal);
+  $('#run-modal-bg').addEventListener('click', e => {
+    if (e.target === $('#run-modal-bg')) closeRunModal();
+  });
+
+  async function loadRunDetail() {
+    if (!OPEN_RUN_ID) return;
+    const j = await api('/admin/runs/' + OPEN_RUN_ID);
+    if (!j || !j.ok || !j.run) {
+      $('#run-modal-meta').textContent = 'Could not load run.';
+      return;
+    }
+    const r = j.run;
+    $('#run-modal-title').textContent = `${r.type.toUpperCase()} · ${r.mode.toUpperCase()}`;
+    const requiredTotal = r.required_phones ? r.required_phones.length : 0;
+    const requiredReplied = r.recipients
+      ? r.recipients.filter(x => r.required_phones.includes(x.phone) && x.replied_at).length
+      : 0;
+    $('#run-modal-meta').innerHTML =
+      `${formatTime(r.created_at)} · status ${r.status.replace('_',' ')}` +
+      (r.type === 'cta' ? ` · required quorum <b>${requiredReplied}/${requiredTotal}</b>` : '');
+    $('#run-modal-msg').textContent = r.message;
+
+    const tbody = $('#run-modal-tbody');
+    tbody.innerHTML = '';
+    (r.recipients || []).forEach(rc => {
+      const tr = document.createElement('tr');
+      const isReq = (r.required_phones || []).includes(rc.phone);
+      const sentBit = rc.sent_ok
+        ? '<span style="color:var(--sage-deep)">✓ sent</span>'
+        : `<span style="color:var(--danger)">${escapeAttr(rc.sent_error || '✗')}</span>`;
+      let replyBit;
+      if (rc.replied_at) {
+        const cls = rc.reply_norm === 'yes' ? 'reply-yes' : (rc.reply_norm === 'no' ? 'reply-no' : '');
+        replyBit = `<span class="${cls}">${rc.reply_norm ? rc.reply_norm.toUpperCase() : '—'}</span>` +
+                   ` <small style="color:var(--dust);font-family:var(--font-mono);">${formatTime(rc.replied_at)}</small>` +
+                   (rc.reply_text ? `<br><small style="color:var(--slate);font-style:italic;">"${escapeAttr(rc.reply_text)}"</small>` : '');
+      } else {
+        replyBit = '<span class="reply-pending">awaiting</span>';
+      }
+      tr.innerHTML = `
+        <td>${isReq ? '★ ' : ''}<b>${escapeAttr(rc.name || '—')}</b><br><small style="color:var(--slate);font-family:var(--font-mono);">${escapeAttr(formatPhone(rc.phone))}</small></td>
+        <td>${sentBit}</td>
+        <td>${replyBit}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+  // Auto-refresh open modal every 8s while it's a pending CTA.
+  setInterval(() => {
+    if (!OPEN_RUN_ID) return;
+    loadRunDetail();
+  }, 8000);
+  // Auto-refresh runs list every 30s
+  setInterval(() => {
+    if ($('#run-modal-bg').classList.contains('show')) return;
+    refreshRuns();
+  }, 30000);
+
+  // ── Helpers ──────────────────────────────────────────────────
+  function normalizePhone(raw) {
+    let s = (raw || '').replace(/[^\d+]/g, '');
+    if (!s) return '';
+    if (!s.startsWith('+')) {
+      if (s.length === 10) s = '+1' + s;
+      else if (s.length === 11 && s.startsWith('1')) s = '+' + s;
+      else s = '+' + s;
+    }
+    return /^\+\d{10,15}$/.test(s) ? s : '';
+  }
+  function formatPhone(p) {
+    return p.replace(/^\+1(\d{3})(\d{3})(\d{4})$/, '($1) $2-$3') || p;
+  }
+  function formatTime(iso) {
+    const d = new Date(iso); if (isNaN(d.getTime())) return '';
+    return d.toLocaleString('en-US', {
+      month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit',
+    });
+  }
+
+  // ── Boot once admin gate is cleared ──────────────────────────
+  window.__adminReady = function () {
+    $('#adm-shell').hidden = false;
+    bootstrap();
+  };
+  // If both gates were dismissed before our handler attached, kick now.
+  if (!document.getElementById('admin-gate') && !document.getElementById('auth-gate')) {
+    window.__adminReady();
+  }
+})();
+</script>
+</body>
+</html>

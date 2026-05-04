@@ -12,6 +12,10 @@ compatibility_date = "2026-04-01"
 #   AUTH_PHONES         comma-separated E.164 phones allowed to log in via SMS
 #   ANTHROPIC_API_KEY   Claude API key for the /advisor route. Get one at
 #                       console.anthropic.com → Settings → API Keys.
+#
+# Required KV namespace — admin recipients + run state for /admin/* routes:
+#   FARM_KV             create with `npx wrangler kv:namespace create FARM_KV`
+#                       then paste the returned id below in [[kv_namespaces]].
 
 [vars]
 GITHUB_REPO = "jnimbles03/farm-trader"
@@ -19,3 +23,16 @@ GITHUB_REPO = "jnimbles03/farm-trader"
 # route fetches this on demand (cached 5 min in the Worker). If you move
 # the bundle (e.g. to R2 or a different Pages path), update here.
 ADVISOR_CONTEXT_URL = "https://jnimbles03.github.io/farm-trader/advisor/advisor_context.json"
+
+# Admin orchestration KV. Stores recipients (admin:recipients:v1), run
+# index (admin:runs:index:v1), each run (admin:run:<id>), and a phone→run
+# pointer for fast inbound reply attribution (admin:phone-run:<phone>).
+#
+# Setup:
+#   cd farm-proxy/cloudflare-worker
+#   npx wrangler kv:namespace create FARM_KV
+#   # paste the returned id here, then:
+#   npx wrangler deploy
+[[kv_namespaces]]
+binding = "FARM_KV"
+id      = "REPLACE_WITH_KV_ID_FROM_WRANGLER_CREATE"
