@@ -1,0 +1,3853 @@
+{
+  "commodityBids": {
+    "type": "api.markets.aggregator.bids.v1#GetBidsListSuccess",
+    "locations": [
+      {
+        "id": "6d46618e-1d65-4162-9316-f777bbd7b38b",
+        "name": "Alto/ICP",
+        "groups": [
+          {
+            "id": "e4277f82-a495-4ef4-9280-82f2aa7c5ac2|bu|USD",
+            "displayName": "Corn",
+            "commodity": {
+              "id": "Corn",
+              "name": "Corn"
+            },
+            "bidPriceUoM": "bu",
+            "bidPriceCurrency": "USD",
+            "basisPriceUoM": null,
+            "basisPriceCurrency": null,
+            "futuresPriceUoM": null,
+            "futuresPriceCurrency": null,
+            "bids": [
+              {
+                "id": "CNCAL000OAFP",
+                "bidType": "cash",
+                "description": "May",
+                "bidPrice": "4.61",
+                "basisPrice": "-0.24",
+                "futuresPrice": "4.8575",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCAL000OMMK",
+                "bidType": "cash",
+                "description": "Jun",
+                "bidPrice": "4.73",
+                "basisPrice": "-0.12",
+                "futuresPrice": "4.8575",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCAL000OMMM",
+                "bidType": "cash",
+                "description": "Jul",
+                "bidPrice": "4.78",
+                "basisPrice": "-0.07",
+                "futuresPrice": "4.8575",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "88e0917e-7510-4871-ae37-d1ecae0932af",
+        "name": "Annawan",
+        "groups": [
+          {
+            "id": "3601d4b9-4611-4aa1-b0d2-69c08021dde4|bu|USD",
+            "displayName": "Corn",
+            "commodity": {
+              "id": "Corn",
+              "name": "Corn"
+            },
+            "bidPriceUoM": "bu",
+            "bidPriceCurrency": "USD",
+            "basisPriceUoM": null,
+            "basisPriceCurrency": null,
+            "futuresPriceUoM": null,
+            "futuresPriceCurrency": null,
+            "bids": [
+              {
+                "id": "CNCAN000NSTR",
+                "bidType": "cash",
+                "description": "May",
+                "bidPrice": "4.68",
+                "basisPrice": "-0.17",
+                "futuresPrice": "4.8575",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCAN000OCND",
+                "bidType": "cash",
+                "description": "Jun",
+                "bidPrice": "4.69",
+                "basisPrice": "-0.16",
+                "futuresPrice": "4.8575",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCAN000NSTZ",
+                "bidType": "cash",
+                "description": "Jul",
+                "bidPrice": "4.77",
+                "basisPrice": "-0.08",
+                "futuresPrice": "4.8575",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCAN000OAVR",
+                "bidType": "cash",
+                "description": "Oct",
+                "bidPrice": "4.77",
+                "basisPrice": "-0.27",
+                "futuresPrice": "5.0425",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCZ26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCAN000OEAL",
+                "bidType": "cash",
+                "description": "Dec",
+                "bidPrice": "4.88",
+                "basisPrice": "-0.16",
+                "futuresPrice": "5.0425",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCZ26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCAN000OQMA",
+                "bidType": "cash",
+                "description": "Jan",
+                "bidPrice": "4.92",
+                "basisPrice": "-0.24",
+                "futuresPrice": "5.1675",
+                "futuresChange": "0.0525",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCH27",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCAN000OQMC",
+                "bidType": "cash",
+                "description": "Feb",
+                "bidPrice": "4.95",
+                "basisPrice": "-0.21",
+                "futuresPrice": "5.1675",
+                "futuresChange": "0.0525",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCH27",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCAN000OQMH",
+                "bidType": "cash",
+                "description": "Mar",
+                "bidPrice": "4.97",
+                "basisPrice": "-0.19",
+                "futuresPrice": "5.1675",
+                "futuresChange": "0.0525",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCH27",
+                "operations": {
+                  "makeOffer": true
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "4af86e92-90ab-43f6-ad98-0feb35c13291",
+        "name": "Big River Galva",
+        "groups": [
+          {
+            "id": "5832a9ca-6021-4540-9747-cdbd294ebea4|bu|USD",
+            "displayName": "Corn",
+            "commodity": {
+              "id": "Corn",
+              "name": "Corn"
+            },
+            "bidPriceUoM": "bu",
+            "bidPriceCurrency": "USD",
+            "basisPriceUoM": null,
+            "basisPriceCurrency": null,
+            "futuresPriceUoM": null,
+            "futuresPriceCurrency": null,
+            "bids": [
+              {
+                "id": "CNCBG000OCNQ",
+                "bidType": "cash",
+                "description": "Jun",
+                "bidPrice": "4.75",
+                "basisPrice": "-0.10",
+                "futuresPrice": "4.8575",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCBG000OAVE",
+                "bidType": "cash",
+                "description": "Oct",
+                "bidPrice": "4.74",
+                "basisPrice": "-0.30",
+                "futuresPrice": "5.0425",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCZ26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCBG000OCNE",
+                "bidType": "cash",
+                "description": "Dec",
+                "bidPrice": "4.84",
+                "basisPrice": "-0.20",
+                "futuresPrice": "5.0425",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCZ26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCBG000OQMB",
+                "bidType": "cash",
+                "description": "Jan",
+                "bidPrice": "4.90",
+                "basisPrice": "-0.26",
+                "futuresPrice": "5.1675",
+                "futuresChange": "0.0525",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCH27",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCBG000OQMD",
+                "bidType": "cash",
+                "description": "Feb",
+                "bidPrice": "4.92",
+                "basisPrice": "-0.24",
+                "futuresPrice": "5.1675",
+                "futuresChange": "0.0525",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCH27",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCBG000OQMG",
+                "bidType": "cash",
+                "description": "Mar",
+                "bidPrice": "4.95",
+                "basisPrice": "-0.21",
+                "futuresPrice": "5.1675",
+                "futuresChange": "0.0525",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCH27",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCBG000NW64",
+                "bidType": "cash",
+                "description": "May",
+                "bidPrice": "4.72",
+                "basisPrice": "-0.13",
+                "futuresPrice": "4.8575",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCBG000NW63",
+                "bidType": "cash",
+                "description": "Jul",
+                "bidPrice": "4.78",
+                "basisPrice": "-0.07",
+                "futuresPrice": "4.8575",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "e0050820-ae8d-4c14-a1a6-6aad90ae9509",
+        "name": "Biourja Peoria",
+        "groups": [
+          {
+            "id": "59254f55-16d1-4337-ae6d-033c19e7efd2|bu|USD",
+            "displayName": "Corn",
+            "commodity": {
+              "id": "Corn",
+              "name": "Corn"
+            },
+            "bidPriceUoM": "bu",
+            "bidPriceCurrency": "USD",
+            "basisPriceUoM": null,
+            "basisPriceCurrency": null,
+            "futuresPriceUoM": null,
+            "futuresPriceCurrency": null,
+            "bids": [
+              {
+                "id": "CNCBP000N3F2",
+                "bidType": "cash",
+                "description": "May",
+                "bidPrice": "4.68",
+                "basisPrice": "-0.17",
+                "futuresPrice": "4.8575",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCBP000OCNF",
+                "bidType": "cash",
+                "description": "Jun",
+                "bidPrice": "4.73",
+                "basisPrice": "-0.12",
+                "futuresPrice": "4.8575",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCBP000N3FY",
+                "bidType": "cash",
+                "description": "Jul",
+                "bidPrice": "4.78",
+                "basisPrice": "-0.07",
+                "futuresPrice": "4.8575",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCBP000OMML",
+                "bidType": "cash",
+                "description": "Oct",
+                "bidPrice": "4.82",
+                "basisPrice": "-0.22",
+                "futuresPrice": "5.0425",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCZ26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCBP000OMMN",
+                "bidType": "cash",
+                "description": "Dec",
+                "bidPrice": "4.97",
+                "basisPrice": "-0.07",
+                "futuresPrice": "5.0425",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCZ26",
+                "operations": {
+                  "makeOffer": true
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "89c2d0ff-e7a6-4bb1-b092-4b4ba340caad",
+        "name": "Brimfield",
+        "groups": [
+          {
+            "id": "3162d0f0-69cf-4e99-873a-e906284aa065|bu|USD",
+            "displayName": "Corn",
+            "commodity": {
+              "id": "Corn",
+              "name": "Corn"
+            },
+            "bidPriceUoM": "bu",
+            "bidPriceCurrency": "USD",
+            "basisPriceUoM": null,
+            "basisPriceCurrency": null,
+            "futuresPriceUoM": null,
+            "futuresPriceCurrency": null,
+            "bids": [
+              {
+                "id": "CNCBR000NSUV",
+                "bidType": "cash",
+                "description": "May",
+                "bidPrice": "4.61",
+                "basisPrice": "-0.24",
+                "futuresPrice": "4.8575",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCBR000OCNS",
+                "bidType": "cash",
+                "description": "Jun",
+                "bidPrice": "4.66",
+                "basisPrice": "-0.19",
+                "futuresPrice": "4.8575",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCBR000NSUP",
+                "bidType": "cash",
+                "description": "Jul",
+                "bidPrice": "4.69",
+                "basisPrice": "-0.16",
+                "futuresPrice": "4.8575",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCBR000N2T3",
+                "bidType": "cash",
+                "description": "Oct",
+                "bidPrice": "4.66",
+                "basisPrice": "-0.38",
+                "futuresPrice": "5.0425",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCZ26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCBR000OCNG",
+                "bidType": "cash",
+                "description": "Dec",
+                "bidPrice": "4.81",
+                "basisPrice": "-0.23",
+                "futuresPrice": "5.0425",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCZ26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCBR000OQME",
+                "bidType": "cash",
+                "description": "Jan",
+                "bidPrice": "4.86",
+                "basisPrice": "-0.30",
+                "futuresPrice": "5.1675",
+                "futuresChange": "0.0525",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCH27",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCBR000OQMZ",
+                "bidType": "cash",
+                "description": "Feb",
+                "bidPrice": "4.92",
+                "basisPrice": "-0.24",
+                "futuresPrice": "5.1675",
+                "futuresChange": "0.0525",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCH27",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCBR000OQMP",
+                "bidType": "cash",
+                "description": "Mar",
+                "bidPrice": "4.97",
+                "basisPrice": "-0.19",
+                "futuresPrice": "5.1675",
+                "futuresChange": "0.0525",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCH27",
+                "operations": {
+                  "makeOffer": true
+                }
+              }
+            ]
+          },
+          {
+            "id": "49de7c73-07ed-48c8-8adb-a631242cad16|bu|USD",
+            "displayName": "Soybeans",
+            "commodity": {
+              "id": "Soybeans",
+              "name": "Soybeans"
+            },
+            "bidPriceUoM": "bu",
+            "bidPriceCurrency": "USD",
+            "basisPriceUoM": null,
+            "basisPriceCurrency": null,
+            "futuresPriceUoM": null,
+            "futuresPriceCurrency": null,
+            "bids": [
+              {
+                "id": "SBCBR000NST5",
+                "bidType": "cash",
+                "description": "May",
+                "bidPrice": "11.85",
+                "basisPrice": "-0.38",
+                "futuresPrice": "12.2300",
+                "futuresChange": "0.1975",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCBR000OCNH",
+                "bidType": "cash",
+                "description": "Jun",
+                "bidPrice": "11.92",
+                "basisPrice": "-0.30",
+                "futuresPrice": "12.2300",
+                "futuresChange": "0.1975",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCBR000NSUE",
+                "bidType": "cash",
+                "description": "Jul",
+                "bidPrice": "11.98",
+                "basisPrice": "-0.25",
+                "futuresPrice": "12.2300",
+                "futuresChange": "0.1975",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCBR000N2UV",
+                "bidType": "cash",
+                "description": "Oct",
+                "bidPrice": "11.41",
+                "basisPrice": "-0.57",
+                "futuresPrice": "11.9800",
+                "futuresChange": "0.1525",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSX26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCBR000OC2F",
+                "bidType": "cash",
+                "description": "Dec",
+                "bidPrice": "11.72",
+                "basisPrice": "-0.37",
+                "futuresPrice": "12.1000",
+                "futuresChange": "0.1475",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSF27",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCBR000OJX3",
+                "bidType": "cash",
+                "description": "Jan",
+                "bidPrice": "11.73",
+                "basisPrice": "-0.37",
+                "futuresPrice": "12.1000",
+                "futuresChange": "0.1475",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSF27",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCBR000OQMX",
+                "bidType": "cash",
+                "description": "Feb",
+                "bidPrice": "11.63",
+                "basisPrice": "-0.42",
+                "futuresPrice": "12.0550",
+                "futuresChange": "0.1250",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSH27",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCBR000OQMF",
+                "bidType": "cash",
+                "description": "Mar",
+                "bidPrice": "11.68",
+                "basisPrice": "-0.37",
+                "futuresPrice": "12.0550",
+                "futuresChange": "0.1250",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSH27",
+                "operations": {
+                  "makeOffer": true
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "581fb223-a868-4f1f-a7b5-c4fc6d19b7c8",
+        "name": "Cargill Bloomington",
+        "groups": [
+          {
+            "id": "f91b465e-506c-4da9-892a-4cdead8b6dbe|bu|USD",
+            "displayName": "Soybeans",
+            "commodity": {
+              "id": "Soybeans",
+              "name": "Soybeans"
+            },
+            "bidPriceUoM": "bu",
+            "bidPriceCurrency": "USD",
+            "basisPriceUoM": null,
+            "basisPriceCurrency": null,
+            "futuresPriceUoM": null,
+            "futuresPriceCurrency": null,
+            "bids": [
+              {
+                "id": "SBCCA000N4CU",
+                "bidType": "cash",
+                "description": "May",
+                "bidPrice": "12.29",
+                "basisPrice": "0.06",
+                "futuresPrice": "12.2300",
+                "futuresChange": "0.1975",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCCA000OCNI",
+                "bidType": "cash",
+                "description": "Jun",
+                "bidPrice": "12.29",
+                "basisPrice": "0.06",
+                "futuresPrice": "12.2300",
+                "futuresChange": "0.1975",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCCA000N4CS",
+                "bidType": "cash",
+                "description": "Jul",
+                "bidPrice": "12.29",
+                "basisPrice": "0.06",
+                "futuresPrice": "12.2300",
+                "futuresChange": "0.1975",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCCA000OIDM",
+                "bidType": "cash",
+                "description": "Oct",
+                "bidPrice": "11.64",
+                "basisPrice": "-0.34",
+                "futuresPrice": "11.9800",
+                "futuresChange": "0.1525",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSX26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCCA000OIDN",
+                "bidType": "cash",
+                "description": "Dec",
+                "bidPrice": "11.76",
+                "basisPrice": "-0.34",
+                "futuresPrice": "12.1000",
+                "futuresChange": "0.1475",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSF27",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCCA000OJX5",
+                "bidType": "cash",
+                "description": "Jan",
+                "bidPrice": "11.81",
+                "basisPrice": "-0.29",
+                "futuresPrice": "12.1000",
+                "futuresChange": "0.1475",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSF27",
+                "operations": {
+                  "makeOffer": true
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ff501f10-f12a-45d6-ab8c-80e9e54689e7",
+        "name": "Cramer",
+        "groups": [
+          {
+            "id": "92f88f55-966a-4247-9d8a-7b5bcaa4ea62|bu|USD",
+            "displayName": "Corn",
+            "commodity": {
+              "id": "Corn",
+              "name": "Corn"
+            },
+            "bidPriceUoM": "bu",
+            "bidPriceCurrency": "USD",
+            "basisPriceUoM": null,
+            "basisPriceCurrency": null,
+            "futuresPriceUoM": null,
+            "futuresPriceCurrency": null,
+            "bids": [
+              {
+                "id": "CNCCR000NSUY",
+                "bidType": "cash",
+                "description": "May",
+                "bidPrice": "4.61",
+                "basisPrice": "-0.24",
+                "futuresPrice": "4.8575",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCCR000OCNT",
+                "bidType": "cash",
+                "description": "Jun",
+                "bidPrice": "4.68",
+                "basisPrice": "-0.17",
+                "futuresPrice": "4.8575",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCCR000NSUT",
+                "bidType": "cash",
+                "description": "Jul",
+                "bidPrice": "4.71",
+                "basisPrice": "-0.14",
+                "futuresPrice": "4.8575",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCCR000N2UH",
+                "bidType": "cash",
+                "description": "Oct",
+                "bidPrice": "4.66",
+                "basisPrice": "-0.38",
+                "futuresPrice": "5.0425",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCZ26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCCR000OCNJ",
+                "bidType": "cash",
+                "description": "Dec",
+                "bidPrice": "4.81",
+                "basisPrice": "-0.23",
+                "futuresPrice": "5.0425",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCZ26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCCR000OQM6",
+                "bidType": "cash",
+                "description": "Jan",
+                "bidPrice": "4.88",
+                "basisPrice": "-0.28",
+                "futuresPrice": "5.1675",
+                "futuresChange": "0.0525",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCH27",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCCR000OQMI",
+                "bidType": "cash",
+                "description": "Feb",
+                "bidPrice": "4.93",
+                "basisPrice": "-0.23",
+                "futuresPrice": "5.1675",
+                "futuresChange": "0.0525",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCH27",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCCR000OQMS",
+                "bidType": "cash",
+                "description": "Mar",
+                "bidPrice": "4.97",
+                "basisPrice": "-0.19",
+                "futuresPrice": "5.1675",
+                "futuresChange": "0.0525",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCH27",
+                "operations": {
+                  "makeOffer": true
+                }
+              }
+            ]
+          },
+          {
+            "id": "fa058643-4cbb-49f5-8585-e592307d904f|bu|USD",
+            "displayName": "Soybeans",
+            "commodity": {
+              "id": "Soybeans",
+              "name": "Soybeans"
+            },
+            "bidPriceUoM": "bu",
+            "bidPriceCurrency": "USD",
+            "basisPriceUoM": null,
+            "basisPriceCurrency": null,
+            "futuresPriceUoM": null,
+            "futuresPriceCurrency": null,
+            "bids": [
+              {
+                "id": "SBCCR000NSU3",
+                "bidType": "cash",
+                "description": "May",
+                "bidPrice": "11.85",
+                "basisPrice": "-0.38",
+                "futuresPrice": "12.2300",
+                "futuresChange": "0.1975",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCCR000OCNK",
+                "bidType": "cash",
+                "description": "Jun",
+                "bidPrice": "11.94",
+                "basisPrice": "-0.28",
+                "futuresPrice": "12.2300",
+                "futuresChange": "0.1975",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCCR000NSU7",
+                "bidType": "cash",
+                "description": "Jul",
+                "bidPrice": "11.98",
+                "basisPrice": "-0.25",
+                "futuresPrice": "12.2300",
+                "futuresChange": "0.1975",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCCR000N2UI",
+                "bidType": "cash",
+                "description": "Oct",
+                "bidPrice": "11.43",
+                "basisPrice": "-0.55",
+                "futuresPrice": "11.9800",
+                "futuresChange": "0.1525",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSX26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCCR000OC2G",
+                "bidType": "cash",
+                "description": "Dec",
+                "bidPrice": "11.74",
+                "basisPrice": "-0.35",
+                "futuresPrice": "12.1000",
+                "futuresChange": "0.1475",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSF27",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCCR000OJX7",
+                "bidType": "cash",
+                "description": "Jan",
+                "bidPrice": "11.73",
+                "basisPrice": "-0.37",
+                "futuresPrice": "12.1000",
+                "futuresChange": "0.1475",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSF27",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCCR000OQMJ",
+                "bidType": "cash",
+                "description": "Feb",
+                "bidPrice": "11.65",
+                "basisPrice": "-0.40",
+                "futuresPrice": "12.0550",
+                "futuresChange": "0.1250",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSH27",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCCR000OQMV",
+                "bidType": "cash",
+                "description": "Mar",
+                "bidPrice": "11.70",
+                "basisPrice": "-0.35",
+                "futuresPrice": "12.0550",
+                "futuresChange": "0.1250",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSH27",
+                "operations": {
+                  "makeOffer": true
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "06c14864-5515-439c-acc1-9a7ec03c81cb",
+        "name": "Creve Cr",
+        "groups": [
+          {
+            "id": "c9bc398e-f6bf-4656-b8d0-4aa5460cd805|bu|USD",
+            "displayName": "Corn",
+            "commodity": {
+              "id": "Corn",
+              "name": "Corn"
+            },
+            "bidPriceUoM": "bu",
+            "bidPriceCurrency": "USD",
+            "basisPriceUoM": null,
+            "basisPriceCurrency": null,
+            "futuresPriceUoM": null,
+            "futuresPriceCurrency": null,
+            "bids": [
+              {
+                "id": "CNCCV000NUUC",
+                "bidType": "cash",
+                "description": "May",
+                "bidPrice": "4.77",
+                "basisPrice": "-0.08",
+                "futuresPrice": "4.8575",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCCV000OCNL",
+                "bidType": "cash",
+                "description": "Jun",
+                "bidPrice": "4.79",
+                "basisPrice": "-0.06",
+                "futuresPrice": "4.8575",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCCV000OBYD",
+                "bidType": "cash",
+                "description": "Jul",
+                "bidPrice": "4.82",
+                "basisPrice": "-0.03",
+                "futuresPrice": "4.8575",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCCV000N3FZ",
+                "bidType": "cash",
+                "description": "Oct",
+                "bidPrice": "4.72",
+                "basisPrice": "-0.32",
+                "futuresPrice": "5.0425",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCZ26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCCV000OCNR",
+                "bidType": "cash",
+                "description": "Dec",
+                "bidPrice": "4.94",
+                "basisPrice": "-0.10",
+                "futuresPrice": "5.0425",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCZ26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCCV000OQMK",
+                "bidType": "cash",
+                "description": "Jan",
+                "bidPrice": "4.99",
+                "basisPrice": "-0.17",
+                "futuresPrice": "5.1675",
+                "futuresChange": "0.0525",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCH27",
+                "operations": {
+                  "makeOffer": true
+                }
+              }
+            ]
+          },
+          {
+            "id": "5f88723a-1920-48de-a8c2-b4cfa5b3c350|bu|USD",
+            "displayName": "Soybeans",
+            "commodity": {
+              "id": "Soybeans",
+              "name": "Soybeans"
+            },
+            "bidPriceUoM": "bu",
+            "bidPriceCurrency": "USD",
+            "basisPriceUoM": null,
+            "basisPriceCurrency": null,
+            "futuresPriceUoM": null,
+            "futuresPriceCurrency": null,
+            "bids": [
+              {
+                "id": "SBCCV000NUUF",
+                "bidType": "cash",
+                "description": "May",
+                "bidPrice": "12.03",
+                "basisPrice": "-0.20",
+                "futuresPrice": "12.2300",
+                "futuresChange": "0.1975",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCCV000OCNM",
+                "bidType": "cash",
+                "description": "Jun",
+                "bidPrice": "12.06",
+                "basisPrice": "-0.17",
+                "futuresPrice": "12.2300",
+                "futuresChange": "0.1975",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCCV000N27P",
+                "bidType": "cash",
+                "description": "Jul",
+                "bidPrice": "12.16",
+                "basisPrice": "-0.07",
+                "futuresPrice": "12.2300",
+                "futuresChange": "0.1975",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCCV000N2TU",
+                "bidType": "cash",
+                "description": "Oct",
+                "bidPrice": "11.56",
+                "basisPrice": "-0.42",
+                "futuresPrice": "11.9800",
+                "futuresChange": "0.1525",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSX26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCCV000ODGI",
+                "bidType": "cash",
+                "description": "Dec",
+                "bidPrice": "11.76",
+                "basisPrice": "-0.34",
+                "futuresPrice": "12.1000",
+                "futuresChange": "0.1475",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSF27",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCCV000OKQ5",
+                "bidType": "cash",
+                "description": "Jan",
+                "bidPrice": "11.91",
+                "basisPrice": "-0.19",
+                "futuresPrice": "12.1000",
+                "futuresChange": "0.1475",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSF27",
+                "operations": {
+                  "makeOffer": true
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "0b848d56-c472-4238-b868-5aed29515bf0",
+        "name": "Edelstein",
+        "groups": [
+          {
+            "id": "9d3fafa1-fa80-4559-ba68-07b16a104cda|bu|USD",
+            "displayName": "Corn",
+            "commodity": {
+              "id": "Corn",
+              "name": "Corn"
+            },
+            "bidPriceUoM": "bu",
+            "bidPriceCurrency": "USD",
+            "basisPriceUoM": null,
+            "basisPriceCurrency": null,
+            "futuresPriceUoM": null,
+            "futuresPriceCurrency": null,
+            "bids": [
+              {
+                "id": "CNCED000NSVF",
+                "bidType": "cash",
+                "description": "May",
+                "bidPrice": "4.63",
+                "basisPrice": "-0.22",
+                "futuresPrice": "4.8575",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCED000OCNN",
+                "bidType": "cash",
+                "description": "Jun",
+                "bidPrice": "4.67",
+                "basisPrice": "-0.18",
+                "futuresPrice": "4.8575",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCED000NSVH",
+                "bidType": "cash",
+                "description": "Jul",
+                "bidPrice": "4.68",
+                "basisPrice": "-0.17",
+                "futuresPrice": "4.8575",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCED000N2TZ",
+                "bidType": "cash",
+                "description": "Oct",
+                "bidPrice": "4.66",
+                "basisPrice": "-0.38",
+                "futuresPrice": "5.0425",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCZ26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCED000OCNU",
+                "bidType": "cash",
+                "description": "Dec",
+                "bidPrice": "4.82",
+                "basisPrice": "-0.22",
+                "futuresPrice": "5.0425",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCZ26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCED000OQML",
+                "bidType": "cash",
+                "description": "Jan",
+                "bidPrice": "4.87",
+                "basisPrice": "-0.29",
+                "futuresPrice": "5.1675",
+                "futuresChange": "0.0525",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCH27",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCED000OQMY",
+                "bidType": "cash",
+                "description": "Feb",
+                "bidPrice": "4.94",
+                "basisPrice": "-0.22",
+                "futuresPrice": "5.1675",
+                "futuresChange": "0.0525",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCH27",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCED000OQND",
+                "bidType": "cash",
+                "description": "Mar",
+                "bidPrice": "4.99",
+                "basisPrice": "-0.17",
+                "futuresPrice": "5.1675",
+                "futuresChange": "0.0525",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCH27",
+                "operations": {
+                  "makeOffer": true
+                }
+              }
+            ]
+          },
+          {
+            "id": "81e8ab93-da6f-4f16-a8d1-cd279eaa49e1|bu|USD",
+            "displayName": "Soybeans",
+            "commodity": {
+              "id": "Soybeans",
+              "name": "Soybeans"
+            },
+            "bidPriceUoM": "bu",
+            "bidPriceCurrency": "USD",
+            "basisPriceUoM": null,
+            "basisPriceCurrency": null,
+            "futuresPriceUoM": null,
+            "futuresPriceCurrency": null,
+            "bids": [
+              {
+                "id": "SBCED000NSU6",
+                "bidType": "cash",
+                "description": "May",
+                "bidPrice": "11.87",
+                "basisPrice": "-0.36",
+                "futuresPrice": "12.2300",
+                "futuresChange": "0.1975",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCED000OCNO",
+                "bidType": "cash",
+                "description": "Jun",
+                "bidPrice": "11.94",
+                "basisPrice": "-0.29",
+                "futuresPrice": "12.2300",
+                "futuresChange": "0.1975",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCED000NSVA",
+                "bidType": "cash",
+                "description": "Jul",
+                "bidPrice": "12.00",
+                "basisPrice": "-0.23",
+                "futuresPrice": "12.2300",
+                "futuresChange": "0.1975",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCED000N2UM",
+                "bidType": "cash",
+                "description": "Oct",
+                "bidPrice": "11.40",
+                "basisPrice": "-0.58",
+                "futuresPrice": "11.9800",
+                "futuresChange": "0.1525",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSX26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCED000OC2C",
+                "bidType": "cash",
+                "description": "Dec",
+                "bidPrice": "11.67",
+                "basisPrice": "-0.42",
+                "futuresPrice": "12.1000",
+                "futuresChange": "0.1475",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSF27",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCED000OJYA",
+                "bidType": "cash",
+                "description": "Jan",
+                "bidPrice": "11.75",
+                "basisPrice": "-0.35",
+                "futuresPrice": "12.1000",
+                "futuresChange": "0.1475",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSF27",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCED000OQMM",
+                "bidType": "cash",
+                "description": "Feb",
+                "bidPrice": "11.60",
+                "basisPrice": "-0.45",
+                "futuresPrice": "12.0550",
+                "futuresChange": "0.1250",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSH27",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCED000OQM2",
+                "bidType": "cash",
+                "description": "Mar",
+                "bidPrice": "11.70",
+                "basisPrice": "-0.35",
+                "futuresPrice": "12.0550",
+                "futuresChange": "0.1250",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSH27",
+                "operations": {
+                  "makeOffer": true
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ff018237-5118-4d81-9743-ffd3a496ae30",
+        "name": "Glasford",
+        "groups": [
+          {
+            "id": "00fd3353-dac0-4cbb-affc-aa8fc3b9e7c5|bu|USD",
+            "displayName": "Corn",
+            "commodity": {
+              "id": "Corn",
+              "name": "Corn"
+            },
+            "bidPriceUoM": "bu",
+            "bidPriceCurrency": "USD",
+            "basisPriceUoM": null,
+            "basisPriceCurrency": null,
+            "futuresPriceUoM": null,
+            "futuresPriceCurrency": null,
+            "bids": [
+              {
+                "id": "CNCGL000NSWZ",
+                "bidType": "cash",
+                "description": "May",
+                "bidPrice": "4.63",
+                "basisPrice": "-0.22",
+                "futuresPrice": "4.8575",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCGL000OCNP",
+                "bidType": "cash",
+                "description": "Jun",
+                "bidPrice": "4.68",
+                "basisPrice": "-0.17",
+                "futuresPrice": "4.8575",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCGL000NSXB",
+                "bidType": "cash",
+                "description": "Jul",
+                "bidPrice": "4.71",
+                "basisPrice": "-0.14",
+                "futuresPrice": "4.8575",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCGL000N2T4",
+                "bidType": "cash",
+                "description": "Oct",
+                "bidPrice": "4.68",
+                "basisPrice": "-0.36",
+                "futuresPrice": "5.0425",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCZ26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCGL000OCN5",
+                "bidType": "cash",
+                "description": "Dec",
+                "bidPrice": "4.83",
+                "basisPrice": "-0.21",
+                "futuresPrice": "5.0425",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCZ26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCGL000OQM4",
+                "bidType": "cash",
+                "description": "Jan",
+                "bidPrice": "4.88",
+                "basisPrice": "-0.28",
+                "futuresPrice": "5.1675",
+                "futuresChange": "0.0525",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCH27",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCGL000OQMN",
+                "bidType": "cash",
+                "description": "Feb",
+                "bidPrice": "4.93",
+                "basisPrice": "-0.23",
+                "futuresPrice": "5.1675",
+                "futuresChange": "0.0525",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCH27",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCGL000OQNE",
+                "bidType": "cash",
+                "description": "Mar",
+                "bidPrice": "4.97",
+                "basisPrice": "-0.19",
+                "futuresPrice": "5.1675",
+                "futuresChange": "0.0525",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCH27",
+                "operations": {
+                  "makeOffer": true
+                }
+              }
+            ]
+          },
+          {
+            "id": "43571367-816f-42aa-9f03-34578f4a1bde|bu|USD",
+            "displayName": "Soybeans",
+            "commodity": {
+              "id": "Soybeans",
+              "name": "Soybeans"
+            },
+            "bidPriceUoM": "bu",
+            "bidPriceCurrency": "USD",
+            "basisPriceUoM": null,
+            "basisPriceCurrency": null,
+            "futuresPriceUoM": null,
+            "futuresPriceCurrency": null,
+            "bids": [
+              {
+                "id": "SBCGL000NSWM",
+                "bidType": "cash",
+                "description": "May",
+                "bidPrice": "11.87",
+                "basisPrice": "-0.36",
+                "futuresPrice": "12.2300",
+                "futuresChange": "0.1975",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCGL000OCN6",
+                "bidType": "cash",
+                "description": "Jun",
+                "bidPrice": "11.95",
+                "basisPrice": "-0.27",
+                "futuresPrice": "12.2300",
+                "futuresChange": "0.1975",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCGL000NSWS",
+                "bidType": "cash",
+                "description": "Jul",
+                "bidPrice": "12.00",
+                "basisPrice": "-0.23",
+                "futuresPrice": "12.2300",
+                "futuresChange": "0.1975",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCGL000N2UQ",
+                "bidType": "cash",
+                "description": "Oct",
+                "bidPrice": "11.44",
+                "basisPrice": "-0.54",
+                "futuresPrice": "11.9800",
+                "futuresChange": "0.1525",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSX26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCGL000OC2D",
+                "bidType": "cash",
+                "description": "Dec",
+                "bidPrice": "11.75",
+                "basisPrice": "-0.34",
+                "futuresPrice": "12.1000",
+                "futuresChange": "0.1475",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSF27",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCGL000OJYD",
+                "bidType": "cash",
+                "description": "Jan",
+                "bidPrice": "11.75",
+                "basisPrice": "-0.35",
+                "futuresPrice": "12.1000",
+                "futuresChange": "0.1475",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSF27",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCGL000OQMO",
+                "bidType": "cash",
+                "description": "Feb",
+                "bidPrice": "11.66",
+                "basisPrice": "-0.39",
+                "futuresPrice": "12.0550",
+                "futuresChange": "0.1250",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSH27",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCGL000OQM3",
+                "bidType": "cash",
+                "description": "Mar",
+                "bidPrice": "11.71",
+                "basisPrice": "-0.34",
+                "futuresPrice": "12.0550",
+                "futuresChange": "0.1250",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSH27",
+                "operations": {
+                  "makeOffer": true
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "c53157b9-10f5-496c-b66e-50709be157b6",
+        "name": "Havana",
+        "groups": [
+          {
+            "id": "5b7a7a8d-8c11-465b-8112-b976ada71557|bu|USD",
+            "displayName": "Corn",
+            "commodity": {
+              "id": "Corn",
+              "name": "Corn"
+            },
+            "bidPriceUoM": "bu",
+            "bidPriceCurrency": "USD",
+            "basisPriceUoM": null,
+            "basisPriceCurrency": null,
+            "futuresPriceUoM": null,
+            "futuresPriceCurrency": null,
+            "bids": [
+              {
+                "id": "CNCHA000NZLW",
+                "bidType": "cash",
+                "description": "May",
+                "bidPrice": "4.83",
+                "basisPrice": "-0.02",
+                "futuresPrice": "4.8575",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCHA000OCN7",
+                "bidType": "cash",
+                "description": "Jun",
+                "bidPrice": "4.87",
+                "basisPrice": "0.01",
+                "futuresPrice": "4.8575",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCHA000N2UX",
+                "bidType": "cash",
+                "description": "Jul",
+                "bidPrice": "4.90",
+                "basisPrice": "0.04",
+                "futuresPrice": "4.8575",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCHA000N2UL",
+                "bidType": "cash",
+                "description": "Oct",
+                "bidPrice": "4.77",
+                "basisPrice": "-0.27",
+                "futuresPrice": "5.0425",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCZ26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCHA000OEAN",
+                "bidType": "cash",
+                "description": "Dec",
+                "bidPrice": "4.97",
+                "basisPrice": "-0.07",
+                "futuresPrice": "5.0425",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCZ26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCHA000OQNF",
+                "bidType": "cash",
+                "description": "Jan",
+                "bidPrice": "5.07",
+                "basisPrice": "-0.09",
+                "futuresPrice": "5.1675",
+                "futuresChange": "0.0525",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCH27",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCHA000OQMQ",
+                "bidType": "cash",
+                "description": "Feb",
+                "bidPrice": "5.12",
+                "basisPrice": "-0.04",
+                "futuresPrice": "5.1675",
+                "futuresChange": "0.0525",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCH27",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCHA000OQM5",
+                "bidType": "cash",
+                "description": "Mar",
+                "bidPrice": "5.16",
+                "basisPrice": "-0.00",
+                "futuresPrice": "5.1675",
+                "futuresChange": "0.0525",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCH27",
+                "operations": {
+                  "makeOffer": true
+                }
+              }
+            ]
+          },
+          {
+            "id": "f01ba54a-e2d8-4b77-a464-10dbc3ad0a32|bu|USD",
+            "displayName": "Soybeans",
+            "commodity": {
+              "id": "Soybeans",
+              "name": "Soybeans"
+            },
+            "bidPriceUoM": "bu",
+            "bidPriceCurrency": "USD",
+            "basisPriceUoM": null,
+            "basisPriceCurrency": null,
+            "futuresPriceUoM": null,
+            "futuresPriceCurrency": null,
+            "bids": [
+              {
+                "id": "SBCHA000N2T7",
+                "bidType": "cash",
+                "description": "May",
+                "bidPrice": "12.08",
+                "basisPrice": "-0.14",
+                "futuresPrice": "12.2300",
+                "futuresChange": "0.1975",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCHA000OCOA",
+                "bidType": "cash",
+                "description": "Jun",
+                "bidPrice": "12.15",
+                "basisPrice": "-0.07",
+                "futuresPrice": "12.2300",
+                "futuresChange": "0.1975",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCHA000N2UP",
+                "bidType": "cash",
+                "description": "Jul",
+                "bidPrice": "12.18",
+                "basisPrice": "-0.04",
+                "futuresPrice": "12.2300",
+                "futuresChange": "0.1975",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCHA000N2U2",
+                "bidType": "cash",
+                "description": "Oct",
+                "bidPrice": "11.64",
+                "basisPrice": "-0.34",
+                "futuresPrice": "11.9800",
+                "futuresChange": "0.1525",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSX26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCHA000OEAM",
+                "bidType": "cash",
+                "description": "Dec",
+                "bidPrice": "11.95",
+                "basisPrice": "-0.14",
+                "futuresPrice": "12.1000",
+                "futuresChange": "0.1475",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSF27",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCHA000OLEC",
+                "bidType": "cash",
+                "description": "Jan",
+                "bidPrice": "11.95",
+                "basisPrice": "-0.14",
+                "futuresPrice": "12.1000",
+                "futuresChange": "0.1475",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSF27",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCHA000OQMR",
+                "bidType": "cash",
+                "description": "Feb",
+                "bidPrice": "11.86",
+                "basisPrice": "-0.19",
+                "futuresPrice": "12.0550",
+                "futuresChange": "0.1250",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSH27",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCHA000OQM7",
+                "bidType": "cash",
+                "description": "Mar",
+                "bidPrice": "11.91",
+                "basisPrice": "-0.14",
+                "futuresPrice": "12.0550",
+                "futuresChange": "0.1250",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSH27",
+                "operations": {
+                  "makeOffer": true
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "50cb6892-fdd9-4838-b4c4-64e691baa16e",
+        "name": "Kewanee",
+        "groups": [
+          {
+            "id": "e6247a8f-e26b-4791-a0d5-c35ff6dc609f|bu|USD",
+            "displayName": "Corn",
+            "commodity": {
+              "id": "Corn",
+              "name": "Corn"
+            },
+            "bidPriceUoM": "bu",
+            "bidPriceCurrency": "USD",
+            "basisPriceUoM": null,
+            "basisPriceCurrency": null,
+            "futuresPriceUoM": null,
+            "futuresPriceCurrency": null,
+            "bids": [
+              {
+                "id": "CNCKE000NSXM",
+                "bidType": "cash",
+                "description": "May",
+                "bidPrice": "4.55",
+                "basisPrice": "-0.30",
+                "futuresPrice": "4.8575",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCKE000OCOB",
+                "bidType": "cash",
+                "description": "Jun",
+                "bidPrice": "4.59",
+                "basisPrice": "-0.26",
+                "futuresPrice": "4.8575",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCKE000NSXV",
+                "bidType": "cash",
+                "description": "Jul",
+                "bidPrice": "4.60",
+                "basisPrice": "-0.25",
+                "futuresPrice": "4.8575",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCKE000N2US",
+                "bidType": "cash",
+                "description": "Oct",
+                "bidPrice": "4.59",
+                "basisPrice": "-0.45",
+                "futuresPrice": "5.0425",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCZ26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCKE000OCOF",
+                "bidType": "cash",
+                "description": "Dec",
+                "bidPrice": "4.74",
+                "basisPrice": "-0.30",
+                "futuresPrice": "5.0425",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCZ26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCKE000OQNB",
+                "bidType": "cash",
+                "description": "Jan",
+                "bidPrice": "4.79",
+                "basisPrice": "-0.37",
+                "futuresPrice": "5.1675",
+                "futuresChange": "0.0525",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCH27",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCKE000OQMT",
+                "bidType": "cash",
+                "description": "Feb",
+                "bidPrice": "4.86",
+                "basisPrice": "-0.30",
+                "futuresPrice": "5.1675",
+                "futuresChange": "0.0525",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCH27",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCKE000OQNH",
+                "bidType": "cash",
+                "description": "Mar",
+                "bidPrice": "4.91",
+                "basisPrice": "-0.25",
+                "futuresPrice": "5.1675",
+                "futuresChange": "0.0525",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCH27",
+                "operations": {
+                  "makeOffer": true
+                }
+              }
+            ]
+          },
+          {
+            "id": "542f5571-d63a-4b8a-8cb5-14142ce0e663|bu|USD",
+            "displayName": "Soybeans",
+            "commodity": {
+              "id": "Soybeans",
+              "name": "Soybeans"
+            },
+            "bidPriceUoM": "bu",
+            "bidPriceCurrency": "USD",
+            "basisPriceUoM": null,
+            "basisPriceCurrency": null,
+            "futuresPriceUoM": null,
+            "futuresPriceCurrency": null,
+            "bids": [
+              {
+                "id": "SBCKE000NSXL",
+                "bidType": "cash",
+                "description": "May",
+                "bidPrice": "11.76",
+                "basisPrice": "-0.47",
+                "futuresPrice": "12.2300",
+                "futuresChange": "0.1975",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCKE000OCOC",
+                "bidType": "cash",
+                "description": "Jun",
+                "bidPrice": "11.83",
+                "basisPrice": "-0.40",
+                "futuresPrice": "12.2300",
+                "futuresChange": "0.1975",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCKE000NSXQ",
+                "bidType": "cash",
+                "description": "Jul",
+                "bidPrice": "11.89",
+                "basisPrice": "-0.34",
+                "futuresPrice": "12.2300",
+                "futuresChange": "0.1975",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCKE000N2UT",
+                "bidType": "cash",
+                "description": "Oct",
+                "bidPrice": "11.29",
+                "basisPrice": "-0.69",
+                "futuresPrice": "11.9800",
+                "futuresChange": "0.1525",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSX26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCKE000OC2E",
+                "bidType": "cash",
+                "description": "Dec",
+                "bidPrice": "11.60",
+                "basisPrice": "-0.49",
+                "futuresPrice": "12.1000",
+                "futuresChange": "0.1475",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSF27",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCKE000OJYF",
+                "bidType": "cash",
+                "description": "Jan",
+                "bidPrice": "11.64",
+                "basisPrice": "-0.45",
+                "futuresPrice": "12.1000",
+                "futuresChange": "0.1475",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSF27",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCKE000OQNA",
+                "bidType": "cash",
+                "description": "Feb",
+                "bidPrice": "11.49",
+                "basisPrice": "-0.56",
+                "futuresPrice": "12.0550",
+                "futuresChange": "0.1250",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSH27",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCKE000OQMU",
+                "bidType": "cash",
+                "description": "Mar",
+                "bidPrice": "11.59",
+                "basisPrice": "-0.46",
+                "futuresPrice": "12.0550",
+                "futuresChange": "0.1250",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSH27",
+                "operations": {
+                  "makeOffer": true
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "bcde761a-74f2-44ca-83ae-5385307fe495",
+        "name": "Lacon",
+        "groups": [
+          {
+            "id": "52fc5b49-ea16-4b26-b72a-aa50c3903a1d|bu|USD",
+            "displayName": "Corn",
+            "commodity": {
+              "id": "Corn",
+              "name": "Corn"
+            },
+            "bidPriceUoM": "bu",
+            "bidPriceCurrency": "USD",
+            "basisPriceUoM": null,
+            "basisPriceCurrency": null,
+            "futuresPriceUoM": null,
+            "futuresPriceCurrency": null,
+            "bids": [
+              {
+                "id": "CNCLA000NXK7",
+                "bidType": "cash",
+                "description": "May",
+                "bidPrice": "4.80",
+                "basisPrice": "-0.05",
+                "futuresPrice": "4.8575",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCLA000OCOD",
+                "bidType": "cash",
+                "description": "Jun",
+                "bidPrice": "4.84",
+                "basisPrice": "-0.01",
+                "futuresPrice": "4.8575",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCLA000NSYA",
+                "bidType": "cash",
+                "description": "Jul",
+                "bidPrice": "4.85",
+                "basisPrice": "0.00",
+                "futuresPrice": "4.8575",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCLA000N4HF",
+                "bidType": "cash",
+                "description": "Oct",
+                "bidPrice": "4.74",
+                "basisPrice": "-0.30",
+                "futuresPrice": "5.0425",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCZ26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCLA000OEMI",
+                "bidType": "cash",
+                "description": "Dec",
+                "bidPrice": "4.99",
+                "basisPrice": "-0.05",
+                "futuresPrice": "5.0425",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCZ26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCLA000OQNC",
+                "bidType": "cash",
+                "description": "Jan",
+                "bidPrice": "5.04",
+                "basisPrice": "-0.12",
+                "futuresPrice": "5.1675",
+                "futuresChange": "0.0525",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCH27",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCLA000OQMW",
+                "bidType": "cash",
+                "description": "Feb",
+                "bidPrice": "5.11",
+                "basisPrice": "-0.05",
+                "futuresPrice": "5.1675",
+                "futuresChange": "0.0525",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCH27",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCLA000OQNG",
+                "bidType": "cash",
+                "description": "Mar",
+                "bidPrice": "5.16",
+                "basisPrice": "0.00",
+                "futuresPrice": "5.1675",
+                "futuresChange": "0.0525",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCH27",
+                "operations": {
+                  "makeOffer": true
+                }
+              }
+            ]
+          },
+          {
+            "id": "9faafc7c-28ea-4654-9c8f-ae4e0c467046|bu|USD",
+            "displayName": "Soybeans",
+            "commodity": {
+              "id": "Soybeans",
+              "name": "Soybeans"
+            },
+            "bidPriceUoM": "bu",
+            "bidPriceCurrency": "USD",
+            "basisPriceUoM": null,
+            "basisPriceCurrency": null,
+            "futuresPriceUoM": null,
+            "futuresPriceCurrency": null,
+            "bids": [
+              {
+                "id": "SBCLA000NSXX",
+                "bidType": "cash",
+                "description": "May",
+                "bidPrice": "12.05",
+                "basisPrice": "-0.18",
+                "futuresPrice": "12.2300",
+                "futuresChange": "0.1975",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCLA000OCOE",
+                "bidType": "cash",
+                "description": "Jun",
+                "bidPrice": "12.12",
+                "basisPrice": "-0.11",
+                "futuresPrice": "12.2300",
+                "futuresChange": "0.1975",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCLA000NSX2",
+                "bidType": "cash",
+                "description": "Jul",
+                "bidPrice": "12.18",
+                "basisPrice": "-0.05",
+                "futuresPrice": "12.2300",
+                "futuresChange": "0.1975",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCLA000N4HG",
+                "bidType": "cash",
+                "description": "Oct",
+                "bidPrice": "11.58",
+                "basisPrice": "-0.40",
+                "futuresPrice": "11.9800",
+                "futuresChange": "0.1525",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSX26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCLA000ODQL",
+                "bidType": "cash",
+                "description": "Dec",
+                "bidPrice": "11.83",
+                "basisPrice": "-0.27",
+                "futuresPrice": "12.1000",
+                "futuresChange": "0.1475",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSF27",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCLA000OJYH",
+                "bidType": "cash",
+                "description": "Jan",
+                "bidPrice": "11.93",
+                "basisPrice": "-0.17",
+                "futuresPrice": "12.1000",
+                "futuresChange": "0.1475",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSF27",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCLA000OQNI",
+                "bidType": "cash",
+                "description": "Feb",
+                "bidPrice": "11.78",
+                "basisPrice": "-0.27",
+                "futuresPrice": "12.0550",
+                "futuresChange": "0.1250",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSH27",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCLA000OQNL",
+                "bidType": "cash",
+                "description": "Mar",
+                "bidPrice": "11.88",
+                "basisPrice": "-0.17",
+                "futuresPrice": "12.0550",
+                "futuresChange": "0.1250",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSH27",
+                "operations": {
+                  "makeOffer": true
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "71b6e17b-63f0-4610-bde2-ff94f116446d",
+        "name": "Marquis",
+        "groups": [
+          {
+            "id": "69339018-29e2-46c9-b85c-2dc6a274048f|bu|USD",
+            "displayName": "Corn",
+            "commodity": {
+              "id": "Corn",
+              "name": "Corn"
+            },
+            "bidPriceUoM": "bu",
+            "bidPriceCurrency": "USD",
+            "basisPriceUoM": null,
+            "basisPriceCurrency": null,
+            "futuresPriceUoM": null,
+            "futuresPriceCurrency": null,
+            "bids": [
+              {
+                "id": "CNCMA000OH4A",
+                "bidType": "cash",
+                "description": "May",
+                "bidPrice": "4.75",
+                "basisPrice": "-0.10",
+                "futuresPrice": "4.8575",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCMA000OOFR",
+                "bidType": "cash",
+                "description": "Jun",
+                "bidPrice": "4.80",
+                "basisPrice": "-0.05",
+                "futuresPrice": "4.8575",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCMA000OOFQ",
+                "bidType": "cash",
+                "description": "Jul",
+                "bidPrice": "4.83",
+                "basisPrice": "-0.02",
+                "futuresPrice": "4.8575",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "8f2a9960-814b-4d65-99a0-59b51191d11d",
+        "name": "Ritchie Grain Elevator",
+        "groups": [
+          {
+            "id": "7fea1ebc-e273-4763-a12a-95d4f1a17988|bu|USD",
+            "displayName": "Corn",
+            "commodity": {
+              "id": "Corn",
+              "name": "Corn"
+            },
+            "bidPriceUoM": "bu",
+            "bidPriceCurrency": "USD",
+            "basisPriceUoM": null,
+            "basisPriceCurrency": null,
+            "futuresPriceUoM": null,
+            "futuresPriceCurrency": null,
+            "bids": [
+              {
+                "id": "CNCRG000OAVQ",
+                "bidType": "cash",
+                "description": "May",
+                "bidPrice": "4.57",
+                "basisPrice": "-0.28",
+                "futuresPrice": "4.8575",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCRG000OCM7",
+                "bidType": "cash",
+                "description": "Jun",
+                "bidPrice": "4.59",
+                "basisPrice": "-0.26",
+                "futuresPrice": "4.8575",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCRG000OAVU",
+                "bidType": "cash",
+                "description": "Jul",
+                "bidPrice": "4.62",
+                "basisPrice": "-0.23",
+                "futuresPrice": "4.8575",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCRG000OAVX",
+                "bidType": "cash",
+                "description": "Oct",
+                "bidPrice": "4.63",
+                "basisPrice": "-0.41",
+                "futuresPrice": "5.0425",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCZ26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCRG000ODGJ",
+                "bidType": "cash",
+                "description": "Dec",
+                "bidPrice": "4.74",
+                "basisPrice": "-0.30",
+                "futuresPrice": "5.0425",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCZ26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCRG000OQNJ",
+                "bidType": "cash",
+                "description": "Jan",
+                "bidPrice": "4.79",
+                "basisPrice": "-0.37",
+                "futuresPrice": "5.1675",
+                "futuresChange": "0.0525",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCH27",
+                "operations": {
+                  "makeOffer": true
+                }
+              }
+            ]
+          },
+          {
+            "id": "3c77e3cb-e0de-4078-938f-41b0c32c6714|bu|USD",
+            "displayName": "Soybeans",
+            "commodity": {
+              "id": "Soybeans",
+              "name": "Soybeans"
+            },
+            "bidPriceUoM": "bu",
+            "bidPriceCurrency": "USD",
+            "basisPriceUoM": null,
+            "basisPriceCurrency": null,
+            "futuresPriceUoM": null,
+            "futuresPriceCurrency": null,
+            "bids": [
+              {
+                "id": "SBCRG000OAVZ",
+                "bidType": "cash",
+                "description": "May",
+                "bidPrice": "12.18",
+                "basisPrice": "-0.04",
+                "futuresPrice": "12.2300",
+                "futuresChange": "0.1975",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCRG000OCNA",
+                "bidType": "cash",
+                "description": "Jun",
+                "bidPrice": "12.18",
+                "basisPrice": "-0.04",
+                "futuresPrice": "12.2300",
+                "futuresChange": "0.1975",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCRG000N27N",
+                "bidType": "cash",
+                "description": "Jul",
+                "bidPrice": "12.23",
+                "basisPrice": "0.00",
+                "futuresPrice": "12.2300",
+                "futuresChange": "0.1975",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCRG000OAV3",
+                "bidType": "cash",
+                "description": "Oct",
+                "bidPrice": "11.64",
+                "basisPrice": "-0.34",
+                "futuresPrice": "11.9800",
+                "futuresChange": "0.1525",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSX26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCRG000ODGK",
+                "bidType": "cash",
+                "description": "Dec",
+                "bidPrice": "11.56",
+                "basisPrice": "-0.54",
+                "futuresPrice": "12.1000",
+                "futuresChange": "0.1475",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSF27",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCRG000OJYI",
+                "bidType": "cash",
+                "description": "Jan",
+                "bidPrice": "11.71",
+                "basisPrice": "-0.39",
+                "futuresPrice": "12.1000",
+                "futuresChange": "0.1475",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSF27",
+                "operations": {
+                  "makeOffer": true
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "17da9e3d-087e-4d13-97a2-7f005f4a4dc0",
+        "name": "Strawn",
+        "groups": [
+          {
+            "id": "23e966a5-054c-413d-9936-1affc4a8e383|bu|USD",
+            "displayName": "Corn",
+            "commodity": {
+              "id": "Corn",
+              "name": "Corn"
+            },
+            "bidPriceUoM": "bu",
+            "bidPriceCurrency": "USD",
+            "basisPriceUoM": null,
+            "basisPriceCurrency": null,
+            "futuresPriceUoM": null,
+            "futuresPriceCurrency": null,
+            "bids": [
+              {
+                "id": "CNCST000OAVJ",
+                "bidType": "cash",
+                "description": "May",
+                "bidPrice": "4.59",
+                "basisPrice": "-0.26",
+                "futuresPrice": "4.8575",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCST000OCNB",
+                "bidType": "cash",
+                "description": "Jun",
+                "bidPrice": "4.61",
+                "basisPrice": "-0.24",
+                "futuresPrice": "4.8575",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCST000OAVP",
+                "bidType": "cash",
+                "description": "Jul",
+                "bidPrice": "4.64",
+                "basisPrice": "-0.21",
+                "futuresPrice": "4.8575",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCST000N2UN",
+                "bidType": "cash",
+                "description": "Oct",
+                "bidPrice": "4.75",
+                "basisPrice": "-0.29",
+                "futuresPrice": "5.0425",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCZ26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCST000ODGL",
+                "bidType": "cash",
+                "description": "Dec",
+                "bidPrice": "4.69",
+                "basisPrice": "-0.35",
+                "futuresPrice": "5.0425",
+                "futuresChange": "0.0550",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCZ26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCST000OQNK",
+                "bidType": "cash",
+                "description": "Jan",
+                "bidPrice": "4.88",
+                "basisPrice": "-0.28",
+                "futuresPrice": "5.1675",
+                "futuresChange": "0.0525",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZCH27",
+                "operations": {
+                  "makeOffer": true
+                }
+              }
+            ]
+          },
+          {
+            "id": "eea0899c-60c7-46a8-a3b7-506217c17e89|bu|USD",
+            "displayName": "Soybeans",
+            "commodity": {
+              "id": "Soybeans",
+              "name": "Soybeans"
+            },
+            "bidPriceUoM": "bu",
+            "bidPriceCurrency": "USD",
+            "basisPriceUoM": null,
+            "basisPriceCurrency": null,
+            "futuresPriceUoM": null,
+            "futuresPriceCurrency": null,
+            "bids": [
+              {
+                "id": "SBCST000NUUW",
+                "bidType": "cash",
+                "description": "May",
+                "bidPrice": "12.16",
+                "basisPrice": "-0.07",
+                "futuresPrice": "12.2300",
+                "futuresChange": "0.1975",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCST000OCNC",
+                "bidType": "cash",
+                "description": "Jun",
+                "bidPrice": "12.16",
+                "basisPrice": "-0.07",
+                "futuresPrice": "12.2300",
+                "futuresChange": "0.1975",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCST000OAVY",
+                "bidType": "cash",
+                "description": "Jul",
+                "bidPrice": "12.16",
+                "basisPrice": "-0.06",
+                "futuresPrice": "12.2300",
+                "futuresChange": "0.1975",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSN26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCST000OAV2",
+                "bidType": "cash",
+                "description": "Oct",
+                "bidPrice": "11.57",
+                "basisPrice": "-0.41",
+                "futuresPrice": "11.9800",
+                "futuresChange": "0.1525",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSX26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCST000ODGM",
+                "bidType": "cash",
+                "description": "Dec",
+                "bidPrice": "11.63",
+                "basisPrice": "-0.47",
+                "futuresPrice": "12.1000",
+                "futuresChange": "0.1475",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSF27",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "SBCST000OJYL",
+                "bidType": "cash",
+                "description": "Jan",
+                "bidPrice": "11.68",
+                "basisPrice": "-0.42",
+                "futuresPrice": "12.1000",
+                "futuresChange": "0.1475",
+                "futuresChangeSign": 1,
+                "futuresSymbol": "ZSF27",
+                "operations": {
+                  "makeOffer": true
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "meta": {
+      "lastUpdated": "2026-05-04T16:57:37Z"
+    }
+  },
+  "contractsSummary": {
+    "type": "api.aggregator.grain.v1#GetContractsSummariesSuccess",
+    "data": [
+      {
+        "commodity": "Corn",
+        "summaries": [
+          {
+            "contractCount": 1,
+            "displayQuantityRemaining": "1,500.00 bu",
+            "displayQuantityDelivered": "0.00 bu",
+            "displayQuantityCancelled": "0.00 bu",
+            "displayQuantityContracted": "1,500.00 bu",
+            "displayAverageCashPrice": "$0.00 USD",
+            "displayQuantityPriced": "0.00 bu",
+            "displayQuantityUnpriced": "1,500.00 bu",
+            "displayQuantityBasisUnpriced": "0.00 bu",
+            "displayQuantityFuturesUnpriced": "0.00 bu",
+            "quantityUom": "bu",
+            "currency": "USD"
+          }
+        ]
+      },
+      {
+        "commodity": "Corn",
+        "summaries": [
+          {
+            "contractCount": 6,
+            "displayQuantityRemaining": "0.00 bu",
+            "displayQuantityDelivered": "20,556.95 bu",
+            "displayQuantityCancelled": "0.00 bu",
+            "displayQuantityContracted": "20,556.95 bu",
+            "displayAverageCashPrice": "$3.79 USD",
+            "displayQuantityPriced": "20,556.95 bu",
+            "displayQuantityUnpriced": "0.00 bu",
+            "displayQuantityBasisUnpriced": "0.00 bu",
+            "displayQuantityFuturesUnpriced": "0.00 bu",
+            "quantityUom": "bu",
+            "currency": "USD"
+          }
+        ]
+      },
+      {
+        "commodity": "Soybeans",
+        "summaries": [
+          {
+            "contractCount": 7,
+            "displayQuantityRemaining": "0.00 bu",
+            "displayQuantityDelivered": "4,988.89 bu",
+            "displayQuantityCancelled": "0.00 bu",
+            "displayQuantityContracted": "4,988.89 bu",
+            "displayAverageCashPrice": "$10.42 USD",
+            "displayQuantityPriced": "4,988.89 bu",
+            "displayQuantityUnpriced": "0.00 bu",
+            "displayQuantityBasisUnpriced": "0.00 bu",
+            "displayQuantityFuturesUnpriced": "0.00 bu",
+            "quantityUom": "bu",
+            "currency": "USD"
+          }
+        ]
+      },
+      {
+        "commodity": "Soybeans",
+        "summaries": [
+          {
+            "contractCount": 1,
+            "displayQuantityRemaining": "500.00 bu",
+            "displayQuantityDelivered": "0.00 bu",
+            "displayQuantityCancelled": "0.00 bu",
+            "displayQuantityContracted": "500.00 bu",
+            "displayAverageCashPrice": "$0.00 USD",
+            "displayQuantityPriced": "0.00 bu",
+            "displayQuantityUnpriced": "500.00 bu",
+            "displayQuantityBasisUnpriced": "0.00 bu",
+            "displayQuantityFuturesUnpriced": "0.00 bu",
+            "quantityUom": "bu",
+            "currency": "USD"
+          }
+        ]
+      }
+    ]
+  },
+  "contracts": {
+    "type": "api.aggregator.grain.v1#GetAllContractsSuccess",
+    "data": [
+      {
+        "id": "120b6df9-4a14-4117-9c5d-b174afeed610",
+        "accountId": "0ad00800-37b3-4294-a512-a26c767a441f",
+        "accountName": "FREIS FARMS LLC",
+        "commodityName": "Soybeans",
+        "contractType": "purchase",
+        "displayType": "Purchase - NPE CONTRACT",
+        "cropYear": null,
+        "datasourceId": "3bb789af-64d3-4bbc-9622-237fa412587b",
+        "deliverySchedule": [
+          {
+            "locationName": "Edelstein",
+            "deliveryPeriods": [
+              "11/01/2026 - 11/01/2026"
+            ]
+          }
+        ],
+        "displayId": "NP01451",
+        "isClosed": false,
+        "pricingStatus": "Unpriced",
+        "quantityCanceled": 0.0,
+        "quantityContracted": 500.0,
+        "quantityDelivered": 0.0,
+        "quantityRemaining": "500.000000",
+        "displayQuantityCanceled": "0.00 bu",
+        "displayQuantityContracted": "500.00 bu",
+        "displayQuantityDelivered": "0.00 bu",
+        "displayQuantityRemaining": "500.00 bu",
+        "quantityUom": "bu",
+        "sourceId": "086-NP01451-P",
+        "customFields": [],
+        "createdAt": "2026-03-31T17:00:00Z",
+        "updatedAt": "2026-03-31T16:12:00Z"
+      },
+      {
+        "id": "fb947292-bf20-4e79-8f33-05d6805dc4d6",
+        "accountId": "0ad00800-37b3-4294-a512-a26c767a441f",
+        "accountName": "FREIS FARMS LLC",
+        "commodityName": "Corn",
+        "contractType": "purchase",
+        "displayType": "Purchase - NPE CONTRACT",
+        "cropYear": null,
+        "datasourceId": "3bb789af-64d3-4bbc-9622-237fa412587b",
+        "deliverySchedule": [
+          {
+            "locationName": "Edelstein",
+            "deliveryPeriods": [
+              "12/01/2026 - 12/01/2026"
+            ]
+          }
+        ],
+        "displayId": "NP01431",
+        "isClosed": false,
+        "pricingStatus": "Unpriced",
+        "quantityCanceled": 0.0,
+        "quantityContracted": 1500.0,
+        "quantityDelivered": 0.0,
+        "quantityRemaining": "1500.000000",
+        "displayQuantityCanceled": "0.00 bu",
+        "displayQuantityContracted": "1,500.00 bu",
+        "displayQuantityDelivered": "0.00 bu",
+        "displayQuantityRemaining": "1,500.00 bu",
+        "quantityUom": "bu",
+        "sourceId": "086-NP01431-P",
+        "customFields": [],
+        "createdAt": "2026-03-31T17:00:00Z",
+        "updatedAt": "2026-03-31T16:00:00Z"
+      },
+      {
+        "id": "425e5e2b-fbdb-4efb-a882-7922f22376a6",
+        "accountId": "0ad00800-37b3-4294-a512-a26c767a441f",
+        "accountName": "FREIS FARMS LLC",
+        "commodityName": "Soybeans",
+        "contractType": "purchase",
+        "displayType": "Purchase - PRICED",
+        "cropYear": null,
+        "datasourceId": "3bb789af-64d3-4bbc-9622-237fa412587b",
+        "deliverySchedule": [
+          {
+            "locationName": "RIT",
+            "deliveryPeriods": [
+              "02/01/2026 - 02/28/2026"
+            ]
+          }
+        ],
+        "displayId": "P074821",
+        "isClosed": true,
+        "pricingStatus": "$11.18 USD",
+        "quantityCanceled": 0.0,
+        "quantityContracted": 500.0,
+        "quantityDelivered": 500.0,
+        "quantityRemaining": "0.000000",
+        "displayQuantityCanceled": "0.00 bu",
+        "displayQuantityContracted": "500.00 bu",
+        "displayQuantityDelivered": "500.00 bu",
+        "displayQuantityRemaining": "0.00 bu",
+        "quantityUom": "bu",
+        "sourceId": "091-P074821-P",
+        "customFields": [],
+        "createdAt": "2026-02-17T18:00:00Z",
+        "updatedAt": "2026-03-17T18:18:00Z"
+      },
+      {
+        "id": "2132031e-6a75-490d-bd32-6ce50d5d463e",
+        "accountId": "0ad00800-37b3-4294-a512-a26c767a441f",
+        "accountName": "FREIS FARMS LLC",
+        "commodityName": "Soybeans",
+        "contractType": "purchase",
+        "displayType": "Purchase - PRICED",
+        "cropYear": null,
+        "datasourceId": "3bb789af-64d3-4bbc-9622-237fa412587b",
+        "deliverySchedule": [
+          {
+            "locationName": "RIT",
+            "deliveryPeriods": [
+              "01/01/2026 - 01/31/2026"
+            ]
+          }
+        ],
+        "displayId": "P073549",
+        "isClosed": true,
+        "pricingStatus": "$11.04 USD",
+        "quantityCanceled": 0.0,
+        "quantityContracted": 750.0,
+        "quantityDelivered": 750.0,
+        "quantityRemaining": "0.000000",
+        "displayQuantityCanceled": "0.00 bu",
+        "displayQuantityContracted": "750.00 bu",
+        "displayQuantityDelivered": "750.00 bu",
+        "displayQuantityRemaining": "0.00 bu",
+        "quantityUom": "bu",
+        "sourceId": "091-P073549-P",
+        "customFields": [],
+        "createdAt": "2025-11-03T18:00:00Z",
+        "updatedAt": "2026-01-02T20:24:00Z"
+      },
+      {
+        "id": "3c49883f-0cc9-494e-bd0f-425c14e7f34a",
+        "accountId": "0ad00800-37b3-4294-a512-a26c767a441f",
+        "accountName": "FREIS FARMS LLC",
+        "commodityName": "Corn",
+        "contractType": "purchase",
+        "displayType": "Purchase - PRICED",
+        "cropYear": null,
+        "datasourceId": "3bb789af-64d3-4bbc-9622-237fa412587b",
+        "deliverySchedule": [
+          {
+            "locationName": "RIT",
+            "deliveryPeriods": [
+              "11/01/2025 - 11/30/2025"
+            ]
+          }
+        ],
+        "displayId": "P073821",
+        "isClosed": true,
+        "pricingStatus": "$4.03 USD",
+        "quantityCanceled": 0.0,
+        "quantityContracted": 3500.0,
+        "quantityDelivered": 3500.0,
+        "quantityRemaining": "0.000000",
+        "displayQuantityCanceled": "0.00 bu",
+        "displayQuantityContracted": "3,500.00 bu",
+        "displayQuantityDelivered": "3,500.00 bu",
+        "displayQuantityRemaining": "0.00 bu",
+        "quantityUom": "bu",
+        "sourceId": "091-P073821-P",
+        "customFields": [],
+        "createdAt": "2025-11-10T18:00:00Z",
+        "updatedAt": "2025-11-11T14:36:00Z"
+      },
+      {
+        "id": "1595b658-5f5e-4c1d-aa5e-9aaa11395bf8",
+        "accountId": "0ad00800-37b3-4294-a512-a26c767a441f",
+        "accountName": "FREIS FARMS LLC",
+        "commodityName": "Soybeans",
+        "contractType": "purchase",
+        "displayType": "Purchase - SPOT",
+        "cropYear": null,
+        "datasourceId": "3bb789af-64d3-4bbc-9622-237fa412587b",
+        "deliverySchedule": [
+          {
+            "locationName": "RIT",
+            "deliveryPeriods": [
+              "10/29/2025 - 10/31/2025"
+            ]
+          }
+        ],
+        "displayId": "S064259",
+        "isClosed": true,
+        "pricingStatus": "Unpriced",
+        "quantityCanceled": 0.0,
+        "quantityContracted": 0.0,
+        "quantityDelivered": 0.0,
+        "quantityRemaining": "0.000000",
+        "displayQuantityCanceled": "0.00 bu",
+        "displayQuantityContracted": "0.00 bu",
+        "displayQuantityDelivered": "0.00 bu",
+        "displayQuantityRemaining": "0.00 bu",
+        "quantityUom": "bu",
+        "sourceId": "091-S064259-P",
+        "customFields": [],
+        "createdAt": "2025-10-29T17:00:00Z",
+        "updatedAt": "2025-11-11T21:18:00Z"
+      },
+      {
+        "id": "8d9deb53-70a0-4841-ba89-89f286fda9b5",
+        "accountId": "0ad00800-37b3-4294-a512-a26c767a441f",
+        "accountName": "FREIS FARMS LLC",
+        "commodityName": "Soybeans",
+        "contractType": "purchase",
+        "displayType": "Purchase - SPOT",
+        "cropYear": null,
+        "datasourceId": "3bb789af-64d3-4bbc-9622-237fa412587b",
+        "deliverySchedule": [
+          {
+            "locationName": "RIT",
+            "deliveryPeriods": [
+              "10/30/2025 - 10/31/2025"
+            ]
+          }
+        ],
+        "displayId": "S064274",
+        "isClosed": true,
+        "pricingStatus": "$10.61 USD",
+        "quantityCanceled": 0.0,
+        "quantityContracted": 1500.0,
+        "quantityDelivered": 1500.0,
+        "quantityRemaining": "0.000000",
+        "displayQuantityCanceled": "0.00 bu",
+        "displayQuantityContracted": "1,500.00 bu",
+        "displayQuantityDelivered": "1,500.00 bu",
+        "displayQuantityRemaining": "0.00 bu",
+        "quantityUom": "bu",
+        "sourceId": "091-S064274-P",
+        "customFields": [],
+        "createdAt": "2025-10-30T17:00:00Z",
+        "updatedAt": "2025-11-18T20:18:00Z"
+      },
+      {
+        "id": "ad5f6202-9bdf-42c5-aa55-2f574e2eaff5",
+        "accountId": "0ad00800-37b3-4294-a512-a26c767a441f",
+        "accountName": "FREIS FARMS LLC",
+        "commodityName": "Corn",
+        "contractType": "purchase",
+        "displayType": "Purchase - SPOT",
+        "cropYear": null,
+        "datasourceId": "3bb789af-64d3-4bbc-9622-237fa412587b",
+        "deliverySchedule": [
+          {
+            "locationName": "RIT",
+            "deliveryPeriods": [
+              "07/01/2025 - 07/31/2025"
+            ]
+          }
+        ],
+        "displayId": "S061601",
+        "isClosed": true,
+        "pricingStatus": "$3.89 USD",
+        "quantityCanceled": 0.0,
+        "quantityContracted": 4000.0,
+        "quantityDelivered": 4000.0,
+        "quantityRemaining": "0.000000",
+        "displayQuantityCanceled": "0.00 bu",
+        "displayQuantityContracted": "4,000.00 bu",
+        "displayQuantityDelivered": "4,000.00 bu",
+        "displayQuantityRemaining": "0.00 bu",
+        "quantityUom": "bu",
+        "sourceId": "091-S061601-P",
+        "customFields": [],
+        "createdAt": "2025-07-22T17:00:00Z",
+        "updatedAt": "2025-09-18T23:12:00Z"
+      },
+      {
+        "id": "6f42ae8a-b0de-4f33-a86c-98d3b07e450f",
+        "accountId": "0ad00800-37b3-4294-a512-a26c767a441f",
+        "accountName": "FREIS FARMS LLC",
+        "commodityName": "Corn",
+        "contractType": "purchase",
+        "displayType": "Purchase - SPOT",
+        "cropYear": null,
+        "datasourceId": "3bb789af-64d3-4bbc-9622-237fa412587b",
+        "deliverySchedule": [
+          {
+            "locationName": "RIT",
+            "deliveryPeriods": [
+              "07/01/2025 - 07/31/2025"
+            ]
+          }
+        ],
+        "displayId": "S061716",
+        "isClosed": true,
+        "pricingStatus": "$3.83 USD",
+        "quantityCanceled": 0.0,
+        "quantityContracted": 4329.0,
+        "quantityDelivered": 4329.0,
+        "quantityRemaining": "0.000000",
+        "displayQuantityCanceled": "0.00 bu",
+        "displayQuantityContracted": "4,329.00 bu",
+        "displayQuantityDelivered": "4,329.00 bu",
+        "displayQuantityRemaining": "0.00 bu",
+        "quantityUom": "bu",
+        "sourceId": "091-S061716-P",
+        "customFields": [],
+        "createdAt": "2025-07-31T17:00:00Z",
+        "updatedAt": "2025-09-18T23:12:00Z"
+      },
+      {
+        "id": "22a0659f-d033-49f1-8c1e-7ea57828f058",
+        "accountId": "0ad00800-37b3-4294-a512-a26c767a441f",
+        "accountName": "FREIS FARMS LLC",
+        "commodityName": "Soybeans",
+        "contractType": "purchase",
+        "displayType": "Purchase - SPOT",
+        "cropYear": null,
+        "datasourceId": "3bb789af-64d3-4bbc-9622-237fa412587b",
+        "deliverySchedule": [
+          {
+            "locationName": "RIT",
+            "deliveryPeriods": [
+              "07/01/2025 - 07/30/2025"
+            ]
+          }
+        ],
+        "displayId": "S061710",
+        "isClosed": true,
+        "pricingStatus": "$10.07 USD",
+        "quantityCanceled": 0.0,
+        "quantityContracted": 849.58,
+        "quantityDelivered": 849.58,
+        "quantityRemaining": "0.000000",
+        "displayQuantityCanceled": "0.00 bu",
+        "displayQuantityContracted": "849.58 bu",
+        "displayQuantityDelivered": "849.58 bu",
+        "displayQuantityRemaining": "0.00 bu",
+        "quantityUom": "bu",
+        "sourceId": "091-S061710-P",
+        "customFields": [],
+        "createdAt": "2025-07-30T17:00:00Z",
+        "updatedAt": "2025-09-18T23:18:00Z"
+      },
+      {
+        "id": "e23587f3-f991-4d7b-b7e1-3d761407d374",
+        "accountId": "0ad00800-37b3-4294-a512-a26c767a441f",
+        "accountName": "FREIS FARMS LLC",
+        "commodityName": "Corn",
+        "contractType": "purchase",
+        "displayType": "Purchase - SPOT",
+        "cropYear": null,
+        "datasourceId": "3bb789af-64d3-4bbc-9622-237fa412587b",
+        "deliverySchedule": [
+          {
+            "locationName": "RIT",
+            "deliveryPeriods": [
+              "08/01/2024 - 08/31/2024"
+            ]
+          }
+        ],
+        "displayId": "S056125",
+        "isClosed": true,
+        "pricingStatus": "$3.58 USD",
+        "quantityCanceled": 0.0,
+        "quantityContracted": 3600.0,
+        "quantityDelivered": 3600.0,
+        "quantityRemaining": "0.000000",
+        "displayQuantityCanceled": "0.00 bu",
+        "displayQuantityContracted": "3,600.00 bu",
+        "displayQuantityDelivered": "3,600.00 bu",
+        "displayQuantityRemaining": "0.00 bu",
+        "quantityUom": "bu",
+        "sourceId": "091-S056125-P",
+        "customFields": [],
+        "createdAt": "2024-08-27T17:00:00Z",
+        "updatedAt": "2024-09-27T16:12:00Z"
+      },
+      {
+        "id": "8e1158fa-501a-46ae-a821-8ca579874bd0",
+        "accountId": "0ad00800-37b3-4294-a512-a26c767a441f",
+        "accountName": "FREIS FARMS LLC",
+        "commodityName": "Soybeans",
+        "contractType": "purchase",
+        "displayType": "Purchase - SPOT",
+        "cropYear": null,
+        "datasourceId": "3bb789af-64d3-4bbc-9622-237fa412587b",
+        "deliverySchedule": [
+          {
+            "locationName": "RIT",
+            "deliveryPeriods": [
+              "08/01/2024 - 08/31/2024"
+            ]
+          }
+        ],
+        "displayId": "S056126",
+        "isClosed": true,
+        "pricingStatus": "$9.87 USD",
+        "quantityCanceled": 0.0,
+        "quantityContracted": 695.0,
+        "quantityDelivered": 695.0,
+        "quantityRemaining": "0.000000",
+        "displayQuantityCanceled": "0.00 bu",
+        "displayQuantityContracted": "695.00 bu",
+        "displayQuantityDelivered": "695.00 bu",
+        "displayQuantityRemaining": "0.00 bu",
+        "quantityUom": "bu",
+        "sourceId": "091-S056126-P",
+        "customFields": [],
+        "createdAt": "2024-08-27T17:00:00Z",
+        "updatedAt": "2024-09-27T20:18:00Z"
+      },
+      {
+        "id": "fba2a670-6806-4a27-96b8-08e14c66ac26",
+        "accountId": "0ad00800-37b3-4294-a512-a26c767a441f",
+        "accountName": "FREIS FARMS LLC",
+        "commodityName": "Corn",
+        "contractType": "purchase",
+        "displayType": "Purchase - SPOT",
+        "cropYear": null,
+        "datasourceId": "3bb789af-64d3-4bbc-9622-237fa412587b",
+        "deliverySchedule": [
+          {
+            "locationName": "RIT",
+            "deliveryPeriods": [
+              "08/01/2024 - 08/31/2024"
+            ]
+          }
+        ],
+        "displayId": "S056195",
+        "isClosed": true,
+        "pricingStatus": "$3.66 USD",
+        "quantityCanceled": 0.0,
+        "quantityContracted": 3627.95,
+        "quantityDelivered": 3627.95,
+        "quantityRemaining": "0.000000",
+        "displayQuantityCanceled": "0.00 bu",
+        "displayQuantityContracted": "3,627.95 bu",
+        "displayQuantityDelivered": "3,627.95 bu",
+        "displayQuantityRemaining": "0.00 bu",
+        "quantityUom": "bu",
+        "sourceId": "091-S056195-P",
+        "customFields": [],
+        "createdAt": "2024-08-30T17:00:00Z",
+        "updatedAt": "2024-09-27T16:06:00Z"
+      },
+      {
+        "id": "aff118f8-0566-4c01-92cf-a4427ee75510",
+        "accountId": "0ad00800-37b3-4294-a512-a26c767a441f",
+        "accountName": "FREIS FARMS LLC",
+        "commodityName": "Soybeans",
+        "contractType": "purchase",
+        "displayType": "Purchase - SPOT",
+        "cropYear": null,
+        "datasourceId": "3bb789af-64d3-4bbc-9622-237fa412587b",
+        "deliverySchedule": [
+          {
+            "locationName": "RIT",
+            "deliveryPeriods": [
+              "08/01/2024 - 08/31/2024"
+            ]
+          }
+        ],
+        "displayId": "S056196",
+        "isClosed": true,
+        "pricingStatus": "$9.78 USD",
+        "quantityCanceled": 0.0,
+        "quantityContracted": 694.31,
+        "quantityDelivered": 694.31,
+        "quantityRemaining": "0.000000",
+        "displayQuantityCanceled": "0.00 bu",
+        "displayQuantityContracted": "694.31 bu",
+        "displayQuantityDelivered": "694.31 bu",
+        "displayQuantityRemaining": "0.00 bu",
+        "quantityUom": "bu",
+        "sourceId": "091-S056196-P",
+        "customFields": [],
+        "createdAt": "2024-08-30T17:00:00Z",
+        "updatedAt": "2024-09-27T20:18:00Z"
+      },
+      {
+        "id": "6c2bc661-4051-4818-83fc-4c0859732fe4",
+        "accountId": "0ad00800-37b3-4294-a512-a26c767a441f",
+        "accountName": "FREIS FARMS LLC",
+        "commodityName": "Corn",
+        "contractType": "purchase",
+        "displayType": "Purchase - SPOT",
+        "cropYear": null,
+        "datasourceId": "3bb789af-64d3-4bbc-9622-237fa412587b",
+        "deliverySchedule": [
+          {
+            "locationName": "RIT",
+            "deliveryPeriods": [
+              "07/01/2024 - 07/30/2024"
+            ]
+          }
+        ],
+        "displayId": "S055701",
+        "isClosed": true,
+        "pricingStatus": "$3.68 USD",
+        "quantityCanceled": 0.0,
+        "quantityContracted": 1500.0,
+        "quantityDelivered": 1500.0,
+        "quantityRemaining": "0.000000",
+        "displayQuantityCanceled": "0.00 bu",
+        "displayQuantityContracted": "1,500.00 bu",
+        "displayQuantityDelivered": "1,500.00 bu",
+        "displayQuantityRemaining": "0.00 bu",
+        "quantityUom": "bu",
+        "sourceId": "091-S055701-P",
+        "customFields": [],
+        "createdAt": "2024-07-31T17:00:00Z",
+        "updatedAt": "2024-09-27T15:54:00Z"
+      }
+    ],
+    "continuationToken": "Q29udHJhY3RQYWdpbmF0aW9ufHw1YzRjNGIzMjM2YTk1ZjViYjU2NWE4NDRjYWZmZjI5MTA3MzBlZGNkfHx7InBhZ2VTaXplIjoyMCwic29ydFBsYW4iOlt7ImNvbHVtbiI6IkNvbnRyYWN0Q2FsY3VsYXRpb24uY2FsY3VsYXRlZE9yZGVyIiwiZGlyZWN0aW9uIjoiYXNjIn0seyJjb2x1bW4iOiJDb250cmFjdC5zb3VyY2VEaXNwbGF5SWQiLCJkaXJlY3Rpb24iOiJhc2MifSx7ImNvbHVtbiI6IkNvbnRyYWN0LnVwZGF0ZWRBdCIsImRpcmVjdGlvbiI6ImRlc2MifV0sInJlY29yZCI6eyJDb250cmFjdENhbGN1bGF0aW9uLmNhbGN1bGF0ZWRPcmRlciI6NzIxNTA3LCJDb250cmFjdC5zb3VyY2VEaXNwbGF5SWQiOiJTMDU1NzAxIiwiQ29udHJhY3QudXBkYXRlZEF0IjoiMjAyNi0wMy0zMVQyMDo1MToyMy4xMjk5MDhaIn19"
+  },
+  "offers": {
+    "type": "api.markets.aggregator.offers.v1#ListOffersSuccess",
+    "data": [
+      {
+        "id": "963351142",
+        "displayId": "963351142",
+        "offerType": "cash",
+        "commodityName": "Soybeans",
+        "expiration": "2026-02-28",
+        "quantity": "500",
+        "quantityRemaining": "0",
+        "unitOfMeasure": "Bushels",
+        "offerPrice": "11.18",
+        "fillPrice": "11.19",
+        "status": "filled",
+        "accountName": "FRELLC - FREIS FARMS LLC",
+        "locationName": "Ritchie Grain Elevator",
+        "deliveryStart": "2026-02-01",
+        "deliveryEnd": "2026-02-28",
+        "comments": "",
+        "operations": {
+          "edit": false,
+          "withdraw": false
+        },
+        "createdAt": "2026-02-17T16:38:47.404Z",
+        "updatedAt": "2026-02-17T16:38:50.499Z"
+      },
+      {
+        "id": "555620373",
+        "displayId": "555620373",
+        "offerType": "cash",
+        "commodityName": "Corn",
+        "expiration": "2025-11-30",
+        "quantity": "3500",
+        "quantityRemaining": "0",
+        "unitOfMeasure": "Bushels",
+        "offerPrice": "4.03",
+        "fillPrice": "4.03",
+        "status": "filled",
+        "accountName": "FRELLC - FREIS FARMS LLC",
+        "locationName": "Ritchie Grain Elevator",
+        "deliveryStart": "2025-11-01",
+        "deliveryEnd": "2025-11-30",
+        "comments": "",
+        "operations": {
+          "edit": false,
+          "withdraw": false
+        },
+        "createdAt": "2025-11-10T17:17:39.739Z",
+        "updatedAt": "2025-11-10T17:17:42.545Z"
+      },
+      {
+        "id": "542359824",
+        "displayId": "542359824",
+        "offerType": "cash",
+        "commodityName": "Soybeans",
+        "expiration": "2026-01-15",
+        "quantity": "750",
+        "quantityRemaining": "0",
+        "unitOfMeasure": "Bushels",
+        "offerPrice": "11.04",
+        "fillPrice": "11.04",
+        "status": "filled",
+        "accountName": "FRELLC - FREIS FARMS LLC",
+        "locationName": "Ritchie Grain Elevator",
+        "deliveryStart": "2026-01-01",
+        "deliveryEnd": "2026-01-15",
+        "comments": "",
+        "operations": {
+          "edit": false,
+          "withdraw": false
+        },
+        "createdAt": "2025-11-03T14:34:20.293Z",
+        "updatedAt": "2025-11-03T14:34:23.906Z"
+      }
+    ],
+    "meta": {
+      "availableCommodityFilters": [
+        {
+          "id": "Soybeans",
+          "name": "Soybeans"
+        },
+        {
+          "id": "Corn",
+          "name": "Corn"
+        }
+      ],
+      "availableLocationFilters": [
+        {
+          "id": "Ritchie Grain Elevator",
+          "name": "Ritchie Grain Elevator"
+        }
+      ],
+      "availableStatusFilters": [
+        {
+          "id": "pending",
+          "name": "Pending"
+        },
+        {
+          "id": "working",
+          "name": "Working"
+        },
+        {
+          "id": "filled",
+          "name": "Filled"
+        },
+        {
+          "id": "rejected",
+          "name": "Rejected"
+        },
+        {
+          "id": "expired",
+          "name": "Expired"
+        },
+        {
+          "id": "cancelled",
+          "name": "Canceled"
+        }
+      ]
+    },
+    "continuationToken": "eyJwYWdlIjoyfQ=="
+  },
+  "accounts": {
+    "error": "400 Client Error: Bad Request for url: https://api.bushelpowered.com/api/aggregator/accounts/v1/GetAllAccounts"
+  },
+  "invoices": {
+    "error": "400 Client Error: Bad Request for url: https://api.bushelpowered.com/api/aggregator/invoices/v1/ListInvoices"
+  },
+  "accountPayableBalances": {
+    "type": "api.aggregator.accountpayablebalance.v1#GetAccountPayableBalancesSuccess",
+    "data": [
+      {
+        "id": "79b6fecd-946c-4c91-96c6-053207a07e56",
+        "displayId": "086-FRELLC",
+        "accountId": "0ad00800-37b3-4294-a512-a26c767a441f",
+        "accountName": "FREIS FARMS LLC",
+        "currency": "USD",
+        "accountBalance": "$0.00",
+        "accountBalanceNumeric": 0.0
+      },
+      {
+        "id": "7701e1da-183c-40cc-8f67-f5c8e50ca85b",
+        "displayId": "091-FRELLC",
+        "accountId": "0ad00800-37b3-4294-a512-a26c767a441f",
+        "accountName": "FREIS FARMS LLC",
+        "currency": "USD",
+        "accountBalance": "$0.00",
+        "accountBalanceNumeric": 0.0
+      }
+    ],
+    "continuationToken": "QWNjb3VudFBheWFibGVCYWxhbmNlUGFnaW5hdGlvbnx8MTg2YWRkYmQzYTViNjRhYmE1ODdhYTU2NGQwMjdhZDlkODY3MDRhZXx8eyJwYWdlU2l6ZSI6MjAsInNvcnRQbGFuIjpbeyJjb2x1bW4iOiJBY2NvdW50UGF5YWJsZUJhbGFuY2Uuc291cmNlSWQiLCJkaXJlY3Rpb24iOiJhc2MifV0sInJlY29yZCI6eyJBY2NvdW50UGF5YWJsZUJhbGFuY2Uuc291cmNlSWQiOiIwOTEtRlJFTExDIn19"
+  },
+  "commodityBalances": {
+    "data": [
+      {
+        "total": "9,115.28 bushels",
+        "total_numeric": 9115.28,
+        "crop_slug": "Q29ybg==-QlVTSEVMUw==",
+        "crop_name": "Corn",
+        "remote_user_id": "FRELLC",
+        "account_name": "FREIS FARMS LLC",
+        "quantity_uom": "bushels",
+        "location_totals": [
+          {
+            "location_name": "Ritchie Grain Facility",
+            "total": "9,115.28 bushels",
+            "company_branding_image": null
+          }
+        ]
+      },
+      {
+        "total": "1,967.12 bushels",
+        "total_numeric": 1967.12,
+        "crop_slug": "U295YmVhbnM=-QlVTSEVMUw==",
+        "crop_name": "Soybeans",
+        "remote_user_id": "FRELLC",
+        "account_name": "FREIS FARMS LLC",
+        "quantity_uom": "bushels",
+        "location_totals": [
+          {
+            "location_name": "Ritchie Grain Facility",
+            "total": "1,967.12 bushels",
+            "company_branding_image": null
+          }
+        ]
+      }
+    ],
+    "meta": {
+      "last_updated": null
+    }
+  },
+  "scaleTickets": {
+    "error": "422 Client Error: Unprocessable Entity for url: https://centre.bushelops.com/api/v3/tickets?page=1&simple-paging=1"
+  },
+  "scaleTicketsSummary": {
+    "error": "422 Client Error: Unprocessable Entity for url: https://centre.bushelops.com/api/v1/summaries/tickets"
+  },
+  "settlements": {
+    "error": "422 Client Error: Unprocessable Entity for url: https://centre.bushelops.com/api/v2/settlements?page=1"
+  }
+}

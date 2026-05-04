@@ -1,0 +1,562 @@
+{
+  "fetchedAt": "2026-05-04T16:57:40.691886Z",
+  "company": "akronservices",
+  "account": "FREIS FARMS LLC",
+  "bushelsOnHand": {
+    "corn": {
+      "bushels": 9115.28,
+      "displayBushels": "9,115.28 bushels",
+      "location": "Ritchie Grain Facility"
+    },
+    "soybeans": {
+      "bushels": 1967.12,
+      "displayBushels": "1,967.12 bushels",
+      "location": "Ritchie Grain Facility"
+    }
+  },
+  "bids": {
+    "corn": {
+      "price": 4.57,
+      "period": "May",
+      "futuresSymbol": "ZCN26",
+      "futuresPrice": 4.8575,
+      "basis": -0.28,
+      "location": "Ritchie Grain Elevator"
+    },
+    "soybeans": {
+      "price": 12.18,
+      "period": "May",
+      "futuresSymbol": "ZSN26",
+      "futuresPrice": 12.23,
+      "basis": -0.04,
+      "location": "Ritchie Grain Elevator"
+    }
+  },
+  "contractsOpen": [
+    {
+      "displayId": "NP01451",
+      "commodity": "Soybeans",
+      "type": "Purchase - NPE CONTRACT",
+      "remainingBushels": 500.0,
+      "displayRemaining": "500.00 bu",
+      "delivery": "Edelstein \u00b7 11/01/2026 - 11/01/2026",
+      "pricingStatus": "Unpriced"
+    },
+    {
+      "displayId": "NP01431",
+      "commodity": "Corn",
+      "type": "Purchase - NPE CONTRACT",
+      "remainingBushels": 1500.0,
+      "displayRemaining": "1,500.00 bu",
+      "delivery": "Edelstein \u00b7 12/01/2026 - 12/01/2026",
+      "pricingStatus": "Unpriced"
+    }
+  ],
+  "balanceOwed": 0.0,
+  "bidsByLocation": {
+    "corn": [
+      {
+        "price": 4.83,
+        "period": "May",
+        "futuresSymbol": "ZCN26",
+        "futuresPrice": 4.8575,
+        "basis": -0.02,
+        "location": "Havana"
+      },
+      {
+        "price": 4.8,
+        "period": "May",
+        "futuresSymbol": "ZCN26",
+        "futuresPrice": 4.8575,
+        "basis": -0.05,
+        "location": "Lacon"
+      },
+      {
+        "price": 4.77,
+        "period": "May",
+        "futuresSymbol": "ZCN26",
+        "futuresPrice": 4.8575,
+        "basis": -0.08,
+        "location": "Creve Cr"
+      },
+      {
+        "price": 4.75,
+        "period": "Jun",
+        "futuresSymbol": "ZCN26",
+        "futuresPrice": 4.8575,
+        "basis": -0.1,
+        "location": "Big River Galva"
+      },
+      {
+        "price": 4.75,
+        "period": "May",
+        "futuresSymbol": "ZCN26",
+        "futuresPrice": 4.8575,
+        "basis": -0.1,
+        "location": "Marquis"
+      }
+    ],
+    "soybeans": [
+      {
+        "price": 12.29,
+        "period": "May",
+        "futuresSymbol": "ZSN26",
+        "futuresPrice": 12.23,
+        "basis": 0.06,
+        "location": "Cargill Bloomington"
+      },
+      {
+        "price": 12.18,
+        "period": "May",
+        "futuresSymbol": "ZSN26",
+        "futuresPrice": 12.23,
+        "basis": -0.04,
+        "location": "Ritchie Grain Elevator"
+      },
+      {
+        "price": 12.16,
+        "period": "May",
+        "futuresSymbol": "ZSN26",
+        "futuresPrice": 12.23,
+        "basis": -0.07,
+        "location": "Strawn"
+      },
+      {
+        "price": 12.08,
+        "period": "May",
+        "futuresSymbol": "ZSN26",
+        "futuresPrice": 12.23,
+        "basis": -0.14,
+        "location": "Havana"
+      },
+      {
+        "price": 12.05,
+        "period": "May",
+        "futuresSymbol": "ZSN26",
+        "futuresPrice": 12.23,
+        "basis": -0.18,
+        "location": "Lacon"
+      }
+    ]
+  },
+  "accountPayableBalances": [
+    {
+      "displayId": "086-FRELLC",
+      "accountName": "FREIS FARMS LLC",
+      "balance": 0.0,
+      "displayBalance": "$0.00"
+    },
+    {
+      "displayId": "091-FRELLC",
+      "accountName": "FREIS FARMS LLC",
+      "balance": 0.0,
+      "displayBalance": "$0.00"
+    }
+  ],
+  "ritchieBidLadder": {
+    "corn": [
+      {
+        "id": "CNCRG000OAVQ",
+        "type": "cash",
+        "period": "May",
+        "bidPrice": 4.57,
+        "basisPrice": -0.28,
+        "futuresPrice": 4.8575,
+        "futuresSymbol": "ZCN26",
+        "canMakeOffer": true
+      },
+      {
+        "id": "CNCRG000OCM7",
+        "type": "cash",
+        "period": "Jun",
+        "bidPrice": 4.59,
+        "basisPrice": -0.26,
+        "futuresPrice": 4.8575,
+        "futuresSymbol": "ZCN26",
+        "canMakeOffer": true
+      },
+      {
+        "id": "CNCRG000OAVU",
+        "type": "cash",
+        "period": "Jul",
+        "bidPrice": 4.62,
+        "basisPrice": -0.23,
+        "futuresPrice": 4.8575,
+        "futuresSymbol": "ZCN26",
+        "canMakeOffer": true
+      },
+      {
+        "id": "CNCRG000OAVX",
+        "type": "cash",
+        "period": "Oct",
+        "bidPrice": 4.63,
+        "basisPrice": -0.41,
+        "futuresPrice": 5.0425,
+        "futuresSymbol": "ZCZ26",
+        "canMakeOffer": true
+      },
+      {
+        "id": "CNCRG000ODGJ",
+        "type": "cash",
+        "period": "Dec",
+        "bidPrice": 4.74,
+        "basisPrice": -0.3,
+        "futuresPrice": 5.0425,
+        "futuresSymbol": "ZCZ26",
+        "canMakeOffer": true
+      },
+      {
+        "id": "CNCRG000OQNJ",
+        "type": "cash",
+        "period": "Jan",
+        "bidPrice": 4.79,
+        "basisPrice": -0.37,
+        "futuresPrice": 5.1675,
+        "futuresSymbol": "ZCH27",
+        "canMakeOffer": true
+      }
+    ],
+    "soybeans": [
+      {
+        "id": "SBCRG000OAVZ",
+        "type": "cash",
+        "period": "May",
+        "bidPrice": 12.18,
+        "basisPrice": -0.04,
+        "futuresPrice": 12.23,
+        "futuresSymbol": "ZSN26",
+        "canMakeOffer": true
+      },
+      {
+        "id": "SBCRG000OCNA",
+        "type": "cash",
+        "period": "Jun",
+        "bidPrice": 12.18,
+        "basisPrice": -0.04,
+        "futuresPrice": 12.23,
+        "futuresSymbol": "ZSN26",
+        "canMakeOffer": true
+      },
+      {
+        "id": "SBCRG000N27N",
+        "type": "cash",
+        "period": "Jul",
+        "bidPrice": 12.23,
+        "basisPrice": 0.0,
+        "futuresPrice": 12.23,
+        "futuresSymbol": "ZSN26",
+        "canMakeOffer": true
+      },
+      {
+        "id": "SBCRG000OAV3",
+        "type": "cash",
+        "period": "Oct",
+        "bidPrice": 11.64,
+        "basisPrice": -0.34,
+        "futuresPrice": 11.98,
+        "futuresSymbol": "ZSX26",
+        "canMakeOffer": true
+      },
+      {
+        "id": "SBCRG000ODGK",
+        "type": "cash",
+        "period": "Dec",
+        "bidPrice": 11.56,
+        "basisPrice": -0.54,
+        "futuresPrice": 12.1,
+        "futuresSymbol": "ZSF27",
+        "canMakeOffer": true
+      },
+      {
+        "id": "SBCRG000OJYI",
+        "type": "cash",
+        "period": "Jan",
+        "bidPrice": 11.71,
+        "basisPrice": -0.39,
+        "futuresPrice": 12.1,
+        "futuresSymbol": "ZSF27",
+        "canMakeOffer": true
+      }
+    ]
+  },
+  "allContracts": [
+    {
+      "displayId": "NP01451",
+      "commodity": "Soybeans",
+      "type": "Purchase - NPE CONTRACT",
+      "isClosed": false,
+      "remainingBushels": 500.0,
+      "displayContracted": "500.00 bu",
+      "displayDelivered": "0.00 bu",
+      "displayRemaining": "500.00 bu",
+      "delivery": "Edelstein \u00b7 11/01/2026 - 11/01/2026",
+      "pricingStatus": "Unpriced"
+    },
+    {
+      "displayId": "NP01431",
+      "commodity": "Corn",
+      "type": "Purchase - NPE CONTRACT",
+      "isClosed": false,
+      "remainingBushels": 1500.0,
+      "displayContracted": "1,500.00 bu",
+      "displayDelivered": "0.00 bu",
+      "displayRemaining": "1,500.00 bu",
+      "delivery": "Edelstein \u00b7 12/01/2026 - 12/01/2026",
+      "pricingStatus": "Unpriced"
+    },
+    {
+      "displayId": "P074821",
+      "commodity": "Soybeans",
+      "type": "Purchase - PRICED",
+      "isClosed": true,
+      "remainingBushels": 0.0,
+      "displayContracted": "500.00 bu",
+      "displayDelivered": "500.00 bu",
+      "displayRemaining": "0.00 bu",
+      "delivery": "RIT \u00b7 02/01/2026 - 02/28/2026",
+      "pricingStatus": "$11.18 USD"
+    },
+    {
+      "displayId": "P073549",
+      "commodity": "Soybeans",
+      "type": "Purchase - PRICED",
+      "isClosed": true,
+      "remainingBushels": 0.0,
+      "displayContracted": "750.00 bu",
+      "displayDelivered": "750.00 bu",
+      "displayRemaining": "0.00 bu",
+      "delivery": "RIT \u00b7 01/01/2026 - 01/31/2026",
+      "pricingStatus": "$11.04 USD"
+    },
+    {
+      "displayId": "P073821",
+      "commodity": "Corn",
+      "type": "Purchase - PRICED",
+      "isClosed": true,
+      "remainingBushels": 0.0,
+      "displayContracted": "3,500.00 bu",
+      "displayDelivered": "3,500.00 bu",
+      "displayRemaining": "0.00 bu",
+      "delivery": "RIT \u00b7 11/01/2025 - 11/30/2025",
+      "pricingStatus": "$4.03 USD"
+    },
+    {
+      "displayId": "S064259",
+      "commodity": "Soybeans",
+      "type": "Purchase - SPOT",
+      "isClosed": true,
+      "remainingBushels": 0.0,
+      "displayContracted": "0.00 bu",
+      "displayDelivered": "0.00 bu",
+      "displayRemaining": "0.00 bu",
+      "delivery": "RIT \u00b7 10/29/2025 - 10/31/2025",
+      "pricingStatus": "Unpriced"
+    },
+    {
+      "displayId": "S064274",
+      "commodity": "Soybeans",
+      "type": "Purchase - SPOT",
+      "isClosed": true,
+      "remainingBushels": 0.0,
+      "displayContracted": "1,500.00 bu",
+      "displayDelivered": "1,500.00 bu",
+      "displayRemaining": "0.00 bu",
+      "delivery": "RIT \u00b7 10/30/2025 - 10/31/2025",
+      "pricingStatus": "$10.61 USD"
+    },
+    {
+      "displayId": "S061601",
+      "commodity": "Corn",
+      "type": "Purchase - SPOT",
+      "isClosed": true,
+      "remainingBushels": 0.0,
+      "displayContracted": "4,000.00 bu",
+      "displayDelivered": "4,000.00 bu",
+      "displayRemaining": "0.00 bu",
+      "delivery": "RIT \u00b7 07/01/2025 - 07/31/2025",
+      "pricingStatus": "$3.89 USD"
+    },
+    {
+      "displayId": "S061716",
+      "commodity": "Corn",
+      "type": "Purchase - SPOT",
+      "isClosed": true,
+      "remainingBushels": 0.0,
+      "displayContracted": "4,329.00 bu",
+      "displayDelivered": "4,329.00 bu",
+      "displayRemaining": "0.00 bu",
+      "delivery": "RIT \u00b7 07/01/2025 - 07/31/2025",
+      "pricingStatus": "$3.83 USD"
+    },
+    {
+      "displayId": "S061710",
+      "commodity": "Soybeans",
+      "type": "Purchase - SPOT",
+      "isClosed": true,
+      "remainingBushels": 0.0,
+      "displayContracted": "849.58 bu",
+      "displayDelivered": "849.58 bu",
+      "displayRemaining": "0.00 bu",
+      "delivery": "RIT \u00b7 07/01/2025 - 07/30/2025",
+      "pricingStatus": "$10.07 USD"
+    },
+    {
+      "displayId": "S056125",
+      "commodity": "Corn",
+      "type": "Purchase - SPOT",
+      "isClosed": true,
+      "remainingBushels": 0.0,
+      "displayContracted": "3,600.00 bu",
+      "displayDelivered": "3,600.00 bu",
+      "displayRemaining": "0.00 bu",
+      "delivery": "RIT \u00b7 08/01/2024 - 08/31/2024",
+      "pricingStatus": "$3.58 USD"
+    },
+    {
+      "displayId": "S056126",
+      "commodity": "Soybeans",
+      "type": "Purchase - SPOT",
+      "isClosed": true,
+      "remainingBushels": 0.0,
+      "displayContracted": "695.00 bu",
+      "displayDelivered": "695.00 bu",
+      "displayRemaining": "0.00 bu",
+      "delivery": "RIT \u00b7 08/01/2024 - 08/31/2024",
+      "pricingStatus": "$9.87 USD"
+    },
+    {
+      "displayId": "S056195",
+      "commodity": "Corn",
+      "type": "Purchase - SPOT",
+      "isClosed": true,
+      "remainingBushels": 0.0,
+      "displayContracted": "3,627.95 bu",
+      "displayDelivered": "3,627.95 bu",
+      "displayRemaining": "0.00 bu",
+      "delivery": "RIT \u00b7 08/01/2024 - 08/31/2024",
+      "pricingStatus": "$3.66 USD"
+    },
+    {
+      "displayId": "S056196",
+      "commodity": "Soybeans",
+      "type": "Purchase - SPOT",
+      "isClosed": true,
+      "remainingBushels": 0.0,
+      "displayContracted": "694.31 bu",
+      "displayDelivered": "694.31 bu",
+      "displayRemaining": "0.00 bu",
+      "delivery": "RIT \u00b7 08/01/2024 - 08/31/2024",
+      "pricingStatus": "$9.78 USD"
+    },
+    {
+      "displayId": "S055701",
+      "commodity": "Corn",
+      "type": "Purchase - SPOT",
+      "isClosed": true,
+      "remainingBushels": 0.0,
+      "displayContracted": "1,500.00 bu",
+      "displayDelivered": "1,500.00 bu",
+      "displayRemaining": "0.00 bu",
+      "delivery": "RIT \u00b7 07/01/2024 - 07/30/2024",
+      "pricingStatus": "$3.68 USD"
+    }
+  ],
+  "openOffers": [
+    {
+      "displayId": "963351142",
+      "commodity": null,
+      "quantity": "500",
+      "targetPrice": null,
+      "status": "filled",
+      "expirationDate": null,
+      "raw": {
+        "id": "963351142",
+        "displayId": "963351142",
+        "offerType": "cash",
+        "commodityName": "Soybeans",
+        "expiration": "2026-02-28",
+        "quantity": "500",
+        "quantityRemaining": "0",
+        "unitOfMeasure": "Bushels",
+        "offerPrice": "11.18",
+        "fillPrice": "11.19",
+        "status": "filled",
+        "accountName": "FRELLC - FREIS FARMS LLC",
+        "locationName": "Ritchie Grain Elevator",
+        "deliveryStart": "2026-02-01",
+        "deliveryEnd": "2026-02-28",
+        "comments": "",
+        "operations": {
+          "edit": false,
+          "withdraw": false
+        },
+        "createdAt": "2026-02-17T16:38:47.404Z",
+        "updatedAt": "2026-02-17T16:38:50.499Z"
+      }
+    },
+    {
+      "displayId": "555620373",
+      "commodity": null,
+      "quantity": "3500",
+      "targetPrice": null,
+      "status": "filled",
+      "expirationDate": null,
+      "raw": {
+        "id": "555620373",
+        "displayId": "555620373",
+        "offerType": "cash",
+        "commodityName": "Corn",
+        "expiration": "2025-11-30",
+        "quantity": "3500",
+        "quantityRemaining": "0",
+        "unitOfMeasure": "Bushels",
+        "offerPrice": "4.03",
+        "fillPrice": "4.03",
+        "status": "filled",
+        "accountName": "FRELLC - FREIS FARMS LLC",
+        "locationName": "Ritchie Grain Elevator",
+        "deliveryStart": "2025-11-01",
+        "deliveryEnd": "2025-11-30",
+        "comments": "",
+        "operations": {
+          "edit": false,
+          "withdraw": false
+        },
+        "createdAt": "2025-11-10T17:17:39.739Z",
+        "updatedAt": "2025-11-10T17:17:42.545Z"
+      }
+    },
+    {
+      "displayId": "542359824",
+      "commodity": null,
+      "quantity": "750",
+      "targetPrice": null,
+      "status": "filled",
+      "expirationDate": null,
+      "raw": {
+        "id": "542359824",
+        "displayId": "542359824",
+        "offerType": "cash",
+        "commodityName": "Soybeans",
+        "expiration": "2026-01-15",
+        "quantity": "750",
+        "quantityRemaining": "0",
+        "unitOfMeasure": "Bushels",
+        "offerPrice": "11.04",
+        "fillPrice": "11.04",
+        "status": "filled",
+        "accountName": "FRELLC - FREIS FARMS LLC",
+        "locationName": "Ritchie Grain Elevator",
+        "deliveryStart": "2026-01-01",
+        "deliveryEnd": "2026-01-15",
+        "comments": "",
+        "operations": {
+          "edit": false,
+          "withdraw": false
+        },
+        "createdAt": "2025-11-03T14:34:20.293Z",
+        "updatedAt": "2025-11-03T14:34:23.906Z"
+      }
+    }
+  ]
+}

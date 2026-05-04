@@ -23,6 +23,8 @@ _archive/
 # Local secrets and caches
 .env.local
 docs/news.local-backup.json
-docs/bushel.json
-docs/bushel_raw.json
+# bushel.json + bushel_raw.json are now tracked — refresh-bushel.yml writes
+# them via cron and the worker / dashboard / admin inventory feed all read
+# from the published copy on GH Pages. Keeping them out of git would mean
+# the dashboard never gets fresh data.
 scripts/.test_perm
