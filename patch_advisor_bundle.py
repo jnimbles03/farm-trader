@@ -90,16 +90,41 @@ def main() -> int:
         return 0
 
     storage = bundle.get("storage_state") or []
-    new_storage, changed = merge_storage_state(storage, live)
-    if not changed:
-        sys.stderr.write("-- no change to storage_state\n")
+    new_storage, storage_changed = merge_storage_state(storage, live)
+
+    # Always splice in the live block (bids + freshness) — these change
+    # intraday even when storage state doesn't. Without this, prices in the
+    # advisor go stale even though refresh_ritchie pulled fresh ones.
+    new_live_block = {
+        "as_of":         live.get("as_of"),
+        "source":        live.get("source"),
+        "account":       live.get("account"),
+        "location":      live.get("location"),
+        "storage":       live.get("storage"),
+        "avg_pricing":   live.get("avg_pricing"),
+        "bids":          live.get("bids"),
+        "fetch_errors":  live.get("fetch_errors") or [],
+    }
+    old_live_block = bundle.get("ritchie_live") or {}
+    live_changed = old_live_block != new_live_block
+    bundle["ritchie_live"]      = new_live_block
+    bundle["last_refreshed_at"] = live.get("as_of")  # top-level "how stale am I"
+
+    if storage_changed:
+        bundle["storage_state"] = new_storage
+
+    if not (storage_changed or live_changed):
+        sys.stderr.write("-- no change to storage_state or live block\n")
         return 0
-    bundle["storage_state"] = new_storage
+
     BUNDLE.write_text(json.dumps(bundle, indent=2) + "\n", encoding="utf-8")
+    bid_count = sum(len(v or []) for v in (new_live_block.get("bids") or {}).values())
     sys.stderr.write(
-        f"++ bundle updated: storage_state now ends with {new_storage[-1]['as_of']} "
+        f"++ bundle updated:\n"
+        f"   storage_state ends {new_storage[-1]['as_of']} "
         f"(corn={new_storage[-1]['corn_at_ritchie']}, "
         f"beans={new_storage[-1]['beans_at_ritchie']})\n"
+        f"   ritchie_live as_of {new_live_block['as_of']}, {bid_count} bid rows\n"
     )
     return 0
 

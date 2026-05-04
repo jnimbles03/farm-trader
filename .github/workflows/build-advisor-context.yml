@@ -22,7 +22,13 @@ name: Refresh advisor bundle (live Ritchie overlay)
 
 on:
   schedule:
+    # Pre-market baseline at 6am CT (11:00 UTC), Mon–Fri.
     - cron: "0 11 * * 1-5"
+    # Every 30 minutes during the CME grain trading day, Mon–Fri:
+    # 8:00am CT (13:00 UTC) through 1:30pm CT (18:30 UTC). The pit closes
+    # at 1:20pm CT — we run one extra refresh just after to catch the
+    # closing settle and any same-day Ritchie back-office processing.
+    - cron: "0,30 13-18 * * 1-5"
   workflow_dispatch:
 
 concurrency:

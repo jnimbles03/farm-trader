@@ -1193,5 +1193,113 @@
     "project_freis_farm_grain": "## Old Crop 2025 \u2014 sales to date\n- **Corn:** 3,500 bu sold November 2025\n- **Beans:** 1,250 bu sold in 2026 (month TBC). Opening 2025 bean inventory was 3,217 bu, leaving 1,967 bu still at Ritchie.\n- **Farm Bridge Assistance payment:** $4,521 federal payment received early March 2026 to offset weak grain prices\n\n## Old Crop 2025 \u2014 still in storage at Ritchie grain elevator\n- **Corn:** 9,115 bu unsold\n- **Beans:** 1,967 bu unsold (of 3,217 bu starting inventory)\n\n## Ritchie elevator \u2014 storage cost policy\n- **1-week \"halo\" / grace period** when grain comes out of the field (no charge)\n- After the halo lapses, storage charges accrue for the rest of the year\n- **Prorated by month** \u2014 partial months are charged proportionally, so timing a sale mid-month matters\n- **Rate trend: rising.** Realized rates climbed from ~2.2\u00a2/bu/mo through 2024 to ~3.2\u00a2/bu/mo in MY 2024-25. For the live working number, see `realized_storage_rates._working_rate_cents` in the advisor context bundle \u2014 recomputed from invoices on every bundle build, so it stays current as new sales settle.\n\n## Ritchie elevator \u2014 fall prepay option for inputs\n- Ritchie allows prepaying input bills in the fall to **lock in input prices** for the following season\n- Useful hedge against chemical/fertilizer price swings; needs cash availability in fall to take advantage\n\n## New Crop 2026 \u2014 pre-plant status\n- John is prepping equipment and inputs for planting, waiting on fields to dry out\n- John is concerned about all input costs rising, especially **diesel and fertilizer**\n- Illinois Farm Business Farm Management Association projects average corn and soybean prices will remain **below cost of production** \u2014 another tough profitability year expected\n\n## New Crop 2026 \u2014 Average Pricing Program (Ritchie elevator)\n- Program averages cash price between **April and July 2026** for corn and soybeans and buys at that average (reduces volatility risk)\n- Committed delivery from 2026 crop:\n  - **1,500 bu corn**\n  - **500 bu soybeans**\n\n**Why:** Jimmy tracks farm P&L and grain marketing decisions; these are the live facts that drive sale timing, storage costs, and cash-flow planning.\n\n**How to apply:** When Jimmy asks about bushels sold/remaining, cash position, marketing plans, or the 2026 crop, use these numbers as the baseline. The Ritchie elevator Average Pricing Program is already locked in for 2,000 bu combined \u2014 treat that as committed when reasoning about remaining bushels to market. Note the incremental sale schedule in the project file assumes 33,000 bu corn / 6,700 bu soy production targets \u2014 update targets if Jimmy revises acreage.",
     "project_freis_farm_books": "The full books-and-records xlsx + JSON live at `data/Finances/Freis_Farm_Books_and_Records.xlsx` (and `.json`). Re-built by `outputs/books/build_books_v3.py`. 14 sheets including Ledger, Annual P&L (Schedule-F-style), By Year, Crop Year, Yields History (2017-2025), Prices History (2018-2025), Headline Metrics, Cattle/Hay/Inputs by Year, Storage State, Capex Backlog, Calendar Anchors, Sources.\n\n**Why:** Augments the live Akron grain feed (which only starts July 2024) with the user's own records back to MY 2021-2022. The MY 2022-2023 sales DATA GAP from earlier was filled when the user dropped Farm 2023.xlsx, FARM 2024.xlsx, Farm 2025.xlsx, Farm Yields.xlsx, and a new root-level Harvest to Sale.xlsx into `data/`.\n\n**How to apply:**\n- The Ledger has 132 transactions: per-sale grain detail, per-year aggregated input categories, capex events.\n- Lifetime grain net since MY 2021-2022 is roughly $432k, lifetime farm net (income minus all outflow incl. capex) is ~$50k.\n- 2024 and 2025 were both net-loss years on a calendar basis (~-$44k and ~-$33k) due to lower grain prices + heavy capex (Can-Am UTV $21,565 in 2024; insulation $11,784 + landscaping $11,925 + water line $2,500 in 2025).\n- Multi-buyer reality: grain sells across **Akron/Ritchie** AND **Posen Coop (PC) / FS Grain** \u2014 two elevators. Older books (2024+) split bushels between the two. The dashboard should not assume Ritchie-only.\n- The user's own per-year P&L summaries treat sales by inventory origin (MY-based), not strictly by calendar date \u2014 e.g., late-Oct-2025 PC sales of MY 2023-2024 inventory get counted in 2024 P&L. The xlsx Annual P&L sheet uses calendar-date (SUMIFS by date), so totals will differ from the user's hand-rolled summaries by the spillover sales. The Crop Year sheet handles the MY view.\n- 2025 added new income lines: USDA/FSA payments ($6,771), private grant for cattle ($3,000 \u2014 funded the water line and partial fences), FS patronage + stock redemption ($508).\n- Hay sales in the books are tiny ($349 in 2023, $955 in 2024, $0 in 2025) because most production is fed to the herd in-house. The \"~4,000 bales \u00d7 $5/bale\" memory was about gross production, not sales.\n- 2023 expense categorization splits Fertilizer + Herbicides separately; 2024 onwards combines them as \"Chemicals\". Per-acre operating cost lands ~$529/ac all-in for 2025 (243 ac).\n- 9-year yield trend (2017-2025): corn 168-227 bu/ac (avg ~211 ex-2019 weather year), beans 49-72 bu/ac. 2025 was a big bean year (72.8 bu/ac); 2024 was a bad bean year (49.75).\n- 8-year price trend (2018-2025): corn $3.37-$6.77, beans $8.72-$15.70. Cycle peak in 2022.\n\n**What's still missing:** Pre-2023 input categories (no Farm 2021/2022 books found yet). 2024 cattle per-animal detail (only annual rollup $2,061). Year-end storage snapshots for 2023/2024/2025 (only 2026-04-28 live snapshot). Schedule-F PDFs filed with the IRS would close any remaining input gaps if the user has them."
   },
-  "recent_alerts_7d": []
+  "recent_alerts_7d": [],
+  "ritchie_live": {
+    "as_of": "2026-05-04T15:59:04Z",
+    "source": "bushel.commodity-balances + bids",
+    "account": "FREIS FARMS LLC",
+    "location": "Ritchie Grain Elevator",
+    "storage": {
+      "corn_bu": 9115.28,
+      "beans_bu": 1967.12
+    },
+    "avg_pricing": {
+      "corn_bu": null,
+      "soy_bu": null
+    },
+    "bids": {
+      "corn": [
+        {
+          "month": "May",
+          "cash": 4.56,
+          "basis": -0.28,
+          "futures": 4.84,
+          "futures_symbol": "ZCN26"
+        },
+        {
+          "month": "Jun",
+          "cash": 4.58,
+          "basis": -0.26,
+          "futures": 4.84,
+          "futures_symbol": "ZCN26"
+        },
+        {
+          "month": "Jul",
+          "cash": 4.61,
+          "basis": -0.23,
+          "futures": 4.84,
+          "futures_symbol": "ZCN26"
+        },
+        {
+          "month": "Oct",
+          "cash": 4.62,
+          "basis": -0.41,
+          "futures": 5.0325,
+          "futures_symbol": "ZCZ26"
+        },
+        {
+          "month": "Dec",
+          "cash": 4.73,
+          "basis": -0.3,
+          "futures": 5.0325,
+          "futures_symbol": "ZCZ26"
+        },
+        {
+          "month": "Jan",
+          "cash": 4.79,
+          "basis": -0.37,
+          "futures": 5.1625,
+          "futures_symbol": "ZCH27"
+        }
+      ],
+      "soy": [
+        {
+          "month": "May",
+          "cash": 12.19,
+          "basis": -0.04,
+          "futures": 12.2425,
+          "futures_symbol": "ZSN26"
+        },
+        {
+          "month": "Jun",
+          "cash": 12.19,
+          "basis": -0.04,
+          "futures": 12.2425,
+          "futures_symbol": "ZSN26"
+        },
+        {
+          "month": "Jul",
+          "cash": 12.24,
+          "basis": 0.0,
+          "futures": 12.2425,
+          "futures_symbol": "ZSN26"
+        },
+        {
+          "month": "Oct",
+          "cash": 11.64,
+          "basis": -0.34,
+          "futures": 11.9875,
+          "futures_symbol": "ZSX26"
+        },
+        {
+          "month": "Dec",
+          "cash": 11.56,
+          "basis": -0.54,
+          "futures": 12.1,
+          "futures_symbol": "ZSF27"
+        },
+        {
+          "month": "Jan",
+          "cash": 11.71,
+          "basis": -0.39,
+          "futures": 12.1,
+          "futures_symbol": "ZSF27"
+        }
+      ]
+    },
+    "fetch_errors": [
+      "avg_pricing: 'str' object has no attribute 'get'"
+    ]
+  },
+  "last_refreshed_at": "2026-05-04T15:59:04Z"
 }
