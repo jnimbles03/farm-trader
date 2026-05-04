@@ -1,0 +1,107 @@
+{
+  "as_of": "2026-05-04T15:43:40Z",
+  "source": "bushel.commodity-balances + bids",
+  "account": "FREIS FARMS LLC",
+  "location": "Ritchie Grain Elevator",
+  "storage": {
+    "corn_bu": 9115.28,
+    "beans_bu": 1967.12
+  },
+  "avg_pricing": {
+    "corn_bu": null,
+    "soy_bu": null
+  },
+  "bids": {
+    "corn": [
+      {
+        "month": "May",
+        "cash": 4.57,
+        "basis": -0.28,
+        "futures": 4.85,
+        "futures_symbol": "ZCN26"
+      },
+      {
+        "month": "Jun",
+        "cash": 4.59,
+        "basis": -0.26,
+        "futures": 4.85,
+        "futures_symbol": "ZCN26"
+      },
+      {
+        "month": "Jul",
+        "cash": 4.62,
+        "basis": -0.23,
+        "futures": 4.85,
+        "futures_symbol": "ZCN26"
+      },
+      {
+        "month": "Oct",
+        "cash": 4.63,
+        "basis": -0.41,
+        "futures": 5.04,
+        "futures_symbol": "ZCZ26"
+      },
+      {
+        "month": "Dec",
+        "cash": 4.74,
+        "basis": -0.3,
+        "futures": 5.04,
+        "futures_symbol": "ZCZ26"
+      },
+      {
+        "month": "Jan",
+        "cash": 4.79,
+        "basis": -0.37,
+        "futures": 5.1675,
+        "futures_symbol": "ZCH27"
+      }
+    ],
+    "soy": [
+      {
+        "month": "May",
+        "cash": 12.19,
+        "basis": -0.04,
+        "futures": 12.24,
+        "futures_symbol": "ZSN26"
+      },
+      {
+        "month": "Jun",
+        "cash": 12.19,
+        "basis": -0.04,
+        "futures": 12.24,
+        "futures_symbol": "ZSN26"
+      },
+      {
+        "month": "Jul",
+        "cash": 12.24,
+        "basis": 0.0,
+        "futures": 12.24,
+        "futures_symbol": "ZSN26"
+      },
+      {
+        "month": "Oct",
+        "cash": 11.64,
+        "basis": -0.34,
+        "futures": 11.9875,
+        "futures_symbol": "ZSX26"
+      },
+      {
+        "month": "Dec",
+        "cash": 11.56,
+        "basis": -0.54,
+        "futures": 12.1025,
+        "futures_symbol": "ZSF27"
+      },
+      {
+        "month": "Jan",
+        "cash": 11.71,
+        "basis": -0.39,
+        "futures": 12.1025,
+        "futures_symbol": "ZSF27"
+      }
+    ]
+  },
+  "fetch_errors": [
+    "avg_pricing: 'str' object has no attribute 'get'"
+  ]
+}

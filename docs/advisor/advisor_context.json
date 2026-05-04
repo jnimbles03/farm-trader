@@ -157,7 +157,7 @@
       "bushels": 12991.96,
       "avg_price": 5.47,
       "net_sales": 69148.24,
-      "status": "Closed · 4 sales (Akron + 1 FS lot)"
+      "status": "Closed \u00b7 4 sales (Akron + 1 FS lot)"
     },
     {
       "marketing_year": "MY 2022-2023",
@@ -166,7 +166,7 @@
       "bushels": 3152.67,
       "avg_price": 14.2,
       "net_sales": 43416.62,
-      "status": "Closed · 3 sales (Akron)"
+      "status": "Closed \u00b7 3 sales (Akron)"
     },
     {
       "marketing_year": "MY 2023-2024",
@@ -175,7 +175,7 @@
       "bushels": 12854.86,
       "avg_price": 3.66,
       "net_sales": 43682.39,
-      "status": "Closed · 6 sales (PC + Akron)"
+      "status": "Closed \u00b7 6 sales (PC + Akron)"
     },
     {
       "marketing_year": "MY 2023-2024",
@@ -184,7 +184,7 @@
       "bushels": 4093.86,
       "avg_price": 10.6,
       "net_sales": 45570.42,
-      "status": "Closed · 5 sales (PC + Akron)"
+      "status": "Closed \u00b7 5 sales (PC + Akron)"
     },
     {
       "marketing_year": "MY 2024-2025",
@@ -193,7 +193,7 @@
       "bushels": 14276.49,
       "avg_price": 4.13,
       "net_sales": 53857.7,
-      "status": "Closed · 5 sales (Akron)"
+      "status": "Closed \u00b7 5 sales (Akron)"
     },
     {
       "marketing_year": "MY 2024-2025",
@@ -202,7 +202,7 @@
       "bushels": 1423.08,
       "avg_price": 10.13,
       "net_sales": 13846.9,
-      "status": "Partial · 2 sales recorded (Akron)"
+      "status": "Partial \u00b7 2 sales recorded (Akron)"
     },
     {
       "marketing_year": "MY 2025-2026",
@@ -211,7 +211,7 @@
       "bushels": 3500.0,
       "avg_price": 4.03,
       "net_sales": 12616.53,
-      "status": "Open · 1 new-crop sale Nov '25"
+      "status": "Open \u00b7 1 new-crop sale Nov '25"
     },
     {
       "marketing_year": "MY 2025-2026",
@@ -220,7 +220,7 @@
       "bushels": 2897.96,
       "avg_price": 10.16,
       "net_sales": 29282.32,
-      "status": "Open · 5 new-crop sales (PC + Akron)"
+      "status": "Open \u00b7 5 new-crop sales (PC + Akron)"
     },
     {
       "marketing_year": "Lifetime since MY 2021-2022",
@@ -503,6 +503,16 @@
       "avg_pricing_corn": 1500.0,
       "avg_pricing_soy": 500.0,
       "notes": "Live: bushels at Ritchie + Average Pricing enrollment. PC inventory zero (last lot sold Oct '25)."
+    },
+    {
+      "as_of": "2026-05-04",
+      "corn_at_ritchie": 9115.28,
+      "beans_at_ritchie": 1967.12,
+      "corn_at_pcfs": 0.0,
+      "beans_at_pcfs": 0.0,
+      "avg_pricing_corn": 1500.0,
+      "avg_pricing_soy": 500.0,
+      "notes": "Live from bushel.commodity-balances + bids at 2026-05-04T15:34:39Z \u00b7 Account FREIS FARMS LLC \u00b7 PC/FS values carried from prior xlsx row (not scraped). \u00b7 Fetch warnings: avg_pricing: 'str' object has no attribute 'get'"
     }
   ],
   "inputs_by_year": {
@@ -637,7 +647,7 @@
       "calves_born": 11.0,
       "calves_sold": 6.0,
       "net_income": null,
-      "notes": "11/11 calving · 6 fall calves to Milford Sept-Oct · 18-mo bull sale this spring · 2 cows + old bull remaining as final phase."
+      "notes": "11/11 calving \u00b7 6 fall calves to Milford Sept-Oct \u00b7 18-mo bull sale this spring \u00b7 2 cows + old bull remaining as final phase."
     }
   ],
   "hay_by_year": [
@@ -654,76 +664,76 @@
     {
       "year": 2025.0,
       "net_hay_sales": 0.0,
-      "notes": "No hay sales recorded — fed all in-house."
+      "notes": "No hay sales recorded \u2014 fed all in-house."
     },
     {
       "year": 2026.0,
       "net_hay_sales": null,
-      "notes": "TBD — Kevin Quigley brokers when sold."
+      "notes": "TBD \u2014 Kevin Quigley brokers when sold."
     }
   ],
   "capex_backlog": [
     {
       "type": "Equipment",
       "item": "New Can-Am UTV",
-      "owner": "—",
-      "status": "Done · 2024",
+      "owner": "\u2014",
+      "status": "Done \u00b7 2024",
       "cost": -21565.0,
       "notes": "Bought 2024."
     },
     {
       "type": "Cattle",
       "item": "New cattle purchase",
-      "owner": "—",
-      "status": "Done · 2024",
+      "owner": "\u2014",
+      "status": "Done \u00b7 2024",
       "cost": -8400.0,
       "notes": "Herd refresh; offset by larger 2025 cattle sales."
     },
     {
       "type": "Buildings",
       "item": "Insulation",
-      "owner": "—",
-      "status": "Done · 2025",
+      "owner": "\u2014",
+      "status": "Done \u00b7 2025",
       "cost": -11784.0,
       "notes": "Nov 2025."
     },
     {
       "type": "Buildings",
       "item": "Water line to pasture",
-      "owner": "—",
-      "status": "Done · 2025",
+      "owner": "\u2014",
+      "status": "Done \u00b7 2025",
       "cost": -2500.0,
       "notes": "Sept 2025; paid by $3k cattle grant."
     },
     {
       "type": "Buildings",
       "item": "New fences",
-      "owner": "—",
-      "status": "Done · 2025",
+      "owner": "\u2014",
+      "status": "Done \u00b7 2025",
       "cost": -2495.0,
       "notes": "Across 2025; portion paid by $3k cattle grant."
     },
     {
       "type": "Buildings",
       "item": "Gutter guards",
-      "owner": "—",
-      "status": "Done · 2025",
+      "owner": "\u2014",
+      "status": "Done \u00b7 2025",
       "cost": -2640.0,
       "notes": "Nov 2025."
     },
     {
       "type": "Land",
       "item": "Landscaping",
-      "owner": "—",
-      "status": "Done · 2025",
+      "owner": "\u2014",
+      "status": "Done \u00b7 2025",
       "cost": -11925.0,
       "notes": "Across 2025."
     },
     {
       "type": "Buildings",
       "item": "Air conditioning",
-      "owner": "—",
-      "status": "Done · 2025",
+      "owner": "\u2014",
+      "status": "Done \u00b7 2025",
       "cost": -455.66,
       "notes": "July 2025."
     },
@@ -737,16 +747,16 @@
     },
     {
       "type": "Buildings",
-      "item": "Machine shed foundation — out of plumb",
-      "owner": "—",
+      "item": "Machine shed foundation \u2014 out of plumb",
+      "owner": "\u2014",
       "status": "Open",
       "cost": null,
       "notes": "Structural; needs assessment."
     },
     {
       "type": "Buildings",
-      "item": "Back cattle barn west side — needs fixing",
-      "owner": "—",
+      "item": "Back cattle barn west side \u2014 needs fixing",
+      "owner": "\u2014",
       "status": "Open",
       "cost": null,
       "notes": "Per Other Info sheet."
@@ -754,7 +764,7 @@
     {
       "type": "Buildings",
       "item": "Add airflow to barns (not full enclosure)",
-      "owner": "—",
+      "owner": "\u2014",
       "status": "Open",
       "cost": null,
       "notes": "Ventilation, not airtight."
@@ -762,7 +772,7 @@
     {
       "type": "Plumbing",
       "item": "Kitchen sink low pressure",
-      "owner": "—",
+      "owner": "\u2014",
       "status": "Open",
       "cost": null,
       "notes": "Per Other Info sheet."
@@ -770,14 +780,14 @@
   ],
   "calendar_anchors": [
     {
-      "approx_date": "late Dec → Feb",
+      "approx_date": "late Dec \u2192 Feb",
       "event": "Calving season",
       "category": "Cattle",
       "notes": "Most calves drop here."
     },
     {
       "approx_date": "early May",
-      "event": "May 10 WASDE — first new-crop balance",
+      "event": "May 10 WASDE \u2014 first new-crop balance",
       "category": "Grain",
       "notes": "USDA's quarterly market mover."
     },
@@ -803,22 +813,22 @@
       "approx_date": "mid-July",
       "event": "Second hay cutting",
       "category": "Hay",
-      "notes": "—"
+      "notes": "\u2014"
     },
     {
-      "approx_date": "April → Aug",
+      "approx_date": "April \u2192 Aug",
       "event": "Old-crop grain sales",
       "category": "Grain",
       "notes": "Multi-buyer: Akron + PC/FS Grain."
     },
     {
-      "approx_date": "late Aug → Sep",
+      "approx_date": "late Aug \u2192 Sep",
       "event": "Corn / bean harvest start",
       "category": "Grain",
       "notes": "Yields/condition reports flow."
     },
     {
-      "approx_date": "Sep → Oct",
+      "approx_date": "Sep \u2192 Oct",
       "event": "Fall calf sales (Milford)",
       "category": "Cattle",
       "notes": "Memory: 6 calves slated 2026."
@@ -827,22 +837,22 @@
       "approx_date": "Sep",
       "event": "Third hay cutting",
       "category": "Hay",
-      "notes": "—"
+      "notes": "\u2014"
     },
     {
-      "approx_date": "Oct → Nov",
+      "approx_date": "Oct \u2192 Nov",
       "event": "New-crop grain sales begin",
       "category": "Grain",
       "notes": "First post-harvest moves."
     },
     {
-      "approx_date": "Oct → Nov",
+      "approx_date": "Oct \u2192 Nov",
       "event": "Seed prepay window",
       "category": "Inputs",
       "notes": "Decide next-year seed buy here."
     },
     {
-      "approx_date": "Dec → Jan",
+      "approx_date": "Dec \u2192 Jan",
       "event": "Year-end inventory snapshot",
       "category": "Storage",
       "notes": "Bushels carried forward, AP enrollment."
@@ -1174,14 +1184,14 @@
     "_note": "Rates computed from Ledger 'Storage -$X' notes on Akron/Ritchie sale invoices. Lumped 'Storage+Hauling+Drying' rows excluded. Use _working_rate_cents for carry/breakeven math."
   },
   "memory_notes": {
-    "project_freis_farm_alerts": "Alert system design (in progress, backtest phase as of 2026-04-28):\n\n**Trigger threshold (medium):** fire on expected move ≥5¢/bu corn, ≥8¢/bu soy, or ≥3% input cost shift. Roughly 3-7 alerts/week typical, more during USDA report weeks or weather events.\n\n**Quiet hours:** 6am–9pm CT only. Overnight headlines queue and fire as a single morning digest at 6am (or one SMS if only one item).\n\n**Channel:** single SMS stream, prefixed `[GRAIN]` or `[INPUT]`. Not split.\n\n**Format (both ¢/bu AND % required — dimensional consistency across grains/inputs):**\n```\n[GRAIN] Headline in 1 line\nWHY: 1-line mechanism\nEXPECT: corn +8-15¢ (+1.5-3%) / soy +5-10¢ (+0.4-0.9%) next 2-3 sessions\nCONF: M — what could falsify\n```\n\n**USDA report days get TWO alerts:** preview the night before with consensus trade estimates, release alert within 5 min of 11am CT with surprise vs. expectation. Surprise drives the move, not the absolute number.\n\n**Guardrails:**\n- Staleness check: skip alert if futures already absorbed >50% of predicted move.\n- Calibration loop: log every alert + actual front-month settlement at +1/+3/+5 sessions; weekly review to retune magnitude prompt.\n\nWhy: Jimmy markets old-crop and 2026 production into the spring/summer window; even one well-timed alert that prompts a same-day Ritchie ticket is worth the build. He already runs the SMS reminder pipeline, so delivery is solved.\n\nHow to apply: build phases — (1) backtest 10 historical headlines to validate magnitude/direction, (2) lock source list, (3) prototype polling+classifier, (4) ship to existing SMS channel.",
-    "project_freis_farm_cattle": "## 2026 calving season\n- **11 for 11** — all 11 mom cows delivered calves\n- 6 calves born Fall 2025 → **sell September or October 2026** at Milford sale barn\n- 5 calves born Spring 2026 → sell Spring 2027\n- No calves being kept\n\n## Market conditions\n- Feeder-lot calf prices are **up 25% vs. last year** and expected to hold through 2026 — good time to sell\n\n## Herd upgrade status (4-year process, nearly complete)\n- Still to replace: **2 old cows and the old bull**\n- Selling this Spring 2026: **one 18-month-old bull** (no replacement needed)\n- Once final 2 cows + old bull are replaced, herd is fully upgraded and should be good for 8–10 years\n\n**Why:** Cattle sales are a material cash-flow event; timing against Milford sale-barn calendar and feeder-lot pricing matters. The herd-upgrade project has been running 4 years and is in its final phase.\n\n**How to apply:** When Jimmy asks about cattle, use these counts. If he's reasoning about fall revenue, plug in the 6 fall-born calves at the Sept–Oct 2026 Milford sale. Flag the 18-month-old bull sale this spring as a separate near-term revenue event. Don't suggest holding calves — policy is to sell, not retain.",
-    "project_freis_farm_cashflow": "## Cash position (as of late April 2026)\n- **Cash on hand:** ~$25,000\n- **Chemical inventory on hand:** ~$10,000 (already-purchased inputs, not cash but a real asset)\n\n## Near-term expense schedule\n- **Real estate taxes:** paid in May, then second half later in the year\n- **LDI / Lattering chemical bill: ~$10,500** — fertilizer input cost is \"slammed\" (way up)\n- **Recurring Ritchie input bills:** typically **3 bills per year**, with the **June bill being the highest** — last year's June bill was ~$10,000\n\n## Planned old-crop bean sale schedule\n- **June 1, 2026:** sell ~half of remaining beans (~1,000 bu of the 1,967 bu still at Ritchie)\n- **July 1, 2026:** sell the other ~1,000 bu\n- This is the revenue side of the cash-flow bridge — the timing is set by the expense calendar above (need cash to cover June bills before they hit)\n- Note: \"$1,000 on 7/1\" in earlier notes refers to **1,000 bushels** sold, NOT a $1,000 expense\n\n## The strategic frame Mom uses\nThree forces have to be balanced when deciding when to sell remaining old-crop beans (1,967 bu) and corn (9,115 bu) at Ritchie:\n1. **Storage cost** — every month held accrues prorated storage at Ritchie\n2. **Liquidity** — known expenses (May real estate tax, June Ritchie input bill ~$10k, $10.5k Lattering) draw cash; $25k on hand is **tight if waiting until July** to sell all remaining beans, which is why the plan splits the bean sale across June 1 and July 1\n3. **Price improvement** — holding for a better mark only pays if the price uplift exceeds storage + opportunity cost of the cash gap\n\n> \"Knowing what expected expenses [look like in a] proforma so you can know cash-cash. Intersection of storage, liquidity, looking for price improvement.\"\n\n**Why:** Mom is the one running farm finances day-to-day; this is the live decision frame she's asking Jimmy to think alongside her on. The numbers above are the scaffolding for a proper cash-flow pro forma she wants to build.\n\n**How to apply:** When Jimmy asks about timing grain sales, cash position, or expense planning, treat these three forces as the operating model — don't recommend \"hold for higher price\" without checking the cash gap to the next big bill, and don't recommend \"sell now\" without checking what storage savings that actually buys. If Jimmy asks for a pro forma / cash flow projection, this is the input list to start from; ask whether numbers have updated before relying on them.",
-    "project_freis_farm_auth": "Auth gate persists 30 days across browser restarts via signed session token in localStorage.\n\n**Two paths, same outcome:**\n- Phone OTP (primary): `/auth/sms-start` → TextBelt → `/auth/sms-verify`\n- Garage code (fallback): `/auth/login`\nBoth mint a 30-day session token of shape `HMAC(TEXTBELT_KEY, \"auth|\" + expires_at)`. Same `freis-farm-auth-v2` localStorage key. Background re-verify via `/auth/verify` on every page load (offline-friendly: trust local expiry if worker unreachable).\n\n**Worker secrets (Cloudflare):**\n- `TEXTBELT_KEY` — paid TextBelt key, doubles as HMAC secret\n- `GITHUB_TOKEN` — fine-grained PAT for repository_dispatch\n- `GARAGE_CODE` — 4-digit fallback code\n- `AUTH_PHONES` — comma-separated E.164, e.g. `+16302479950,+16305551234`\n\n**Why:** Started with sessionStorage (lost on close). User wanted 30-day persistence + SMS auth against a whitelist. Worker-signed token means flipping localStorage in dev tools doesn't bypass the gate (no valid signature for arbitrary state).\n\n**How to apply:**\n- Add/remove a phone: `npx wrangler secret put AUTH_PHONES` from `farm-proxy/cloudflare-worker/`, paste full new list, then `npx wrangler deploy`. Existing 30-day sessions stay valid (token isn't bound to phone identity), but no new logins from removed numbers.\n- Rotate garage code: `wrangler secret put GARAGE_CODE`, deploy.\n- Force everyone to re-auth: change `TEXTBELT_KEY` (also breaks trade widget — only do if rotating that key anyway).\n\n**Decoy bundle:** `/auth/sms-start` returns a fake `{nonce, expires_at, hmac}` for non-whitelisted phones to prevent enumeration. Verify will reject because the HMAC isn't bound to anything real.",
-    "project_freis_farm_hay": "## 2025 hay production\n- **3 cuttings** last year — more than enough to feed Freis Farm cattle over winter\n- Sold surplus hay in **Fall 2025** through Kevin Quigley (John Quigley's son)\n\n## Kevin Quigley's role\n- Getting more involved in farming; found outside buyers for hay\n- Purchased a **larger hay rack** for hauling\n- Purchased an **elevator** to move square bales up to the higher levels of the Freis hay barn\n- Baled ~4,000 square bales last year across several fields, sold for **~$5/bale average**\n- Hay has been a good cash crop for both Kevin and Freis Farm\n\n## Fields\n- **Old hay field:** 8 acres — used through 2026 season\n- **New hay field:** 10 acres — John planting Spring 2026 on Freis land; ready for use in 2027\n\n**Why:** Hay is both feed for the cattle operation and a supplemental cash crop via the Kevin Quigley partnership. Field rotation (old → new) affects capacity planning for the 2026–2027 transition.\n\n**How to apply:** When Jimmy asks about hay revenue, feed supply, or Kevin's role, use these facts. Don't expect new-field hay production in 2026 — it's not ready until 2027. The ~$5/bale × 4,000 bales benchmark is Kevin's total across several fields, not Freis-only — be careful not to overcount Freis's share when modeling revenue.",
-    "project_freis_farm_dashboard": "Three-page dashboard at github.com/jnimbles03/farm-trader, served from `docs/` via GitHub Pages. Cloudflare worker `freis-farm-sms-reply.freis.workers.dev` handles all stateful endpoints (orders + auth).\n\n**Build:** Pages are generated by `outputs/build_pages.py` (Cowork session-local) from a single shared shell + per-page bodies. Source-of-truth tokens live in that script: cream paper, sage accent, Fraunces (display) + DM Sans (text) + JetBrains Mono (numerals). Direction A layout = decision card top, hero chart + side panel, sparkline strip bottom.\n\n**Why:** Three pages used to drift visually (dark home, cream others). User wanted \"uniform\" — picked Direction A from a 3-concept showcase, then asked for the trade widget back, then added books explorer + Yield × Margin × Benchmark to Farm Ops.\n\n**How to apply:** Edit `build_pages.py`, run it, files land in `Freis Farm/`. To deploy, copy to `farm-proxy/docs/` (also overwrite `index.html` with home.html — they're the same content, just two URLs). Then `git pull --rebase origin main` (data bot pushes JSON updates frequently), commit, push.\n\n**Gotcha:** Worker URL is `freis-farm-sms-reply.freis.workers.dev` (the `freis` subdomain is the Cloudflare account name), NOT `jnimbles03.workers.dev`.\n\n**Backups:** `docs/_pre_unify_backup/` has the originals.",
-    "project_freis_farm_grain": "## Old Crop 2025 — sales to date\n- **Corn:** 3,500 bu sold November 2025\n- **Beans:** 1,250 bu sold in 2026 (month TBC). Opening 2025 bean inventory was 3,217 bu, leaving 1,967 bu still at Ritchie.\n- **Farm Bridge Assistance payment:** $4,521 federal payment received early March 2026 to offset weak grain prices\n\n## Old Crop 2025 — still in storage at Ritchie grain elevator\n- **Corn:** 9,115 bu unsold\n- **Beans:** 1,967 bu unsold (of 3,217 bu starting inventory)\n\n## Ritchie elevator — storage cost policy\n- **1-week \"halo\" / grace period** when grain comes out of the field (no charge)\n- After the halo lapses, storage charges accrue for the rest of the year\n- **Prorated by month** — partial months are charged proportionally, so timing a sale mid-month matters\n- **Rate trend: rising.** Realized rates climbed from ~2.2¢/bu/mo through 2024 to ~3.2¢/bu/mo in MY 2024-25. For the live working number, see `realized_storage_rates._working_rate_cents` in the advisor context bundle — recomputed from invoices on every bundle build, so it stays current as new sales settle.\n\n## Ritchie elevator — fall prepay option for inputs\n- Ritchie allows prepaying input bills in the fall to **lock in input prices** for the following season\n- Useful hedge against chemical/fertilizer price swings; needs cash availability in fall to take advantage\n\n## New Crop 2026 — pre-plant status\n- John is prepping equipment and inputs for planting, waiting on fields to dry out\n- John is concerned about all input costs rising, especially **diesel and fertilizer**\n- Illinois Farm Business Farm Management Association projects average corn and soybean prices will remain **below cost of production** — another tough profitability year expected\n\n## New Crop 2026 — Average Pricing Program (Ritchie elevator)\n- Program averages cash price between **April and July 2026** for corn and soybeans and buys at that average (reduces volatility risk)\n- Committed delivery from 2026 crop:\n  - **1,500 bu corn**\n  - **500 bu soybeans**\n\n**Why:** Jimmy tracks farm P&L and grain marketing decisions; these are the live facts that drive sale timing, storage costs, and cash-flow planning.\n\n**How to apply:** When Jimmy asks about bushels sold/remaining, cash position, marketing plans, or the 2026 crop, use these numbers as the baseline. The Ritchie elevator Average Pricing Program is already locked in for 2,000 bu combined — treat that as committed when reasoning about remaining bushels to market. Note the incremental sale schedule in the project file assumes 33,000 bu corn / 6,700 bu soy production targets — update targets if Jimmy revises acreage.",
-    "project_freis_farm_books": "The full books-and-records xlsx + JSON live at `data/Finances/Freis_Farm_Books_and_Records.xlsx` (and `.json`). Re-built by `outputs/books/build_books_v3.py`. 14 sheets including Ledger, Annual P&L (Schedule-F-style), By Year, Crop Year, Yields History (2017-2025), Prices History (2018-2025), Headline Metrics, Cattle/Hay/Inputs by Year, Storage State, Capex Backlog, Calendar Anchors, Sources.\n\n**Why:** Augments the live Akron grain feed (which only starts July 2024) with the user's own records back to MY 2021-2022. The MY 2022-2023 sales DATA GAP from earlier was filled when the user dropped Farm 2023.xlsx, FARM 2024.xlsx, Farm 2025.xlsx, Farm Yields.xlsx, and a new root-level Harvest to Sale.xlsx into `data/`.\n\n**How to apply:**\n- The Ledger has 132 transactions: per-sale grain detail, per-year aggregated input categories, capex events.\n- Lifetime grain net since MY 2021-2022 is roughly $432k, lifetime farm net (income minus all outflow incl. capex) is ~$50k.\n- 2024 and 2025 were both net-loss years on a calendar basis (~-$44k and ~-$33k) due to lower grain prices + heavy capex (Can-Am UTV $21,565 in 2024; insulation $11,784 + landscaping $11,925 + water line $2,500 in 2025).\n- Multi-buyer reality: grain sells across **Akron/Ritchie** AND **Posen Coop (PC) / FS Grain** — two elevators. Older books (2024+) split bushels between the two. The dashboard should not assume Ritchie-only.\n- The user's own per-year P&L summaries treat sales by inventory origin (MY-based), not strictly by calendar date — e.g., late-Oct-2025 PC sales of MY 2023-2024 inventory get counted in 2024 P&L. The xlsx Annual P&L sheet uses calendar-date (SUMIFS by date), so totals will differ from the user's hand-rolled summaries by the spillover sales. The Crop Year sheet handles the MY view.\n- 2025 added new income lines: USDA/FSA payments ($6,771), private grant for cattle ($3,000 — funded the water line and partial fences), FS patronage + stock redemption ($508).\n- Hay sales in the books are tiny ($349 in 2023, $955 in 2024, $0 in 2025) because most production is fed to the herd in-house. The \"~4,000 bales × $5/bale\" memory was about gross production, not sales.\n- 2023 expense categorization splits Fertilizer + Herbicides separately; 2024 onwards combines them as \"Chemicals\". Per-acre operating cost lands ~$529/ac all-in for 2025 (243 ac).\n- 9-year yield trend (2017-2025): corn 168-227 bu/ac (avg ~211 ex-2019 weather year), beans 49-72 bu/ac. 2025 was a big bean year (72.8 bu/ac); 2024 was a bad bean year (49.75).\n- 8-year price trend (2018-2025): corn $3.37-$6.77, beans $8.72-$15.70. Cycle peak in 2022.\n\n**What's still missing:** Pre-2023 input categories (no Farm 2021/2022 books found yet). 2024 cattle per-animal detail (only annual rollup $2,061). Year-end storage snapshots for 2023/2024/2025 (only 2026-04-28 live snapshot). Schedule-F PDFs filed with the IRS would close any remaining input gaps if the user has them."
+    "project_freis_farm_alerts": "Alert system design (in progress, backtest phase as of 2026-04-28):\n\n**Trigger threshold (medium):** fire on expected move \u22655\u00a2/bu corn, \u22658\u00a2/bu soy, or \u22653% input cost shift. Roughly 3-7 alerts/week typical, more during USDA report weeks or weather events.\n\n**Quiet hours:** 6am\u20139pm CT only. Overnight headlines queue and fire as a single morning digest at 6am (or one SMS if only one item).\n\n**Channel:** single SMS stream, prefixed `[GRAIN]` or `[INPUT]`. Not split.\n\n**Format (both \u00a2/bu AND % required \u2014 dimensional consistency across grains/inputs):**\n```\n[GRAIN] Headline in 1 line\nWHY: 1-line mechanism\nEXPECT: corn +8-15\u00a2 (+1.5-3%) / soy +5-10\u00a2 (+0.4-0.9%) next 2-3 sessions\nCONF: M \u2014 what could falsify\n```\n\n**USDA report days get TWO alerts:** preview the night before with consensus trade estimates, release alert within 5 min of 11am CT with surprise vs. expectation. Surprise drives the move, not the absolute number.\n\n**Guardrails:**\n- Staleness check: skip alert if futures already absorbed >50% of predicted move.\n- Calibration loop: log every alert + actual front-month settlement at +1/+3/+5 sessions; weekly review to retune magnitude prompt.\n\nWhy: Jimmy markets old-crop and 2026 production into the spring/summer window; even one well-timed alert that prompts a same-day Ritchie ticket is worth the build. He already runs the SMS reminder pipeline, so delivery is solved.\n\nHow to apply: build phases \u2014 (1) backtest 10 historical headlines to validate magnitude/direction, (2) lock source list, (3) prototype polling+classifier, (4) ship to existing SMS channel.",
+    "project_freis_farm_cattle": "## 2026 calving season\n- **11 for 11** \u2014 all 11 mom cows delivered calves\n- 6 calves born Fall 2025 \u2192 **sell September or October 2026** at Milford sale barn\n- 5 calves born Spring 2026 \u2192 sell Spring 2027\n- No calves being kept\n\n## Market conditions\n- Feeder-lot calf prices are **up 25% vs. last year** and expected to hold through 2026 \u2014 good time to sell\n\n## Herd upgrade status (4-year process, nearly complete)\n- Still to replace: **2 old cows and the old bull**\n- Selling this Spring 2026: **one 18-month-old bull** (no replacement needed)\n- Once final 2 cows + old bull are replaced, herd is fully upgraded and should be good for 8\u201310 years\n\n**Why:** Cattle sales are a material cash-flow event; timing against Milford sale-barn calendar and feeder-lot pricing matters. The herd-upgrade project has been running 4 years and is in its final phase.\n\n**How to apply:** When Jimmy asks about cattle, use these counts. If he's reasoning about fall revenue, plug in the 6 fall-born calves at the Sept\u2013Oct 2026 Milford sale. Flag the 18-month-old bull sale this spring as a separate near-term revenue event. Don't suggest holding calves \u2014 policy is to sell, not retain.",
+    "project_freis_farm_cashflow": "## Cash position (as of late April 2026)\n- **Cash on hand:** ~$25,000\n- **Chemical inventory on hand:** ~$10,000 (already-purchased inputs, not cash but a real asset)\n\n## Near-term expense schedule\n- **Real estate taxes:** paid in May, then second half later in the year\n- **LDI / Lattering chemical bill: ~$10,500** \u2014 fertilizer input cost is \"slammed\" (way up)\n- **Recurring Ritchie input bills:** typically **3 bills per year**, with the **June bill being the highest** \u2014 last year's June bill was ~$10,000\n\n## Planned old-crop bean sale schedule\n- **June 1, 2026:** sell ~half of remaining beans (~1,000 bu of the 1,967 bu still at Ritchie)\n- **July 1, 2026:** sell the other ~1,000 bu\n- This is the revenue side of the cash-flow bridge \u2014 the timing is set by the expense calendar above (need cash to cover June bills before they hit)\n- Note: \"$1,000 on 7/1\" in earlier notes refers to **1,000 bushels** sold, NOT a $1,000 expense\n\n## The strategic frame Mom uses\nThree forces have to be balanced when deciding when to sell remaining old-crop beans (1,967 bu) and corn (9,115 bu) at Ritchie:\n1. **Storage cost** \u2014 every month held accrues prorated storage at Ritchie\n2. **Liquidity** \u2014 known expenses (May real estate tax, June Ritchie input bill ~$10k, $10.5k Lattering) draw cash; $25k on hand is **tight if waiting until July** to sell all remaining beans, which is why the plan splits the bean sale across June 1 and July 1\n3. **Price improvement** \u2014 holding for a better mark only pays if the price uplift exceeds storage + opportunity cost of the cash gap\n\n> \"Knowing what expected expenses [look like in a] proforma so you can know cash-cash. Intersection of storage, liquidity, looking for price improvement.\"\n\n**Why:** Mom is the one running farm finances day-to-day; this is the live decision frame she's asking Jimmy to think alongside her on. The numbers above are the scaffolding for a proper cash-flow pro forma she wants to build.\n\n**How to apply:** When Jimmy asks about timing grain sales, cash position, or expense planning, treat these three forces as the operating model \u2014 don't recommend \"hold for higher price\" without checking the cash gap to the next big bill, and don't recommend \"sell now\" without checking what storage savings that actually buys. If Jimmy asks for a pro forma / cash flow projection, this is the input list to start from; ask whether numbers have updated before relying on them.",
+    "project_freis_farm_auth": "Auth gate persists 30 days across browser restarts via signed session token in localStorage.\n\n**Two paths, same outcome:**\n- Phone OTP (primary): `/auth/sms-start` \u2192 TextBelt \u2192 `/auth/sms-verify`\n- Garage code (fallback): `/auth/login`\nBoth mint a 30-day session token of shape `HMAC(TEXTBELT_KEY, \"auth|\" + expires_at)`. Same `freis-farm-auth-v2` localStorage key. Background re-verify via `/auth/verify` on every page load (offline-friendly: trust local expiry if worker unreachable).\n\n**Worker secrets (Cloudflare):**\n- `TEXTBELT_KEY` \u2014 paid TextBelt key, doubles as HMAC secret\n- `GITHUB_TOKEN` \u2014 fine-grained PAT for repository_dispatch\n- `GARAGE_CODE` \u2014 4-digit fallback code\n- `AUTH_PHONES` \u2014 comma-separated E.164, e.g. `+16302479950,+16305551234`\n\n**Why:** Started with sessionStorage (lost on close). User wanted 30-day persistence + SMS auth against a whitelist. Worker-signed token means flipping localStorage in dev tools doesn't bypass the gate (no valid signature for arbitrary state).\n\n**How to apply:**\n- Add/remove a phone: `npx wrangler secret put AUTH_PHONES` from `farm-proxy/cloudflare-worker/`, paste full new list, then `npx wrangler deploy`. Existing 30-day sessions stay valid (token isn't bound to phone identity), but no new logins from removed numbers.\n- Rotate garage code: `wrangler secret put GARAGE_CODE`, deploy.\n- Force everyone to re-auth: change `TEXTBELT_KEY` (also breaks trade widget \u2014 only do if rotating that key anyway).\n\n**Decoy bundle:** `/auth/sms-start` returns a fake `{nonce, expires_at, hmac}` for non-whitelisted phones to prevent enumeration. Verify will reject because the HMAC isn't bound to anything real.",
+    "project_freis_farm_hay": "## 2025 hay production\n- **3 cuttings** last year \u2014 more than enough to feed Freis Farm cattle over winter\n- Sold surplus hay in **Fall 2025** through Kevin Quigley (John Quigley's son)\n\n## Kevin Quigley's role\n- Getting more involved in farming; found outside buyers for hay\n- Purchased a **larger hay rack** for hauling\n- Purchased an **elevator** to move square bales up to the higher levels of the Freis hay barn\n- Baled ~4,000 square bales last year across several fields, sold for **~$5/bale average**\n- Hay has been a good cash crop for both Kevin and Freis Farm\n\n## Fields\n- **Old hay field:** 8 acres \u2014 used through 2026 season\n- **New hay field:** 10 acres \u2014 John planting Spring 2026 on Freis land; ready for use in 2027\n\n**Why:** Hay is both feed for the cattle operation and a supplemental cash crop via the Kevin Quigley partnership. Field rotation (old \u2192 new) affects capacity planning for the 2026\u20132027 transition.\n\n**How to apply:** When Jimmy asks about hay revenue, feed supply, or Kevin's role, use these facts. Don't expect new-field hay production in 2026 \u2014 it's not ready until 2027. The ~$5/bale \u00d7 4,000 bales benchmark is Kevin's total across several fields, not Freis-only \u2014 be careful not to overcount Freis's share when modeling revenue.",
+    "project_freis_farm_dashboard": "Three-page dashboard at github.com/jnimbles03/farm-trader, served from `docs/` via GitHub Pages. Cloudflare worker `freis-farm-sms-reply.freis.workers.dev` handles all stateful endpoints (orders + auth).\n\n**Build:** Pages are generated by `outputs/build_pages.py` (Cowork session-local) from a single shared shell + per-page bodies. Source-of-truth tokens live in that script: cream paper, sage accent, Fraunces (display) + DM Sans (text) + JetBrains Mono (numerals). Direction A layout = decision card top, hero chart + side panel, sparkline strip bottom.\n\n**Why:** Three pages used to drift visually (dark home, cream others). User wanted \"uniform\" \u2014 picked Direction A from a 3-concept showcase, then asked for the trade widget back, then added books explorer + Yield \u00d7 Margin \u00d7 Benchmark to Farm Ops.\n\n**How to apply:** Edit `build_pages.py`, run it, files land in `Freis Farm/`. To deploy, copy to `farm-proxy/docs/` (also overwrite `index.html` with home.html \u2014 they're the same content, just two URLs). Then `git pull --rebase origin main` (data bot pushes JSON updates frequently), commit, push.\n\n**Gotcha:** Worker URL is `freis-farm-sms-reply.freis.workers.dev` (the `freis` subdomain is the Cloudflare account name), NOT `jnimbles03.workers.dev`.\n\n**Backups:** `docs/_pre_unify_backup/` has the originals.",
+    "project_freis_farm_grain": "## Old Crop 2025 \u2014 sales to date\n- **Corn:** 3,500 bu sold November 2025\n- **Beans:** 1,250 bu sold in 2026 (month TBC). Opening 2025 bean inventory was 3,217 bu, leaving 1,967 bu still at Ritchie.\n- **Farm Bridge Assistance payment:** $4,521 federal payment received early March 2026 to offset weak grain prices\n\n## Old Crop 2025 \u2014 still in storage at Ritchie grain elevator\n- **Corn:** 9,115 bu unsold\n- **Beans:** 1,967 bu unsold (of 3,217 bu starting inventory)\n\n## Ritchie elevator \u2014 storage cost policy\n- **1-week \"halo\" / grace period** when grain comes out of the field (no charge)\n- After the halo lapses, storage charges accrue for the rest of the year\n- **Prorated by month** \u2014 partial months are charged proportionally, so timing a sale mid-month matters\n- **Rate trend: rising.** Realized rates climbed from ~2.2\u00a2/bu/mo through 2024 to ~3.2\u00a2/bu/mo in MY 2024-25. For the live working number, see `realized_storage_rates._working_rate_cents` in the advisor context bundle \u2014 recomputed from invoices on every bundle build, so it stays current as new sales settle.\n\n## Ritchie elevator \u2014 fall prepay option for inputs\n- Ritchie allows prepaying input bills in the fall to **lock in input prices** for the following season\n- Useful hedge against chemical/fertilizer price swings; needs cash availability in fall to take advantage\n\n## New Crop 2026 \u2014 pre-plant status\n- John is prepping equipment and inputs for planting, waiting on fields to dry out\n- John is concerned about all input costs rising, especially **diesel and fertilizer**\n- Illinois Farm Business Farm Management Association projects average corn and soybean prices will remain **below cost of production** \u2014 another tough profitability year expected\n\n## New Crop 2026 \u2014 Average Pricing Program (Ritchie elevator)\n- Program averages cash price between **April and July 2026** for corn and soybeans and buys at that average (reduces volatility risk)\n- Committed delivery from 2026 crop:\n  - **1,500 bu corn**\n  - **500 bu soybeans**\n\n**Why:** Jimmy tracks farm P&L and grain marketing decisions; these are the live facts that drive sale timing, storage costs, and cash-flow planning.\n\n**How to apply:** When Jimmy asks about bushels sold/remaining, cash position, marketing plans, or the 2026 crop, use these numbers as the baseline. The Ritchie elevator Average Pricing Program is already locked in for 2,000 bu combined \u2014 treat that as committed when reasoning about remaining bushels to market. Note the incremental sale schedule in the project file assumes 33,000 bu corn / 6,700 bu soy production targets \u2014 update targets if Jimmy revises acreage.",
+    "project_freis_farm_books": "The full books-and-records xlsx + JSON live at `data/Finances/Freis_Farm_Books_and_Records.xlsx` (and `.json`). Re-built by `outputs/books/build_books_v3.py`. 14 sheets including Ledger, Annual P&L (Schedule-F-style), By Year, Crop Year, Yields History (2017-2025), Prices History (2018-2025), Headline Metrics, Cattle/Hay/Inputs by Year, Storage State, Capex Backlog, Calendar Anchors, Sources.\n\n**Why:** Augments the live Akron grain feed (which only starts July 2024) with the user's own records back to MY 2021-2022. The MY 2022-2023 sales DATA GAP from earlier was filled when the user dropped Farm 2023.xlsx, FARM 2024.xlsx, Farm 2025.xlsx, Farm Yields.xlsx, and a new root-level Harvest to Sale.xlsx into `data/`.\n\n**How to apply:**\n- The Ledger has 132 transactions: per-sale grain detail, per-year aggregated input categories, capex events.\n- Lifetime grain net since MY 2021-2022 is roughly $432k, lifetime farm net (income minus all outflow incl. capex) is ~$50k.\n- 2024 and 2025 were both net-loss years on a calendar basis (~-$44k and ~-$33k) due to lower grain prices + heavy capex (Can-Am UTV $21,565 in 2024; insulation $11,784 + landscaping $11,925 + water line $2,500 in 2025).\n- Multi-buyer reality: grain sells across **Akron/Ritchie** AND **Posen Coop (PC) / FS Grain** \u2014 two elevators. Older books (2024+) split bushels between the two. The dashboard should not assume Ritchie-only.\n- The user's own per-year P&L summaries treat sales by inventory origin (MY-based), not strictly by calendar date \u2014 e.g., late-Oct-2025 PC sales of MY 2023-2024 inventory get counted in 2024 P&L. The xlsx Annual P&L sheet uses calendar-date (SUMIFS by date), so totals will differ from the user's hand-rolled summaries by the spillover sales. The Crop Year sheet handles the MY view.\n- 2025 added new income lines: USDA/FSA payments ($6,771), private grant for cattle ($3,000 \u2014 funded the water line and partial fences), FS patronage + stock redemption ($508).\n- Hay sales in the books are tiny ($349 in 2023, $955 in 2024, $0 in 2025) because most production is fed to the herd in-house. The \"~4,000 bales \u00d7 $5/bale\" memory was about gross production, not sales.\n- 2023 expense categorization splits Fertilizer + Herbicides separately; 2024 onwards combines them as \"Chemicals\". Per-acre operating cost lands ~$529/ac all-in for 2025 (243 ac).\n- 9-year yield trend (2017-2025): corn 168-227 bu/ac (avg ~211 ex-2019 weather year), beans 49-72 bu/ac. 2025 was a big bean year (72.8 bu/ac); 2024 was a bad bean year (49.75).\n- 8-year price trend (2018-2025): corn $3.37-$6.77, beans $8.72-$15.70. Cycle peak in 2022.\n\n**What's still missing:** Pre-2023 input categories (no Farm 2021/2022 books found yet). 2024 cattle per-animal detail (only annual rollup $2,061). Year-end storage snapshots for 2023/2024/2025 (only 2026-04-28 live snapshot). Schedule-F PDFs filed with the IRS would close any remaining input gaps if the user has them."
   },
   "recent_alerts_7d": []
 }

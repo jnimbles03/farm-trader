@@ -1,13 +1,24 @@
-name: Build advisor context bundle
+name: Refresh advisor bundle (live Ritchie overlay)
 
-# Rebuilds advisor/advisor_context.json from the books + memory + recent
-# alerts every morning at 6am CT (11:00 UTC) on weekdays, and copies the
-# result into docs/advisor/ so GitHub Pages serves it. The Worker's
-# /advisor route fetches that URL on demand (cached 5 min).
+# Daily 6am CT (11:00 UTC), Mon–Fri.
 #
-# Manual run available via workflow_dispatch — useful after editing
-# memory files or after a fresh Ledger row lands in
-# Freis_Farm_Books_and_Records.xlsx.
+# What this workflow does TODAY:
+#   1. refresh_ritchie.py  — log into Bushel via the portal-mediated flow,
+#                             pull commodity-balances + bids, write
+#                             docs/advisor/ritchie_live.json.
+#   2. patch_advisor_bundle.py — overlay that sidecar onto the existing
+#                                 docs/advisor/advisor_context.json by
+#                                 appending a same-day storage_state row.
+#   3. Commit + push if anything changed.
+#
+# What this workflow does NOT do:
+#   - Rebuild the bundle from scratch. The xlsx-driven advisor/context_builder.py
+#     still runs on Jimmy's Mac when books change; that produces the canonical
+#     advisor_context.json which is committed manually. This workflow only
+#     refreshes the live Ritchie slice on top of whatever the last commit shipped.
+#
+# Manual run available via workflow_dispatch — useful when you want to pull
+# fresh Ritchie data on demand without waiting for 6am.
 
 on:
   schedule:
@@ -22,18 +33,12 @@ permissions:
   contents: write
 
 jobs:
-  build:
+  refresh:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v5
         with:
-          # Need the canonical books file path; if it lives outside this
-          # repo (it does — under data/Finances/), the workflow needs
-          # access to that data. Today the books live in the parent
-          # checkout of the operator's machine; the GHA-side fallback
-          # is to read the last-published bundle as a no-op. When the
-          # books move into the repo, drop this fallback.
           fetch-depth: 1
 
       - uses: actions/setup-python@v6
@@ -43,30 +48,41 @@ jobs:
 
       - name: Install deps
         run: |
-          pip install openpyxl
+          pip install requests beautifulsoup4 lxml python-dotenv
 
-      - name: Build context bundle (if books available)
-        id: build
+      - name: Refresh live Ritchie data (Bushel)
+        id: refresh
+        env:
+          BUSHEL_USER: ${{ secrets.BUSHEL_USER }}
+          BUSHEL_PASS: ${{ secrets.BUSHEL_PASS }}
         run: |
-          if [ -f "data/Finances/Freis_Farm_Books_and_Records.xlsx" ]; then
-            python3 advisor/context_builder.py
-            cp advisor/advisor_context.json docs/advisor/advisor_context.json
-            echo "built=true" >> "$GITHUB_OUTPUT"
+          if [ -z "${BUSHEL_USER:-}" ] || [ -z "${BUSHEL_PASS:-}" ]; then
+            echo "::warning::BUSHEL_USER / BUSHEL_PASS not set — skipping refresh."
+            echo "refreshed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          mkdir -p docs/advisor
+          if python3 refresh_ritchie.py; then
+            echo "refreshed=true" >> "$GITHUB_OUTPUT"
           else
-            echo "Books file not present in repo — skipping rebuild."
-            echo "Existing docs/advisor/advisor_context.json (if any) stays."
-            echo "built=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::refresh_ritchie.py exited non-zero — bundle stays unchanged."
+            echo "refreshed=false" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Patch bundle with live overlay
+        if: steps.refresh.outputs.refreshed == 'true'
+        run: |
+          python3 patch_advisor_bundle.py
+
       - name: Commit + push if changed
-        if: steps.build.outputs.built == 'true'
+        if: steps.refresh.outputs.refreshed == 'true'
         run: |
           git config user.name  "freis-farm-bot"
           git config user.email "bot@users.noreply.github.com"
-          git add docs/advisor/advisor_context.json advisor/advisor_context.json
+          git add docs/advisor/advisor_context.json docs/advisor/ritchie_live.json
           if git diff --cached --quiet; then
             echo "no changes to commit"
             exit 0
           fi
-          git commit -m "advisor-context: $(date -u +'%Y-%m-%dT%H:%MZ')"
+          git commit -m "ritchie-live: $(date -u +'%Y-%m-%dT%H:%MZ')"
           git push
