@@ -36,8 +36,11 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload entire repository
-          path: '.'
+          # Upload only the docs/ folder so files like docs/admin.html are
+          # served at /admin.html (matches the legacy "Deploy from branch /
+          # docs" Pages config). Uploading '.' caused docs/* files to land
+          # under /docs/* and 404 at the canonical URL.
+          path: 'docs'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5

@@ -1,0 +1,79 @@
+name: Refresh bushel.json (Akron live bids)
+
+# Re-scrapes the Akron / Ritchie portal and updates docs/bushel.json on
+# a 15-minute cadence during market hours. Keeps the dashboard's bid
+# feed AND the worker's /admin/inventory + reminder-cycle bid pulls
+# fresh without anyone having to run scrape_bushel.py by hand.
+#
+# Market hours coverage:
+#   13:00–21:00 UTC = 08:00–16:00 CDT (CBOT day session is 08:30–13:20 CT
+#   with cash bids continuing through afternoon). Mon–Fri only.
+#
+# Manual trigger via workflow_dispatch — useful right before a live
+# trade send to guarantee the freshest possible bid.
+
+on:
+  schedule:
+    - cron: "*/15 13-21 * * 1-5"
+  workflow_dispatch:
+
+concurrency:
+  group: refresh-bushel
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install deps
+        run: |
+          pip install httpx beautifulsoup4
+
+      - name: Scrape live bids
+        env:
+          BUSHEL_USER: ${{ secrets.BUSHEL_USER }}
+          BUSHEL_PASS: ${{ secrets.BUSHEL_PASS }}
+        run: |
+          if [ -z "$BUSHEL_USER" ] || [ -z "$BUSHEL_PASS" ]; then
+            echo "::warning::BUSHEL_USER / BUSHEL_PASS not set — cannot scrape, exiting clean."
+            exit 0
+          fi
+          # CI-friendly copy lives at scripts/scrape_bushel.py (output
+          # paths use HERE.parent / "docs" so it writes to docs/bushel.json).
+          if [ -f "scripts/scrape_bushel.py" ]; then
+            python3 scripts/scrape_bushel.py
+          else
+            echo "::warning::scripts/scrape_bushel.py not present — cannot refresh."
+            exit 0
+          fi
+
+      - name: Commit + push if changed
+        run: |
+          git config user.name  "freis-farm-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add docs/bushel.json docs/bushel_raw.json 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "No bid changes since last refresh."
+            exit 0
+          fi
+          # Brief commit message including the new corn/soy headline bids
+          summary=$(python3 -c "
+          import json
+          d = json.load(open('docs/bushel.json'))
+          c = d.get('bids', {}).get('corn',     {})
+          s = d.get('bids', {}).get('soybeans', {})
+          print(f\"corn \${c.get('price','?')} ({c.get('period','?')}), soy \${s.get('price','?')} ({s.get('period','?')})\")
+          ")
+          git commit -m "bushel-refresh: $summary @ $(date -u +'%Y-%m-%dT%H:%MZ')"
+          git push

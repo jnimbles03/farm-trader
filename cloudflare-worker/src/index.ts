@@ -196,6 +196,14 @@ export default {
     }
     return textbeltReply(req, env);
   },
+
+  // Cloudflare Cron Trigger — fires every minute (see [triggers] in
+  // wrangler.toml). Walks pending CTA runs and sends reminders to
+  // non-respondents with the freshest bid available. Replaces the
+  // local watch_for_dan.py / send_trade_orchestrate.py scripts.
+  async scheduled(_event: ScheduledEvent, env: Env, ctx: ExecutionContext): Promise<void> {
+    ctx.waitUntil(processReminders(env));
+  },
 };
 
 // ---------------------------------------------------------------------------
@@ -1235,7 +1243,15 @@ interface AdminRun {
   recipients:       RunRecipient[];
   required_phones:  string[];
   status:           "pending" | "quorum_met" | "rejected" | "complete" | "failed";
+  // Reminder tracking — populated by the scheduled() cron handler.
+  reminders_sent?:    number;
+  last_reminder_at?:  string;
 }
+
+// Reminder cron policy
+const REMINDER_FIRST_DELAY_MS = 5 * 60 * 1000;   // 5 min before first reminder
+const REMINDER_INTERVAL_MS    = 60 * 1000;       // 1 min between reminders
+const REMINDER_MAX_CYCLES     = 8;               // cap blast radius
 
 // ---------- token plumbing ----------
 
@@ -1749,13 +1765,149 @@ async function recordCtaReplyIfActive(env: Env, fromPhone: string, text: string)
   const requiredReplies = run.recipients.filter(r => requiredSet.has(r.phone) && r.replied_at);
   const anyRequiredNo   = requiredReplies.some(r => r.reply_norm === "no");
   const allRequiredReplied = requiredReplies.length === requiredSet.size && requiredSet.size > 0;
+  const wasPending = run.status === "pending";
+
   if (anyRequiredNo) {
     run.status = "rejected";
   } else if (allRequiredReplied) {
+    // Hit quorum — auto-fire the all-clear with a fresh bid. We do this
+    // inline (the inbound webhook is on the request path) so the all-clear
+    // SMS goes out before this function returns. ~1s of extra latency on
+    // the TextBelt webhook response is fine.
     run.status = "quorum_met";
+    await env.FARM_KV.put(KV_RUN_PREFIX + run.id, JSON.stringify(run));
+    if (wasPending) {  // only fire once
+      try {
+        await sendAllClear(env, run);
+        run.status = "complete";
+      } catch (e) {
+        console.error(`all-clear send failed for run ${run.id}: ${(e as Error).message}`);
+        // Leave status at quorum_met so the operator can retry manually.
+      }
+    }
   } // else stays pending
 
   await env.FARM_KV.put(KV_RUN_PREFIX + run.id, JSON.stringify(run));
+}
+
+// ---------- scheduled reminder cron ----------
+
+async function processReminders(env: Env): Promise<void> {
+  const runs = await loadRecentRuns(env, 25);
+  const now = Date.now();
+  for (const run of runs) {
+    if (run.status !== "pending") continue;
+    if (run.type !== "cta") continue;
+    if (run.mode !== "live") continue;
+
+    // Wait at least 5 min after creation before the first reminder.
+    const created = Date.parse(run.created_at);
+    if (!Number.isFinite(created)) continue;
+    if (now - created < REMINDER_FIRST_DELAY_MS) continue;
+
+    // Honor the 1-min interval after the previous reminder.
+    if (run.last_reminder_at) {
+      const last = Date.parse(run.last_reminder_at);
+      if (Number.isFinite(last) && now - last < REMINDER_INTERVAL_MS) continue;
+    }
+
+    // Hit the cap?
+    if ((run.reminders_sent ?? 0) >= REMINDER_MAX_CYCLES) continue;
+
+    // Who hasn't replied yet from the required quorum?
+    const requiredSet = new Set(run.required_phones);
+    const outstanding = run.recipients.filter(
+      r => requiredSet.has(r.phone) && !r.replied_at && r.sent_ok,
+    );
+    if (outstanding.length === 0) continue;  // shouldn't happen if status=pending, but defensive
+
+    await sendReminderCycle(env, run, outstanding);
+  }
+}
+
+async function sendReminderCycle(
+  env: Env,
+  run: AdminRun,
+  outstanding: RunRecipient[],
+): Promise<void> {
+  // Fresh bid for the trade's crop.
+  const crop = (run.trade?.crop || "soy").toLowerCase().startsWith("corn") ? "corn" : "soy";
+  const inv = await loadInventory(env);
+  const cropRow = inv.find(r => r.crop === crop);
+  const livePrice  = cropRow?.current_bid;
+  const livePeriod = cropRow?.bid_month || "";
+
+  const stillNeed = outstanding.map(r => (r.name || r.phone).split(" ")[0]).join(", ");
+  const bidStr = typeof livePrice === "number" ? `$${livePrice.toFixed(2)}` : "(no live quote)";
+  const bidMeta = livePeriod ? ` (${livePeriod} bid, Ritchie)` : "";
+
+  let nudge: string;
+  if (run.trade) {
+    const t = run.trade;
+    const tradeStr = `${t.bushels.toLocaleString()} bu ${crop === "corn" ? "corn" : "soybeans"} @ $${(t.target_price ?? 0).toFixed(2)}`;
+    nudge = `[LIVE | FARM] Still need: ${stillNeed}. Live ${crop === "corn" ? "corn" : "soy"}: ${bidStr}${bidMeta}. Trade still: ${tradeStr}. Reply Y/N.`;
+  } else {
+    nudge = `[LIVE | FARM] Still need: ${stillNeed}. Reply Y/N.`;
+  }
+
+  for (const r of outstanding) {
+    const sent = await sendTextBelt(env, r.phone, nudge);
+    if (!sent.ok) {
+      console.error(`reminder: textbelt failed for ${r.phone}: ${sent.error}`);
+    }
+  }
+
+  // Bookkeeping
+  run.reminders_sent    = (run.reminders_sent ?? 0) + 1;
+  run.last_reminder_at  = new Date().toISOString();
+  await env.FARM_KV.put(KV_RUN_PREFIX + run.id, JSON.stringify(run));
+  console.log(`reminder cycle ${run.reminders_sent}/${REMINDER_MAX_CYCLES} sent for run ${run.id} to ${outstanding.length} outstanding`);
+}
+
+// Auto-fire the all-clear SMS when a CTA hits quorum. Pulls a fresh bid
+// from bushel.json so the message reflects the live price at confirmation
+// time, not the price at send time. Only re-sends to recipients whose
+// initial SMS succeeded (sent_ok == true).
+async function sendAllClear(env: Env, run: AdminRun): Promise<void> {
+  // Fresh bid — use the trade's crop if specified, else default to soy.
+  const crop = (run.trade?.crop || "soy").toLowerCase().startsWith("corn") ? "corn" : "soy";
+  const inv = await loadInventory(env);
+  const cropRow = inv.find(r => r.crop === crop);
+  const livePrice  = cropRow?.current_bid;
+  const livePeriod = cropRow?.bid_month || "";
+
+  // First names of the required quorum, for "All confirmed (X, Y, Z)".
+  const requiredFirstNames = run.recipients
+    .filter(r => run.required_phones.includes(r.phone) && r.name)
+    .map(r => r.name.split(" ")[0])
+    .filter(Boolean)
+    .join(", ");
+
+  let msg: string;
+  if (run.trade) {
+    const t = run.trade;
+    const priceStr = typeof livePrice === "number"
+      ? `$${livePrice.toFixed(2)}`
+      : (typeof t.target_price === "number" ? `$${t.target_price.toFixed(2)}` : "limit");
+    const periodStr = livePeriod ? ` (${livePeriod} bid, Ritchie)` : ", Ritchie";
+    const cropLabel = crop === "corn" ? "corn" : "soybeans";
+    msg = `[LIVE | FARM] All confirmed${requiredFirstNames ? ` (${requiredFirstNames})` : ""}. Placing the order: ${t.bushels.toLocaleString()} bu ${cropLabel} @ ${priceStr} cash${periodStr}. Thanks all.`;
+  } else {
+    // Non-trade CTA (rare). Echo confirmation back.
+    msg = `[LIVE | FARM] All confirmed${requiredFirstNames ? ` (${requiredFirstNames})` : ""}. Thanks all.`;
+  }
+
+  // Send to every recipient who got the original (sent_ok=true). Skip
+  // failures so we don't spam someone TextBelt couldn't reach the first
+  // time.
+  for (const r of run.recipients) {
+    if (!r.sent_ok) continue;
+    const sent = await sendTextBelt(env, r.phone, msg);
+    if (!sent.ok) {
+      console.error(`all-clear: textbelt failed for ${r.phone}: ${sent.error}`);
+    }
+  }
+  console.log(`all-clear sent for run ${run.id} to ${run.recipients.filter(r => r.sent_ok).length} recipients`);
 }
 
 function normalizeYesNo(text: string): "yes" | "no" | null {

@@ -35,4 +35,10 @@ ADVISOR_CONTEXT_URL = "https://jnimbles03.github.io/farm-trader/advisor/advisor_
 #   npx wrangler deploy
 [[kv_namespaces]]
 binding = "FARM_KV"
-id      = "REPLACE_WITH_KV_ID_FROM_WRANGLER_CREATE"
+id      = "89ac203079404b90b032798eea908a05"
+
+# Cron Trigger — fires the worker's scheduled() handler every minute.
+# Drives reminder cycles for active CTA broadcasts. Free tier allows
+# up to 5 cron triggers per worker.
+[triggers]
+crons = ["* * * * *"]
