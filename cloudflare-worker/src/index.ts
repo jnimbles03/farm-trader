@@ -73,6 +73,29 @@ const KV_RECIPIENTS    = "admin:recipients:v1";   // [{name, phone, required}]
 const KV_RUNS_INDEX    = "admin:runs:index:v1";   // [run_id, ...] newest first, capped 200
 const KV_RUN_PREFIX    = "admin:run:";            // admin:run:<id> → Run JSON
 const KV_PHONE_RUN_IX  = "admin:phone-run:";      // admin:phone-run:<phone> → run_id of latest CTA they're on
+const KV_GROUPS        = "admin:groups:v1";       // [Group, ...]
+const KV_TEMPLATES     = "admin:templates:v1";    // [Template, ...]
+const KV_ALERTS_CFG    = "admin:alerts:config:v1";// AlertConfig
+
+// Default alert config — used if KV is empty. Matches the medium-threshold
+// values from the project memory (5¢ corn, 8¢ soy, 3% input, 6am-9pm CT).
+const DEFAULT_ALERT_CONFIG: AlertConfig = {
+  thresholds: {
+    corn_cents: 5,
+    soy_cents:  8,
+    input_pct:  3,
+  },
+  quiet_hours: {
+    start_hour: 21,  // 9pm CT
+    end_hour:   6,   // 6am CT
+    timezone:   "America/Chicago",
+  },
+  channels: {
+    grain: true,
+    input: true,
+  },
+  subscriber_phones: [],
+};
 
 // Auth token TTL — how long a logged-in browser stays unlocked.
 const AUTH_TTL_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
@@ -177,6 +200,15 @@ export default {
     }
     if (url.pathname === "/admin/recipients") {
       return adminRecipients(req, env);
+    }
+    if (url.pathname === "/admin/groups") {
+      return adminGroups(req, env);
+    }
+    if (url.pathname === "/admin/templates") {
+      return adminTemplates(req, env);
+    }
+    if (url.pathname === "/admin/alerts/config") {
+      return adminAlertsConfig(req, env);
     }
     if (url.pathname === "/admin/broadcast/start") {
       return adminBroadcastStart(req, env);
@@ -1219,6 +1251,48 @@ interface Recipient {
   required: boolean;         // for CTA quorum
 }
 
+interface Group {
+  id:           string;
+  name:         string;
+  members:      Array<{ phone: string; required: boolean }>;
+  created_at:   string;
+  updated_at:   string;
+}
+
+interface Template {
+  id:           string;
+  name:         string;
+  type:         "bulletin" | "cta";
+  body:         string;            // supports tokens like {bushels} {price} {crop}
+  default_group_id?: string;       // optional pre-selected group
+  trade_defaults?: {               // pre-fill for CTA trade picker
+    crop?:         string;
+    bushels?:      number;
+    target_price?: number;
+    delivery?:     string;
+  };
+  created_at:   string;
+  updated_at:   string;
+}
+
+interface AlertConfig {
+  thresholds: {
+    corn_cents: number;            // ¢/bu move that triggers a GRAIN alert
+    soy_cents:  number;
+    input_pct:  number;            // % move on input prices
+  };
+  quiet_hours: {
+    start_hour: number;            // hour of day in `timezone` after which we don't send (24h)
+    end_hour:   number;            // hour of day before which we don't send
+    timezone:   string;            // IANA tz, e.g. "America/Chicago"
+  };
+  channels: {
+    grain: boolean;
+    input: boolean;
+  };
+  subscriber_phones: string[];     // who gets the alerts
+}
+
 interface RunRecipient extends Recipient {
   sent_ok:     boolean;
   sent_error?: string;
@@ -1356,9 +1430,14 @@ async function adminState(req: Request, env: Env): Promise<Response> {
   const auth = await requireAdmin(req, env);
   if (!auth.ok) return auth.resp;
 
-  const recipients = await loadRecipients(env);
-  const runs       = await loadRecentRuns(env, 25);
-  const inventory  = await loadInventory(env);
+  const [recipients, runs, inventory, groups, templates, alertsConfig] = await Promise.all([
+    loadRecipients(env),
+    loadRecentRuns(env, 25),
+    loadInventory(env),
+    loadGroups(env),
+    loadTemplates(env),
+    loadAlertConfig(env),
+  ]);
 
   return jsonResponse({
     ok:           true,
@@ -1366,7 +1445,166 @@ async function adminState(req: Request, env: Env): Promise<Response> {
     recipients,
     recent_runs:  runs,
     inventory,
+    groups,
+    templates,
+    alerts_config: alertsConfig,
   });
+}
+
+// ---------- /admin/groups GET (via state) + POST (full overwrite) ----------
+
+async function adminGroups(req: Request, env: Env): Promise<Response> {
+  const auth = await requireAdmin(req, env);
+  if (!auth.ok) return auth.resp;
+  if (req.method !== "POST") {
+    return jsonResponse({ ok: false, error: "POST only — read groups via /admin/state" }, { status: 405 });
+  }
+  let body: { groups?: Group[] };
+  try { body = await req.json(); } catch {
+    return jsonResponse({ ok: false, error: "Bad JSON" }, { status: 400 });
+  }
+  if (!Array.isArray(body.groups)) {
+    return jsonResponse({ ok: false, error: "groups must be array" }, { status: 400 });
+  }
+  const now = new Date().toISOString();
+  const cleaned: Group[] = body.groups.map(g => ({
+    id:         (g.id && /^[a-z0-9_-]+$/i.test(g.id)) ? g.id : "g_" + randomHex(4),
+    name:       String(g?.name || "").trim().slice(0, 80) || "Untitled",
+    members:    Array.isArray(g?.members) ? g.members
+                  .map(m => ({
+                    phone:    normalizePhone(String(m?.phone || "")),
+                    required: !!m?.required,
+                  }))
+                  .filter(m => m.phone)
+                : [],
+    created_at: g?.created_at || now,
+    updated_at: now,
+  }));
+  await env.FARM_KV.put(KV_GROUPS, JSON.stringify(cleaned));
+  return jsonResponse({ ok: true, groups: cleaned });
+}
+
+async function loadGroups(env: Env): Promise<Group[]> {
+  const raw = await env.FARM_KV.get(KV_GROUPS);
+  if (!raw) return [];
+  try { const a = JSON.parse(raw); return Array.isArray(a) ? a : []; } catch { return []; }
+}
+
+// ---------- /admin/templates ----------
+
+async function adminTemplates(req: Request, env: Env): Promise<Response> {
+  const auth = await requireAdmin(req, env);
+  if (!auth.ok) return auth.resp;
+  if (req.method !== "POST") {
+    return jsonResponse({ ok: false, error: "POST only — read templates via /admin/state" }, { status: 405 });
+  }
+  let body: { templates?: Template[] };
+  try { body = await req.json(); } catch {
+    return jsonResponse({ ok: false, error: "Bad JSON" }, { status: 400 });
+  }
+  if (!Array.isArray(body.templates)) {
+    return jsonResponse({ ok: false, error: "templates must be array" }, { status: 400 });
+  }
+  const now = new Date().toISOString();
+  const cleaned: Template[] = body.templates.map(t => ({
+    id:                (t.id && /^[a-z0-9_-]+$/i.test(t.id)) ? t.id : "t_" + randomHex(4),
+    name:              String(t?.name || "").trim().slice(0, 80) || "Untitled",
+    type:              t?.type === "cta" ? "cta" : "bulletin",
+    body:              String(t?.body || "").slice(0, 480),
+    default_group_id:  t?.default_group_id ? String(t.default_group_id) : undefined,
+    trade_defaults:    t?.trade_defaults ? {
+      crop:         t.trade_defaults.crop ? String(t.trade_defaults.crop) : undefined,
+      bushels:      t.trade_defaults.bushels !== undefined ? Number(t.trade_defaults.bushels) : undefined,
+      target_price: t.trade_defaults.target_price !== undefined ? Number(t.trade_defaults.target_price) : undefined,
+      delivery:     t.trade_defaults.delivery ? String(t.trade_defaults.delivery) : undefined,
+    } : undefined,
+    created_at:        t?.created_at || now,
+    updated_at:        now,
+  }));
+  await env.FARM_KV.put(KV_TEMPLATES, JSON.stringify(cleaned));
+  return jsonResponse({ ok: true, templates: cleaned });
+}
+
+async function loadTemplates(env: Env): Promise<Template[]> {
+  const raw = await env.FARM_KV.get(KV_TEMPLATES);
+  if (!raw) return [];
+  try { const a = JSON.parse(raw); return Array.isArray(a) ? a : []; } catch { return []; }
+}
+
+// ---------- /admin/alerts/config ----------
+
+async function adminAlertsConfig(req: Request, env: Env): Promise<Response> {
+  const auth = await requireAdmin(req, env);
+  if (!auth.ok) return auth.resp;
+  if (req.method !== "POST") {
+    return jsonResponse({ ok: false, error: "POST only — read via /admin/state" }, { status: 405 });
+  }
+  let body: { config?: AlertConfig };
+  try { body = await req.json(); } catch {
+    return jsonResponse({ ok: false, error: "Bad JSON" }, { status: 400 });
+  }
+  const c = body.config;
+  if (!c || typeof c !== "object") {
+    return jsonResponse({ ok: false, error: "config required" }, { status: 400 });
+  }
+  // Sanitize / clamp
+  const cleaned: AlertConfig = {
+    thresholds: {
+      corn_cents: clampNumber(c.thresholds?.corn_cents, 0, 100, DEFAULT_ALERT_CONFIG.thresholds.corn_cents),
+      soy_cents:  clampNumber(c.thresholds?.soy_cents,  0, 100, DEFAULT_ALERT_CONFIG.thresholds.soy_cents),
+      input_pct:  clampNumber(c.thresholds?.input_pct,  0, 100, DEFAULT_ALERT_CONFIG.thresholds.input_pct),
+    },
+    quiet_hours: {
+      start_hour: clampNumber(c.quiet_hours?.start_hour, 0, 23, DEFAULT_ALERT_CONFIG.quiet_hours.start_hour),
+      end_hour:   clampNumber(c.quiet_hours?.end_hour,   0, 23, DEFAULT_ALERT_CONFIG.quiet_hours.end_hour),
+      timezone:   String(c.quiet_hours?.timezone || DEFAULT_ALERT_CONFIG.quiet_hours.timezone),
+    },
+    channels: {
+      grain: !!c.channels?.grain,
+      input: !!c.channels?.input,
+    },
+    subscriber_phones: Array.isArray(c.subscriber_phones)
+      ? c.subscriber_phones.map(p => normalizePhone(String(p))).filter(p => p.length > 0)
+      : [],
+  };
+  await env.FARM_KV.put(KV_ALERTS_CFG, JSON.stringify(cleaned));
+
+  // Mirror to git as audit log (so the alert scripts can read from it on cron).
+  try {
+    await fireAlertConfigAudit(env, cleaned);
+  } catch (e) {
+    console.error(`alerts-config audit dispatch failed: ${(e as Error).message}`);
+  }
+
+  return jsonResponse({ ok: true, config: cleaned });
+}
+
+async function loadAlertConfig(env: Env): Promise<AlertConfig> {
+  const raw = await env.FARM_KV.get(KV_ALERTS_CFG);
+  if (!raw) return DEFAULT_ALERT_CONFIG;
+  try { return JSON.parse(raw) as AlertConfig; } catch { return DEFAULT_ALERT_CONFIG; }
+}
+
+async function fireAlertConfigAudit(env: Env, config: AlertConfig): Promise<void> {
+  await fetch(`https://api.github.com/repos/${env.GITHUB_REPO}/dispatches`, {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${env.GITHUB_TOKEN}`,
+      "Accept":        "application/vnd.github+json",
+      "Content-Type":  "application/json",
+      "User-Agent":    "freis-farm-admin-worker",
+    },
+    body: JSON.stringify({
+      event_type: "alerts_config_update",
+      client_payload: { config, updated_at: new Date().toISOString() },
+    }),
+  });
+}
+
+function clampNumber(raw: unknown, min: number, max: number, fallback: number): number {
+  const n = Number(raw);
+  if (!Number.isFinite(n)) return fallback;
+  return Math.max(min, Math.min(max, n));
 }
 
 // ---------- /admin/recipients — GET (via state) and POST (save) ----------

@@ -1,0 +1,80 @@
+name: Mirror alerts config to git
+
+# Cloudflare Worker fires repository_dispatch event_type=alerts_config_update
+# whenever the admin saves new news-alert thresholds via the dashboard.
+# This workflow writes the new config to data/alert_config.json so the
+# existing usda_alerts.py / news pipeline can read from it on cron.
+#
+# KV (admin:alerts:config:v1) remains the live source-of-truth for the
+# admin UI. This file is for the alert scripts running in CI.
+
+on:
+  repository_dispatch:
+    types: [alerts_config_update]
+
+concurrency:
+  group: alerts-config-audit
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Write alert_config.json from dispatch payload
+        env:
+          CONFIG_JSON: ${{ toJson(github.event.client_payload.config) }}
+          UPDATED_AT:  ${{ github.event.client_payload.updated_at }}
+        run: |
+          mkdir -p data
+          python3 - <<'PY'
+          import json, os, datetime
+          config = json.loads(os.environ.get("CONFIG_JSON") or "{}")
+          updated_at = os.environ.get("UPDATED_AT") or datetime.datetime.utcnow().isoformat() + "Z"
+          payload = {
+              "_doc": (
+                  "Audit mirror of news alert config. Live source-of-truth "
+                  "is Cloudflare KV (admin:alerts:config:v1). The "
+                  "alerts-config-audit workflow rewrites this file on "
+                  "every save through the admin dashboard. usda_alerts.py "
+                  "and other alert scripts should read thresholds + "
+                  "subscriber list from here."
+              ),
+              "updated_at": updated_at,
+              "config": config,
+          }
+          with open("data/alert_config.json", "w") as f:
+              json.dump(payload, f, indent=2, sort_keys=False)
+              f.write("\n")
+          PY
+
+      - name: Commit + push if changed
+        run: |
+          git config user.name  "freis-farm-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add data/alert_config.json
+          if git diff --cached --quiet; then
+            echo "no changes — KV save was a no-op"
+            exit 0
+          fi
+          summary=$(python3 -c "
+          import json
+          d = json.load(open('data/alert_config.json'))
+          c = d.get('config', {})
+          t = c.get('thresholds', {})
+          q = c.get('quiet_hours', {})
+          subs = c.get('subscriber_phones', [])
+          print(f\"thresholds: corn ${t.get('corn_cents')}c, soy ${t.get('soy_cents')}c, input {t.get('input_pct')}%\")
+          print(f\"quiet: {q.get('start_hour')}h-{q.get('end_hour')}h {q.get('timezone','?')}\")
+          print(f\"subscribers: {len(subs)}\")
+          ")
+          git commit -m "alerts-config: updated $(date -u +'%Y-%m-%dT%H:%MZ')
+
+          $summary
+          "
+          git push

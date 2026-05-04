@@ -625,10 +625,214 @@ footer.shell-foot {
 }
 .confirm-card .row { display: flex; gap: 10px; justify-content: center; margin-top: 14px; }
 
+/* ---------- v3 control-tower additions ---------- */
+
+/* Active CTAs panel — top of page, always visible when there's an active CTA */
+.adm-active {
+  border-left: 3px solid var(--sage-deep);
+  margin-bottom: 18px;
+}
+.adm-active.empty { display: none; }
+.adm-active h3 { display: flex; align-items: center; gap: 10px; }
+.live-dot {
+  display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+  background: var(--sage); animation: pulse 1.6s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 var(--sage-pale); }
+  50%      { opacity: 0.4; box-shadow: 0 0 0 6px transparent; }
+}
+.active-runs-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.active-run {
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px 14px;
+  cursor: pointer;
+}
+.active-run:hover { border-color: var(--sage-deep); }
+.active-run-head {
+  display: flex; align-items: baseline; gap: 12px;
+  margin-bottom: 8px;
+}
+.active-run-trade {
+  font-family: var(--font-display); font-size: 16px; font-weight: 500;
+  color: var(--ink-2); flex: 1;
+}
+.active-run-meta {
+  font-family: var(--font-mono); font-size: 10px;
+  text-transform: uppercase; letter-spacing: 0.6px;
+  color: var(--dust);
+}
+.active-run-quorum {
+  display: flex; align-items: center; gap: 14px;
+  font-size: 12px;
+}
+.quorum-pill {
+  font-family: var(--font-mono); font-size: 11px;
+  padding: 3px 8px; border-radius: 3px;
+  background: var(--sage-pale); color: var(--sage-deep);
+}
+.quorum-pill.full { background: var(--sage-deep); color: var(--cream); }
+.quorum-pill.rejected { background: #FBEEEA; color: var(--danger); }
+.active-run-names { display: flex; gap: 6px; flex-wrap: wrap; }
+.active-run-names .name {
+  padding: 2px 8px; border-radius: 999px;
+  border: 1px solid var(--rule);
+  font-size: 11px; color: var(--slate);
+  background: var(--paper);
+}
+.active-run-names .name.replied {
+  background: var(--sage-pale); color: var(--sage-deep); border-color: var(--sage-deep);
+}
+.active-run-names .name.replied::before { content: "✓ "; }
+.active-run-names .name.no { background: #FBEEEA; color: var(--danger); border-color: var(--danger); }
+.active-run-names .name.no::before { content: "✗ "; }
+.active-run-foot {
+  display: flex; justify-content: space-between; margin-top: 8px;
+  font-family: var(--font-mono); font-size: 10px; color: var(--dust);
+  text-transform: uppercase; letter-spacing: 0.6px;
+}
+
+/* Compose row additions: group + template selectors */
+.compose-row.split { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.compose-row.split > div { display: flex; gap: 8px; align-items: center; }
+.compose-row select {
+  padding: 6px 10px;
+  border: 1px solid var(--border); border-radius: 3px;
+  background: var(--cream); color: var(--ink-2);
+  font-family: var(--font-text); font-size: 12px;
+  flex: 1;
+}
+.compose-row select:focus { border-color: var(--sage-deep); outline: 0; }
+
+/* Tabs */
+.adm-tabs {
+  display: flex; gap: 2px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px; margin-top: 24px;
+}
+.adm-tabs button {
+  background: transparent; border: 0;
+  padding: 10px 18px;
+  font-family: var(--font-text); font-size: 12px; font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.4px;
+  color: var(--slate); cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+.adm-tabs button:hover { color: var(--ink-2); }
+.adm-tabs button.here {
+  color: var(--ink-2);
+  border-bottom-color: var(--sage-deep);
+}
+.tab-pane { display: none; }
+.tab-pane.here { display: block; }
+
+/* Groups + templates lists (cards inside the tab) */
+.entity-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+}
+.entity-card {
+  background: var(--cream);
+  border: 1px solid var(--border); border-radius: 6px;
+  padding: 12px 14px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.entity-card.editing { border-color: var(--sage-deep); background: var(--paper); }
+.entity-card .entity-name {
+  font-family: var(--font-display); font-size: 16px; font-weight: 500;
+  color: var(--ink-2); border: 0; background: transparent; padding: 0;
+  outline: none; width: 100%;
+}
+.entity-card .entity-name:focus { border-bottom: 1px solid var(--sage-deep); }
+.entity-card .entity-meta {
+  font-family: var(--font-mono); font-size: 10px;
+  color: var(--dust); text-transform: uppercase; letter-spacing: 0.5px;
+}
+.entity-card .entity-actions { display: flex; gap: 6px; margin-top: auto; padding-top: 8px; }
+.entity-card .entity-actions button {
+  font-family: var(--font-text); font-size: 11px;
+  padding: 4px 10px; border-radius: 3px;
+  border: 1px solid var(--rule); background: var(--paper);
+  color: var(--slate); cursor: pointer;
+}
+.entity-card .entity-actions button:hover { color: var(--ink-2); border-color: var(--sage-deep); }
+.entity-card .entity-actions button.danger:hover { color: var(--danger); border-color: var(--danger); }
+
+/* Group member chips */
+.group-members { display: flex; flex-wrap: wrap; gap: 4px; }
+.group-member-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 8px; border-radius: 999px;
+  background: var(--paper-2);
+  font-size: 11px; color: var(--ink);
+}
+.group-member-chip.required { background: var(--sage-pale); color: var(--sage-deep); }
+.group-member-chip .star { font-size: 9px; }
+
+/* Template body preview */
+.template-body {
+  background: var(--paper); border: 1px solid var(--border); border-radius: 3px;
+  padding: 8px 10px; font-family: var(--font-mono); font-size: 11px;
+  color: var(--slate); white-space: pre-wrap;
+  max-height: 80px; overflow: hidden;
+}
+
+/* Editor row in groups/templates */
+.editor-row { display: grid; grid-template-columns: 90px 1fr; gap: 8px 14px; align-items: center; margin-bottom: 8px; }
+.editor-row label { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--dust); }
+.editor-row input, .editor-row select, .editor-row textarea {
+  padding: 6px 10px;
+  border: 1px solid var(--border); border-radius: 3px;
+  background: var(--cream); color: var(--ink-2);
+  font-family: var(--font-text); font-size: 13px;
+}
+.editor-row textarea { font-family: var(--font-mono); font-size: 12px; min-height: 80px; resize: vertical; }
+.editor-row input:focus, .editor-row select:focus, .editor-row textarea:focus {
+  border-color: var(--sage-deep); outline: 0;
+}
+.editor-checkbox-list {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 4px 12px;
+  font-family: var(--font-text); font-size: 12px;
+}
+.editor-checkbox-list label {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--font-text); font-size: 12px; color: var(--ink);
+  text-transform: none; letter-spacing: normal;
+}
+.editor-checkbox-list label .req-toggle {
+  margin-left: 8px; font-size: 10px; color: var(--slate);
+  cursor: pointer; padding: 1px 6px; border-radius: 999px;
+  border: 1px solid var(--rule); background: transparent;
+}
+.editor-checkbox-list label .req-toggle.on {
+  background: var(--sage-pale); color: var(--sage-deep); border-color: var(--sage-deep);
+}
+
+/* Alerts config */
+.alerts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.alerts-card {
+  background: var(--cream); border: 1px solid var(--border); border-radius: 6px;
+  padding: 14px 16px;
+}
+.alerts-card h4 {
+  font-family: var(--font-display); font-weight: 500;
+  font-size: 14px; color: var(--ink-2); margin: 0 0 10px;
+}
+.threshold-row { display: grid; grid-template-columns: 100px 1fr 60px; gap: 10px; align-items: center; margin-bottom: 8px; font-family: var(--font-mono); font-size: 12px; }
+.threshold-row .lbl { color: var(--dust); text-transform: uppercase; font-size: 10px; letter-spacing: 0.5px; }
+.threshold-row input[type="range"] { width: 100%; }
+.threshold-row .val { text-align: right; color: var(--ink-2); font-weight: 500; }
+
 @media (max-width: 980px) {
   .adm-grid { grid-template-columns: 1fr; }
   .recip-list { grid-template-columns: 1fr; }
   .trade-row { grid-template-columns: 1fr 1fr; }
+  .compose-row.split { grid-template-columns: 1fr; }
+  .alerts-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 700px) {
   .shell-nav { padding: 12px 16px; gap: 12px; flex-wrap: wrap; }
@@ -1030,106 +1234,214 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
     </div>
   </div>
 
-  <div class="adm-grid">
+  <!-- Active CTAs control tower (top, always visible when there's a pending CTA) -->
+  <section class="adm-card adm-active empty" id="active-card">
+    <h3>Active CTAs <span class="live-dot" title="Live — polling every 5s"></span></h3>
+    <p class="adm-card-tip">Pending broadcasts where required recipients haven't all replied. Click for full per-recipient state.</p>
+    <ul class="active-runs-list" id="active-runs"></ul>
+  </section>
 
-    <!-- Composer -->
-    <section class="adm-card">
-      <h3>Compose broadcast</h3>
-      <p class="adm-card-tip">Bulletin = one-way news. CTA = trade confirmation requiring a Y/N quorum from required recipients.</p>
+  <!-- Composer -->
+  <section class="adm-card">
+    <h3>Compose broadcast</h3>
+    <p class="adm-card-tip">Pick a saved group or template, or write fresh. Bulletin = one-way news. CTA = needs Y/N quorum.</p>
 
-      <div class="compose-row">
-        <label>Type</label>
-        <div class="compose-radios" id="type-toggle">
-          <button type="button" class="on" data-type="bulletin">Bulletin</button>
-          <button type="button"           data-type="cta">CTA</button>
+    <div class="compose-row split">
+      <div>
+        <label>Group</label>
+        <select id="group-pick">
+          <option value="">— Custom (pick recipients below) —</option>
+        </select>
+      </div>
+      <div>
+        <label>Template</label>
+        <select id="template-pick">
+          <option value="">— Custom (write fresh below) —</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="compose-row">
+      <label>Type</label>
+      <div class="compose-radios" id="type-toggle">
+        <button type="button" class="on" data-type="bulletin">Bulletin</button>
+        <button type="button"           data-type="cta">CTA</button>
+      </div>
+    </div>
+
+    <textarea class="compose-text" id="compose-text"
+              placeholder="What do you want them to know? (e.g. 'Heads up: May corn closed +12¢ today on the WASDE surprise.')"
+              maxlength="400"></textarea>
+    <div class="compose-meta">
+      <span id="char-count">0 / 400</span>
+      <span id="seg-count">~ 1 SMS segment</span>
+    </div>
+
+    <!-- Trade picker (CTA only) -->
+    <div class="trade-picker" id="trade-picker" hidden>
+      <div class="trade-row">
+        <label for="t-crop">Crop</label>
+        <select id="t-crop">
+          <option value="corn">Corn</option>
+          <option value="soy">Soy</option>
+        </select>
+        <label for="t-bushels">Bushels</label>
+        <input id="t-bushels" type="number" min="0" step="50" placeholder="1000" />
+      </div>
+      <div class="trade-cap" id="t-cap">On hand: <b>—</b></div>
+
+      <div class="trade-row">
+        <label for="t-price">Target $</label>
+        <input id="t-price" type="number" min="0" step="0.01" placeholder="4.45" />
+        <label for="t-delivery">Delivery</label>
+        <input id="t-delivery" type="text" placeholder="Cash · May" />
+      </div>
+      <div class="trade-cap" id="t-bid">Current bid: <b>—</b></div>
+    </div>
+
+    <!-- Recipient picker -->
+    <div class="recip-picker">
+      <div class="recip-picker-head">
+        <span>Recipients</span>
+        <a id="pick-all">Select all</a>
+        <a id="pick-required">Required only</a>
+        <a id="pick-none">Clear</a>
+      </div>
+      <div class="recip-list" id="recip-list"></div>
+    </div>
+
+    <!-- Send -->
+    <div class="send-block">
+      <div class="send-summary" id="send-summary">Choose Bulletin or CTA, write a message, pick recipients.</div>
+      <button class="btn primary" id="send-btn" disabled>Send Test</button>
+    </div>
+    <div id="send-err" style="margin-top:8px;color:var(--danger);font-family:var(--font-mono);font-size:11px;min-height:14px;"></div>
+  </section>
+
+  <!-- Tabs: management sections -->
+  <nav class="adm-tabs" role="tablist">
+    <button type="button" class="here" data-tab="recipients">Recipients</button>
+    <button type="button"               data-tab="groups">Groups</button>
+    <button type="button"               data-tab="templates">Templates</button>
+    <button type="button"               data-tab="alerts">News alerts</button>
+    <button type="button"               data-tab="history">History</button>
+  </nav>
+
+  <!-- Tab: Recipients -->
+  <section class="adm-card tab-pane here" data-tabpane="recipients">
+    <h3>Recipients roster</h3>
+    <p class="adm-card-tip">★ marks required-quorum members (Dan, Susan, Maryann). They can't be removed; phone is editable. Add/remove anyone else as optional.</p>
+    <table class="recipients">
+      <thead>
+        <tr>
+          <th style="width:30%;">Name</th>
+          <th style="width:35%;">Phone</th>
+          <th class="req-cell">Required</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="recip-tbody"></tbody>
+    </table>
+    <div class="adm-row-actions">
+      <button type="button" class="btn" id="recip-add">+ Add person</button>
+      <button type="button" class="btn primary" id="recip-save">Save roster</button>
+      <span class="adm-toast" id="recip-toast"></span>
+    </div>
+  </section>
+
+  <!-- Tab: Groups -->
+  <section class="adm-card tab-pane" data-tabpane="groups">
+    <h3>Groups</h3>
+    <p class="adm-card-tip">Save reusable recipient lists — "Trade Quorum 3", "Hay Buyers", "Cattle Buyers". Pick one in the composer instead of ticking checkboxes every time.</p>
+    <div class="entity-grid" id="groups-grid"></div>
+    <div class="adm-row-actions">
+      <button type="button" class="btn" id="group-add">+ New group</button>
+      <button type="button" class="btn primary" id="groups-save">Save all groups</button>
+      <span class="adm-toast" id="groups-toast"></span>
+    </div>
+  </section>
+
+  <!-- Tab: Templates -->
+  <section class="adm-card tab-pane" data-tabpane="templates">
+    <h3>Templates</h3>
+    <p class="adm-card-tip">Common message bodies — "Sell beans live", "Buy contract corn". Pick one in the composer to skip retyping.</p>
+    <div class="entity-grid" id="templates-grid"></div>
+    <div class="adm-row-actions">
+      <button type="button" class="btn" id="template-add">+ New template</button>
+      <button type="button" class="btn primary" id="templates-save">Save all templates</button>
+      <span class="adm-toast" id="templates-toast"></span>
+    </div>
+  </section>
+
+  <!-- Tab: News alerts -->
+  <section class="adm-card tab-pane" data-tabpane="alerts">
+    <h3>News alert config</h3>
+    <p class="adm-card-tip">Thresholds + quiet hours + subscriber list for grain/input news SMS.</p>
+    <div class="alerts-grid">
+      <div class="alerts-card">
+        <h4>Thresholds</h4>
+        <div class="threshold-row">
+          <span class="lbl">Corn ¢</span>
+          <input type="range" id="th-corn" min="1" max="20" step="1" />
+          <span class="val" id="th-corn-val">5</span>
+        </div>
+        <div class="threshold-row">
+          <span class="lbl">Soy ¢</span>
+          <input type="range" id="th-soy" min="1" max="30" step="1" />
+          <span class="val" id="th-soy-val">8</span>
+        </div>
+        <div class="threshold-row">
+          <span class="lbl">Input %</span>
+          <input type="range" id="th-input" min="0.5" max="10" step="0.5" />
+          <span class="val" id="th-input-val">3</span>
         </div>
       </div>
-
-      <textarea class="compose-text" id="compose-text"
-                placeholder="What do you want them to know? (e.g. 'Heads up: May corn closed +12¢ today on the WASDE surprise.')"
-                maxlength="400"></textarea>
-      <div class="compose-meta">
-        <span id="char-count">0 / 400</span>
-        <span id="seg-count">~ 1 SMS segment</span>
-      </div>
-
-      <!-- Trade picker (CTA only) -->
-      <div class="trade-picker" id="trade-picker" hidden>
-        <div class="trade-row">
-          <label for="t-crop">Crop</label>
-          <select id="t-crop">
-            <option value="corn">Corn</option>
-            <option value="soy">Soy</option>
-          </select>
-          <label for="t-bushels">Bushels</label>
-          <input id="t-bushels" type="number" min="0" step="50" placeholder="1000" />
+      <div class="alerts-card">
+        <h4>Quiet hours (CT)</h4>
+        <div class="threshold-row">
+          <span class="lbl">Quiet from</span>
+          <input type="range" id="th-quiet-start" min="0" max="23" step="1" />
+          <span class="val" id="th-quiet-start-val">21</span>
         </div>
-        <div class="trade-cap" id="t-cap">On hand: <b>—</b></div>
-
-        <div class="trade-row">
-          <label for="t-price">Target $</label>
-          <input id="t-price" type="number" min="0" step="0.01" placeholder="4.45" />
-          <label for="t-delivery">Delivery</label>
-          <input id="t-delivery" type="text" placeholder="Cash · May" />
+        <div class="threshold-row">
+          <span class="lbl">Quiet til</span>
+          <input type="range" id="th-quiet-end" min="0" max="23" step="1" />
+          <span class="val" id="th-quiet-end-val">6</span>
         </div>
-        <div class="trade-cap" id="t-bid">Current bid: <b>—</b></div>
+        <p style="font-family:var(--font-display);font-style:italic;font-size:11px;color:var(--slate);margin:6px 0 10px;">No alerts during these hours unless explicitly bypassed.</p>
+        <h4 style="margin-top:14px;">Channels</h4>
+        <label style="display:block;font-size:13px;margin-bottom:4px;">
+          <input type="checkbox" id="th-grain" /> Grain alerts ([GRAIN] tag)
+        </label>
+        <label style="display:block;font-size:13px;">
+          <input type="checkbox" id="th-input-ch" /> Input cost alerts ([INPUT] tag)
+        </label>
       </div>
-
-      <!-- Recipient picker -->
-      <div class="recip-picker">
-        <div class="recip-picker-head">
-          <span>Recipients</span>
-          <a id="pick-all">Select all</a>
-          <a id="pick-required">Required only</a>
-          <a id="pick-none">Clear</a>
-        </div>
-        <div class="recip-list" id="recip-list"></div>
+      <div class="alerts-card" style="grid-column:1/-1;">
+        <h4>Subscribers</h4>
+        <p style="font-family:var(--font-display);font-style:italic;font-size:12px;color:var(--slate);margin:0 0 8px;">Tick recipients who should get news alert SMS.</p>
+        <div class="editor-checkbox-list" id="alerts-subscribers"></div>
       </div>
+    </div>
+    <div class="adm-row-actions" style="margin-top:14px;">
+      <button type="button" class="btn primary" id="alerts-save">Save alert config</button>
+      <span class="adm-toast" id="alerts-toast"></span>
+    </div>
+  </section>
 
-      <!-- Send -->
-      <div class="send-block">
-        <div class="send-summary" id="send-summary">Choose Bulletin or CTA, write a message, pick recipients.</div>
-        <button class="btn primary" id="send-btn" disabled>Send Test</button>
-      </div>
-      <div id="send-err" style="margin-top:8px;color:var(--danger);font-family:var(--font-mono);font-size:11px;min-height:14px;"></div>
-    </section>
+  <!-- Tab: History -->
+  <section class="adm-card tab-pane" data-tabpane="history">
+    <h3>Broadcast history</h3>
+    <p class="adm-card-tip">Last 50 sends, newest first. Click any row to see full reply state.</p>
+    <ul class="runs-list" id="runs-list">
+      <li class="runs-empty">Loading…</li>
+    </ul>
+    <div class="adm-row-actions">
+      <button type="button" class="btn ghost" id="runs-refresh">Refresh</button>
+      <span class="adm-toast" id="runs-toast"></span>
+    </div>
+  </section>
 
-    <!-- Active runs -->
-    <section class="adm-card">
-      <h3>Recent broadcasts</h3>
-      <p class="adm-card-tip">Last 25 sends. Click any row to see full reply state.</p>
-      <ul class="runs-list" id="runs-list">
-        <li class="runs-empty">Loading…</li>
-      </ul>
-      <div class="adm-row-actions">
-        <button type="button" class="btn ghost" id="runs-refresh">Refresh</button>
-        <span class="adm-toast" id="runs-toast"></span>
-      </div>
-    </section>
-
-    <!-- Recipients editor (full width) -->
-    <section class="adm-card adm-section full">
-      <h3>Recipients roster</h3>
-      <p class="adm-card-tip">★ marks the three required for a live trade-confirmation quorum (Dan, Susan, Maryann). They cannot be removed; their phone is editable. Other people are optional — add or remove as needed.</p>
-      <table class="recipients">
-        <thead>
-          <tr>
-            <th style="width:30%;">Name</th>
-            <th style="width:35%;">Phone</th>
-            <th class="req-cell">Required</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="recip-tbody"></tbody>
-      </table>
-      <div class="adm-row-actions">
-        <button type="button" class="btn" id="recip-add">+ Add person</button>
-        <button type="button" class="btn primary" id="recip-save">Save roster</button>
-        <span class="adm-toast" id="recip-toast"></span>
-      </div>
-    </section>
-
-  </div>
 </main>
 
 <!-- Run detail modal -->
@@ -1175,7 +1487,7 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
 
 <script>
 /* ─────────────────────────────────────────────────────────────
-   ADMIN APP — recipients, composer, broadcast, runs
+   ADMIN APP v3 — control tower: groups, templates, alerts, active CTAs
    ───────────────────────────────────────────────────────────── */
 (function () {
   const WORKER = window.WORKER_BASE;
@@ -1188,8 +1500,13 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
   let RECIPIENTS = [];         // editable roster (server side after save)
   let INVENTORY  = [];         // [{crop,bu_on_hand,current_bid,bid_month}]
   let RUNS       = [];         // recent runs from /admin/state
+  let GROUPS     = [];         // [{id,name,members,created_at,updated_at}]
+  let TEMPLATES  = [];         // [{id,name,type,body,trade_defaults?,...}]
+  let ALERTS     = null;       // AlertConfig
   let SELECTED_PHONES = new Set();  // recipients ticked in composer
   let OPEN_RUN_ID = null;      // currently-open run modal
+  let SELECTED_GROUP_ID = '';   // currently-selected group in composer
+  let SELECTED_TEMPLATE_ID = ''; // currently-selected template in composer
 
   function adminAuth() { return window.__adminAuth(); }
   function adminHeaders(extra) {
@@ -1230,13 +1547,22 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
       $('#admin-meta').textContent = 'ADMIN · ERROR';
       return;
     }
-    RECIPIENTS = j.recipients || [];
-    INVENTORY  = j.inventory  || [];
-    RUNS       = j.recent_runs || [];
+    RECIPIENTS = j.recipients   || [];
+    INVENTORY  = j.inventory    || [];
+    RUNS       = j.recent_runs  || [];
+    GROUPS     = j.groups       || [];
+    TEMPLATES  = j.templates    || [];
+    ALERTS     = j.alerts_config|| null;
     renderRecipients();
     renderRecipPicker();
     renderRuns();
     renderInventory();
+    renderGroupsPick();
+    renderTemplatesPick();
+    renderGroupsTab();
+    renderTemplatesTab();
+    renderAlertsTab();
+    renderActiveCtas();
     const a = adminAuth();
     if (a) {
       const exp = new Date(a.admin_expires_at);
@@ -1596,7 +1922,11 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
   // ── Runs list + detail ────────────────────────────────────────
   async function refreshRuns() {
     const j = await api('/admin/runs');
-    if (j && j.ok) { RUNS = j.runs; renderRuns(); }
+    if (j && j.ok) {
+      RUNS = j.runs;
+      renderRuns();
+      renderActiveCtas();
+    }
   }
   $('#runs-refresh').addEventListener('click', refreshRuns);
 
@@ -1730,6 +2060,400 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
       month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit',
     });
   }
+
+  // ─────────────────────────────────────────────────────────────
+  // v3: TABS — show/hide management panes
+  // ─────────────────────────────────────────────────────────────
+  $$('.adm-tabs button').forEach(b => b.addEventListener('click', () => {
+    $$('.adm-tabs button').forEach(x => x.classList.toggle('here', x === b));
+    const t = b.dataset.tab;
+    $$('.tab-pane').forEach(p => p.classList.toggle('here', p.dataset.tabpane === t));
+  }));
+
+  // ─────────────────────────────────────────────────────────────
+  // v3: ACTIVE CTAs — top control-tower panel, polls every 5s
+  // ─────────────────────────────────────────────────────────────
+  function renderActiveCtas() {
+    const card = $('#active-card');
+    const list = $('#active-runs');
+    const active = (RUNS || []).filter(r => r.type === 'cta' && r.mode === 'live' && r.status === 'pending');
+    if (active.length === 0) {
+      card.classList.add('empty');
+      list.innerHTML = '';
+      return;
+    }
+    card.classList.remove('empty');
+    list.innerHTML = '';
+    active.forEach(r => {
+      const li = document.createElement('li');
+      li.className = 'active-run';
+      li.dataset.runId = r.id;
+      const requiredSet = new Set(r.required_phones || []);
+      const required = (r.recipients || []).filter(x => requiredSet.has(x.phone));
+      const repliedRequired = required.filter(x => x.replied_at);
+      const yesCount = repliedRequired.filter(x => x.reply_norm === 'yes').length;
+      const noCount  = repliedRequired.filter(x => x.reply_norm === 'no').length;
+      const totalReq = required.length;
+
+      let pillClass = '';
+      if (noCount > 0) pillClass = 'rejected';
+      else if (yesCount === totalReq && totalReq > 0) pillClass = 'full';
+
+      const tradeBit = (r.trade)
+        ? `${r.trade.bushels.toLocaleString()} bu ${r.trade.crop} @ $${(r.trade.target_price ?? 0).toFixed(2)}`
+        : (r.message || '').slice(0, 80);
+
+      const namesHtml = required.map(x => {
+        const first = (x.name || x.phone).split(' ')[0];
+        let cls = '';
+        if (x.replied_at) cls = (x.reply_norm === 'no') ? 'no' : 'replied';
+        return `<span class="name ${cls}">${escapeAttr(first)}</span>`;
+      }).join('');
+
+      li.innerHTML = `
+        <div class="active-run-head">
+          <div class="active-run-trade">${escapeAttr(tradeBit)}</div>
+          <div class="active-run-meta">${formatTime(r.created_at)}</div>
+        </div>
+        <div class="active-run-quorum">
+          <span class="quorum-pill ${pillClass}">${yesCount}/${totalReq} required ${noCount > 0 ? '· ' + noCount + ' NO' : ''}</span>
+          <div class="active-run-names">${namesHtml}</div>
+        </div>
+        <div class="active-run-foot">
+          <span>${r.recipients.filter(x => x.sent_ok).length} sent · ${r.recipients.filter(x => x.replied_at).length} total replied</span>
+          <span>reminders: ${r.reminders_sent ?? 0} / 8</span>
+        </div>
+      `;
+      li.addEventListener('click', () => openRunModal(r.id));
+      list.appendChild(li);
+    });
+  }
+
+  // 5s poll while there's an active CTA, 30s otherwise (existing 30s poll
+  // for runs list lives below in the existing code).
+  setInterval(async () => {
+    const haveActive = (RUNS || []).some(r => r.type === 'cta' && r.mode === 'live' && r.status === 'pending');
+    if (!haveActive) return;
+    if ($('#run-modal-bg').classList.contains('show')) return;  // modal has its own poll
+    const j = await api('/admin/runs');
+    if (j && j.ok) { RUNS = j.runs; renderActiveCtas(); }
+  }, 5000);
+
+  // ─────────────────────────────────────────────────────────────
+  // v3: GROUPS + TEMPLATES — composer dropdowns
+  // ─────────────────────────────────────────────────────────────
+  function renderGroupsPick() {
+    const sel = $('#group-pick');
+    const cur = SELECTED_GROUP_ID;
+    sel.innerHTML = '<option value="">— Custom (pick recipients below) —</option>';
+    GROUPS.forEach(g => {
+      const opt = document.createElement('option');
+      opt.value = g.id;
+      opt.textContent = `${g.name} (${g.members.length})`;
+      if (g.id === cur) opt.selected = true;
+      sel.appendChild(opt);
+    });
+  }
+  function renderTemplatesPick() {
+    const sel = $('#template-pick');
+    const cur = SELECTED_TEMPLATE_ID;
+    sel.innerHTML = '<option value="">— Custom (write fresh below) —</option>';
+    TEMPLATES.forEach(t => {
+      const opt = document.createElement('option');
+      opt.value = t.id;
+      opt.textContent = `${t.name} [${t.type.toUpperCase()}]`;
+      if (t.id === cur) opt.selected = true;
+      sel.appendChild(opt);
+    });
+  }
+  $('#group-pick').addEventListener('change', e => {
+    SELECTED_GROUP_ID = e.target.value;
+    if (!SELECTED_GROUP_ID) return;
+    const g = GROUPS.find(x => x.id === SELECTED_GROUP_ID);
+    if (!g) return;
+    SELECTED_PHONES = new Set(g.members.map(m => normalizePhone(m.phone)).filter(Boolean));
+    renderRecipPicker();
+    updateSendUI();
+  });
+  $('#template-pick').addEventListener('change', e => {
+    SELECTED_TEMPLATE_ID = e.target.value;
+    if (!SELECTED_TEMPLATE_ID) return;
+    const t = TEMPLATES.find(x => x.id === SELECTED_TEMPLATE_ID);
+    if (!t) return;
+    // Apply type
+    if (t.type === 'cta' || t.type === 'bulletin') {
+      TYPE = t.type;
+      $$('#type-toggle button').forEach(b => b.classList.toggle('on', b.dataset.type === TYPE));
+      $('#trade-picker').hidden = (TYPE !== 'cta');
+    }
+    // Apply body
+    $('#compose-text').value = t.body || '';
+    $('#compose-text').dispatchEvent(new Event('input'));
+    // Apply trade defaults
+    if (t.trade_defaults) {
+      if (t.trade_defaults.crop)         $('#t-crop').value     = t.trade_defaults.crop;
+      if (t.trade_defaults.bushels)      $('#t-bushels').value  = t.trade_defaults.bushels;
+      if (t.trade_defaults.target_price) $('#t-price').value    = t.trade_defaults.target_price;
+      if (t.trade_defaults.delivery)     $('#t-delivery').value = t.trade_defaults.delivery;
+      refreshTradeCaptions();
+    }
+    // Apply default group if set + no group already picked
+    if (t.default_group_id && !SELECTED_GROUP_ID) {
+      $('#group-pick').value = t.default_group_id;
+      $('#group-pick').dispatchEvent(new Event('change'));
+    }
+    updateSendUI();
+  });
+
+  // ─────────────────────────────────────────────────────────────
+  // v3: GROUPS TAB — CRUD editor
+  // ─────────────────────────────────────────────────────────────
+  function renderGroupsTab() {
+    const grid = $('#groups-grid');
+    grid.innerHTML = '';
+    if (GROUPS.length === 0) {
+      grid.innerHTML = '<div style="grid-column:1/-1;color:var(--slate);font-style:italic;font-family:var(--font-display);font-size:13px;padding:12px 0;">No groups yet. Click "+ New group" to make one.</div>';
+      return;
+    }
+    GROUPS.forEach((g, idx) => {
+      const card = document.createElement('div');
+      card.className = 'entity-card editing';
+      const memberSet = new Set(g.members.map(m => m.phone));
+      const requiredSet = new Set(g.members.filter(m => m.required).map(m => m.phone));
+      const validRoster = RECIPIENTS.filter(r => normalizePhone(r.phone));
+      const checkboxes = validRoster.map(r => {
+        const phone = normalizePhone(r.phone);
+        const checked = memberSet.has(phone);
+        const required = requiredSet.has(phone);
+        return `
+          <label>
+            <input type="checkbox" data-member-phone="${phone}" ${checked ? 'checked' : ''} />
+            <span>${escapeAttr(r.name)}</span>
+            <button type="button" class="req-toggle ${required ? 'on' : ''}" data-req-phone="${phone}" title="Toggle required">★</button>
+          </label>
+        `;
+      }).join('');
+      card.innerHTML = `
+        <input class="entity-name" data-name-idx="${idx}" value="${escapeAttr(g.name)}" placeholder="Group name" />
+        <div class="entity-meta">${g.members.length} member${g.members.length === 1 ? '' : 's'} · ${g.members.filter(m => m.required).length} required</div>
+        <div class="editor-checkbox-list">${checkboxes}</div>
+        <div class="entity-actions">
+          <button type="button" class="danger" data-del-group="${idx}">Delete</button>
+        </div>
+      `;
+      // Wire input + checkboxes
+      card.querySelector('.entity-name').addEventListener('input', e => {
+        GROUPS[idx].name = e.target.value;
+      });
+      card.querySelectorAll('input[data-member-phone]').forEach(cb => {
+        cb.addEventListener('change', e => {
+          const phone = e.target.dataset.memberPhone;
+          const present = GROUPS[idx].members.findIndex(m => m.phone === phone);
+          if (e.target.checked && present < 0) {
+            GROUPS[idx].members.push({ phone, required: false });
+          } else if (!e.target.checked && present >= 0) {
+            GROUPS[idx].members.splice(present, 1);
+          }
+        });
+      });
+      card.querySelectorAll('.req-toggle').forEach(btn => {
+        btn.addEventListener('click', e => {
+          const phone = btn.dataset.reqPhone;
+          const m = GROUPS[idx].members.find(x => x.phone === phone);
+          if (m) {
+            m.required = !m.required;
+          } else {
+            // Auto-add if not yet a member
+            GROUPS[idx].members.push({ phone, required: true });
+            const cb = card.querySelector(`input[data-member-phone="${phone}"]`);
+            if (cb) cb.checked = true;
+          }
+          btn.classList.toggle('on');
+        });
+      });
+      card.querySelector('[data-del-group]').addEventListener('click', () => {
+        if (!confirm(`Delete group "${g.name}"?`)) return;
+        GROUPS.splice(idx, 1);
+        renderGroupsTab(); renderGroupsPick();
+      });
+      grid.appendChild(card);
+    });
+  }
+  $('#group-add').addEventListener('click', () => {
+    GROUPS.push({
+      id: 'g_' + Math.random().toString(36).slice(2, 6),
+      name: 'New group',
+      members: [],
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    });
+    renderGroupsTab(); renderGroupsPick();
+  });
+  $('#groups-save').addEventListener('click', async () => {
+    $('#groups-save').disabled = true;
+    try {
+      const j = await api('/admin/groups', { groups: GROUPS });
+      if (j && j.ok) {
+        GROUPS = j.groups;
+        renderGroupsTab(); renderGroupsPick();
+        toast($('#groups-toast'), 'Groups saved.');
+      } else {
+        toast($('#groups-toast'), (j && j.error) || 'Save failed.', true);
+      }
+    } finally { $('#groups-save').disabled = false; }
+  });
+
+  // ─────────────────────────────────────────────────────────────
+  // v3: TEMPLATES TAB — CRUD editor
+  // ─────────────────────────────────────────────────────────────
+  function renderTemplatesTab() {
+    const grid = $('#templates-grid');
+    grid.innerHTML = '';
+    if (TEMPLATES.length === 0) {
+      grid.innerHTML = '<div style="grid-column:1/-1;color:var(--slate);font-style:italic;font-family:var(--font-display);font-size:13px;padding:12px 0;">No templates yet. Click "+ New template" to make one.</div>';
+      return;
+    }
+    TEMPLATES.forEach((t, idx) => {
+      const card = document.createElement('div');
+      card.className = 'entity-card editing';
+      const groupOpts = ['<option value="">— None —</option>']
+        .concat(GROUPS.map(g => `<option value="${g.id}" ${g.id === t.default_group_id ? 'selected' : ''}>${escapeAttr(g.name)}</option>`))
+        .join('');
+      card.innerHTML = `
+        <input class="entity-name" value="${escapeAttr(t.name)}" placeholder="Template name" />
+        <div class="editor-row">
+          <label>Type</label>
+          <select data-tmpl-type>
+            <option value="bulletin" ${t.type === 'bulletin' ? 'selected' : ''}>Bulletin</option>
+            <option value="cta"      ${t.type === 'cta'      ? 'selected' : ''}>CTA</option>
+          </select>
+        </div>
+        <div class="editor-row">
+          <label>Group</label>
+          <select data-tmpl-group>${groupOpts}</select>
+        </div>
+        <textarea class="template-body" data-tmpl-body placeholder="Message body — use {bushels}, {price}, {crop} as placeholders.">${escapeAttr(t.body || '')}</textarea>
+        <div class="editor-row" style="grid-template-columns:90px 70px 90px 70px;">
+          <label>Crop</label>
+          <select data-tmpl-crop>
+            <option value="">—</option>
+            <option value="corn" ${t.trade_defaults?.crop === 'corn' ? 'selected' : ''}>Corn</option>
+            <option value="soy"  ${t.trade_defaults?.crop === 'soy'  ? 'selected' : ''}>Soy</option>
+          </select>
+          <label>Bushels</label>
+          <input data-tmpl-bushels type="number" min="0" step="50" value="${t.trade_defaults?.bushels ?? ''}" />
+        </div>
+        <div class="entity-actions">
+          <button type="button" class="danger" data-del-tmpl="${idx}">Delete</button>
+        </div>
+      `;
+      card.querySelector('.entity-name').addEventListener('input', e => TEMPLATES[idx].name = e.target.value);
+      card.querySelector('[data-tmpl-type]').addEventListener('change', e => TEMPLATES[idx].type = e.target.value);
+      card.querySelector('[data-tmpl-group]').addEventListener('change', e => TEMPLATES[idx].default_group_id = e.target.value || undefined);
+      card.querySelector('[data-tmpl-body]').addEventListener('input', e => TEMPLATES[idx].body = e.target.value);
+      card.querySelector('[data-tmpl-crop]').addEventListener('change', e => {
+        TEMPLATES[idx].trade_defaults = TEMPLATES[idx].trade_defaults || {};
+        TEMPLATES[idx].trade_defaults.crop = e.target.value || undefined;
+      });
+      card.querySelector('[data-tmpl-bushels]').addEventListener('input', e => {
+        TEMPLATES[idx].trade_defaults = TEMPLATES[idx].trade_defaults || {};
+        TEMPLATES[idx].trade_defaults.bushels = Number(e.target.value) || undefined;
+      });
+      card.querySelector('[data-del-tmpl]').addEventListener('click', () => {
+        if (!confirm(`Delete template "${t.name}"?`)) return;
+        TEMPLATES.splice(idx, 1);
+        renderTemplatesTab(); renderTemplatesPick();
+      });
+      grid.appendChild(card);
+    });
+  }
+  $('#template-add').addEventListener('click', () => {
+    TEMPLATES.push({
+      id: 't_' + Math.random().toString(36).slice(2, 6),
+      name: 'New template',
+      type: 'cta',
+      body: '',
+      trade_defaults: {},
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    });
+    renderTemplatesTab(); renderTemplatesPick();
+  });
+  $('#templates-save').addEventListener('click', async () => {
+    $('#templates-save').disabled = true;
+    try {
+      const j = await api('/admin/templates', { templates: TEMPLATES });
+      if (j && j.ok) {
+        TEMPLATES = j.templates;
+        renderTemplatesTab(); renderTemplatesPick();
+        toast($('#templates-toast'), 'Templates saved.');
+      } else {
+        toast($('#templates-toast'), (j && j.error) || 'Save failed.', true);
+      }
+    } finally { $('#templates-save').disabled = false; }
+  });
+
+  // ─────────────────────────────────────────────────────────────
+  // v3: ALERTS TAB — thresholds, quiet hours, channels, subscribers
+  // ─────────────────────────────────────────────────────────────
+  function renderAlertsTab() {
+    if (!ALERTS) return;
+    const t = ALERTS.thresholds || {};
+    $('#th-corn').value = t.corn_cents ?? 5;       $('#th-corn-val').textContent = String(t.corn_cents ?? 5);
+    $('#th-soy').value  = t.soy_cents  ?? 8;       $('#th-soy-val').textContent  = String(t.soy_cents  ?? 8);
+    $('#th-input').value = t.input_pct ?? 3;       $('#th-input-val').textContent = String(t.input_pct ?? 3);
+    const q = ALERTS.quiet_hours || {};
+    $('#th-quiet-start').value = q.start_hour ?? 21;  $('#th-quiet-start-val').textContent = String(q.start_hour ?? 21);
+    $('#th-quiet-end').value   = q.end_hour   ?? 6;   $('#th-quiet-end-val').textContent   = String(q.end_hour   ?? 6);
+    const ch = ALERTS.channels || {};
+    $('#th-grain').checked    = ch.grain !== false;
+    $('#th-input-ch').checked = ch.input !== false;
+    // Subscribers
+    const subs = new Set(ALERTS.subscriber_phones || []);
+    const subsContainer = $('#alerts-subscribers');
+    subsContainer.innerHTML = '';
+    RECIPIENTS.filter(r => normalizePhone(r.phone)).forEach(r => {
+      const phone = normalizePhone(r.phone);
+      const lbl = document.createElement('label');
+      lbl.innerHTML = `<input type="checkbox" data-sub-phone="${phone}" ${subs.has(phone) ? 'checked' : ''} /> ${escapeAttr(r.name)} <small style="color:var(--slate);font-family:var(--font-mono);">${escapeAttr(formatPhone(phone))}</small>`;
+      subsContainer.appendChild(lbl);
+    });
+  }
+  ['#th-corn','#th-soy','#th-input','#th-quiet-start','#th-quiet-end'].forEach(sel => {
+    $(sel).addEventListener('input', e => {
+      $(sel + '-val').textContent = e.target.value;
+    });
+  });
+  $('#alerts-save').addEventListener('click', async () => {
+    if (!ALERTS) return;
+    const config = {
+      thresholds: {
+        corn_cents: Number($('#th-corn').value),
+        soy_cents:  Number($('#th-soy').value),
+        input_pct:  Number($('#th-input').value),
+      },
+      quiet_hours: {
+        start_hour: Number($('#th-quiet-start').value),
+        end_hour:   Number($('#th-quiet-end').value),
+        timezone:   ALERTS.quiet_hours?.timezone || 'America/Chicago',
+      },
+      channels: {
+        grain: $('#th-grain').checked,
+        input: $('#th-input-ch').checked,
+      },
+      subscriber_phones: $$('#alerts-subscribers input[data-sub-phone]:checked').map(cb => cb.dataset.subPhone),
+    };
+    $('#alerts-save').disabled = true;
+    try {
+      const j = await api('/admin/alerts/config', { config });
+      if (j && j.ok) {
+        ALERTS = j.config;
+        toast($('#alerts-toast'), 'Alerts config saved + mirrored to git.');
+      } else {
+        toast($('#alerts-toast'), (j && j.error) || 'Save failed.', true);
+      }
+    } finally { $('#alerts-save').disabled = false; }
+  });
 
   // ── Boot once admin gate is cleared ──────────────────────────
   window.__adminReady = function () {
