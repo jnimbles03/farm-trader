@@ -660,7 +660,7 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
     <a href="hedge.html" class="shell-tab">Hedge</a>
     <a href="farm-ops.html" class="shell-tab">Farm Ops</a>
   </div>
-  <div class="shell-meta">APR 30, 2026 · CT</div>
+  <div class="shell-meta"><span class="js-today" data-fmt="header">APR 30, 2026</span> · CT</div>
 </nav>
 
 <main class="A-page">
@@ -886,7 +886,7 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
 
 </main>
 
-<footer class="shell-foot">FREIS FARM · TODAY'S CALL · APR 30 2026</footer>
+<footer class="shell-foot">FREIS FARM · TODAY'S CALL · <span class="js-today" data-fmt="footer">APR 30 2026</span></footer>
 
 <style>
 /* ===== TRADE ORDER WIDGET ===== */
@@ -1787,13 +1787,25 @@ loadDrafts();
 
 
 <script id="js-today-updater">
-// Auto-fill the eyebrow date with today's local date so it never stales.
-// Format mirrors what the page was generated with: "MMM D, YYYY".
+// Auto-fill any .js-today element with today's local date.
+// Format chosen via data-fmt: "long" (May 4, 2026) | "header" (MAY 4, 2026)
+// | "footer" (MAY 4 2026). All other formats fall back to "long".
 (function(){
   var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   var d = new Date();
-  var label = months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
-  document.querySelectorAll('.js-today').forEach(function(el){ el.textContent = label; });
+  var mLong  = months[d.getMonth()];
+  var mUpper = mLong.toUpperCase();
+  var day = d.getDate();
+  var year = d.getFullYear();
+  var fmt = {
+    long:   mLong  + ' ' + day + ', ' + year,
+    header: mUpper + ' ' + day + ', ' + year,
+    footer: mUpper + ' ' + day + ' '  + year,
+  };
+  document.querySelectorAll('.js-today').forEach(function(el){
+    var f = el.getAttribute('data-fmt') || 'long';
+    el.textContent = fmt[f] || fmt.long;
+  });
 })();
 </script>
 </body>
