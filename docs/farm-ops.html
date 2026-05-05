@@ -667,7 +667,7 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
 
   <div class="A-call">
     <div>
-      <p class="A-eyebrow">Operations · Apr 30, 2026</p>
+      <p class="A-eyebrow">Operations · <span class="js-today" data-fmt="long">Apr 30, 2026</span></p>
       <h1>The books, <em>at a glance.</em></h1>
       <p>What came in, what's going out, what's left for July. Two bean sales (Jun 1 + Jul 1) are what bridge cash through the bills.</p>
     </div>
@@ -1680,5 +1680,16 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
 </style>
 
 <footer class="shell-foot">FREIS FARM · FARM OPS · APR 30 2026</footer>
+
+<script id="js-today-updater">
+// Auto-fill the eyebrow date with today's local date so it never stales.
+// Format mirrors what the page was generated with: "MMM D, YYYY".
+(function(){
+  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var d = new Date();
+  var label = months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
+  document.querySelectorAll('.js-today').forEach(function(el){ el.textContent = label; });
+})();
+</script>
 </body>
 </html>

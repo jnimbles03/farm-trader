@@ -667,7 +667,7 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
 
   <div class="A-call">
     <div>
-      <p class="A-eyebrow">Hedge · What-if model · Apr 30, 2026</p>
+      <p class="A-eyebrow">Hedge · What-if model · <span class="js-today" data-fmt="long">Apr 30, 2026</span></p>
       <h1>If we bought protection — <em>nothing would trigger today</em>.</h1>
       <p>Both crops sit between modeled floor and ceiling. The collar costs nothing to keep in place. (Model only — no position open. We'd have to call Ritchie or a broker to set one up.)</p>
     </div>
@@ -1689,5 +1689,16 @@ renderTranches();
 loadDrafts();
 </script>
 
+
+<script id="js-today-updater">
+// Auto-fill the eyebrow date with today's local date so it never stales.
+// Format mirrors what the page was generated with: "MMM D, YYYY".
+(function(){
+  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var d = new Date();
+  var label = months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
+  document.querySelectorAll('.js-today').forEach(function(el){ el.textContent = label; });
+})();
+</script>
 </body>
 </html>

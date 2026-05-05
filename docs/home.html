@@ -668,7 +668,7 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
   <!-- Decision card: H1 + 3 KPIs -->
   <div class="A-call">
     <div>
-      <p class="A-eyebrow">For Mom · Grain marketing · Apr 30, 2026</p>
+      <p class="A-eyebrow">For Mom · Grain marketing · <span class="js-today" data-fmt="long">Apr 30, 2026</span></p>
       <h1>Hold corn. Sell <em>~1,000 bu soy</em> by June 1.</h1>
       <p>Soy is +5pp ahead of seasonal pace and slowly losing value as it sits — turn ~1,000 bu into cash before the June bills land. Corn is on pace and worth holding through summer.</p>
     </div>
@@ -1785,5 +1785,16 @@ renderTranches();
 loadDrafts();
 </script>
 
+
+<script id="js-today-updater">
+// Auto-fill the eyebrow date with today's local date so it never stales.
+// Format mirrors what the page was generated with: "MMM D, YYYY".
+(function(){
+  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var d = new Date();
+  var label = months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
+  document.querySelectorAll('.js-today').forEach(function(el){ el.textContent = label; });
+})();
+</script>
 </body>
 </html>
