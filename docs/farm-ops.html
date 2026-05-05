@@ -733,6 +733,7 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
     <a href="./" class="shell-tab">Today's Call</a>
     <a href="hedge.html" class="shell-tab">Hedge</a>
     <a href="farm-ops.html" class="shell-tab here">Farm Ops</a>
+    <a href="books.html" class="shell-tab">Books</a>
   </div>
   <div class="shell-meta">APR 30, 2026 · CT</div>
 </nav>
@@ -1044,343 +1045,146 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
      Each chart overlays our line on the IL state benchmark line.
      Toggle controls let the user emphasize one crop or one metric.
      ============================================================ -->
+<!-- ============================================================
+     YIELD × MARGIN × BENCHMARK — compact 4-cell strip.
+     Each cell: latest value, delta vs IL, sparkline (us = solid,
+     IL = dashed). No toggles, no axes — full benchmarks live on
+     benchmarks.html.
+     ============================================================ -->
 <section class="ymb" id="ymb">
   <div class="ymb-head">
     <div>
       <p class="A-eyebrow">Yield · Margin · Benchmark · 2017–2025</p>
       <h2 class="ymb-h">How we stack up against <em>Illinois.</em></h2>
-      <p class="ymb-deck">Our yields and net margin per acre, year by year, plotted against the Illinois state average from USDA NASS. Hover any year to see all four numbers.</p>
     </div>
-    <div class="ymb-controls">
-      <div class="ymb-control">
-        <span class="ymb-control-l">Crop</span>
-        <div class="ymb-toggle" data-toggle="crop">
-          <button class="ymb-pill active" data-v="both">Both</button>
-          <button class="ymb-pill" data-v="corn">Corn</button>
-          <button class="ymb-pill" data-v="bean">Beans</button>
-        </div>
-      </div>
-      <div class="ymb-control">
-        <span class="ymb-control-l">Show</span>
-        <div class="ymb-toggle" data-toggle="metric">
-          <button class="ymb-pill active" data-v="both">Yield + Margin</button>
-          <button class="ymb-pill" data-v="yield">Yield</button>
-          <button class="ymb-pill" data-v="margin">Margin</button>
-        </div>
-      </div>
-    </div>
+    <a href="benchmarks.html" class="ymb-more">See full benchmarks →</a>
   </div>
-
-  <div class="ymb-grid" id="ymb-grid"></div>
-
-  <p class="ymb-source">
-    Source · Yields and IL benchmark from <a href="https://www.nass.usda.gov/Statistics_by_State/Illinois/" target="_blank" rel="noopener">USDA NASS Illinois</a>.
-    Net $/ac benchmark from <a href="https://farmdocdaily.illinois.edu/" target="_blank" rel="noopener">farmdoc / IL FBFM</a> central-IL high-productivity 50-50 rotation.
-    Our values are from <code>Freis_Farm_Books_and_Records.xlsx</code>.
-    <br>
-    <em>Note · 2025 soybean $/ac reflects partial sales only (MY 2024-2025 status: "2 sales recorded, partial"). Final number will rise as remaining bushels sell.</em>
-  </p>
+  <div class="ymb-strip" id="ymb-strip"></div>
+  <p class="ymb-source">USDA NASS · farmdoc / IL FBFM · <code>Freis_Farm_Books_and_Records.xlsx</code>. <em>2025 bean $/ac is partial — rises as remaining bushels sell.</em></p>
 </section>
 
 <script id="ymb-data" type="application/json">{"years":[2017,2018,2019,2020,2021,2022,2023,2024,2025],"corn":{"yield_us":[238.8,186.7,178.7,217.9,168.2,200.5,226.7,220.3,222.5],"yield_il":[201,210,181,192,202,214,206,217,214],"margin_us":[null,null,null,null,null,565,610,337,475],"margin_il":[null,null,null,null,null,540,305,250,271]},"bean":{"yield_us":[60.5,64.0,53.3,60.1,59.7,55.6,63.7,49.8,72.8],"yield_il":[58,65,54,59,65,64,63,64,66],"margin_us":[null,null,null,null,null,440,335,402,107],"margin_il":[null,null,null,null,null,410,220,235,271]}}</script>
 <script>
 (function () {
+  // YMB sparkline strip — 4 small multiples (corn yield, corn $/ac,
+  // bean yield, bean $/ac). Solid line = us, dashed = IL benchmark.
+  // Latest value + delta vs IL printed above. No toggles, no axes.
   const D = JSON.parse(document.getElementById("ymb-data").textContent);
-  // D = { years:[...], corn:{ yield_us:[...], yield_il:[...], margin_us:[...], margin_il:[...] }, bean:{...} }
 
-  const fmtNum = n => n == null ? "—" : Number(n).toLocaleString(undefined, {maximumFractionDigits: 1});
-  const fmtMoney = n => n == null ? "—" : (n<0?"−$":"$") + Math.abs(Math.round(n)).toLocaleString();
+  const cells = [
+    { label: "Corn yield",  unit: "bu/ac", us: D.corn.yield_us,  il: D.corn.yield_il,  fmt: v => Math.round(v) + " bu",       dlt: (a,b) => Math.round(a-b)        + " bu" },
+    { label: "Corn $/ac",   unit: "$/ac",  us: D.corn.margin_us, il: D.corn.margin_il, fmt: v => "$" + Math.round(v),         dlt: (a,b) => (a-b>=0?"+$":"−$") + Math.abs(Math.round(a-b)) },
+    { label: "Bean yield",  unit: "bu/ac", us: D.bean.yield_us,  il: D.bean.yield_il,  fmt: v => v.toFixed(1) + " bu",         dlt: (a,b) => ((a-b)>=0?"+":"−") + Math.abs((a-b)).toFixed(1) + " bu" },
+    { label: "Bean $/ac",   unit: "$/ac",  us: D.bean.margin_us, il: D.bean.margin_il, fmt: v => "$" + Math.round(v),         dlt: (a,b) => (a-b>=0?"+$":"−$") + Math.abs(Math.round(a-b)) },
+  ];
 
-  const STATE = { crop: "both", metric: "both" };
+  const W = 120, H = 36, PAD_X = 4, PAD_Y = 4;
 
-  function chart(opts) {
-    // opts: { title, sub, unit, weBased, theyBased, yMin, yMax, weLabel, theyLabel, fmt }
-    const W = 360, H = 200, padL = 40, padR = 20, padT = 14, padB = 24;
-    const years = D.years;
-    const innerW = W - padL - padR;
-    const innerH = H - padT - padB;
-    const x = i => padL + (i/(years.length-1)) * innerW;
-    const y = v => padT + (1 - (v - opts.yMin)/(opts.yMax - opts.yMin)) * innerH;
+  function buildPath(vals, xs, yScale) {
+    let d = "", started = false;
+    vals.forEach((v, i) => {
+      if (v == null) { started = false; return; }
+      d += (started ? " L" : "M") + xs[i].toFixed(1) + "," + yScale(v).toFixed(1);
+      started = true;
+    });
+    return d;
+  }
 
-    const buildPath = (vals, klass) => {
-      let d = "", started = false;
-      vals.forEach((v, i) => {
-        if (v == null) { started = false; return; }
-        d += (started ? " L" : "M") + x(i).toFixed(1) + "," + y(v).toFixed(1);
-        started = true;
-      });
-      return d ? `<path d="${d}" class="ymb-line ${klass}"/>` : "";
-    };
-    const buildDots = (vals, klass) => vals.map((v, i) => v == null ? "" :
-      `<circle cx="${x(i)}" cy="${y(v)}" r="2.6" class="ymb-dot ${klass}"
-        data-i="${i}" data-v="${v}" data-l="${klass}"/>`
-    ).join("");
+  function lastDefined(vals) {
+    for (let i = vals.length - 1; i >= 0; i--) if (vals[i] != null) return { v: vals[i], i };
+    return null;
+  }
 
-    // y-axis ticks (3)
-    const ticks = [opts.yMin, (opts.yMin+opts.yMax)/2, opts.yMax];
-    const tickLines = ticks.map(t => `<line x1="${padL}" x2="${W-padR}" y1="${y(t)}" y2="${y(t)}" stroke="var(--rule)" stroke-width="0.5" stroke-dasharray="2,3"/>`).join("");
-    const tickLabels = ticks.map(t => `<text x="${padL-6}" y="${y(t)+3}" text-anchor="end" class="ymb-tick">${opts.fmt(t)}</text>`).join("");
+  function renderCell(c) {
+    const all = [...c.us, ...c.il].filter(v => v != null);
+    const lo = Math.min(...all), hi = Math.max(...all);
+    const span = (hi - lo) || 1;
+    const innerH = H - PAD_Y * 2;
+    const innerW = W - PAD_X * 2;
+    const xs = c.us.map((_, i) => PAD_X + (i / (c.us.length - 1)) * innerW);
+    const yScale = v => PAD_Y + (1 - (v - lo) / span) * innerH;
 
-    // x-axis labels — every other year
-    const xLabels = years.map((yr, i) => (i % 2 === 0 || i === years.length-1)
-      ? `<text x="${x(i)}" y="${H-6}" text-anchor="middle" class="ymb-tick">${String(yr).slice(2)}</text>` : ""
-    ).join("");
+    const usPath = buildPath(c.us, xs, yScale);
+    const ilPath = buildPath(c.il, xs, yScale);
 
-    // delta callout — last year that has both values
-    let lastIdx = -1;
-    for (let i = years.length - 1; i >= 0; i--) {
-      if (opts.we[i] != null && opts.they[i] != null) { lastIdx = i; break; }
-    }
-    let delta = "", deltaCls = "";
-    if (lastIdx >= 0) {
-      const d = opts.we[lastIdx] - opts.they[lastIdx];
-      const pct = (d / opts.they[lastIdx]) * 100;
-      deltaCls = d >= 0 ? "up" : "down";
-      delta = `${d >= 0 ? "+" : ""}${opts.fmt(d)} <span class="ymb-delta-pct">(${d>=0?"+":""}${pct.toFixed(0)}%)</span>`;
-    }
+    const lastUs = lastDefined(c.us);
+    const lastIl = lastDefined(c.il);
+    const valStr = lastUs ? c.fmt(lastUs.v) : "—";
+    const dltStr = (lastUs && lastIl)
+      ? c.dlt(lastUs.v, lastIl.v) + " vs IL"
+      : "—";
+    const dltCls = (lastUs && lastIl)
+      ? (lastUs.v >= lastIl.v ? "up" : "down")
+      : "";
 
     return `
-      <div class="ymb-card" data-metric="${opts.metric}" data-crop="${opts.crop}">
-        <div class="ymb-card-head">
-          <div>
-            <div class="ymb-card-l">${opts.sub}</div>
-            <div class="ymb-card-h">${opts.title}</div>
-          </div>
-          <div class="ymb-delta ${deltaCls}">${delta}<div class="ymb-delta-l">us vs. IL · ${years[lastIdx] ?? ""}</div></div>
-        </div>
-        <svg viewBox="0 0 ${W} ${H}" class="ymb-svg">
-          ${tickLines}
-          ${tickLabels}
-          ${buildPath(opts.they, "they")}
-          ${buildPath(opts.we, "we")}
-          ${buildDots(opts.they, "they")}
-          ${buildDots(opts.we, "we")}
-          ${xLabels}
+      <div class="ymb-cell">
+        <div class="ymb-cell-l">${c.label}</div>
+        <div class="ymb-cell-v">${valStr}</div>
+        <div class="ymb-cell-d"><span class="${dltCls}">${dltStr}</span></div>
+        <svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" preserveAspectRatio="none">
+          ${ilPath ? `<path d="${ilPath}" class="ymb-line-il"/>` : ""}
+          ${usPath ? `<path d="${usPath}" class="ymb-line-us"/>` : ""}
+          ${lastUs ? `<circle cx="${xs[lastUs.i].toFixed(1)}" cy="${yScale(lastUs.v).toFixed(1)}" r="2.2" fill="var(--sage-deep)"/>` : ""}
         </svg>
-        <div class="ymb-legend">
-          <span class="ymb-leg us"><span class="ymb-leg-sw"></span>${opts.weLabel}</span>
-          <span class="ymb-leg il"><span class="ymb-leg-sw"></span>${opts.theyLabel}</span>
-        </div>
-      </div>
-    `;
+      </div>`;
   }
 
-  function render() {
-    const grid = document.getElementById("ymb-grid");
-    grid.innerHTML = "";
-    const cards = [];
-
-    // CORN YIELD
-    cards.push(chart({
-      crop: "corn", metric: "yield",
-      title: "Corn yield",
-      sub: "Bushels per acre · 9 yrs",
-      yMin: 150, yMax: 250,
-      we: D.corn.yield_us, they: D.corn.yield_il,
-      weLabel: "Freis Farm", theyLabel: "Illinois avg",
-      fmt: v => fmtNum(v)
-    }));
-
-    // CORN MARGIN
-    cards.push(chart({
-      crop: "corn", metric: "margin",
-      title: "Corn net $/ac",
-      sub: "Operator + land return · 4 yrs",
-      yMin: 0, yMax: 700,
-      we: D.corn.margin_us, they: D.corn.margin_il,
-      weLabel: "Freis Farm", theyLabel: "IL FBFM",
-      fmt: v => fmtMoney(v)
-    }));
-
-    // BEAN YIELD
-    cards.push(chart({
-      crop: "bean", metric: "yield",
-      title: "Soybean yield",
-      sub: "Bushels per acre · 9 yrs",
-      yMin: 40, yMax: 80,
-      we: D.bean.yield_us, they: D.bean.yield_il,
-      weLabel: "Freis Farm", theyLabel: "Illinois avg",
-      fmt: v => fmtNum(v)
-    }));
-
-    // BEAN MARGIN
-    cards.push(chart({
-      crop: "bean", metric: "margin",
-      title: "Soybean net $/ac",
-      sub: "Operator + land return · 4 yrs",
-      yMin: 0, yMax: 500,
-      we: D.bean.margin_us, they: D.bean.margin_il,
-      weLabel: "Freis Farm", theyLabel: "IL FBFM",
-      fmt: v => fmtMoney(v)
-    }));
-
-    grid.innerHTML = cards.join("");
-
-    // apply visibility filters
-    document.querySelectorAll(".ymb-card").forEach(c => {
-      const showCrop   = STATE.crop   === "both" || c.dataset.crop   === STATE.crop;
-      const showMetric = STATE.metric === "both" || c.dataset.metric === STATE.metric;
-      c.style.display = (showCrop && showMetric) ? "" : "none";
-    });
-
-    // tooltip on dots
-    grid.querySelectorAll(".ymb-card").forEach(card => {
-      const tip = document.createElement("div");
-      tip.className = "ymb-tip"; tip.hidden = true;
-      card.appendChild(tip);
-      card.querySelectorAll(".ymb-dot").forEach(dot => {
-        dot.addEventListener("mouseenter", e => {
-          const i = +dot.dataset.i, v = +dot.dataset.v, l = dot.dataset.l;
-          const yr = D.years[i];
-          tip.innerHTML = `<b>${yr}</b> · ${l === "we" ? "Freis" : "IL"} · ${
-            card.dataset.metric === "yield" ? fmtNum(v) + " bu/ac" : fmtMoney(v) + "/ac"
-          }`;
-          tip.hidden = false;
-          // position relative to card
-          const rect = card.getBoundingClientRect();
-          const dotRect = dot.getBoundingClientRect();
-          tip.style.left = (dotRect.left - rect.left + 6) + "px";
-          tip.style.top  = (dotRect.top - rect.top - 28) + "px";
-        });
-        dot.addEventListener("mouseleave", () => { tip.hidden = true; });
-      });
-    });
-  }
-
-  document.querySelectorAll(".ymb-toggle").forEach(group => {
-    group.addEventListener("click", e => {
-      const btn = e.target.closest(".ymb-pill");
-      if (!btn) return;
-      const dim = group.dataset.toggle;
-      STATE[dim] = btn.dataset.v;
-      group.querySelectorAll(".ymb-pill").forEach(p => p.classList.toggle("active", p === btn));
-      render();
-    });
-  });
-
-  render();
+  document.getElementById("ymb-strip").innerHTML = cells.map(renderCell).join("");
 })();
 </script>
 
 <style>
-.ymb { padding: 24px 32px 8px; background: var(--cream); border-top: 1px solid var(--border); }
-.ymb-head { display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: end; margin-bottom: 18px; }
+/* YMB sparkline strip — compact 4-cell row replacing the old toggle grid. */
+.ymb { padding: 24px 32px 16px; background: var(--cream); border-top: 1px solid var(--border); }
+.ymb-head { display: flex; justify-content: space-between; align-items: end; gap: 24px; flex-wrap: wrap; margin-bottom: 14px; }
 .ymb-h {
-  font-family: var(--font-display); font-weight: 400; font-size: 28px;
-  line-height: 1.15; letter-spacing: -0.3px; color: var(--ink-2);
-  margin: 6px 0 0;
+  font-family: var(--font-display); font-weight: 400; font-size: 24px;
+  line-height: 1.15; color: var(--ink-2); margin: 4px 0 0; letter-spacing: -0.3px;
 }
 .ymb-h em { font-style: italic; font-weight: 500; color: var(--sage-deep); }
-.ymb-deck {
-  font-family: var(--font-display); font-style: italic;
-  color: var(--slate); font-size: 14px; max-width: 56ch;
-  margin: 8px 0 0;
+.ymb-more {
+  font-family: var(--font-text); font-size: 12px; color: var(--slate);
+  text-decoration: none; border-bottom: 1px solid var(--rule);
+  padding-bottom: 1px; white-space: nowrap;
 }
-.ymb-controls { display: flex; gap: 18px; flex-wrap: wrap; }
-.ymb-control { display: flex; align-items: center; gap: 8px; }
-.ymb-control-l {
-  font-family: var(--font-mono); font-size: 9px;
-  text-transform: uppercase; letter-spacing: 0.7px;
-  color: var(--dust);
-}
-.ymb-toggle { display: flex; gap: 0; border: 1px solid var(--rule); border-radius: 999px; padding: 2px; background: var(--paper); }
-.ymb-pill {
-  background: transparent; border: 0;
-  padding: 4px 12px; border-radius: 999px;
-  font-size: 11px; font-weight: 500; font-family: var(--font-text);
-  color: var(--slate); cursor: pointer;
-}
-.ymb-pill:hover { color: var(--ink-2); }
-.ymb-pill.active { background: var(--ink-2); color: var(--cream); }
-
-.ymb-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.ymb-card {
+.ymb-more:hover { color: var(--sage-deep); border-color: var(--sage-deep); }
+.ymb-strip {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 0;
   background: var(--paper); border: 1px solid var(--border); border-radius: 6px;
-  padding: 16px 18px;
-  position: relative;
+  padding: 14px 0;
 }
-.ymb-card-head {
-  display: flex; align-items: flex-start; justify-content: space-between;
-  margin-bottom: 8px;
+.ymb-cell { padding: 0 16px; border-left: 1px solid var(--rule); }
+.ymb-cell:first-child { border-left: 0; }
+.ymb-cell-l {
+  font-family: var(--font-mono); font-size: 9px; color: var(--dust);
+  text-transform: uppercase; letter-spacing: 0.6px;
 }
-.ymb-card-l {
-  font-family: var(--font-mono); font-size: 9px;
-  text-transform: uppercase; letter-spacing: 0.7px;
-  color: var(--dust);
-}
-.ymb-card-h {
-  font-family: var(--font-display); font-size: 16px;
-  font-weight: 500; color: var(--ink-2);
-  margin-top: 2px;
-}
-.ymb-delta {
-  font-family: var(--font-mono); font-weight: 500; font-size: 14px;
-  text-align: right;
-  color: var(--ink-2);
+.ymb-cell-v {
+  font-family: var(--font-display); font-size: 22px; font-weight: 500;
+  color: var(--ink-2); margin-top: 4px; letter-spacing: -0.3px;
   font-variant-numeric: tabular-nums;
 }
-.ymb-delta.up   { color: var(--sage-deep); }
-.ymb-delta.down { color: var(--warn); }
-.ymb-delta-pct { color: var(--dust); font-size: 11px; font-weight: 400; }
-.ymb-delta-l {
-  font-family: var(--font-mono); font-size: 9px;
-  text-transform: uppercase; letter-spacing: 0.6px;
-  color: var(--dust); font-weight: 400; margin-top: 1px;
-}
-
-.ymb-svg { width: 100%; height: auto; display: block; }
-.ymb-line { fill: none; stroke-width: 1.6; }
-.ymb-line.we   { stroke: var(--sage-deep); }
-.ymb-line.they { stroke: var(--slate); stroke-dasharray: 4 3; }
-.ymb-dot.we    { fill: var(--sage-deep); cursor: pointer; }
-.ymb-dot.they  { fill: var(--slate); cursor: pointer; }
-.ymb-dot:hover { r: 4; }
-.ymb-tick { font-family: var(--font-mono); font-size: 9px; fill: var(--dust); }
-
-.ymb-legend {
-  display: flex; gap: 14px;
-  margin-top: 4px;
-  font-family: var(--font-mono); font-size: 9px;
-  text-transform: uppercase; letter-spacing: 0.6px;
-  color: var(--slate);
-}
-.ymb-leg { display: inline-flex; align-items: center; gap: 6px; }
-.ymb-leg-sw {
-  display: inline-block; width: 18px; height: 0;
-  border-top: 1.6px solid var(--sage-deep);
-}
-.ymb-leg.il .ymb-leg-sw { border-top: 1.6px dashed var(--slate); }
-
-.ymb-tip {
-  position: absolute;
-  background: var(--ink-2); color: var(--cream);
-  padding: 4px 8px; border-radius: 3px;
-  font-family: var(--font-mono); font-size: 10px;
-  pointer-events: none;
-  white-space: nowrap;
-  z-index: 10;
-}
-
+.ymb-cell-d { font-size: 11px; color: var(--slate); margin-top: 2px; }
+.ymb-cell-d .up   { color: var(--sage-deep); font-weight: 500; }
+.ymb-cell-d .down { color: var(--warn);      font-weight: 500; }
+.ymb-cell svg { margin-top: 8px; display: block; width: 100%; }
+.ymb-line-us { fill: none; stroke: var(--ink-2); stroke-width: 1.4; }
+.ymb-line-il { fill: none; stroke: var(--slate); stroke-width: 1; stroke-dasharray: 3,2; opacity: 0.65; }
 .ymb-source {
-  font-size: 11px; color: var(--slate);
-  font-style: italic; font-family: var(--font-display);
-  margin: 14px 0 0;
+  font-family: var(--font-display); font-style: italic;
+  font-size: 11px; color: var(--dust); margin: 12px 0 0;
 }
-.ymb-source code {
-  font-style: normal; font-family: var(--font-mono);
-  font-size: 10px; background: var(--paper-2);
-  padding: 1px 4px; border-radius: 2px;
-  color: var(--ink);
-}
-.ymb-source a { color: var(--sage-deep); text-decoration: none; border-bottom: 1px dotted var(--sage); }
-.ymb-source a:hover { border-bottom-style: solid; }
-
-@media (max-width: 1100px) {
-  .ymb-head { grid-template-columns: 1fr; }
-  .ymb-grid { grid-template-columns: 1fr; }
+.ymb-source code { font-family: var(--font-mono); font-style: normal; font-size: 10px; }
+@media (max-width: 900px) {
+  .ymb-strip { grid-template-columns: repeat(2, 1fr); row-gap: 14px; }
+  .ymb-cell:nth-child(3) { border-left: 0; }
 }
 @media (max-width: 700px) {
   .ymb { padding: 16px; }
+  .ymb-strip { grid-template-columns: 1fr; }
+  .ymb-cell { border-left: 0; border-top: 1px solid var(--rule); padding-top: 10px; padding-bottom: 4px; }
+  .ymb-cell:first-child { border-top: 0; padding-top: 0; }
 }
 </style>
 
@@ -1388,535 +1192,65 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
      BOOKS & RECORDS — interactive analysis below the dashboard.
      Self-contained: data inlined as a JS const, no fetches.
      ============================================================ -->
-<section class="explorer" id="explorer">
-  <div class="explorer-head">
-    <div>
-      <p class="A-eyebrow">Books &amp; records · 4 yrs · 134 transactions</p>
-      <h2 class="explorer-h">Every dollar in <em>and out.</em></h2>
+<!-- Books explorer extracted to books.html — link card stays in its place. -->
+<section class="books-link" aria-label="Books and records — link to dedicated page">
+  <a href="books.html" class="books-link-card">
+    <div class="books-link-l">
+      <div class="books-link-eye">Books &amp; records</div>
+      <div class="books-link-h">Every dollar in <em>and out.</em></div>
+      <div class="books-link-d">Annual P&amp;L · crop-year cuts · yields · prices · inputs · cattle · capex backlog</div>
     </div>
-    <div class="explorer-totals" id="explorer-totals">
-      <div class="ex-tot"><div class="ex-tot-l">Income</div><div class="ex-tot-v up" id="tot-income">$0</div></div>
-      <div class="ex-tot"><div class="ex-tot-l">Expense</div><div class="ex-tot-v down" id="tot-expense">$0</div></div>
-      <div class="ex-tot"><div class="ex-tot-l">Capex</div><div class="ex-tot-v down" id="tot-capex">$0</div></div>
-      <div class="ex-tot"><div class="ex-tot-l">Net</div><div class="ex-tot-v" id="tot-net">$0</div></div>
-      <div class="ex-tot"><div class="ex-tot-l">Rows</div><div class="ex-tot-v" id="tot-rows">0</div></div>
+    <div class="books-link-r">
+      <div class="books-link-arrow">→</div>
+      <div class="books-link-cta">Open books</div>
     </div>
-  </div>
-
-  <div class="ex-tabs" role="tablist" id="ex-tabs">
-    <button class="ex-tab active" data-view="ledger"  role="tab">Ledger</button>
-    <button class="ex-tab"        data-view="pnl"     role="tab">Annual P&amp;L</button>
-    <button class="ex-tab"        data-view="byyear"  role="tab">By Year</button>
-    <button class="ex-tab"        data-view="crop"    role="tab">Crop Year</button>
-    <button class="ex-tab"        data-view="yields"  role="tab">Yields</button>
-    <button class="ex-tab"        data-view="prices"  role="tab">Prices</button>
-    <button class="ex-tab"        data-view="inputs"  role="tab">Inputs</button>
-    <button class="ex-tab"        data-view="cattle"  role="tab">Cattle</button>
-    <button class="ex-tab"        data-view="capex"   role="tab">Capex backlog</button>
-  </div>
-
-  <div class="ex-filters" id="ex-filters">
-    <div class="ex-filter">
-      <span class="ex-filter-l">Direction</span>
-      <div class="ex-chips" data-filter="direction">
-        <button class="ex-chip active" data-v="">All</button>
-        <button class="ex-chip" data-v="Income">Income</button>
-        <button class="ex-chip" data-v="Expense">Expense</button>
-        <button class="ex-chip" data-v="Capex">Capex</button>
-      </div>
-    </div>
-    <div class="ex-filter">
-      <span class="ex-filter-l">Category</span>
-      <div class="ex-chips" data-filter="category" id="cat-chips"><button class="ex-chip active" data-v="">All</button></div>
-    </div>
-    <div class="ex-filter">
-      <span class="ex-filter-l">Year</span>
-      <div class="ex-chips" data-filter="year" id="year-chips"><button class="ex-chip active" data-v="">All</button></div>
-    </div>
-    <div class="ex-search">
-      <input type="search" id="ex-search-input" placeholder="Search counterparty, subcategory, notes…" autocomplete="off" />
-    </div>
-    <button class="ex-reset" id="ex-reset" title="Clear all filters">Reset</button>
-  </div>
-
-  <div class="ex-table-wrap">
-    <div class="ex-view" id="view-ledger" data-view="ledger">
-      <table class="ex-table" id="ex-ledger-table">
-        <thead>
-          <tr>
-            <th class="sortable" data-sort="Date">Date<span class="sort-ind"></span></th>
-            <th class="sortable" data-sort="Direction">Direction<span class="sort-ind"></span></th>
-            <th class="sortable" data-sort="Category">Category<span class="sort-ind"></span></th>
-            <th class="sortable" data-sort="Subcategory">Subcategory<span class="sort-ind"></span></th>
-            <th class="sortable" data-sort="Counterparty">Counterparty<span class="sort-ind"></span></th>
-            <th class="sortable num" data-sort="Quantity">Qty<span class="sort-ind"></span></th>
-            <th class="sortable num" data-sort="Unit Price">Unit $<span class="sort-ind"></span></th>
-            <th class="sortable num" data-sort="Net">Net $<span class="sort-ind"></span></th>
-          </tr>
-        </thead>
-        <tbody id="ex-ledger-body"></tbody>
-      </table>
-      <p class="ex-hint">Click any row to see the full record · click a column header to sort</p>
-    </div>
-    <div class="ex-view" id="view-pnl"    data-view="pnl"    hidden></div>
-    <div class="ex-view" id="view-byyear" data-view="byyear" hidden></div>
-    <div class="ex-view" id="view-crop"   data-view="crop"   hidden></div>
-    <div class="ex-view" id="view-yields" data-view="yields" hidden></div>
-    <div class="ex-view" id="view-prices" data-view="prices" hidden></div>
-    <div class="ex-view" id="view-inputs" data-view="inputs" hidden></div>
-    <div class="ex-view" id="view-cattle" data-view="cattle" hidden></div>
-    <div class="ex-view" id="view-capex"  data-view="capex"  hidden></div>
-  </div>
-
-  <div class="ex-detail" id="ex-detail" hidden>
-    <button class="ex-detail-close" id="ex-detail-close" aria-label="Close">×</button>
-    <div id="ex-detail-body"></div>
-  </div>
+  </a>
 </section>
 
-<script id="books-data" type="application/json">{"generated_at":"2026-04-29T18:28:48.178311Z","sheets":{"Ledger":[{"Date":"2022-08-31T00:00:00","Period":"MY 2021-2022","Direction":"Income","Category":"Grain","Subcategory":"Corn","Counterparty":"(buyer not recorded)","Quantity":9536.11,"Unit":"bu","Unit Price":6.77,"Gross":64038.06,"Adjustments":0,"Net":64038.06,"Source":"data/Crops/Harvest to Sale.xlsx","Notes":"50% share of 19,072.22 bu (113.42 ac \u00d7 168.17 bu/ac). End-of-MY bucket; per-transaction detail not recorded."},{"Date":"2022-08-31T00:00:00","Period":"MY 2021-2022","Direction":"Income","Category":"Grain","Subcategory":"Soybeans","Counterparty":"(buyer not recorded)","Quantity":3751.93,"Unit":"bu","Unit Price":15.2,"Gross":57028.16,"Adjustments":0,"Net":57028.16,"Source":"data/Crops/Harvest to Sale.xlsx","Notes":"50% share of 7,503.86 bu (129.58 ac \u00d7 59.71 bu/ac). Avg $/bu derived from realized."},{"Date":"2023-04-21T00:00:00","Period":"2023","Direction":"Capex","Category":"Infrastructure","Subcategory":"Internet","Counterparty":"Starlink","Quantity":1,"Unit":"kit","Unit Price":614.9,"Gross":614.9,"Adjustments":0,"Net":-614.9,"Source":"data/Starlink/.../Starlink Service & Hardware 2023.xlsx","Notes":"Hardware: dish + router. Pending reimbursement at recording."},{"Date":"2023-05-10T00:00:00","Period":"2023","Direction":"Expense","Category":"Infrastructure","Subcategory":"Internet","Counterparty":"Starlink","Quantity":1,"Unit":"month","Unit Price":120,"Gross":120,"Adjustments":0,"Net":-120,"Source":"data/Starlink/.../Starlink Service & Hardware 2023.xlsx","Notes":"Monthly Starlink service."},{"Date":"2023-05-22T00:00:00","Period":"MY 2022-2023","Direction":"Income","Category":"Grain","Subcategory":"Corn","Counterparty":"Akron/Ritchie","Quantity":3123,"Unit":"bu","Unit Price":5.91,"Gross":18456.92,"Adjustments":-482.88,"Net":17974.04,"Source":"data/Farm 2023.xlsx","Notes":"Storage -455.56, Checkoff -27.32."},{"Date":"2023-05-22T00:00:00","Period":"MY 2022-2023","Direction":"Income","Category":"Grain","Subcategory":"Soybeans","Counterparty":"Akron/Ritchie","Quantity":1575,"Unit":"bu","Unit Price":13.51,"Gross":21278.26,"Adjustments":-336.15,"Net":20942.1,"Source":"data/Farm 2023.xlsx","Notes":"Storage -229.76, Checkoff -106.39."},{"Date":"2023-06-10T00:00:00","Period":"2023","Direction":"Expense","Category":"Infrastructure","Subcategory":"Internet","Counterparty":"Starlink","Quantity":1,"Unit":"month","Unit Price":120,"Gross":120,"Adjustments":0,"Net":-120,"Source":"data/Starlink/.../Starlink Service & Hardware 2023.xlsx","Notes":"Monthly Starlink service."},{"Date":"2023-07-10T00:00:00","Period":"MY 2022-2023","Direction":"Income","Category":"Grain","Subcategory":"Corn","Counterparty":"Akron/Ritchie","Quantity":5000,"Unit":"bu","Unit Price":5.7,"Gross":28499.99,"Adjustments":-1095.1,"Net":27404.89,"Source":"data/Farm 2023.xlsx","Notes":"Storage -1,051.34, Checkoff -43.76."},{"Date":"2023-07-10T00:00:00","Period":"MY 2022-2023","Direction":"Income","Category":"Grain","Subcategory":"Soybeans","Counterparty":"Akron/Ritchie","Quantity":800,"Unit":"bu","Unit Price":15.04,"Gross":12032,"Adjustments":-228.37,"Net":11803.63,"Source":"data/Farm 2023.xlsx","Notes":"Storage -168.21, Checkoff -60.16."},{"Date":"2023-07-10T00:00:00","Period":"2023","Direction":"Expense","Category":"Infrastructure","Subcategory":"Internet","Counterparty":"Starlink","Quantity":1,"Unit":"month","Unit Price":120,"Gross":120,"Adjustments":0,"Net":-120,"Source":"data/Starlink/.../Starlink Service & Hardware 2023.xlsx","Notes":"Monthly Starlink service."},{"Date":"2023-08-10T00:00:00","Period":"2023","Direction":"Expense","Category":"Infrastructure","Subcategory":"Internet","Counterparty":"Starlink","Quantity":1,"Unit":"month","Unit Price":120,"Gross":120,"Adjustments":0,"Net":-120,"Source":"data/Starlink/.../Starlink Service & Hardware 2023.xlsx","Notes":"Monthly Starlink service."},{"Date":"2023-08-23T00:00:00","Period":"MY 2022-2023","Direction":"Income","Category":"Grain","Subcategory":"Corn","Counterparty":"Akron/Ritchie","Quantity":4368.43,"Unit":"bu","Unit Price":5.19,"Gross":22672.14,"Adjustments":-1209.36,"Net":21462.78,"Source":"data/Farm 2023.xlsx","Notes":"Storage -1,171.13, Checkoff -38.23."},{"Date":"2023-08-23T00:00:00","Period":"MY 2022-2023","Direction":"Income","Category":"Grain","Subcategory":"Corn","Counterparty":"FS Grain","Quantity":500.53,"Unit":"bu","Unit Price":5.09,"Gross":2547.7,"Adjustments":-241.17,"Net":2306.53,"Source":"data/Farm 2023.xlsx","Notes":"Storage -236.79, Checkoff -4.38."},{"Date":"2023-08-23T00:00:00","Period":"MY 2022-2023","Direction":"Income","Category":"Grain","Subcategory":"Soybeans","Counterparty":"Akron/Ritchie","Quantity":777.67,"Unit":"bu","Unit Price":14.06,"Gross":10934.04,"Adjustments":-263.15,"Net":10670.89,"Source":"data/Farm 2023.xlsx","Notes":"Storage -208.49, Checkoff -54.66."},{"Date":"2023-09-10T00:00:00","Period":"2023","Direction":"Expense","Category":"Infrastructure","Subcategory":"Internet","Counterparty":"Starlink","Quantity":1,"Unit":"month","Unit Price":120,"Gross":120,"Adjustments":0,"Net":-120,"Source":"data/Starlink/.../Starlink Service & Hardware 2023.xlsx","Notes":"Monthly Starlink service."},{"Date":"2023-10-10T00:00:00","Period":"2023","Direction":"Expense","Category":"Infrastructure","Subcategory":"Internet","Counterparty":"Starlink","Quantity":1,"Unit":"month","Unit Price":120,"Gross":120,"Adjustments":0,"Net":-120,"Source":"data/Starlink/.../Starlink Service & Hardware 2023.xlsx","Notes":"Monthly Starlink service."},{"Date":"2023-11-10T00:00:00","Period":"2023","Direction":"Expense","Category":"Infrastructure","Subcategory":"Internet","Counterparty":"Starlink","Quantity":1,"Unit":"month","Unit Price":120,"Gross":120,"Adjustments":0,"Net":-120,"Source":"data/Starlink/.../Starlink Service & Hardware 2023.xlsx","Notes":"Monthly Starlink service."},{"Date":"2023-12-10T00:00:00","Period":"2023","Direction":"Expense","Category":"Infrastructure","Subcategory":"Internet","Counterparty":"Starlink","Quantity":1,"Unit":"month","Unit Price":120,"Gross":120,"Adjustments":0,"Net":-120,"Source":"data/Starlink/.../Starlink Service & Hardware 2023.xlsx","Notes":"Monthly Starlink service."},{"Date":"2023-12-31T00:00:00","Period":"2023","Direction":"Income","Category":"Hay","Subcategory":null,"Counterparty":"(retail)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":348.75,"Source":"data/Farm 2023.xlsx","Notes":"Annual hay sales total. Most production fed to herd in-house."},{"Date":"2023-12-31T00:00:00","Period":"2023","Direction":"Income","Category":"Cattle","Subcategory":"Black cow","Counterparty":"(buyer not recorded)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":1451.1,"Source":"data/Farm 2023.xlsx","Notes":"Single cow sale."},{"Date":"2023-12-31T00:00:00","Period":"2023","Direction":"Income","Category":"Cattle","Subcategory":"Red stripe cow","Counterparty":"(buyer not recorded)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":715.2,"Source":"data/Farm 2023.xlsx","Notes":"Single cow sale."},{"Date":"2023-12-31T00:00:00","Period":"2023","Direction":"Income","Category":"Cattle","Subcategory":"2 cows","Counterparty":"(buyer not recorded)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":2005,"Source":"data/Farm 2023.xlsx","Notes":"Two-cow sale."},{"Date":"2023-12-31T00:00:00","Period":"2023","Direction":"Income","Category":"Patronage","Subcategory":null,"Counterparty":"FS Coop","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":836.19,"Source":"data/Farm 2023.xlsx","Notes":"Co-op dividend / patronage payment."},{"Date":"2023-12-31T00:00:00","Period":"2023","Direction":"Expense","Category":"Inputs","Subcategory":"Supplies","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-3981.66,"Source":"data/Farm 2023.xlsx","Notes":"Annual rollup. Combined house + farm per Sheet3."},{"Date":"2023-12-31T00:00:00","Period":"2023","Direction":"Expense","Category":"Inputs","Subcategory":"Utilities","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-6926.47,"Source":"data/Farm 2023.xlsx","Notes":"Annual rollup. Combined house + farm per Sheet3."},{"Date":"2023-12-31T00:00:00","Period":"2023","Direction":"Expense","Category":"Inputs","Subcategory":"Repairs & Maintenance","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-12808.99,"Source":"data/Farm 2023.xlsx","Notes":"Annual rollup. Combined house + farm per Sheet3."},{"Date":"2023-12-31T00:00:00","Period":"2023","Direction":"Expense","Category":"Inputs","Subcategory":"Fuel & Gas","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-10093.43,"Source":"data/Farm 2023.xlsx","Notes":"Annual rollup. Combined house + farm per Sheet3."},{"Date":"2023-12-31T00:00:00","Period":"2023","Direction":"Expense","Category":"Inputs","Subcategory":"Insurance","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-3868.2,"Source":"data/Farm 2023.xlsx","Notes":"Annual rollup. Combined house + farm per Sheet3."},{"Date":"2023-12-31T00:00:00","Period":"2023","Direction":"Expense","Category":"Inputs","Subcategory":"Taxes","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-12320.34,"Source":"data/Farm 2023.xlsx","Notes":"Annual rollup. Combined house + farm per Sheet3."},{"Date":"2023-12-31T00:00:00","Period":"2023","Direction":"Expense","Category":"Inputs","Subcategory":"Fertilizer","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-20082.16,"Source":"data/Farm 2023.xlsx","Notes":"Annual rollup. Combined house + farm per Sheet3."},{"Date":"2023-12-31T00:00:00","Period":"2023","Direction":"Expense","Category":"Inputs","Subcategory":"Herbicides","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-14373.88,"Source":"data/Farm 2023.xlsx","Notes":"Annual rollup. Combined house + farm per Sheet3."},{"Date":"2023-12-31T00:00:00","Period":"2023","Direction":"Expense","Category":"Inputs","Subcategory":"Freight","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-195.18,"Source":"data/Farm 2023.xlsx","Notes":"Annual rollup. Combined house + farm per Sheet3."},{"Date":"2023-12-31T00:00:00","Period":"2023","Direction":"Expense","Category":"Inputs","Subcategory":"Drying","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-757.51,"Source":"data/Farm 2023.xlsx","Notes":"Annual rollup. Combined house + farm per Sheet3."},{"Date":"2023-12-31T00:00:00","Period":"2023","Direction":"Expense","Category":"Inputs","Subcategory":"Storage","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-3492.66,"Source":"data/Farm 2023.xlsx","Notes":"Annual rollup. Combined house + farm per Sheet3."},{"Date":"2023-12-31T00:00:00","Period":"2023","Direction":"Expense","Category":"Inputs","Subcategory":"Seed","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-13241.14,"Source":"data/Farm 2023.xlsx","Notes":"Annual rollup. Combined house + farm per Sheet3."},{"Date":"2023-12-31T00:00:00","Period":"2023","Direction":"Expense","Category":"Inputs","Subcategory":"Meals","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-103,"Source":"data/Farm 2023.xlsx","Notes":"Annual rollup. Combined house + farm per Sheet3."},{"Date":"2023-12-31T00:00:00","Period":"2023","Direction":"Expense","Category":"Inputs","Subcategory":"Security","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-225,"Source":"data/Farm 2023.xlsx","Notes":"Annual rollup. Combined house + farm per Sheet3."},{"Date":"2023-12-31T00:00:00","Period":"2023","Direction":"Expense","Category":"Inputs","Subcategory":"Postage","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-18.02,"Source":"data/Farm 2023.xlsx","Notes":"Annual rollup. Combined house + farm per Sheet3."},{"Date":"2023-12-31T00:00:00","Period":"2023","Direction":"Expense","Category":"Inputs","Subcategory":"Furniture","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-4821.22,"Source":"data/Farm 2023.xlsx","Notes":"Annual rollup. Combined house + farm per Sheet3."},{"Date":"2023-12-31T00:00:00","Period":"2023","Direction":"Expense","Category":"Inputs","Subcategory":"Sec of State","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-75,"Source":"data/Farm 2023.xlsx","Notes":"Annual rollup. Combined house + farm per Sheet3."},{"Date":"2023-12-31T00:00:00","Period":"2023","Direction":"Expense","Category":"Inputs","Subcategory":"Farm Bureau","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-65,"Source":"data/Farm 2023.xlsx","Notes":"Annual rollup. Combined house + farm per Sheet3."},{"Date":"2023-12-31T00:00:00","Period":"2023","Direction":"Expense","Category":"Inputs","Subcategory":"Gravel","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-675,"Source":"data/Farm 2023.xlsx","Notes":"Annual rollup. Combined house + farm per Sheet3."},{"Date":"2023-12-31T00:00:00","Period":"2023","Direction":"Expense","Category":"Inputs","Subcategory":"WBK","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-330,"Source":"data/Farm 2023.xlsx","Notes":"Annual rollup. Combined house + farm per Sheet3."},{"Date":"2023-12-31T00:00:00","Period":"2023","Direction":"Expense","Category":"Inputs","Subcategory":"Soil testing","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-321.65,"Source":"data/Farm 2023.xlsx","Notes":"Annual rollup. Combined house + farm per Sheet3."},{"Date":"2023-12-31T00:00:00","Period":"2023","Direction":"Expense","Category":"Inputs","Subcategory":"Chgo Farmers Mem","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-195,"Source":"data/Farm 2023.xlsx","Notes":"Annual rollup. Combined house + farm per Sheet3."},{"Date":"2023-12-31T00:00:00","Period":"2023","Direction":"Expense","Category":"Inputs","Subcategory":"Veterinarian","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-630,"Source":"data/Farm 2023.xlsx","Notes":"Annual rollup. Combined house + farm per Sheet3."},{"Date":"2024-04-05T00:00:00","Period":"MY 2023-2024","Direction":"Income","Category":"Grain","Subcategory":"Soybeans","Counterparty":"Posen Coop (PC)","Quantity":500,"Unit":"bu","Unit Price":12.01,"Gross":6005.51,"Adjustments":-72.73,"Net":5932.78,"Source":"data/FARM 2024.xlsx","Notes":"Storage -42.71, Checkoff -30.02."},{"Date":"2024-05-16T00:00:00","Period":"MY 2023-2024","Direction":"Income","Category":"Grain","Subcategory":"Soybeans","Counterparty":"Posen Coop (PC)","Quantity":500,"Unit":"bu","Unit Price":12.25,"Gross":6125,"Adjustments":-100.28,"Net":6024.72,"Source":"data/FARM 2024.xlsx","Notes":"Storage -69.65, Checkoff -30.63."},{"Date":"2024-06-24T00:00:00","Period":"MY 2023-2024","Direction":"Income","Category":"Grain","Subcategory":"Soybeans","Counterparty":"Posen Coop (PC)","Quantity":1704.55,"Unit":"bu","Unit Price":11.95,"Gross":20799.57,"Adjustments":-437.65,"Net":20363.91,"Source":"data/FARM 2024.xlsx","Notes":"Storage -331.66, Checkoff -105.99."},{"Date":"2024-07-12T00:00:00","Period":"MY 2023-2024","Direction":"Income","Category":"Grain","Subcategory":"Corn","Counterparty":"FS Grain","Quantity":2500,"Unit":"bu","Unit Price":3.82,"Gross":9550,"Adjustments":-745.63,"Net":8804.37,"Source":"data/FARM 2024.xlsx","Notes":"Storage -723.75, Checkoff -21.88."},{"Date":"2024-07-31T00:00:00","Period":"MY 2023-2024","Direction":"Income","Category":"Grain","Subcategory":"Corn","Counterparty":"Akron/Ritchie","Quantity":1500,"Unit":"bu","Unit Price":3.68,"Gross":5520,"Adjustments":-329.63,"Net":5190.37,"Source":"data/FARM 2024.xlsx","Notes":"Storage -316.50, Checkoff -13.13."},{"Date":"2024-07-31T00:00:00","Period":"MY 2023-2024","Direction":"Income","Category":"Grain","Subcategory":"Corn","Counterparty":"FS Grain","Quantity":1000,"Unit":"bu","Unit Price":3.69,"Gross":3690,"Adjustments":-326.75,"Net":3363.25,"Source":"data/FARM 2024.xlsx","Notes":"Storage -318.00, Checkoff -8.75."},{"Date":"2024-08-27T00:00:00","Period":"MY 2023-2024","Direction":"Income","Category":"Grain","Subcategory":"Soybeans","Counterparty":"Akron/Ritchie","Quantity":695,"Unit":"bu","Unit Price":9.87,"Gross":6859.65,"Adjustments":-199.71,"Net":6659.94,"Source":"data/FARM 2024.xlsx","Notes":"Storage -165.41, Checkoff -34.30."},{"Date":"2024-08-27T00:00:00","Period":"MY 2023-2024","Direction":"Income","Category":"Grain","Subcategory":"Corn","Counterparty":"FS Grain","Quantity":626.91,"Unit":"bu","Unit Price":3.51,"Gross":2209.45,"Adjustments":-230.24,"Net":1970.21,"Source":"data/FARM 2024.xlsx","Notes":"Storage -224.75, Checkoff -5.49."},{"Date":"2024-08-27T00:00:00","Period":"MY 2023-2024","Direction":"Income","Category":"Grain","Subcategory":"Corn","Counterparty":"Akron/Ritchie","Quantity":3600,"Unit":"bu","Unit Price":3.43,"Gross":12351.61,"Adjustments":-906.35,"Net":11981.86,"Source":"data/FARM 2024.xlsx","Notes":"Storage -874.85, Checkoff -31.50."},{"Date":"2024-08-30T00:00:00","Period":"MY 2023-2024","Direction":"Income","Category":"Grain","Subcategory":"Soybeans","Counterparty":"Akron/Ritchie","Quantity":694.31,"Unit":"bu","Unit Price":9.78,"Gross":6790.35,"Adjustments":-201.28,"Net":6589.07,"Source":"data/FARM 2024.xlsx","Notes":"Storage -167.33, Checkoff -33.95."},{"Date":"2024-08-30T00:00:00","Period":"MY 2023-2024","Direction":"Income","Category":"Grain","Subcategory":"Corn","Counterparty":"Akron/Ritchie","Quantity":3627.95,"Unit":"bu","Unit Price":3.66,"Gross":13278.3,"Adjustments":-906.08,"Net":12372.33,"Source":"data/FARM 2024.xlsx","Notes":"Storage -874.34, Checkoff -31.74."},{"Date":"2024-12-31T00:00:00","Period":"2024","Direction":"Income","Category":"Hay","Subcategory":null,"Counterparty":"(retail)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":955,"Source":"data/FARM 2024.xlsx","Notes":"Annual hay sales."},{"Date":"2024-12-31T00:00:00","Period":"2024","Direction":"Income","Category":"Cattle","Subcategory":null,"Counterparty":"(buyer not recorded)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":2060.76,"Source":"data/FARM 2024.xlsx","Notes":"Annual cattle sales (no per-animal breakdown)."},{"Date":"2024-12-31T00:00:00","Period":"2024","Direction":"Income","Category":"Patronage","Subcategory":null,"Counterparty":"FS Coop","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":760.42,"Source":"data/FARM 2024.xlsx","Notes":"Co-op patronage ($682.42 + $78)."},{"Date":"2024-12-31T00:00:00","Period":"2024","Direction":"Expense","Category":"Inputs","Subcategory":"Supplies","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-3163.28,"Source":"data/FARM 2024.xlsx","Notes":"Annual rollup."},{"Date":"2024-12-31T00:00:00","Period":"2024","Direction":"Expense","Category":"Inputs","Subcategory":"Utilities","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-6259.11,"Source":"data/FARM 2024.xlsx","Notes":"Annual rollup."},{"Date":"2024-12-31T00:00:00","Period":"2024","Direction":"Expense","Category":"Inputs","Subcategory":"Repairs & Maintenance","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-13410.13,"Source":"data/FARM 2024.xlsx","Notes":"Annual rollup."},{"Date":"2024-12-31T00:00:00","Period":"2024","Direction":"Expense","Category":"Inputs","Subcategory":"Fuel & Gas","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-9242.01,"Source":"data/FARM 2024.xlsx","Notes":"Annual rollup."},{"Date":"2024-12-31T00:00:00","Period":"2024","Direction":"Expense","Category":"Inputs","Subcategory":"Insurance","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-5004.79,"Source":"data/FARM 2024.xlsx","Notes":"Annual rollup."},{"Date":"2024-12-31T00:00:00","Period":"2024","Direction":"Expense","Category":"Inputs","Subcategory":"Taxes","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-13449,"Source":"data/FARM 2024.xlsx","Notes":"Annual rollup."},{"Date":"2024-12-31T00:00:00","Period":"2024","Direction":"Expense","Category":"Inputs","Subcategory":"Chemicals","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-30335.26,"Source":"data/FARM 2024.xlsx","Notes":"Annual rollup."},{"Date":"2024-12-31T00:00:00","Period":"2024","Direction":"Expense","Category":"Inputs","Subcategory":"Freight","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-873.42,"Source":"data/FARM 2024.xlsx","Notes":"Annual rollup."},{"Date":"2024-12-31T00:00:00","Period":"2024","Direction":"Expense","Category":"Inputs","Subcategory":"Drying","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-581.33,"Source":"data/FARM 2024.xlsx","Notes":"Annual rollup."},{"Date":"2024-12-31T00:00:00","Period":"2024","Direction":"Expense","Category":"Inputs","Subcategory":"Storage","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-1695.45,"Source":"data/FARM 2024.xlsx","Notes":"Annual rollup."},{"Date":"2024-12-31T00:00:00","Period":"2024","Direction":"Expense","Category":"Inputs","Subcategory":"Seed","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-14644.31,"Source":"data/FARM 2024.xlsx","Notes":"Annual rollup."},{"Date":"2024-12-31T00:00:00","Period":"2024","Direction":"Expense","Category":"Inputs","Subcategory":"Meals","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-1188.52,"Source":"data/FARM 2024.xlsx","Notes":"Annual rollup."},{"Date":"2024-12-31T00:00:00","Period":"2024","Direction":"Expense","Category":"Inputs","Subcategory":"Security","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-1860.27,"Source":"data/FARM 2024.xlsx","Notes":"Annual rollup."},{"Date":"2024-12-31T00:00:00","Period":"2024","Direction":"Expense","Category":"Inputs","Subcategory":"Postage","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-1.47,"Source":"data/FARM 2024.xlsx","Notes":"Annual rollup."},{"Date":"2024-12-31T00:00:00","Period":"2024","Direction":"Expense","Category":"Inputs","Subcategory":"New tree","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-642.5,"Source":"data/FARM 2024.xlsx","Notes":"Annual rollup."},{"Date":"2024-12-31T00:00:00","Period":"2024","Direction":"Expense","Category":"Inputs","Subcategory":"Sec of State","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-75,"Source":"data/FARM 2024.xlsx","Notes":"Annual rollup."},{"Date":"2024-12-31T00:00:00","Period":"2024","Direction":"Expense","Category":"Inputs","Subcategory":"Farm Bureau","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-65,"Source":"data/FARM 2024.xlsx","Notes":"Annual rollup."},{"Date":"2024-12-31T00:00:00","Period":"2024","Direction":"Expense","Category":"Inputs","Subcategory":"Washer/dryer","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-1741.84,"Source":"data/FARM 2024.xlsx","Notes":"Annual rollup."},{"Date":"2024-12-31T00:00:00","Period":"2024","Direction":"Expense","Category":"Inputs","Subcategory":"WBK","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-340,"Source":"data/FARM 2024.xlsx","Notes":"Annual rollup."},{"Date":"2024-12-31T00:00:00","Period":"2024","Direction":"Expense","Category":"Inputs","Subcategory":"Soil testing","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-289.44,"Source":"data/FARM 2024.xlsx","Notes":"Annual rollup."},{"Date":"2024-12-31T00:00:00","Period":"2024","Direction":"Expense","Category":"Inputs","Subcategory":"Flagstone","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-1319.05,"Source":"data/FARM 2024.xlsx","Notes":"Annual rollup."},{"Date":"2024-12-31T00:00:00","Period":"2024","Direction":"Expense","Category":"Inputs","Subcategory":"Mulch","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-538.6,"Source":"data/FARM 2024.xlsx","Notes":"Annual rollup."},{"Date":"2024-12-31T00:00:00","Period":"2024","Direction":"Expense","Category":"Inputs","Subcategory":"Trailer license","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-37,"Source":"data/FARM 2024.xlsx","Notes":"Annual rollup."},{"Date":"2024-12-31T00:00:00","Period":"2024","Direction":"Capex","Category":"Equipment","Subcategory":"Can-Am UTV","Counterparty":"(dealer)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-21565,"Source":"data/FARM 2024.xlsx","Notes":"New Can-Am side-by-side."},{"Date":"2024-12-31T00:00:00","Period":"2024","Direction":"Capex","Category":"Cattle","Subcategory":"New cattle purchase","Counterparty":"(buyer not recorded)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-8400,"Source":"data/FARM 2024.xlsx","Notes":"Herd refresh \u2014 buying-side cost."},{"Date":"2025-04-04T00:00:00","Period":"MY 2024-2025","Direction":"Income","Category":"Grain","Subcategory":"Corn","Counterparty":"Akron/Ritchie","Quantity":3000,"Unit":"bu","Unit Price":4.54,"Gross":13620,"Adjustments":-396.85,"Net":13223.15,"Source":"data/Farm 2025.xlsx","Notes":"Storage -370.60, Checkoff -26.25."},{"Date":"2025-04-08T00:00:00","Period":"MY 2024-2025","Direction":"Income","Category":"Grain","Subcategory":"Soybeans","Counterparty":"Akron/Ritchie","Quantity":573.5,"Unit":"bu","Unit Price":10.18,"Gross":5838.23,"Adjustments":-121.51,"Net":5716.72,"Source":"data/Farm 2025.xlsx","Notes":"Storage -92.32, Checkoff -29.19."},{"Date":"2025-05-15T00:00:00","Period":"2025","Direction":"Income","Category":"USDA","Subcategory":null,"Counterparty":"USDA / FSA","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":3803.03,"Source":"data/Farm 2025.xlsx","Notes":"FSA payment, May."},{"Date":"2025-06-09T00:00:00","Period":"MY 2024-2025","Direction":"Income","Category":"Grain","Subcategory":"Corn","Counterparty":"Akron/Ritchie","Quantity":1500,"Unit":"bu","Unit Price":4.4,"Gross":6600,"Adjustments":-328.52,"Net":6271.48,"Source":"data/Farm 2025.xlsx","Notes":"Storage -315.39, Checkoff -13.13."},{"Date":"2025-06-26T00:00:00","Period":"MY 2024-2025","Direction":"Income","Category":"Grain","Subcategory":"Corn","Counterparty":"Akron/Ritchie","Quantity":1447.49,"Unit":"bu","Unit Price":4.11,"Gross":5949.18,"Adjustments":-349.37,"Net":5599.81,"Source":"data/Farm 2025.xlsx","Notes":"Storage -336.70, Checkoff -12.67."},{"Date":"2025-07-22T00:00:00","Period":"MY 2024-2025","Direction":"Income","Category":"Grain","Subcategory":"Corn","Counterparty":"Akron/Ritchie","Quantity":4000,"Unit":"bu","Unit Price":3.89,"Gross":15560,"Adjustments":-1603,"Net":13957,"Source":"data/Farm 2025.xlsx","Notes":"Storage -1,568.00, Checkoff -35.00."},{"Date":"2025-07-30T00:00:00","Period":"MY 2024-2025","Direction":"Income","Category":"Grain","Subcategory":"Soybeans","Counterparty":"Akron/Ritchie","Quantity":849.58,"Unit":"bu","Unit Price":10.07,"Gross":8555.27,"Adjustments":-425.09,"Net":8130.18,"Source":"data/Farm 2025.xlsx","Notes":"Storage -382.31, Checkoff -42.78."},{"Date":"2025-07-31T00:00:00","Period":"MY 2024-2025","Direction":"Income","Category":"Grain","Subcategory":"Corn","Counterparty":"Akron/Ritchie","Quantity":4329,"Unit":"bu","Unit Price":3.83,"Gross":16580.07,"Adjustments":-1773.81,"Net":14806.26,"Source":"data/Farm 2025.xlsx","Notes":"Storage -1,735.93, Checkoff -37.88."},{"Date":"2025-09-15T00:00:00","Period":"2025","Direction":"Income","Category":"USDA","Subcategory":null,"Counterparty":"USDA / FSA","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":626.37,"Source":"data/Farm 2025.xlsx","Notes":"FSA payment, Sept."},{"Date":"2025-10-15T00:00:00","Period":"2025","Direction":"Income","Category":"USDA","Subcategory":null,"Counterparty":"USDA / FSA","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":2342,"Source":"data/Farm 2025.xlsx","Notes":"FSA payment, Oct."},{"Date":"2025-10-28T00:00:00","Period":"MY 2025-2026","Direction":"Income","Category":"Grain","Subcategory":"Soybeans","Counterparty":"Posen Coop (PC)","Quantity":472,"Unit":"bu","Unit Price":9.82,"Gross":4635.04,"Adjustments":-23.18,"Net":4611.86,"Source":"data/Farm 2025.xlsx","Notes":"New crop \u00b7 Storage +0.00, Adj -23.18."},{"Date":"2025-10-30T00:00:00","Period":"MY 2025-2026","Direction":"Income","Category":"Grain","Subcategory":"Soybeans","Counterparty":"Posen Coop (PC)","Quantity":336,"Unit":"bu","Unit Price":9.89,"Gross":3323.04,"Adjustments":-29.99,"Net":3293.05,"Source":"data/Farm 2025.xlsx","Notes":"New crop \u00b7 Storage -13.44, Adj -16.55."},{"Date":"2025-10-30T00:00:00","Period":"MY 2025-2026","Direction":"Income","Category":"Grain","Subcategory":"Soybeans","Counterparty":"Posen Coop (PC)","Quantity":428.79,"Unit":"bu","Unit Price":9.9,"Gross":4245.02,"Adjustments":-21.23,"Net":4223.79,"Source":"data/Farm 2025.xlsx","Notes":"New crop \u00b7 Storage +0.00, Adj -21.23."},{"Date":"2025-10-30T00:00:00","Period":"MY 2025-2026","Direction":"Income","Category":"Grain","Subcategory":"Soybeans","Counterparty":"Akron/Ritchie","Quantity":1500,"Unit":"bu","Unit Price":10.61,"Gross":15915,"Adjustments":-350.58,"Net":15564.42,"Source":"data/Farm 2025.xlsx","Notes":"New crop \u00b7 Storage -271.00, Adj -79.58."},{"Date":"2025-10-31T00:00:00","Period":"MY 2025-2026","Direction":"Income","Category":"Grain","Subcategory":"Soybeans","Counterparty":"Posen Coop (PC)","Quantity":161.17,"Unit":"bu","Unit Price":9.97,"Gross":1606.86,"Adjustments":-17.66,"Net":1589.2,"Source":"data/Farm 2025.xlsx","Notes":"New crop \u00b7 Storage -9.67, Adj -7.99."},{"Date":"2025-11-11T00:00:00","Period":"MY 2025-2026","Direction":"Income","Category":"Grain","Subcategory":"Corn","Counterparty":"Akron/Ritchie","Quantity":3500,"Unit":"bu","Unit Price":4.03,"Gross":14105,"Adjustments":-1488.47,"Net":12616.53,"Source":"data/Farm 2025.xlsx","Notes":"New crop \u00b7 Storage+Hauling+Drying -1,457.84, Checkoff -30.63."},{"Date":"2025-12-31T00:00:00","Period":"2025","Direction":"Income","Category":"Cattle","Subcategory":null,"Counterparty":"(buyer not recorded)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":10444.37,"Source":"data/Farm 2025.xlsx","Notes":"Annual cattle sales \u2014 much larger than 2023/2024 as herd refresh proceeded."},{"Date":"2025-12-31T00:00:00","Period":"2025","Direction":"Income","Category":"Grant","Subcategory":null,"Counterparty":"(private)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":3000,"Source":"data/Farm 2025.xlsx","Notes":"Private grant for cattle maintenance \u2014 $2,500 went to water line, $500 to fences."},{"Date":"2025-12-31T00:00:00","Period":"2025","Direction":"Income","Category":"Patronage","Subcategory":null,"Counterparty":"FS Coop","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":508.3,"Source":"data/Farm 2025.xlsx","Notes":"FS Patronage $445.80 + FS stock redemption $62.50."},{"Date":"2025-12-31T00:00:00","Period":"2025","Direction":"Expense","Category":"Inputs","Subcategory":"Supplies","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-5040.23,"Source":"data/Farm 2025.xlsx","Notes":"Annual rollup. R&M is corrected total ($15k rodent removal + insulation included)."},{"Date":"2025-12-31T00:00:00","Period":"2025","Direction":"Expense","Category":"Inputs","Subcategory":"Utilities","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-6670.59,"Source":"data/Farm 2025.xlsx","Notes":"Annual rollup. R&M is corrected total ($15k rodent removal + insulation included)."},{"Date":"2025-12-31T00:00:00","Period":"2025","Direction":"Expense","Category":"Inputs","Subcategory":"Repairs & Maintenance","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-33690,"Source":"data/Farm 2025.xlsx","Notes":"Annual rollup. R&M is corrected total ($15k rodent removal + insulation included)."},{"Date":"2025-12-31T00:00:00","Period":"2025","Direction":"Expense","Category":"Inputs","Subcategory":"Fuel & Gas","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-12053.96,"Source":"data/Farm 2025.xlsx","Notes":"Annual rollup. R&M is corrected total ($15k rodent removal + insulation included)."},{"Date":"2025-12-31T00:00:00","Period":"2025","Direction":"Expense","Category":"Inputs","Subcategory":"Insurance","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-5489.48,"Source":"data/Farm 2025.xlsx","Notes":"Annual rollup. R&M is corrected total ($15k rodent removal + insulation included)."},{"Date":"2025-12-31T00:00:00","Period":"2025","Direction":"Expense","Category":"Inputs","Subcategory":"Taxes","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-14306.38,"Source":"data/Farm 2025.xlsx","Notes":"Annual rollup. R&M is corrected total ($15k rodent removal + insulation included)."},{"Date":"2025-12-31T00:00:00","Period":"2025","Direction":"Expense","Category":"Inputs","Subcategory":"Chemicals","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-31337.59,"Source":"data/Farm 2025.xlsx","Notes":"Annual rollup. R&M is corrected total ($15k rodent removal + insulation included)."},{"Date":"2025-12-31T00:00:00","Period":"2025","Direction":"Expense","Category":"Inputs","Subcategory":"Freight","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-1273.85,"Source":"data/Farm 2025.xlsx","Notes":"Annual rollup. R&M is corrected total ($15k rodent removal + insulation included)."},{"Date":"2025-12-31T00:00:00","Period":"2025","Direction":"Expense","Category":"Inputs","Subcategory":"Drying","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-454.99,"Source":"data/Farm 2025.xlsx","Notes":"Annual rollup. R&M is corrected total ($15k rodent removal + insulation included)."},{"Date":"2025-12-31T00:00:00","Period":"2025","Direction":"Expense","Category":"Inputs","Subcategory":"Storage","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-4801.25,"Source":"data/Farm 2025.xlsx","Notes":"Annual rollup. R&M is corrected total ($15k rodent removal + insulation included)."},{"Date":"2025-12-31T00:00:00","Period":"2025","Direction":"Expense","Category":"Inputs","Subcategory":"Check Off","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-307.11,"Source":"data/Farm 2025.xlsx","Notes":"Annual rollup. R&M is corrected total ($15k rodent removal + insulation included)."},{"Date":"2025-12-31T00:00:00","Period":"2025","Direction":"Expense","Category":"Inputs","Subcategory":"Seed","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-13446.95,"Source":"data/Farm 2025.xlsx","Notes":"Annual rollup. R&M is corrected total ($15k rodent removal + insulation included)."},{"Date":"2025-12-31T00:00:00","Period":"2025","Direction":"Expense","Category":"Inputs","Subcategory":"Meals","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-86,"Source":"data/Farm 2025.xlsx","Notes":"Annual rollup. R&M is corrected total ($15k rodent removal + insulation included)."},{"Date":"2025-12-31T00:00:00","Period":"2025","Direction":"Expense","Category":"Inputs","Subcategory":"Security","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-247.5,"Source":"data/Farm 2025.xlsx","Notes":"Annual rollup. R&M is corrected total ($15k rodent removal + insulation included)."},{"Date":"2025-12-31T00:00:00","Period":"2025","Direction":"Expense","Category":"Inputs","Subcategory":"Postage","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-18.44,"Source":"data/Farm 2025.xlsx","Notes":"Annual rollup. R&M is corrected total ($15k rodent removal + insulation included)."},{"Date":"2025-12-31T00:00:00","Period":"2025","Direction":"Expense","Category":"Inputs","Subcategory":"New trees","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-212.51,"Source":"data/Farm 2025.xlsx","Notes":"Annual rollup. R&M is corrected total ($15k rodent removal + insulation included)."},{"Date":"2025-12-31T00:00:00","Period":"2025","Direction":"Expense","Category":"Inputs","Subcategory":"Sec of State","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-100,"Source":"data/Farm 2025.xlsx","Notes":"Annual rollup. R&M is corrected total ($15k rodent removal + insulation included)."},{"Date":"2025-12-31T00:00:00","Period":"2025","Direction":"Expense","Category":"Inputs","Subcategory":"Farm Bureau","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-65,"Source":"data/Farm 2025.xlsx","Notes":"Annual rollup. R&M is corrected total ($15k rodent removal + insulation included)."},{"Date":"2025-12-31T00:00:00","Period":"2025","Direction":"Expense","Category":"Inputs","Subcategory":"Gravel","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-740.6,"Source":"data/Farm 2025.xlsx","Notes":"Annual rollup. R&M is corrected total ($15k rodent removal + insulation included)."},{"Date":"2025-12-31T00:00:00","Period":"2025","Direction":"Expense","Category":"Inputs","Subcategory":"Legal","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-600,"Source":"data/Farm 2025.xlsx","Notes":"Annual rollup. R&M is corrected total ($15k rodent removal + insulation included)."},{"Date":"2025-12-31T00:00:00","Period":"2025","Direction":"Expense","Category":"Inputs","Subcategory":"Trailer registration","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-36,"Source":"data/Farm 2025.xlsx","Notes":"Annual rollup. R&M is corrected total ($15k rodent removal + insulation included)."},{"Date":"2025-12-31T00:00:00","Period":"2025","Direction":"Expense","Category":"Inputs","Subcategory":"Veterinarian","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-450.5,"Source":"data/Farm 2025.xlsx","Notes":"Annual rollup. R&M is corrected total ($15k rodent removal + insulation included)."},{"Date":"2025-12-31T00:00:00","Period":"2025","Direction":"Expense","Category":"Inputs","Subcategory":"WBK","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-350,"Source":"data/Farm 2025.xlsx","Notes":"Annual rollup. R&M is corrected total ($15k rodent removal + insulation included)."},{"Date":"2025-12-31T00:00:00","Period":"2025","Direction":"Capex","Category":"Buildings/Land","Subcategory":"New fences","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-2495,"Source":"data/Farm 2025.xlsx","Notes":"Capex event \u2014 All year."},{"Date":"2025-12-31T00:00:00","Period":"2025","Direction":"Capex","Category":"Buildings/Land","Subcategory":"Insulation","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-11784,"Source":"data/Farm 2025.xlsx","Notes":"Capex event \u2014 Nov."},{"Date":"2025-12-31T00:00:00","Period":"2025","Direction":"Capex","Category":"Buildings/Land","Subcategory":"Water line to pasture","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-2500,"Source":"data/Farm 2025.xlsx","Notes":"Capex event \u2014 Sept (paid by $3k cattle grant)."},{"Date":"2025-12-31T00:00:00","Period":"2025","Direction":"Capex","Category":"Buildings/Land","Subcategory":"Gutter guards","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-2640,"Source":"data/Farm 2025.xlsx","Notes":"Capex event \u2014 Nov."},{"Date":"2025-12-31T00:00:00","Period":"2025","Direction":"Capex","Category":"Buildings/Land","Subcategory":"Landscaping","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-11925,"Source":"data/Farm 2025.xlsx","Notes":"Capex event \u2014 All year."},{"Date":"2025-12-31T00:00:00","Period":"2025","Direction":"Capex","Category":"Buildings/Land","Subcategory":"New AC","Counterparty":"(various)","Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":null,"Net":-455.66,"Source":"data/Farm 2025.xlsx","Notes":"Capex event \u2014 July."},{"Date":null,"Period":null,"Direction":null,"Category":null,"Subcategory":null,"Counterparty":null,"Quantity":null,"Unit":null,"Unit Price":null,"Gross":null,"Adjustments":"Net (income \u2212 outflow)","Net":50868.05,"Source":null,"Notes":null}],"Annual P&L":[{"Line":"INCOME","2022":null,"2023":null,"2024":null,"2025":null,"2026":null},{"Line":"Sale of Corn","2022":64038.06,"2023":69148.24,"2024":43682.39,"2025":66474.23,"2026":0},{"Line":"Sale of Soybeans","2022":57028.16,"2023":43416.62,"2024":45570.42,"2025":43129.22,"2026":0},{"Line":"Sale of Hay","2022":0,"2023":348.75,"2024":955,"2025":0,"2026":0},{"Line":"Sale of Cattle","2022":0,"2023":4171.3,"2024":2060.76,"2025":10444.37,"2026":0},{"Line":"USDA / FSA payments","2022":0,"2023":0,"2024":0,"2025":6771.4,"2026":0},{"Line":"Co-op patronage","2022":0,"2023":836.19,"2024":760.42,"2025":508.3,"2026":0},{"Line":"Grants","2022":0,"2023":0,"2024":0,"2025":3000,"2026":0},{"Line":"Total income","2022":121066.22,"2023":117921.1,"2024":93028.99,"2025":130327.52,"2026":0},{"Line":"EXPENSE / CAPEX (signed \u2212)","2022":null,"2023":null,"2024":null,"2025":null,"2026":null},{"Line":"Inputs (operating)","2022":0,"2023":-109600.51,"2024":-106756.78,"2025":-131778.93,"2026":0},{"Line":"Infrastructure","2022":0,"2023":-1574.9,"2024":0,"2025":0,"2026":0},{"Line":"Equipment (capex)","2022":0,"2023":0,"2024":-21565,"2025":0,"2026":0},{"Line":"Buildings / Land (capex)","2022":0,"2023":0,"2024":0,"2025":-31799.66,"2026":0},{"Line":"Cattle purchases (capex)","2022":0,"2023":0,"2024":-8400,"2025":0,"2026":0},{"Line":"Total outflow","2022":0,"2023":-111175.41,"2024":-136721.78,"2025":-163578.59,"2026":0},{"Line":"NET","2022":121066.22,"2023":6745.69000000002,"2024":-43692.79,"2025":-33251.07,"2026":0}],"By Year":[{"Year":2022,"Grain income":121066.22,"Other income":0,"Outflow":0,"Net":121066.22},{"Year":2023,"Grain income":112564.86,"Other income":5356.23999999999,"Outflow":-111175.41,"Net":6745.68999999999},{"Year":2024,"Grain income":89252.81,"Other income":3776.18000000001,"Outflow":-136721.78,"Net":-43692.79},{"Year":2025,"Grain income":109603.45,"Other income":20724.07,"Outflow":-163578.59,"Net":-33251.07},{"Year":"Total","Grain income":432487.34,"Other income":29856.49,"Outflow":-411475.78,"Net":50868.05}],"Crop Year":[{"Marketing Year":"MY 2021-2022","Crop":"Corn","Acres":113.42,"Bushels (user share)":9536.11,"Avg $/bu":6.77,"Net Sales":64038.06,"Status":"Closed (50% share)"},{"Marketing Year":"MY 2021-2022","Crop":"Soybeans","Acres":129.58,"Bushels (user share)":3751.93,"Avg $/bu":15.2,"Net Sales":57028.16,"Status":"Closed (50% share)"},{"Marketing Year":"MY 2022-2023","Crop":"Corn","Acres":129.58,"Bushels (user share)":12991.96,"Avg $/bu":5.47,"Net Sales":69148.24,"Status":"Closed \u00b7 4 sales (Akron + 1 FS lot)"},{"Marketing Year":"MY 2022-2023","Crop":"Soybeans","Acres":113.42,"Bushels (user share)":3152.67,"Avg $/bu":14.2,"Net Sales":43416.62,"Status":"Closed \u00b7 3 sales (Akron)"},{"Marketing Year":"MY 2023-2024","Crop":"Corn","Acres":113.42,"Bushels (user share)":12854.86,"Avg $/bu":3.66,"Net Sales":43682.39,"Status":"Closed \u00b7 6 sales (PC + Akron)"},{"Marketing Year":"MY 2023-2024","Crop":"Soybeans","Acres":129.58,"Bushels (user share)":4093.86,"Avg $/bu":10.6,"Net Sales":45570.42,"Status":"Closed \u00b7 5 sales (PC + Akron)"},{"Marketing Year":"MY 2024-2025","Crop":"Corn","Acres":129.58,"Bushels (user share)":14276.49,"Avg $/bu":4.13,"Net Sales":53857.7,"Status":"Closed \u00b7 5 sales (Akron)"},{"Marketing Year":"MY 2024-2025","Crop":"Soybeans","Acres":113.42,"Bushels (user share)":1423.08,"Avg $/bu":10.13,"Net Sales":13846.9,"Status":"Partial \u00b7 2 sales recorded (Akron)"},{"Marketing Year":"MY 2025-2026","Crop":"Corn","Acres":113.42,"Bushels (user share)":3500,"Avg $/bu":4.03,"Net Sales":12616.53,"Status":"Open \u00b7 1 new-crop sale Nov '25"},{"Marketing Year":"MY 2025-2026","Crop":"Soybeans","Acres":129.58,"Bushels (user share)":2897.96,"Avg $/bu":10.16,"Net Sales":29282.32,"Status":"Open \u00b7 5 new-crop sales (PC + Akron)"},{"Marketing Year":"Lifetime since MY 2021-2022","Crop":null,"Acres":null,"Bushels (user share)":68478.92,"Avg $/bu":null,"Net Sales":432487.34,"Status":null}],"Yields History":[{"Harvest Year":2017,"Corn bushels":27037.32,"Acres":129,"Corn bu/ac":238.78,"Bean bushels":7808.84,"Bean bu/ac":60.53,"Notes":null},{"Harvest Year":2018,"Corn bushels":23965.22,"Acres":113.23,"Corn bu/ac":186.73,"Bean bushels":7248.96,"Bean bu/ac":64.02,"Notes":null},{"Harvest Year":2019,"Corn bushels":10004.22,"Acres":128,"Corn bu/ac":178.65,"Bean bushels":6820.4,"Bean bu/ac":53.28,"Notes":"Less corn acres planted due to weather; received crop insurance."},{"Harvest Year":2020,"Corn bushels":26221.2,"Acres":113.41,"Corn bu/ac":217.89,"Bean bushels":6814.3,"Bean bu/ac":60.09,"Notes":null},{"Harvest Year":2021,"Corn bushels":19072.22,"Acres":129.58,"Corn bu/ac":168.17,"Bean bushels":7503.86,"Bean bu/ac":59.71,"Notes":null},{"Harvest Year":2022,"Corn bushels":25983.92,"Acres":113.41,"Corn bu/ac":200.52,"Bean bushels":6305.34,"Bean bu/ac":55.6,"Notes":null},{"Harvest Year":2023,"Corn bushels":25709.72,"Acres":129.58,"Corn bu/ac":226.7,"Bean bushels":8259.72,"Bean bu/ac":63.74,"Notes":null},{"Harvest Year":2024,"Corn bushels":28552.98,"Acres":113.41,"Corn bu/ac":220.35,"Bean bushels":5642.08,"Bean bu/ac":49.75,"Notes":null},{"Harvest Year":2025,"Corn bushels":25230.56,"Acres":129.58,"Corn bu/ac":222.47,"Bean bushels":9434.24,"Bean bu/ac":72.8,"Notes":"Big bean year."}],"Prices History":[{"Sold in":2018,"Avg $/bu Corn":3.4,"Avg $/bu Soybeans":10.03,"Notes":null},{"Sold in":2019,"Avg $/bu Corn":3.82,"Avg $/bu Soybeans":8.72,"Notes":null},{"Sold in":2020,"Avg $/bu Corn":3.37,"Avg $/bu Soybeans":9.17,"Notes":null},{"Sold in":2021,"Avg $/bu Corn":5.76,"Avg $/bu Soybeans":15.31,"Notes":null},{"Sold in":2022,"Avg $/bu Corn":6.77,"Avg $/bu Soybeans":15.7,"Notes":"Cycle peak."},{"Sold in":2023,"Avg $/bu Corn":5.47,"Avg $/bu Soybeans":14.2,"Notes":null},{"Sold in":2024,"Avg $/bu Corn":3.66,"Avg $/bu Soybeans":10.6,"Notes":null},{"Sold in":2025,"Avg $/bu Corn":4.13,"Avg $/bu Soybeans":10.29,"Notes":null},{"Sold in":2026,"Avg $/bu Corn":null,"Avg $/bu Soybeans":11.11,"Notes":"YTD partial."}],"Headline Metrics":[{"Year":"2018","Net $/bu Corn":3.4,"Net $/bu Soybeans":10.03,"Net $/ac Corn":null,"Net $/ac Soybeans":null,"Calving rate":null,"$/ac cash inputs":null},{"Year":"2019","Net $/bu Corn":3.82,"Net $/bu Soybeans":8.72,"Net $/ac Corn":null,"Net $/ac Soybeans":null,"Calving rate":null,"$/ac cash inputs":null},{"Year":"2020","Net $/bu Corn":3.37,"Net $/bu Soybeans":9.17,"Net $/ac Corn":null,"Net $/ac Soybeans":null,"Calving rate":null,"$/ac cash inputs":null},{"Year":"2021","Net $/bu Corn":5.76,"Net $/bu Soybeans":15.31,"Net $/ac Corn":null,"Net $/ac Soybeans":null,"Calving rate":null,"$/ac cash inputs":null},{"Year":"2022","Net $/bu Corn":6.77,"Net $/bu Soybeans":15.7,"Net $/ac Corn":564.60994533592,"Net $/ac Soybeans":440.100015434481,"Calving rate":null,"$/ac cash inputs":null},{"Year":"2023","Net $/bu Corn":5.47,"Net $/bu Soybeans":14.2,"Net $/ac Corn":609.665314759302,"Net $/ac Soybeans":335.056490199105,"Calving rate":null,"$/ac cash inputs":null},{"Year":"2024","Net $/bu Corn":3.66,"Net $/bu Soybeans":10.6,"Net $/ac Corn":337.107501157586,"Net $/ac Soybeans":401.784694057485,"Calving rate":null,"$/ac cash inputs":null},{"Year":"2025","Net $/bu Corn":4.13,"Net $/bu Soybeans":10.29,"Net $/ac Corn":474.851877975666,"Net $/ac Soybeans":106.859854915882,"Calving rate":null,"$/ac cash inputs":null},{"Year":"2026 YTD","Net $/bu Corn":null,"Net $/bu Soybeans":10.78,"Net $/ac Corn":null,"Net $/ac Soybeans":null,"Calving rate":1,"$/ac cash inputs":82}],"Cattle by Year":[{"Year":"2023","Cows at start":null,"Calving rate":null,"Calves born":null,"Calves sold":null,"Net cattle income":4171.3,"Notes":"Black cow $1,451.10 + Red stripe cow $715.20 + 2 cows $2,005."},{"Year":"2024","Cows at start":null,"Calving rate":null,"Calves born":null,"Calves sold":null,"Net cattle income":2060.76,"Notes":"Annual rollup; herd refresh in progress (also bought $8,400 in new cattle)."},{"Year":"2025","Cows at start":null,"Calving rate":null,"Calves born":null,"Calves sold":null,"Net cattle income":10444.37,"Notes":"Big cattle-sale year as herd transition continued; received $3k private grant for cattle."},{"Year":"2026","Cows at start":11,"Calving rate":1,"Calves born":11,"Calves sold":6,"Net cattle income":null,"Notes":"11/11 calving \u00b7 6 fall calves to Milford Sept-Oct \u00b7 18-mo bull sale this spring \u00b7 2 cows + old bull remaining as final phase."}],"Hay by Year":[{"Year":"2023","Net hay sales":348.75,"Notes":"Most hay fed to herd in-house. Sales total only."},{"Year":"2024","Net hay sales":955,"Notes":"Same pattern."},{"Year":"2025","Net hay sales":0,"Notes":"No hay sales recorded \u2014 fed all in-house."},{"Year":"2026","Net hay sales":null,"Notes":"TBD \u2014 Kevin Quigley brokers when sold."}],"Inputs by Year":[{"Category":"Supplies","2023":3981.66,"2024":3163.28,"2025":5040.23},{"Category":"Utilities","2023":6926.47,"2024":6259.11,"2025":6670.59},{"Category":"Repairs & Maintenance","2023":12808.99,"2024":13410.13,"2025":33690},{"Category":"Fuel & Gas","2023":10093.43,"2024":9242.01,"2025":12053.96},{"Category":"Insurance","2023":3868.2,"2024":5004.79,"2025":5489.48},{"Category":"Taxes","2023":12320.34,"2024":13449,"2025":14306.38},{"Category":"Fertilizer","2023":20082.16,"2024":null,"2025":null},{"Category":"Herbicides","2023":14373.88,"2024":null,"2025":null},{"Category":"Chemicals","2023":null,"2024":30335.26,"2025":31337.59},{"Category":"Freight","2023":195.18,"2024":873.42,"2025":1273.85},{"Category":"Drying","2023":757.51,"2024":581.33,"2025":454.99},{"Category":"Storage","2023":3492.66,"2024":1695.45,"2025":4801.25},{"Category":"Seed","2023":13241.14,"2024":14644.31,"2025":13446.95},{"Category":"Meals","2023":103,"2024":1188.52,"2025":86},{"Category":"Security","2023":225,"2024":1860.27,"2025":247.5},{"Category":"Veterinarian","2023":630,"2024":null,"2025":450.5},{"Category":"Other","2023":"misc small","2024":"misc small","2025":"misc small + capex separate"},{"Category":"Total operating inputs","2023":109600.51,"2024":116070.69,"2025":128489.06},{"Category":"Note","2023":"2023 broke out Fertilizer + Herbicides separately. 2024 onwards combined as Chemicals. Per-acre comparable: 2025 inputs \u00f7 243 ac \u2248 $529/ac all-in (incl. taxes/utilities/repairs).","2024":null,"2025":null}],"Storage State":[{"As of":"2023-12-31T00:00:00","Corn @ Akron/Ritchie":null,"Beans @ Akron/Ritchie":null,"Corn @ PC/FS":null,"Beans @ PC/FS":null,"Avg Pricing \u2014 Corn":null,"Avg Pricing \u2014 Soy":null,"Notes":"Year-end snapshot pending."},{"As of":"2024-12-31T00:00:00","Corn @ Akron/Ritchie":null,"Beans @ Akron/Ritchie":null,"Corn @ PC/FS":null,"Beans @ PC/FS":null,"Avg Pricing \u2014 Corn":null,"Avg Pricing \u2014 Soy":null,"Notes":"Year-end snapshot pending."},{"As of":"2025-12-31T00:00:00","Corn @ Akron/Ritchie":null,"Beans @ Akron/Ritchie":null,"Corn @ PC/FS":null,"Beans @ PC/FS":null,"Avg Pricing \u2014 Corn":null,"Avg Pricing \u2014 Soy":null,"Notes":"Year-end snapshot pending."},{"As of":"2026-04-28T00:00:00","Corn @ Akron/Ritchie":9115,"Beans @ Akron/Ritchie":1967,"Corn @ PC/FS":0,"Beans @ PC/FS":0,"Avg Pricing \u2014 Corn":1500,"Avg Pricing \u2014 Soy":500,"Notes":"Live: bushels at Ritchie + Average Pricing enrollment. PC inventory zero (last lot sold Oct '25)."}],"Capex Backlog":[{"Type":"Equipment","Item":"New Can-Am UTV","Owner":"\u2014","Status":"Done \u00b7 2024","Cost":-21565,"Notes":"Bought 2024."},{"Type":"Cattle","Item":"New cattle purchase","Owner":"\u2014","Status":"Done \u00b7 2024","Cost":-8400,"Notes":"Herd refresh; offset by larger 2025 cattle sales."},{"Type":"Buildings","Item":"Insulation","Owner":"\u2014","Status":"Done \u00b7 2025","Cost":-11784,"Notes":"Nov 2025."},{"Type":"Buildings","Item":"Water line to pasture","Owner":"\u2014","Status":"Done \u00b7 2025","Cost":-2500,"Notes":"Sept 2025; paid by $3k cattle grant."},{"Type":"Buildings","Item":"New fences","Owner":"\u2014","Status":"Done \u00b7 2025","Cost":-2495,"Notes":"Across 2025; portion paid by $3k cattle grant."},{"Type":"Buildings","Item":"Gutter guards","Owner":"\u2014","Status":"Done \u00b7 2025","Cost":-2640,"Notes":"Nov 2025."},{"Type":"Land","Item":"Landscaping","Owner":"\u2014","Status":"Done \u00b7 2025","Cost":-11925,"Notes":"Across 2025."},{"Type":"Buildings","Item":"Air conditioning","Owner":"\u2014","Status":"Done \u00b7 2025","Cost":-455.66,"Notes":"July 2025."},{"Type":"Drainage","Item":"Tile 3 wetspots in the field","Owner":"John (operator)","Status":"Open","Cost":null,"Notes":"Per Other Info sheet, Dec 2022."},{"Type":"Buildings","Item":"Machine shed foundation \u2014 out of plumb","Owner":"\u2014","Status":"Open","Cost":null,"Notes":"Structural; needs assessment."},{"Type":"Buildings","Item":"Back cattle barn west side \u2014 needs fixing","Owner":"\u2014","Status":"Open","Cost":null,"Notes":"Per Other Info sheet."},{"Type":"Buildings","Item":"Add airflow to barns (not full enclosure)","Owner":"\u2014","Status":"Open","Cost":null,"Notes":"Ventilation, not airtight."},{"Type":"Plumbing","Item":"Kitchen sink low pressure","Owner":"\u2014","Status":"Open","Cost":null,"Notes":"Per Other Info sheet."}],"Calendar Anchors":[{"Approx date":"late Dec \u2192 Feb","Event":"Calving season","Category":"Cattle","Notes":"Most calves drop here."},{"Approx date":"early May","Event":"May 10 WASDE \u2014 first new-crop balance","Category":"Grain","Notes":"USDA's quarterly market mover."},{"Approx date":"mid-May","Event":"Real-estate tax due","Category":"Tax","Notes":"County."},{"Approx date":"late May","Event":"First hay cutting","Category":"Hay","Notes":"Kevin Quigley brokers when sold."},{"Approx date":"June 30","Event":"USDA Acreage + Stocks","Category":"Grain","Notes":"Big quarterly print."},{"Approx date":"mid-July","Event":"Second hay cutting","Category":"Hay","Notes":"\u2014"},{"Approx date":"April \u2192 Aug","Event":"Old-crop grain sales","Category":"Grain","Notes":"Multi-buyer: Akron + PC/FS Grain."},{"Approx date":"late Aug \u2192 Sep","Event":"Corn / bean harvest start","Category":"Grain","Notes":"Yields/condition reports flow."},{"Approx date":"Sep \u2192 Oct","Event":"Fall calf sales (Milford)","Category":"Cattle","Notes":"Memory: 6 calves slated 2026."},{"Approx date":"Sep","Event":"Third hay cutting","Category":"Hay","Notes":"\u2014"},{"Approx date":"Oct \u2192 Nov","Event":"New-crop grain sales begin","Category":"Grain","Notes":"First post-harvest moves."},{"Approx date":"Oct \u2192 Nov","Event":"Seed prepay window","Category":"Inputs","Notes":"Decide next-year seed buy here."},{"Approx date":"Dec \u2192 Jan","Event":"Year-end inventory snapshot","Category":"Storage","Notes":"Bushels carried forward, AP enrollment."}],"Sources":[{"File / System":"Harvest to Sale.xlsx (Crops)","What it covers":"MY 2021-2022 grain sales (closed) + Other Info backlog notes","Path":"data/Crops/Harvest to Sale.xlsx"},{"File / System":"Harvest to Sale.xlsx (root)","What it covers":"5-year MY summary 2021-2026 with bushels/acres/yields/avg-$/bu","Path":"data/Harvest to Sale.xlsx"},{"File / System":"Farm 2023.xlsx","What it covers":"Full 2023 books: monthly home+farm expenses, 2023 grain sales (MY 2022-2023 sold), Schedule-F summary","Path":"data/Farm 2023.xlsx"},{"File / System":"FARM 2024.xlsx","What it covers":"Full 2024 books: monthly expenses, multi-buyer grain detail (PC + Akron), Can-Am + cattle capex","Path":"data/FARM 2024.xlsx"},{"File / System":"Farm 2025.xlsx","What it covers":"Full 2025 books: expenses, multi-buyer grain, 2025 capex events (insulation, fences, etc.), USDA grants","Path":"data/Farm 2025.xlsx"},{"File / System":"Farm 2025 Income & Expenses.xlsx","What it covers":"Corrected 2025 P&L (R&M with $15k rodent/insulation included)","Path":"data/Farm 2025 Income & Expenses.xlsx"},{"File / System":"Farm Yields.xlsx","What it covers":"9 years of yields (2017-2025) + 8 years of avg $/bu (2018-2025)","Path":"data/Farm Yields.xlsx"},{"File / System":"Starlink xlsx","What it covers":"2023 hardware + monthly service","Path":"data/Starlink/Waiting Reimbursement/Starlink Service & Hardware 2023.xlsx"},{"File / System":"settlements.csv","What it covers":"12 Akron grain settlements 2024-07 \u2192 2026-02 (live feed)","Path":"farm_ops_data/settlements.csv"},{"File / System":"adjustments.csv","What it covers":"Per-settlement storage / checkoff adjustments","Path":"farm_ops_data/adjustments.csv"},{"File / System":"Memory: cattle/hay state","What it covers":"11/11 calving '26, 6 fall calves to Milford, herd-upgrade arc, AP enrollment","Path":"spaces/.../memory/project_freis_farm_*.md"}]}}</script>
-<script>
-(function () {
-  const fmtMoney = n => n == null || isNaN(n) ? "" :
-    (n < 0 ? "−$" : "$") + Math.abs(Math.round(n)).toLocaleString();
-  const fmtMoney2 = n => n == null || isNaN(n) ? "" :
-    (n < 0 ? "−$" : "$") + Math.abs(n).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
-  const fmtNum = n => n == null || isNaN(n) ? "" :
-    Number(n).toLocaleString(undefined, {maximumFractionDigits:2});
-  const fmtDate = s => s ? String(s).slice(0,10) : "";
-  const yearOf  = s => s ? String(s).slice(0,4)  : "";
-
-  const DATA   = JSON.parse(document.getElementById("books-data").textContent);
-  const LEDGER = DATA.sheets["Ledger"] || [];
-  const PNL    = DATA.sheets["Annual P&L"] || [];
-  const BYYEAR = DATA.sheets["By Year"] || [];
-  const CROP   = DATA.sheets["Crop Year"] || [];
-  const YIELDS = DATA.sheets["Yields History"] || [];
-  const PRICES = DATA.sheets["Prices History"] || [];
-  const INPUTS = DATA.sheets["Inputs by Year"] || [];
-  const CATTLE = DATA.sheets["Cattle by Year"] || [];
-  const CAPEX  = DATA.sheets["Capex Backlog"] || [];
-
-  const F = { direction: "", category: "", year: "", q: "" };
-  let SORT = { key: "Date", dir: "desc" };
-  let CURRENT_VIEW = "ledger";
-
-  const cats = [...new Set(LEDGER.map(r => r.Category).filter(Boolean))].sort();
-  const years = [...new Set(LEDGER.map(r => yearOf(r.Date)).filter(Boolean))].sort();
-  const catChips = document.getElementById("cat-chips");
-  cats.forEach(c => {
-    const b = document.createElement("button");
-    b.className = "ex-chip"; b.dataset.v = c; b.textContent = c;
-    catChips.appendChild(b);
-  });
-  const yearChips = document.getElementById("year-chips");
-  years.forEach(y => {
-    const b = document.createElement("button");
-    b.className = "ex-chip"; b.dataset.v = y; b.textContent = y;
-    yearChips.appendChild(b);
-  });
-
-  document.querySelectorAll(".ex-chips").forEach(group => {
-    group.addEventListener("click", e => {
-      const btn = e.target.closest(".ex-chip");
-      if (!btn) return;
-      const dim = group.dataset.filter;
-      F[dim] = btn.dataset.v;
-      group.querySelectorAll(".ex-chip").forEach(c => c.classList.toggle("active", c === btn));
-      if (CURRENT_VIEW === "ledger") renderLedger();
-    });
-  });
-  document.getElementById("ex-search-input").addEventListener("input", e => {
-    F.q = e.target.value.trim().toLowerCase();
-    if (CURRENT_VIEW === "ledger") renderLedger();
-  });
-  document.getElementById("ex-reset").addEventListener("click", () => {
-    F.direction = ""; F.category = ""; F.year = ""; F.q = "";
-    document.querySelectorAll(".ex-chips").forEach(g => {
-      g.querySelectorAll(".ex-chip").forEach(c => c.classList.toggle("active", c.dataset.v === ""));
-    });
-    document.getElementById("ex-search-input").value = "";
-    if (CURRENT_VIEW === "ledger") renderLedger();
-  });
-  document.querySelectorAll("#ex-ledger-table th.sortable").forEach(th => {
-    th.addEventListener("click", () => {
-      const key = th.dataset.sort;
-      if (SORT.key === key) SORT.dir = SORT.dir === "asc" ? "desc" : "asc";
-      else { SORT.key = key; SORT.dir = (key === "Net" || key === "Quantity" || key === "Unit Price" || key === "Date") ? "desc" : "asc"; }
-      renderLedger();
-    });
-  });
-
-  function filtered() {
-    return LEDGER.filter(r => {
-      if (F.direction && r.Direction !== F.direction) return false;
-      if (F.category && r.Category !== F.category) return false;
-      if (F.year && yearOf(r.Date) !== F.year) return false;
-      if (F.q) {
-        const hay = [r.Counterparty, r.Subcategory, r.Notes, r.Source, r.Period].filter(Boolean).join(" ").toLowerCase();
-        if (!hay.includes(F.q)) return false;
-      }
-      return true;
-    });
-  }
-  function sorted(rows) {
-    const k = SORT.key, dir = SORT.dir === "asc" ? 1 : -1;
-    return [...rows].sort((a,b) => {
-      let av = a[k], bv = b[k];
-      if (k === "Date") { av = av || ""; bv = bv || ""; return av < bv ? -dir : av > bv ? dir : 0; }
-      if (typeof av === "number" || typeof bv === "number") {
-        av = av == null ? -Infinity : av; bv = bv == null ? -Infinity : bv;
-        return av < bv ? -dir : av > bv ? dir : 0;
-      }
-      av = (av == null ? "" : String(av)).toLowerCase();
-      bv = (bv == null ? "" : String(bv)).toLowerCase();
-      return av < bv ? -dir : av > bv ? dir : 0;
-    });
-  }
-  function dirClass(d) { return d === "Income" ? "up" : (d === "Expense" || d === "Capex") ? "down" : ""; }
-
-  function renderLedger() {
-    const rows = sorted(filtered());
-    const body = document.getElementById("ex-ledger-body");
-    body.innerHTML = "";
-    let inc = 0, exp = 0, cap = 0;
-    const frag = document.createDocumentFragment();
-    rows.forEach(r => {
-      const tr = document.createElement("tr");
-      tr.className = "ex-row " + dirClass(r.Direction);
-      tr.dataset.idx = LEDGER.indexOf(r);
-      tr.innerHTML =
-        '<td class="mono">' + fmtDate(r.Date) + '</td>' +
-        '<td><span class="dir-pill dir-' + (r.Direction||'').toLowerCase() + '">' + (r.Direction||"") + '</span></td>' +
-        '<td>' + (r.Category||"") + '</td>' +
-        '<td>' + (r.Subcategory||"") + '</td>' +
-        '<td class="ellip" title="' + (r.Counterparty||'').replace(/"/g,'&quot;') + '">' + (r.Counterparty||"") + '</td>' +
-        '<td class="num mono">' + (r.Quantity != null ? fmtNum(r.Quantity)+(r.Unit?" "+r.Unit:"") : "") + '</td>' +
-        '<td class="num mono">' + (r["Unit Price"] != null ? fmtMoney2(r["Unit Price"]) : "") + '</td>' +
-        '<td class="num mono ' + dirClass(r.Direction) + '">' + fmtMoney(r.Net) + '</td>';
-      frag.appendChild(tr);
-      const v = Number(r.Net) || 0;
-      if (r.Direction === "Income") inc += v;
-      else if (r.Direction === "Expense") exp += v;
-      else if (r.Direction === "Capex") cap += v;
-    });
-    body.appendChild(frag);
-    document.getElementById("tot-income").textContent  = fmtMoney(inc);
-    document.getElementById("tot-expense").textContent = fmtMoney(exp);
-    document.getElementById("tot-capex").textContent   = fmtMoney(cap);
-    document.getElementById("tot-net").textContent     = fmtMoney(inc + exp + cap);
-    document.getElementById("tot-rows").textContent    = rows.length.toLocaleString();
-    document.querySelectorAll("#ex-ledger-table th.sortable").forEach(th => {
-      const ind = th.querySelector(".sort-ind");
-      if (th.dataset.sort === SORT.key) ind.textContent = SORT.dir === "asc" ? " ▲" : " ▼";
-      else ind.textContent = "";
-    });
-  }
-
-  document.getElementById("ex-ledger-body").addEventListener("click", e => {
-    const tr = e.target.closest("tr.ex-row");
-    if (!tr) return;
-    const r = LEDGER[+tr.dataset.idx];
-    const drawer = document.getElementById("ex-detail");
-    document.getElementById("ex-detail-body").innerHTML =
-      '<div class="ex-detail-head">' +
-        '<div class="ex-detail-eye">' + fmtDate(r.Date) + ' · ' + (r.Period||"") + '</div>' +
-        '<div class="ex-detail-h">' + (r.Subcategory || r.Category || "") +
-          ' <span class="dir-pill dir-' + (r.Direction||'').toLowerCase() + '">' + (r.Direction||"") + '</span></div>' +
-        '<div class="ex-detail-amt ' + dirClass(r.Direction) + '">' + fmtMoney(r.Net) + '</div>' +
-      '</div>' +
-      '<dl class="ex-detail-grid">' +
-        '<dt>Category</dt><dd>' + (r.Category||"") + (r.Subcategory ? ' · '+r.Subcategory : '') + '</dd>' +
-        '<dt>Counterparty</dt><dd>' + (r.Counterparty||"—") + '</dd>' +
-        '<dt>Quantity</dt><dd>' + (r.Quantity != null ? fmtNum(r.Quantity) + (r.Unit?" "+r.Unit:"") : "—") + '</dd>' +
-        '<dt>Unit price</dt><dd>' + (r["Unit Price"] != null ? fmtMoney2(r["Unit Price"]) : "—") + '</dd>' +
-        '<dt>Gross</dt><dd>' + fmtMoney(r.Gross) + '</dd>' +
-        '<dt>Adjustments</dt><dd>' + fmtMoney(r.Adjustments) + '</dd>' +
-        '<dt>Net</dt><dd class="' + dirClass(r.Direction) + '">' + fmtMoney(r.Net) + '</dd>' +
-        '<dt>Source</dt><dd class="mono small">' + (r.Source||"—") + '</dd>' +
-        '<dt>Notes</dt><dd>' + (r.Notes||"—") + '</dd>' +
-      '</dl>';
-    drawer.hidden = false;
-  });
-  document.getElementById("ex-detail-close").addEventListener("click", () => {
-    document.getElementById("ex-detail").hidden = true;
-  });
-  document.addEventListener("keydown", e => {
-    if (e.key === "Escape") document.getElementById("ex-detail").hidden = true;
-  });
-
-  function table(headers, rows, opts) {
-    opts = opts || {};
-    const t = document.createElement("table");
-    t.className = "ex-table" + (opts.className ? " " + opts.className : "");
-    const thead = document.createElement("thead");
-    const trh = document.createElement("tr");
-    headers.forEach(h => {
-      const th = document.createElement("th");
-      th.innerHTML = h.label;
-      if (h.num) th.className = "num";
-      trh.appendChild(th);
-    });
-    thead.appendChild(trh); t.appendChild(thead);
-    const tb = document.createElement("tbody");
-    rows.forEach(r => {
-      const tr = document.createElement("tr");
-      if (r.__class) tr.className = r.__class;
-      headers.forEach(h => {
-        const td = document.createElement("td");
-        const v = r[h.key];
-        td.innerHTML = h.fmt ? h.fmt(v, r) : (v == null ? "" : String(v));
-        if (h.num) td.classList.add("num", "mono");
-        tr.appendChild(td);
-      });
-      tb.appendChild(tr);
-    });
-    t.appendChild(tb);
-    return t;
-  }
-  function clear(el) { while (el.firstChild) el.removeChild(el.firstChild); }
-
-  function renderPnl() {
-    const el = document.getElementById("view-pnl"); clear(el);
-    const headers = [
-      { key: "Line",  label: "Line" },
-      { key: "2022", label: "2022", num: true, fmt: fmtMoney },
-      { key: "2023", label: "2023", num: true, fmt: fmtMoney },
-      { key: "2024", label: "2024", num: true, fmt: fmtMoney },
-      { key: "2025", label: "2025", num: true, fmt: fmtMoney },
-      { key: "2026", label: "2026", num: true, fmt: fmtMoney },
-    ];
-    const rows = PNL.map(r => {
-      const isHeader = r["2022"] == null && r["2023"] == null && r["2024"] == null;
-      const isTotal  = /^Total|^NET/i.test(r.Line || "");
-      return Object.assign({}, r, { __class: isHeader ? "section" : (isTotal ? "total" : "") });
-    });
-    el.appendChild(table(headers, rows));
-  }
-  function renderByYear() {
-    const el = document.getElementById("view-byyear"); clear(el);
-    const headers = [
-      { key: "Year", label: "Year" },
-      { key: "Grain income", label: "Grain income", num: true, fmt: fmtMoney },
-      { key: "Other income", label: "Other income", num: true, fmt: fmtMoney },
-      { key: "Outflow",      label: "Outflow",      num: true, fmt: fmtMoney },
-      { key: "Net",          label: "Net",          num: true, fmt: v => '<span class="' + (v>=0?'up':'down') + '">' + fmtMoney(v) + '</span>' },
-    ];
-    el.appendChild(table(headers, BYYEAR));
-    const max = Math.max(...BYYEAR.map(r => Math.abs(r.Net||0))) || 1;
-    const w = 600, h = 140, pad = 30;
-    const slot = (w - pad*2) / BYYEAR.length;
-    const bw = slot - 8;
-    let svg = '<svg viewBox="0 0 ' + w + ' ' + h + '" style="width:100%;height:140px;margin-top:18px">';
-    svg += '<line x1="' + pad + '" y1="' + (h/2) + '" x2="' + (w-pad) + '" y2="' + (h/2) + '" stroke="var(--rule)"/>';
-    BYYEAR.forEach((r, i) => {
-      const x = pad + i*slot;
-      const v = r.Net||0;
-      const bh = Math.abs(v)/max * (h/2 - 16);
-      const y = v >= 0 ? h/2 - bh : h/2;
-      const fill = v >= 0 ? "var(--sage-deep)" : "var(--warn)";
-      svg += '<rect x="' + x + '" y="' + y + '" width="' + bw + '" height="' + bh + '" fill="' + fill + '"/>';
-      svg += '<text x="' + (x+bw/2) + '" y="' + (h-4) + '" text-anchor="middle" class="spark-text">' + r.Year + '</text>';
-      svg += '<text x="' + (x+bw/2) + '" y="' + (v>=0?y-4:y+bh+12) + '" text-anchor="middle" class="spark-text" fill="' + fill + '">' + fmtMoney(v) + '</text>';
-    });
-    svg += '</svg>';
-    const wrap = document.createElement("div"); wrap.innerHTML = svg;
-    el.appendChild(wrap);
-  }
-  function renderCrop() {
-    const el = document.getElementById("view-crop"); clear(el);
-    const headers = [
-      { key: "Marketing Year", label: "Marketing year" },
-      { key: "Crop", label: "Crop" },
-      { key: "Acres", label: "Acres", num: true, fmt: fmtNum },
-      { key: "Bushels (user share)", label: "Bushels", num: true, fmt: fmtNum },
-      { key: "Avg $/bu", label: "Avg $/bu", num: true, fmt: fmtMoney2 },
-      { key: "Net Sales", label: "Net sales", num: true, fmt: fmtMoney },
-      { key: "Status", label: "Status" },
-    ];
-    el.appendChild(table(headers, CROP));
-  }
-  function renderYields() {
-    const el = document.getElementById("view-yields"); clear(el);
-    const headers = [
-      { key: "Harvest Year", label: "Harvest yr" },
-      { key: "Acres",        label: "Acres", num: true, fmt: fmtNum },
-      { key: "Corn bushels", label: "Corn bu", num: true, fmt: fmtNum },
-      { key: "Corn bu/ac",   label: "Corn bu/ac", num: true, fmt: fmtNum },
-      { key: "Bean bushels", label: "Bean bu", num: true, fmt: fmtNum },
-      { key: "Bean bu/ac",   label: "Bean bu/ac", num: true, fmt: fmtNum },
-      { key: "Notes",        label: "Notes" },
-    ];
-    el.appendChild(table(headers, YIELDS));
-    const vals = YIELDS.map(r => r["Corn bu/ac"]).filter(v => v != null);
-    if (vals.length) {
-      const max = Math.max(...vals), min = Math.min(...vals);
-      const w = 600, h = 80;
-      let path = "";
-      YIELDS.forEach((r, i) => {
-        const v = r["Corn bu/ac"]; if (v == null) return;
-        const x = 30 + i*((w-60)/(YIELDS.length-1));
-        const y = 60 - ((v - min) / (max - min || 1)) * 40;
-        path += (path ? " L" : "M") + x.toFixed(1) + "," + y.toFixed(1);
-      });
-      let svg = '<div style="margin-top:18px"><div class="ex-mini-l">Corn yield trend (bu/ac)</div>' +
-        '<svg viewBox="0 0 ' + w + ' ' + h + '" style="width:100%;height:' + h + 'px">' +
-        '<path d="' + path + '" class="spark-line" stroke-width="2"/>';
-      YIELDS.forEach((r, i) => {
-        const v = r["Corn bu/ac"]; if (v == null) return;
-        const x = 30 + i*((w-60)/(YIELDS.length-1));
-        const y = 60 - ((v - min) / (max - min || 1)) * 40;
-        svg += '<circle cx="' + x + '" cy="' + y + '" r="2.5" class="spark-dot"/>';
-        svg += '<text x="' + x + '" y="' + (h-4) + '" class="spark-text" text-anchor="middle">' + r["Harvest Year"] + '</text>';
-        svg += '<text x="' + x + '" y="' + (y-6) + '" class="spark-text" text-anchor="middle">' + Math.round(v) + '</text>';
-      });
-      svg += '</svg></div>';
-      const wrap = document.createElement("div"); wrap.innerHTML = svg;
-      el.appendChild(wrap);
-    }
-  }
-  function renderPrices() {
-    const el = document.getElementById("view-prices"); clear(el);
-    const headers = [
-      { key: "Sold in", label: "Sold in" },
-      { key: "Avg $/bu Corn", label: "Avg $/bu corn", num: true, fmt: fmtMoney2 },
-      { key: "Avg $/bu Soybeans", label: "Avg $/bu soy", num: true, fmt: fmtMoney2 },
-      { key: "Notes", label: "Notes" },
-    ];
-    el.appendChild(table(headers, PRICES));
-  }
-  function renderInputs() {
-    const el = document.getElementById("view-inputs"); clear(el);
-    const headers = [
-      { key: "Category", label: "Category" },
-      { key: "2023", label: "2023", num: true, fmt: fmtMoney },
-      { key: "2024", label: "2024", num: true, fmt: fmtMoney },
-      { key: "2025", label: "2025", num: true, fmt: fmtMoney },
-    ];
-    el.appendChild(table(headers, INPUTS));
-  }
-  function renderCattle() {
-    const el = document.getElementById("view-cattle"); clear(el);
-    const headers = [
-      { key: "Year", label: "Year" },
-      { key: "Cows at start", label: "Cows", num: true, fmt: fmtNum },
-      { key: "Calving rate",  label: "Calving %", num: true, fmt: v => v == null ? "" : (Math.round(v*100)+"%") },
-      { key: "Calves born",   label: "Born",   num: true, fmt: fmtNum },
-      { key: "Calves sold",   label: "Sold",   num: true, fmt: fmtNum },
-      { key: "Net cattle income", label: "Net $", num: true, fmt: fmtMoney },
-      { key: "Notes", label: "Notes" },
-    ];
-    el.appendChild(table(headers, CATTLE));
-  }
-  function renderCapex() {
-    const el = document.getElementById("view-capex"); clear(el);
-    const headers = [
-      { key: "Type", label: "Type" },
-      { key: "Item", label: "Item" },
-      { key: "Owner", label: "Owner" },
-      { key: "Status", label: "Status" },
-      { key: "Cost", label: "Cost", num: true, fmt: fmtMoney },
-      { key: "Notes", label: "Notes" },
-    ];
-    el.appendChild(table(headers, CAPEX));
-  }
-
-  const RENDERERS = { ledger:renderLedger, pnl:renderPnl, byyear:renderByYear, crop:renderCrop, yields:renderYields, prices:renderPrices, inputs:renderInputs, cattle:renderCattle, capex:renderCapex };
-  const FILTER_VIEWS = new Set(["ledger"]);
-  function setView(v) {
-    CURRENT_VIEW = v;
-    document.querySelectorAll(".ex-tab").forEach(t => t.classList.toggle("active", t.dataset.view === v));
-    document.querySelectorAll(".ex-view").forEach(s => s.hidden = s.dataset.view !== v);
-    document.getElementById("ex-filters").style.display = FILTER_VIEWS.has(v) ? "" : "none";
-    RENDERERS[v]();
-    document.getElementById("explorer-totals").style.visibility = FILTER_VIEWS.has(v) ? "" : "hidden";
-  }
-  document.getElementById("ex-tabs").addEventListener("click", e => {
-    const btn = e.target.closest(".ex-tab");
-    if (!btn) return;
-    setView(btn.dataset.view);
-  });
-  setView("ledger");
-})();
-</script>
-
 <style>
-.explorer { padding: 8px 32px 48px; background: var(--cream); }
-.explorer-head { display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: end; border-top: 1px solid var(--border); padding-top: 24px; margin-bottom: 16px; }
-.explorer-h { font-family: var(--font-display); font-weight: 400; font-size: 28px; line-height: 1.15; letter-spacing: -0.3px; color: var(--ink-2); margin: 6px 0 0; }
-.explorer-h em { font-style: italic; font-weight: 500; color: var(--sage-deep); }
-.explorer-totals { display: flex; gap: 0; background: var(--paper); border: 1px solid var(--border); border-radius: 6px; padding: 10px 16px; }
-.ex-tot { padding: 0 14px; border-left: 1px solid var(--rule); }
-.ex-tot:first-child { border-left: 0; padding-left: 0; }
-.ex-tot-l { font-family: var(--font-mono); font-size: 9px; text-transform: uppercase; letter-spacing: 0.7px; color: var(--dust); }
-.ex-tot-v { font-family: var(--font-mono); font-size: 14px; font-weight: 500; color: var(--ink-2); margin-top: 2px; font-variant-numeric: tabular-nums; }
-.ex-tot-v.up { color: var(--sage-deep); }
-.ex-tot-v.down { color: var(--warn); }
-
-.ex-tabs { display: flex; flex-wrap: wrap; gap: 2px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
-.ex-tab { background: transparent; border: 0; padding: 10px 14px; font-family: var(--font-text); font-size: 12px; font-weight: 500; color: var(--slate); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; letter-spacing: 0.2px; }
-.ex-tab:hover { color: var(--ink); }
-.ex-tab.active { color: var(--ink-2); border-bottom-color: var(--sage-deep); }
-
-.ex-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 20px; background: var(--paper); border: 1px solid var(--border); border-radius: 6px; padding: 12px 16px; margin-bottom: 12px; }
-.ex-filter { display: flex; align-items: center; gap: 8px; }
-.ex-filter-l { font-family: var(--font-mono); font-size: 9px; text-transform: uppercase; letter-spacing: 0.7px; color: var(--dust); }
-.ex-chips { display: flex; gap: 4px; flex-wrap: wrap; }
-.ex-chip { background: var(--cream); border: 1px solid var(--rule); border-radius: 999px; padding: 3px 10px; font-size: 11px; font-family: var(--font-text); color: var(--slate); cursor: pointer; font-weight: 500; }
-.ex-chip:hover { border-color: var(--sage); }
-.ex-chip.active { background: var(--ink-2); color: var(--cream); border-color: var(--ink-2); }
-.ex-search { flex: 1; min-width: 200px; }
-.ex-search input { width: 100%; padding: 6px 10px; font-family: var(--font-text); font-size: 12px; border: 1px solid var(--rule); border-radius: 4px; background: var(--cream); color: var(--ink); outline: none; }
-.ex-search input:focus { border-color: var(--sage-deep); }
-.ex-reset { background: transparent; border: 1px solid var(--rule); padding: 6px 10px; border-radius: 4px; font-size: 11px; font-family: var(--font-mono); color: var(--slate); cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; }
-.ex-reset:hover { color: var(--ink-2); border-color: var(--ink-2); }
-
-.ex-table-wrap { background: var(--paper); border: 1px solid var(--border); border-radius: 6px; padding: 14px 18px; overflow-x: auto; }
-.ex-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-.ex-table thead th { text-align: left; font-family: var(--font-text); font-weight: 500; font-size: 10px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--dust); padding: 8px 10px; border-bottom: 1px solid var(--rule); background: var(--paper); position: sticky; top: 0; white-space: nowrap; }
-.ex-table thead th.sortable { cursor: pointer; user-select: none; }
-.ex-table thead th.sortable:hover { color: var(--ink-2); }
-.ex-table thead th.num { text-align: right; }
-.ex-table tbody td { padding: 7px 10px; border-bottom: 1px dotted var(--rule); color: var(--ink); vertical-align: top; }
-.ex-table tbody tr:hover { background: var(--paper-2); cursor: pointer; }
-.ex-table tbody tr.section td { background: var(--paper-2); color: var(--slate); font-weight: 600; font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.6px; }
-.ex-table tbody tr.total td { font-weight: 600; color: var(--ink-2); border-top: 1px solid var(--rule); }
-.ex-table td.num { text-align: right; }
-.ex-table td.mono { font-family: var(--font-mono); }
-.ex-table td.up { color: var(--sage-deep); }
-.ex-table td.down { color: var(--warn); }
-.ex-table td.ellip { max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.ex-table td.small { font-size: 10px; color: var(--slate); }
-
-.dir-pill { display: inline-block; padding: 1px 7px; border-radius: 3px; font-size: 9px; font-family: var(--font-mono); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
-.dir-pill.dir-income { background: var(--sage-pale); color: var(--sage-deep); }
-.dir-pill.dir-expense { background: #F1E8CE; color: #876B2B; }
-.dir-pill.dir-capex { background: #F1E0D8; color: var(--warn); }
-
-.ex-hint { font-family: var(--font-display); font-style: italic; color: var(--slate); font-size: 11px; margin: 10px 0 0; }
-.ex-mini-l { font-family: var(--font-mono); font-size: 9px; text-transform: uppercase; letter-spacing: 0.7px; color: var(--dust); margin-bottom: 4px; }
-
-.ex-detail { position: fixed; right: 0; top: 0; bottom: 0; width: 460px; max-width: 100%; background: var(--paper); border-left: 1px solid var(--border); box-shadow: -8px 0 24px rgba(0,0,0,0.06); padding: 32px 28px; z-index: 100; overflow-y: auto; animation: drawerIn 0.22s ease; }
-@keyframes drawerIn { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-.ex-detail-close { position: absolute; top: 12px; right: 16px; background: transparent; border: 0; font-size: 24px; color: var(--slate); cursor: pointer; line-height: 1; }
-.ex-detail-close:hover { color: var(--ink-2); }
-.ex-detail-head { padding-bottom: 16px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
-.ex-detail-eye { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--dust); }
-.ex-detail-h { font-family: var(--font-display); font-weight: 500; font-size: 22px; color: var(--ink-2); margin-top: 4px; }
-.ex-detail-amt { font-family: var(--font-mono); font-weight: 500; font-size: 28px; margin-top: 8px; font-variant-numeric: tabular-nums; }
-.ex-detail-amt.up { color: var(--sage-deep); }
-.ex-detail-amt.down { color: var(--warn); }
-.ex-detail-grid { display: grid; grid-template-columns: 110px 1fr; gap: 8px 16px; margin: 0; font-size: 12px; }
-.ex-detail-grid dt { font-family: var(--font-mono); font-size: 9px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--dust); padding-top: 2px; }
-.ex-detail-grid dd { margin: 0; color: var(--ink); }
-.ex-detail-grid dd.up { color: var(--sage-deep); }
-.ex-detail-grid dd.down { color: var(--warn); }
-.ex-detail-grid dd.mono { font-family: var(--font-mono); font-size: 11px; }
-.ex-detail-grid dd.small { font-size: 11px; }
-
-@media (max-width: 1100px) { .explorer-head { grid-template-columns: 1fr; } .explorer-totals { overflow-x: auto; } .ex-detail { width: 100%; } }
-@media (max-width: 700px)  { .explorer { padding: 8px 16px 32px; } .ex-table { font-size: 11px; } .ex-table thead th, .ex-table tbody td { padding: 6px 8px; } }
+.books-link { padding: 8px 32px 24px; background: var(--cream); }
+.books-link-card {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 24px;
+  align-items: center;
+  padding: 18px 24px;
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  text-decoration: none;
+  color: var(--ink);
+  transition: border-color 0.18s ease, transform 0.18s ease;
+}
+.books-link-card:hover { border-color: var(--sage-deep); transform: translateY(-1px); }
+.books-link-eye {
+  font-family: var(--font-mono); font-size: 10px;
+  color: var(--dust); text-transform: uppercase; letter-spacing: 0.8px;
+}
+.books-link-h {
+  font-family: var(--font-display); font-weight: 400;
+  font-size: 22px; line-height: 1.15; color: var(--ink-2);
+  margin-top: 4px; letter-spacing: -0.2px;
+}
+.books-link-h em { font-style: italic; font-weight: 500; color: var(--sage-deep); }
+.books-link-d { color: var(--slate); margin-top: 6px; font-size: 12px; max-width: 56ch; }
+.books-link-r { text-align: right; min-width: 96px; }
+.books-link-arrow {
+  font-family: var(--font-display); font-size: 28px;
+  color: var(--sage-deep); line-height: 1;
+}
+.books-link-cta {
+  font-family: var(--font-mono); font-size: 10px;
+  color: var(--sage-deep); text-transform: uppercase; letter-spacing: 0.8px;
+  margin-top: 4px;
+}
+@media (max-width: 700px) {
+  .books-link { padding: 8px 16px 24px; }
+  .books-link-card { grid-template-columns: 1fr; gap: 12px; padding: 14px 16px; }
+  .books-link-r { text-align: left; }
+}
 </style>
+
 
 <footer class="shell-foot">FREIS FARM · FARM OPS · APR 30 2026</footer>
 </body>

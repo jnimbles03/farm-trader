@@ -659,6 +659,7 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
     <a href="./" class="shell-tab here">Today's Call</a>
     <a href="hedge.html" class="shell-tab">Hedge</a>
     <a href="farm-ops.html" class="shell-tab">Farm Ops</a>
+    <a href="books.html" class="shell-tab">Books</a>
   </div>
   <div class="shell-meta"><span class="js-today" data-fmt="header">APR 30, 2026</span> · CT</div>
 </nav>
@@ -675,12 +676,12 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
     <div class="A-kpis">
       <div class="A-kpi">
         <div class="A-kpi-l">Stored corn</div>
-        <div class="A-kpi-v">9,115<span class="u">bu</span></div>
-        <div class="A-kpi-d">at Ritchie · ≈ $40,724 @ $4.47</div>
+        <div class="A-kpi-v"><span class="js-bid" data-key="bushels.corn" data-fmt="bu">9,115</span><span class="u">bu</span></div>
+        <div class="A-kpi-d">at Ritchie · ≈ <span class="js-bid" data-key="corn.value" data-fmt="money">$40,724</span> @ <span class="js-bid" data-key="ritchie.corn_bid" data-fmt="price">$4.47</span></div>
       </div>
       <div class="A-kpi">
         <div class="A-kpi-l">Stored soy</div>
-        <div class="A-kpi-v">1,967<span class="u">bu</span></div>
+        <div class="A-kpi-v"><span class="js-bid" data-key="bushels.soy" data-fmt="bu">1,967</span><span class="u">bu</span></div>
         <div class="A-kpi-d">soy pace <span class="up">+5pp ahead</span></div>
       </div>
       <div class="A-kpi">
@@ -781,7 +782,8 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
         <circle cx="564" cy="140" r="5"  fill="var(--sage-deep)" stroke="var(--cream)" stroke-width="2"/>
 
         <!-- Soy chip: price + status -->
-        <text x="510" y="68" text-anchor="end"
+        <text class="js-bid" data-key="ritchie.soy_bid" data-fmt="price"
+              x="510" y="68" text-anchor="end"
               font-family="DM Sans, sans-serif" font-weight="600" font-size="22"
               fill="var(--sage-deep)" font-variant-numeric="tabular-nums">$11.68</text>
         <text x="510" y="86" text-anchor="end"
@@ -789,7 +791,8 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
               letter-spacing="0.12em" fill="var(--sage-deep)">+5PP AHEAD OF PACE</text>
 
         <!-- Corn chip: price only -->
-        <text x="510" y="160" text-anchor="end"
+        <text class="js-bid" data-key="ritchie.corn_bid" data-fmt="price"
+              x="510" y="160" text-anchor="end"
               font-family="DM Sans, sans-serif" font-weight="600" font-size="16"
               fill="var(--ink-2)" font-variant-numeric="tabular-nums">$4.47</text>
 
@@ -832,7 +835,7 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
   <section class="A-strip" aria-label="Live levels with sparklines">
     <div class="A-strip-cell">
       <div class="A-strip-l">Corn · Jul</div>
-      <div class="A-strip-v">$4.47<span style="font-size:11px">¾</span></div>
+      <div class="A-strip-v"><span class="js-bid" data-key="ritchie.corn_bid" data-fmt="price">$4.47</span></div>
       <div class="A-strip-d">+3¢ / 5d</div>
       <svg viewBox="0 0 100 28" class="A-strip-spark" style="width:100%;height:28px">
         <path d="M0,18 L10,16 L20,20 L30,15 L40,12 L50,14 L60,10 L70,13 L80,11 L90,9 L100,8" class="spark-line"/>
@@ -841,7 +844,7 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
     </div>
     <div class="A-strip-cell">
       <div class="A-strip-l">Soy · Jul</div>
-      <div class="A-strip-v">$10.84</div>
+      <div class="A-strip-v"><span class="js-bid" data-key="ritchie.soy_bid" data-fmt="price">$10.84</span></div>
       <div class="A-strip-d">−7¢ / 5d</div>
       <svg viewBox="0 0 100 28" class="A-strip-spark" style="width:100%;height:28px">
         <path d="M0,8 L10,10 L20,12 L30,11 L40,15 L50,14 L60,18 L70,16 L80,20 L90,19 L100,21" class="spark-line warn"/>
@@ -850,8 +853,8 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
     </div>
     <div class="A-strip-cell">
       <div class="A-strip-l">Basis · Ritchie</div>
-      <div class="A-strip-v">−18¢</div>
-      <div class="A-strip-d">narrowing</div>
+      <div class="A-strip-v"><span class="js-bid" data-key="ritchie.corn_basis_cents" data-fmt="basis">−18¢</span></div>
+      <div class="A-strip-d">corn · soy <span class="js-bid" data-key="ritchie.soy_basis_cents" data-fmt="basis">−4¢</span></div>
       <svg viewBox="0 0 100 28" class="A-strip-spark" style="width:100%;height:28px">
         <path d="M0,14 L10,15 L20,13 L30,14 L40,12 L50,13 L60,11 L70,10 L80,11 L90,9 L100,8" class="spark-line"/>
       </svg>
@@ -1805,6 +1808,51 @@ loadDrafts();
   document.querySelectorAll('.js-today').forEach(function(el){
     var f = el.getAttribute('data-fmt') || 'long';
     el.textContent = fmt[f] || fmt.long;
+  });
+})();
+</script>
+
+<script id="js-bid-updater">
+// Auto-fill any .js-bid element with a value resolved from
+// ./elevator_bids.json + ./bushel.json. Pattern mirrors js-today:
+//   <span class="js-bid" data-key="ritchie.corn_bid" data-fmt="price">$4.47</span>
+// data-key paths:
+//   ritchie.corn_bid, ritchie.soy_bid          (Ritchie cash bid in $/bu)
+//   ritchie.corn_basis_cents, ritchie.soy_basis_cents (cents vs futures)
+//   bushels.corn, bushels.soy                  (on-hand bushels at Ritchie)
+//   corn.value, soy.value                      (derived: bushels × bid)
+// data-fmt: "price" | "bu" | "money" | "basis". Default "price".
+// Inline content stays as the fallback if fetch fails (file:// or offline).
+(async function(){
+  var elev = null, bushel = null;
+  try { var r = await fetch('./elevator_bids.json', {cache:'no-store'}); if (r.ok) elev   = await r.json(); } catch(_){}
+  try { var r = await fetch('./bushel.json',        {cache:'no-store'}); if (r.ok) bushel = await r.json(); } catch(_){}
+
+  var ritchie = (elev && elev.elevators) ? elev.elevators.find(function(e){return e.is_baseline;}) : null;
+  var data = {
+    'ritchie.corn_bid':         (ritchie && ritchie.corn_bid != null) ? ritchie.corn_bid : (bushel && bushel.bids && bushel.bids.corn ? bushel.bids.corn.price : null),
+    'ritchie.soy_bid':          (ritchie && ritchie.soy_bid  != null) ? ritchie.soy_bid  : (bushel && bushel.bids && bushel.bids.soybeans ? bushel.bids.soybeans.price : null),
+    'ritchie.corn_basis_cents': (ritchie && ritchie.corn_basis_cents != null) ? ritchie.corn_basis_cents : (bushel && bushel.bids && bushel.bids.corn && bushel.bids.corn.basis != null ? bushel.bids.corn.basis * 100 : null),
+    'ritchie.soy_basis_cents':  (ritchie && ritchie.soy_basis_cents  != null) ? ritchie.soy_basis_cents  : (bushel && bushel.bids && bushel.bids.soybeans && bushel.bids.soybeans.basis != null ? bushel.bids.soybeans.basis * 100 : null),
+    'bushels.corn':             (bushel && bushel.bushelsOnHand && bushel.bushelsOnHand.corn)     ? bushel.bushelsOnHand.corn.bushels     : null,
+    'bushels.soy':              (bushel && bushel.bushelsOnHand && bushel.bushelsOnHand.soybeans) ? bushel.bushelsOnHand.soybeans.bushels : null,
+  };
+  if (data['bushels.corn'] != null && data['ritchie.corn_bid'] != null) data['corn.value'] = data['bushels.corn'] * data['ritchie.corn_bid'];
+  if (data['bushels.soy']  != null && data['ritchie.soy_bid']  != null) data['soy.value']  = data['bushels.soy']  * data['ritchie.soy_bid'];
+
+  var fmt = {
+    price: function(v){ return v == null ? null : '$' + Number(v).toFixed(2); },
+    bu:    function(v){ return v == null ? null : Math.round(Number(v)).toLocaleString(); },
+    money: function(v){ return v == null ? null : '$' + Math.round(Number(v)).toLocaleString(); },
+    basis: function(v){ return v == null ? null : (v >= 0 ? '+' : '−') + Math.abs(Math.round(v)) + '¢'; },
+  };
+
+  document.querySelectorAll('.js-bid').forEach(function(el){
+    var key = el.getAttribute('data-key');
+    var f   = el.getAttribute('data-fmt') || 'price';
+    var v   = data[key];
+    var out = (fmt[f] || fmt.price)(v);
+    if (out != null) el.textContent = out;
   });
 })();
 </script>
