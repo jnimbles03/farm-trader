@@ -392,6 +392,80 @@ footer.shell-foot {
   .A-kpi { border-left: 0; padding: 0; padding-top: 12px; border-top: 1px solid var(--rule); }
   .A-kpi:first-child { border-top: 0; padding-top: 0; }
 }
+
+/* ============================================================
+   ELEVATOR ALTERNATIVES — bid comparison panel.
+   Spans both columns of the A-page grid like .A-strip does.
+   Renders from inline JSON data; freight ¢/bu computed client-side.
+   ============================================================ */
+.A-elev {
+  grid-column: 1 / -1;
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 16px 20px;
+}
+.A-elev-head {
+  display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.A-elev-title {
+  font-family: var(--font-display);
+  font-size: 16px; font-weight: 500; color: var(--ink-2);
+}
+.A-elev-sub {
+  font-size: 11px; color: var(--dust); font-family: var(--font-mono);
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.A-elev-sub b { color: var(--ink-2); font-weight: 500; }
+.A-elev-table { width: 100%; border-collapse: collapse; font-family: var(--font-mono); font-size: 12px; }
+.A-elev-table th {
+  text-align: left; font-family: var(--font-text);
+  font-weight: 500; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px;
+  color: var(--dust); padding: 6px 8px; border-bottom: 1px solid var(--rule);
+}
+.A-elev-table th.num { text-align: right; }
+.A-elev-table td {
+  padding: 8px; border-bottom: 1px dotted var(--rule); color: var(--ink);
+  vertical-align: top;
+}
+.A-elev-table tr:last-child td { border-bottom: 0; }
+.A-elev-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+.A-elev-table tr.baseline td { background: var(--cream); }
+.A-elev-name { font-family: var(--font-text); font-size: 12px; }
+.A-elev-name b { font-weight: 500; color: var(--ink-2); }
+.A-elev-name .addr { display: block; font-size: 10px; color: var(--dust); margin-top: 2px; font-family: var(--font-mono); letter-spacing: 0.2px; }
+.A-elev-tag {
+  display: inline-block; font-size: 9px;
+  padding: 1px 5px; border-radius: 3px; margin-left: 6px; vertical-align: 1px;
+  font-family: var(--font-mono); letter-spacing: 0.4px; text-transform: uppercase;
+  color: var(--slate); background: var(--paper-2);
+}
+.A-elev-tag.live    { color: var(--sage-deep); background: var(--sage-pale); }
+.A-elev-tag.pending { color: var(--warn);      background: #F5EBDA; }
+.A-elev-tag.deferred{ color: var(--dust);      background: var(--paper-2); }
+.A-elev-net.up   { color: var(--sage-deep); font-weight: 500; }
+.A-elev-net.down { color: var(--warn);      font-weight: 500; }
+.A-elev-net .baseline-mark, .A-elev-table td .dim { color: var(--dust); }
+.A-elev-foot {
+  font-size: 11px; color: var(--slate); margin-top: 12px;
+  display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+}
+.A-elev-foot .note { font-style: italic; font-family: var(--font-display); flex: 1; min-width: 280px; }
+.A-elev-foot .note b { font-style: normal; font-weight: 500; color: var(--ink-2); }
+.A-elev-foot .src {
+  font-family: var(--font-mono);
+  text-transform: uppercase; letter-spacing: 0.5px;
+  color: var(--dust); font-size: 10px;
+}
+@media (max-width: 900px) {
+  .A-elev-name .addr { display: none; }
+  .A-elev-table th, .A-elev-table td { padding: 6px 5px; }
+}
+@media (max-width: 700px) {
+  .A-elev { padding: 12px 14px; }
+  .A-elev-table { font-size: 11px; }
+}
 </style>
 </head>
 <body>
@@ -660,14 +734,14 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
     <a href="hedge.html" class="shell-tab">Hedge</a>
     <a href="farm-ops.html" class="shell-tab here">Farm Ops</a>
   </div>
-  <div class="shell-meta"><span class="js-today" data-fmt="header">APR 30, 2026</span> · CT</div>
+  <div class="shell-meta">APR 30, 2026 · CT</div>
 </nav>
 
 <main class="A-page">
 
   <div class="A-call">
     <div>
-      <p class="A-eyebrow">Operations · <span class="js-today" data-fmt="long">Apr 30, 2026</span></p>
+      <p class="A-eyebrow">Operations · Apr 30, 2026</p>
       <h1>The books, <em>at a glance.</em></h1>
       <p>What came in, what's going out, what's left for July. Two bean sales (Jun 1 + Jul 1) are what bridge cash through the bills.</p>
     </div>
@@ -796,6 +870,171 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
       </svg>
     </div>
   </section>
+
+  <!-- ============================================================
+       ELEVATOR ALTERNATIVES — Surrounding grain houses, current cash
+       bids, and net advantage vs Ritchie after freight (¢/bu/extra mi).
+       Data inlined as JSON; rendered client-side. Bids null until
+       refresh_elevator_bids.py wires up on the 6am cron.
+       ============================================================ -->
+  <section class="A-elev" id="elev" aria-label="Surrounding grain elevators and bid comparison">
+    <div class="A-elev-head">
+      <span class="A-elev-title">Where else this could go</span>
+      <span class="A-elev-sub">Cash bids vs Ritchie · net of freight at <b>0.6¢/bu/mi</b></span>
+    </div>
+    <table class="A-elev-table" id="elev-table">
+      <thead>
+        <tr>
+          <th>Elevator</th>
+          <th class="num">Miles</th>
+          <th class="num">Freight</th>
+          <th class="num">Corn $</th>
+          <th class="num">Δ vs Ritchie</th>
+          <th class="num">Soy $</th>
+          <th class="num">Δ vs Ritchie</th>
+        </tr>
+      </thead>
+      <tbody id="elev-tbody"><!-- rendered by JS --></tbody>
+    </table>
+    <div class="A-elev-foot">
+      <span class="note" id="elev-note"><em>Bids pending</em> — auto-refresh from elevator websites wires up next. Distances are straight-line approximations from <b>19076 W Peotone Rd</b>; freight assumes <b>$5/loaded mi ÷ 890 bu/load</b> corn.</span>
+      <span class="src" id="elev-src">Source · elevator websites + Bushel</span>
+    </div>
+  </section>
+
+  <script id="elev-data" type="application/json">
+  {
+    "as_of": "2026-05-05T22:13:35",
+    "freight_per_mile_cents_per_bu": 0.6,
+    "baseline_id": "ritchie",
+    "futures": {"ZCN26": 4.7975, "ZSN26": 12.1025},
+    "elevators": [
+      {"id":"ritchie","name":"Ritchie Grain","address":"34511 Elevator Rd, Wilmington (Akron Services)","miles":5,"corn_bid":null,"soy_bid":null,"as_of":null,"scraper_status":"wired","is_baseline":true},
+      {"id":"mazon","name":"Mazon (FS Grain)","address":"Grundy Co. — Mazon, IL","miles":10,"corn_bid":4.4975,"soy_bid":11.9525,"corn_basis_cents":-30,"soy_basis_cents":-15,"as_of":"2026-05-05","scraper_status":"live","is_baseline":false},
+      {"id":"chs_morris","name":"CHS Morris (river)","address":"Grundy Co. — Morris, IL (Illinois River)","miles":14,"corn_bid":4.6775,"soy_bid":11.9125,"corn_basis_cents":-12,"soy_basis_cents":-19,"as_of":"2026-05-05","scraper_status":"live","is_baseline":false},
+      {"id":"adm_morris","name":"ADM Morris (river)","address":"Grundy Co. — Morris, IL (Illinois River)","miles":14,"corn_bid":4.6775,"soy_bid":11.8925,"corn_basis_cents":-12,"soy_basis_cents":-21,"as_of":"2026-05-05","scraper_status":"live","is_baseline":false},
+      {"id":"lisbon_center","name":"Lisbon Center (FS Grain)","address":"Kendall Co. — Lisbon, IL","miles":15,"corn_bid":null,"soy_bid":11.9025,"corn_basis_cents":null,"soy_basis_cents":-20,"as_of":"2026-05-05","scraper_status":"live","is_baseline":false},
+      {"id":"cgb_dwight","name":"CGB Dwight","address":"Livingston Co. — Dwight, IL","miles":22,"corn_bid":4.6775,"soy_bid":12.0225,"corn_basis_cents":-12,"soy_basis_cents":-8,"as_of":"2026-05-05","scraper_status":"live","is_baseline":false},
+      {"id":"ransom","name":"Ransom (FS Grain)","address":"LaSalle Co. — Ransom, IL","miles":22,"corn_bid":4.5075,"soy_bid":11.7425,"corn_basis_cents":-29,"soy_basis_cents":-36,"as_of":"2026-05-05","scraper_status":"live","is_baseline":false},
+      {"id":"bourbonnais","name":"Bourbonnais (FS Grain / Heritage)","address":"Kankakee Co. — Bourbonnais, IL","miles":22,"corn_bid":4.5175,"soy_bid":11.9425,"corn_basis_cents":-28,"soy_basis_cents":-16,"as_of":"2026-05-05","scraper_status":"live","is_baseline":false},
+      {"id":"grand_ridge","name":"Grand Ridge (FS Grain)","address":"LaSalle Co. — Grand Ridge, IL","miles":28,"corn_bid":4.5075,"soy_bid":11.7225,"corn_basis_cents":-29,"soy_basis_cents":-38,"as_of":"2026-05-05","scraper_status":"live","is_baseline":false},
+      {"id":"exline","name":"Exline (FS Grain)","address":"Kankakee Co. — Exline, IL","miles":28,"corn_bid":null,"soy_bid":11.9025,"corn_basis_cents":null,"soy_basis_cents":-20,"as_of":"2026-05-05","scraper_status":"live","is_baseline":false},
+      {"id":"st_anne","name":"St Anne (FS Grain)","address":"Kankakee Co. — St Anne, IL","miles":28,"corn_bid":4.4375,"soy_bid":11.7625,"corn_basis_cents":-36,"soy_basis_cents":-34,"as_of":"2026-05-05","scraper_status":"live","is_baseline":false},
+      {"id":"manteno","name":"Manteno Farmers Elevator","address":"Kankakee Co. — Manteno, IL","miles":22,"corn_bid":null,"soy_bid":null,"corn_basis_cents":null,"soy_basis_cents":null,"as_of":null,"scraper_status":"deferred","is_baseline":false}
+    ]
+  }
+  </script>
+  <script>
+  (async function () {
+    // Load inline snapshot first (always works, including file://). Then
+    // try fetching the live JSON sidecar; if it succeeds, it overrides
+    // the snapshot. The cron commits ./elevator_bids.json, so the page
+    // never needs to be re-baked when bids change.
+    let D = JSON.parse(document.getElementById("elev-data").textContent);
+    try {
+      const r = await fetch("./elevator_bids.json", {cache: "no-store"});
+      if (r.ok) D = await r.json();
+    } catch (_) { /* offline / file:// — keep inline snapshot */ }
+
+    const baseline = D.elevators.find(e => e.is_baseline) || D.elevators[0];
+    const rate = D.freight_per_mile_cents_per_bu;
+
+    const fmtBid = v => (v == null) ? '<span class="dim">—</span>' : '$' + Number(v).toFixed(2);
+    const fmtMiles = m => (m == null) ? '<span class="dim">—</span>' : Math.round(m).toString();
+    const fmtFreight = m => (m == null) ? '<span class="dim">—</span>' : Math.round(m * rate) + '¢';
+
+    const fmtNet = n => {
+      if (n == null) return '<span class="dim">—</span>';
+      const cents = Math.round(n * 100);
+      if (cents === 0) return '0¢';
+      return (cents > 0 ? '+' : '−') + Math.abs(cents) + '¢';
+    };
+
+    const tagFor = e => {
+      if (e.is_baseline) return '';
+      const s = e.scraper_status || 'pending';
+      const klass = s.startsWith('wired') ? 'live' : s.startsWith('deferred') ? 'deferred' : 'pending';
+      const text  = klass === 'live' ? 'live' : klass === 'deferred' ? 'v2' : 'pending';
+      return `<span class="A-elev-tag ${klass}">${text}</span>`;
+    };
+
+    const baselineFreight = (baseline.miles == null) ? 0 : (baseline.miles * rate / 100);
+    const haveBaselineCorn = (baseline.corn_bid != null);
+    const haveBaselineSoy  = (baseline.soy_bid  != null);
+
+    // If we don't yet have Ritchie's bid, the Δ columns show *basis cents*
+    // (which is the apples-to-apples comparator since every row references
+    // the same futures contract). Once Ritchie's bid is wired, the columns
+    // switch to Δ-net-of-freight in cents. Update headers accordingly.
+    const headRow = document.querySelector('#elev-table thead tr');
+    if (headRow) {
+      const cornHead = headRow.children[4];
+      const soyHead  = headRow.children[6];
+      if (cornHead) cornHead.textContent = haveBaselineCorn ? 'Δ vs Ritchie' : 'Corn basis';
+      if (soyHead)  soyHead.textContent  = haveBaselineSoy  ? 'Δ vs Ritchie' : 'Soy basis';
+    }
+
+    const fmtBasis = c => (c == null) ? '<span class="dim">—</span>'
+                       : (c > 0 ? '+' : '−') + Math.abs(Math.round(c)) + '¢';
+
+    const rowsHtml = D.elevators.map(e => {
+      const elevFreight = (e.miles == null) ? null : (e.miles * rate / 100);
+      const freightDelta = (elevFreight == null) ? null : (elevFreight - baselineFreight);
+
+      const cornNet = (e.is_baseline || e.corn_bid == null || baseline.corn_bid == null || freightDelta == null)
+        ? null : ((e.corn_bid - baseline.corn_bid) - freightDelta);
+      const soyNet = (e.is_baseline || e.soy_bid == null || baseline.soy_bid == null || freightDelta == null)
+        ? null : ((e.soy_bid - baseline.soy_bid) - freightDelta);
+
+      // For the cell, prefer the net-vs-Ritchie number; fall back to basis
+      // when Ritchie isn't wired yet. Color-code on whichever applies.
+      let cornCellHtml, cornCls;
+      if (haveBaselineCorn) {
+        cornCls = (cornNet == null) ? '' : cornNet > 0 ? 'up' : cornNet < 0 ? 'down' : '';
+        cornCellHtml = e.is_baseline ? '<span class="dim">—</span>' : fmtNet(cornNet);
+      } else {
+        cornCls = (e.corn_basis_cents == null) ? '' : e.corn_basis_cents >= -10 ? 'up' : e.corn_basis_cents <= -30 ? 'down' : '';
+        cornCellHtml = e.is_baseline ? '<span class="dim">—</span>' : fmtBasis(e.corn_basis_cents);
+      }
+
+      let soyCellHtml, soyCls;
+      if (haveBaselineSoy) {
+        soyCls = (soyNet == null) ? '' : soyNet > 0 ? 'up' : soyNet < 0 ? 'down' : '';
+        soyCellHtml = e.is_baseline ? '<span class="dim">—</span>' : fmtNet(soyNet);
+      } else {
+        soyCls = (e.soy_basis_cents == null) ? '' : e.soy_basis_cents >= -10 ? 'up' : e.soy_basis_cents <= -30 ? 'down' : '';
+        soyCellHtml = e.is_baseline ? '<span class="dim">—</span>' : fmtBasis(e.soy_basis_cents);
+      }
+
+      const baselineMark = '<span class="dim">baseline</span>';
+
+      return `<tr class="${e.is_baseline ? 'baseline' : ''}">
+        <td>
+          <div class="A-elev-name"><b>${e.name}</b>${tagFor(e)}</div>
+          <span class="A-elev-name addr">${e.address}</span>
+        </td>
+        <td class="num">${fmtMiles(e.miles)}</td>
+        <td class="num">${e.is_baseline ? baselineMark : fmtFreight(e.miles)}</td>
+        <td class="num">${fmtBid(e.corn_bid)}</td>
+        <td class="num A-elev-net ${cornCls}">${cornCellHtml}</td>
+        <td class="num">${fmtBid(e.soy_bid)}</td>
+        <td class="num A-elev-net ${soyCls}">${soyCellHtml}</td>
+      </tr>`;
+    }).join('');
+
+    document.getElementById("elev-tbody").innerHTML = rowsHtml;
+
+    // If any elevator has an as_of date set, surface it in the footer note.
+    const dates = D.elevators.map(e => e.as_of).filter(Boolean).sort();
+    if (dates.length > 0) {
+      const baselineNote = haveBaselineCorn
+        ? `Δ columns net of freight at <b>${rate}¢/bu/mi</b>.`
+        : `Δ columns show <b>basis cents</b> (vs. CME futures) until Ritchie's bid is wired in. Same futures contract, so basis is the right comparator.`;
+      document.getElementById("elev-note").innerHTML =
+        `As of <b>${dates[dates.length - 1]}</b>. ${baselineNote} Distances are straight-line from <b>19076 W Peotone Rd</b>; freight assumes <b>$5/loaded mi ÷ 890 bu/load</b> corn.`;
+    }
+  })();
+  </script>
 
 </main>
 
@@ -1679,29 +1918,6 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
 @media (max-width: 700px)  { .explorer { padding: 8px 16px 32px; } .ex-table { font-size: 11px; } .ex-table thead th, .ex-table tbody td { padding: 6px 8px; } }
 </style>
 
-<footer class="shell-foot">FREIS FARM · FARM OPS · <span class="js-today" data-fmt="footer">APR 30 2026</span></footer>
-
-<script id="js-today-updater">
-// Auto-fill any .js-today element with today's local date.
-// Format chosen via data-fmt: "long" (May 4, 2026) | "header" (MAY 4, 2026)
-// | "footer" (MAY 4 2026). All other formats fall back to "long".
-(function(){
-  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  var d = new Date();
-  var mLong  = months[d.getMonth()];
-  var mUpper = mLong.toUpperCase();
-  var day = d.getDate();
-  var year = d.getFullYear();
-  var fmt = {
-    long:   mLong  + ' ' + day + ', ' + year,
-    header: mUpper + ' ' + day + ', ' + year,
-    footer: mUpper + ' ' + day + ' '  + year,
-  };
-  document.querySelectorAll('.js-today').forEach(function(el){
-    var f = el.getAttribute('data-fmt') || 'long';
-    el.textContent = fmt[f] || fmt.long;
-  });
-})();
-</script>
+<footer class="shell-foot">FREIS FARM · FARM OPS · APR 30 2026</footer>
 </body>
 </html>

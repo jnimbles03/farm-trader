@@ -36,13 +36,26 @@ from urllib.parse import parse_qs, urljoin, urlparse
 
 import requests
 from bs4 import BeautifulSoup
-from dotenv import load_dotenv
+
+# python-dotenv is only used to load a local dev .env; in CI the env
+# vars come straight from GitHub secrets, so don't hard-fail if it
+# isn't installed.
+try:
+    from dotenv import load_dotenv
+except ImportError:
+    def load_dotenv(*_args, **_kwargs):  # type: ignore[no-redef]
+        return False
 
 HERE = Path(__file__).parent
 load_dotenv(HERE / ".env")
 
-PHONE = os.environ.get("AKRON_USER", "").strip()
-PASS  = os.environ.get("AKRON_PASS", "").strip()
+# Accept either env-var pair. The GitHub secret is BUSHEL_USER/BUSHEL_PASS
+# (matching refresh_ritchie.py); local .env historically used AKRON_USER/
+# AKRON_PASS. Either is fine.
+PHONE = (os.environ.get("BUSHEL_USER")
+         or os.environ.get("AKRON_USER", "")).strip()
+PASS  = (os.environ.get("BUSHEL_PASS")
+         or os.environ.get("AKRON_PASS", "")).strip()
 
 # .env's AKRON_USER was Mom's email originally; the actual username is the
 # 10-digit phone number. Allow either (strip @gmail.com if someone forgot).
@@ -504,7 +517,7 @@ def summarize_for_cashflow(data: dict) -> dict:
 
 def main():
     if not PHONE or not PASS:
-        print("!! AKRON_USER and AKRON_PASS must be set in .env"); sys.exit(2)
+        print("!! BUSHEL_USER/BUSHEL_PASS (or AKRON_USER/AKRON_PASS) must be set"); sys.exit(2)
 
     s = make_session()
     session = login(s, PHONE, PASS)

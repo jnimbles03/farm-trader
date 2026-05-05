@@ -38,12 +38,22 @@ jobs:
 
       - name: Install deps
         run: |
-          pip install httpx beautifulsoup4
+          # scripts/scrape_bushel.py imports requests + bs4 (lxml parser)
+          # + python-dotenv. python-dotenv only loads a local .env in dev;
+          # we install it so the import doesn't blow up the CI run.
+          # refresh_elevator_bids.py only needs requests (already covered).
+          pip install requests beautifulsoup4 lxml python-dotenv
 
       - name: Scrape live bids
         env:
+          # Pass creds under BOTH names so either script variant picks
+          # them up. The GH secret is BUSHEL_USER/BUSHEL_PASS (per
+          # refresh_ritchie.py); scripts/scrape_bushel.py reads
+          # AKRON_USER/AKRON_PASS — feed it the same value.
           BUSHEL_USER: ${{ secrets.BUSHEL_USER }}
           BUSHEL_PASS: ${{ secrets.BUSHEL_PASS }}
+          AKRON_USER:  ${{ secrets.BUSHEL_USER }}
+          AKRON_PASS:  ${{ secrets.BUSHEL_PASS }}
         run: |
           if [ -z "$BUSHEL_USER" ] || [ -z "$BUSHEL_PASS" ]; then
             echo "::warning::BUSHEL_USER / BUSHEL_PASS not set — cannot scrape, exiting clean."
@@ -58,11 +68,26 @@ jobs:
             exit 0
           fi
 
+      - name: Refresh competing-elevator bids (FS Grain regional grid)
+        run: |
+          # Pulls cash bids from fsgrain.com/markets/cashgrid.php — covers
+          # ADM, CHS, CGB, FS Grain, etc. — combines with futures from
+          # AgriCharts and reads docs/bushel.json for the Ritchie baseline.
+          # Writes data/elevator_bids.json + docs/elevator_bids.json
+          # consumed by the Farm Ops "Where else this could go" panel.
+          # Script auto-discovers paths so it works at this repo root.
+          if [ -f "refresh_elevator_bids.py" ]; then
+            python3 refresh_elevator_bids.py || \
+              echo "::warning::refresh_elevator_bids.py failed — keeping previous JSON."
+          else
+            echo "::warning::refresh_elevator_bids.py not present — skipping."
+          fi
+
       - name: Commit + push if changed
         run: |
           git config user.name  "freis-farm-bot"
           git config user.email "bot@users.noreply.github.com"
-          git add docs/bushel.json docs/bushel_raw.json 2>/dev/null || true
+          git add docs/bushel.json docs/bushel_raw.json docs/elevator_bids.json data/elevator_bids.json 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "No bid changes since last refresh."
             exit 0
