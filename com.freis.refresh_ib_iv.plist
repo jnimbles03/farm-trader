@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  com.freis.refresh_ib_iv.plist
+
+  Runs farm-proxy/refresh_ib_iv.sh M–F at 16:30 local (the Mac mini's local
+  time should be set to America/Chicago so this lines up with the grain pit
+  close). Output goes to ~/Library/Logs/refresh_ib_iv/.
+
+  Install:
+    cp farm-proxy/com.freis.refresh_ib_iv.plist ~/Library/LaunchAgents/
+    launchctl load ~/Library/LaunchAgents/com.freis.refresh_ib_iv.plist
+
+  Trigger manually for testing:
+    launchctl start com.freis.refresh_ib_iv
+
+  Inspect schedule:
+    launchctl list | grep freis
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.freis.refresh_ib_iv</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>-lc</string>
+    <string>"$HOME/Documents/Claude/Projects/Freis Farm/farm-proxy/refresh_ib_iv.sh"</string>
+  </array>
+
+  <key>StartCalendarInterval</key>
+  <array>
+    <dict>
+      <key>Weekday</key><integer>1</integer>
+      <key>Hour</key><integer>16</integer>
+      <key>Minute</key><integer>30</integer>
+    </dict>
+    <dict>
+      <key>Weekday</key><integer>2</integer>
+      <key>Hour</key><integer>16</integer>
+      <key>Minute</key><integer>30</integer>
+    </dict>
+    <dict>
+      <key>Weekday</key><integer>3</integer>
+      <key>Hour</key><integer>16</integer>
+      <key>Minute</key><integer>30</integer>
+    </dict>
+    <dict>
+      <key>Weekday</key><integer>4</integer>
+      <key>Hour</key><integer>16</integer>
+      <key>Minute</key><integer>30</integer>
+    </dict>
+    <dict>
+      <key>Weekday</key><integer>5</integer>
+      <key>Hour</key><integer>16</integer>
+      <key>Minute</key><integer>30</integer>
+    </dict>
+  </array>
+
+  <key>StandardOutPath</key>
+  <string>/tmp/refresh_ib_iv.out.log</string>
+  <key>StandardErrorPath</key>
+  <string>/tmp/refresh_ib_iv.err.log</string>
+
+  <key>RunAtLoad</key>
+  <false/>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin</string>
+  </dict>
+</dict>
+</plist>

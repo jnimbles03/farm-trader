@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Freis Farm — Hedge</title>
+<title>Freis Farm — Trading</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -392,6 +392,732 @@ footer.shell-foot {
   .A-kpi { border-left: 0; padding: 0; padding-top: 12px; border-top: 1px solid var(--rule); }
   .A-kpi:first-child { border-top: 0; padding-top: 0; }
 }
+
+/* =========================================================
+   IN-PAGE TABS — Risk Management / Speculation
+   ========================================================= */
+.page-tabs {
+  display: flex; gap: 0;
+  background: var(--cream);
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px;
+  position: sticky; top: 51px; z-index: 49;
+}
+.page-tab {
+  padding: 12px 22px 11px;
+  background: transparent; border: 0; cursor: pointer;
+  font-family: var(--font-text);
+  font-size: 11.5px; font-weight: 500;
+  letter-spacing: 0.6px; text-transform: uppercase;
+  color: var(--slate);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color .15s, border-color .15s;
+}
+.page-tab:hover { color: var(--ink-2); }
+.page-tab.active {
+  color: var(--ink-2);
+  border-bottom-color: var(--sage-deep);
+}
+.page-tab .dot {
+  display: inline-block;
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--sage);
+  margin-right: 7px;
+  vertical-align: middle;
+}
+.A-page[hidden],
+.agdca-page[hidden] { display: none !important; }
+
+/* =========================================================
+   AgDCA — Event-weighted vol panel
+   ========================================================= */
+.agdca-page {
+  padding: 28px 32px 60px;
+  max-width: 1480px;
+  margin: 0 auto;
+  display: flex; flex-direction: column;
+  gap: 22px;
+}
+.agdca-head {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 24px;
+  align-items: end;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 16px;
+}
+.agdca-head h1 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 32px;
+  line-height: 1.1;
+  letter-spacing: -0.4px;
+  color: var(--ink-2);
+  margin: 0 0 8px;
+}
+.agdca-head h1 em {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--sage-deep);
+}
+.agdca-head .lede {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 14px;
+  color: var(--slate);
+  max-width: 64ch;
+  margin: 0;
+  line-height: 1.5;
+}
+.agdca-head .stamp {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 1.0px;
+  text-transform: uppercase;
+  color: var(--dust);
+  text-align: right;
+  line-height: 1.7;
+}
+/* compact eyebrow — small, single line */
+.agdca-head.compact {
+  display: block;
+  border-bottom: 0;
+  padding: 0;
+  margin: 0;
+}
+.agdca-head.compact .eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 1.0px;
+  text-transform: uppercase;
+  color: var(--dust);
+  margin: 0;
+}
+.agdca-head.compact .eyebrow span { color: var(--ink); }
+
+/* Pattern-read banner — meta-thesis above the matrix */
+.agdca-banner {
+  background: linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 100%);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--sage-deep);
+  border-radius: 6px;
+  padding: 20px 26px 22px;
+}
+.banner-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--sage-deep);
+  margin: 0 0 8px;
+  font-weight: 500;
+}
+.banner-bullets {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  max-width: 88ch;
+}
+.banner-bullets li {
+  position: relative;
+  padding-left: 18px;
+  font-family: var(--font-text);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ink);
+}
+.banner-bullets li::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0.65em;
+  width: 8px; height: 1px;
+  background: var(--sage-deep);
+}
+.banner-bullets li strong {
+  font-family: var(--font-text);
+  font-weight: 600;
+  color: var(--ink-2);
+}
+.banner-closer {
+  margin: 16px 0 0;
+  padding-top: 12px;
+  border-top: 1px dashed var(--rule);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 15px;
+  color: var(--sage-deep);
+  font-weight: 500;
+  max-width: 60ch;
+}
+@media (max-width: 700px) {
+  .agdca-banner { padding: 16px 18px; }
+  .banner-bullets li { font-size: 13px; }
+  .banner-closer { font-size: 13px; }
+}
+
+.agdca-card {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 18px 22px;
+}
+.agdca-card-h {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin: 0 0 4px; gap: 12px;
+}
+.agdca-card-h h2 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 16px;
+  color: var(--ink-2);
+  margin: 0;
+  letter-spacing: -0.1px;
+}
+.agdca-card-h .src {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--dust);
+}
+.agdca-card .sub {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 13px;
+  color: var(--slate);
+  margin: 0 0 14px;
+  line-height: 1.5;
+}
+
+/* matrix table */
+table.agdca-matrix {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+table.agdca-matrix th {
+  font-family: var(--font-text);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--dust);
+  text-align: left;
+  padding: 8px 12px 8px 0;
+  border-bottom: 1px solid var(--rule);
+}
+table.agdca-matrix td {
+  padding: 14px 12px 14px 0;
+  border-bottom: 1px dotted var(--rule);
+  vertical-align: top;
+  font-size: 12.5px;
+  color: var(--ink);
+}
+table.agdca-matrix tr:last-child td { border-bottom: 0; }
+table.agdca-matrix .why {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 11px;
+  color: var(--slate);
+  margin-top: 4px;
+  line-height: 1.4;
+  font-weight: 400;
+}
+table.agdca-matrix .verdict {
+  font-family: var(--font-display);
+  font-size: 13px;
+  color: var(--ink-2);
+  line-height: 1.5;
+  font-weight: 400;
+}
+table.agdca-matrix .verdict strong {
+  font-style: normal;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  font-weight: 500;
+}
+table.agdca-matrix .state {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--slate);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+table.agdca-matrix .ticker {
+  font-family: var(--font-text);
+  font-weight: 500;
+  font-size: 13px;
+  color: var(--ink-2);
+}
+
+/* rich/fair/cheap buckets — Freis palette */
+.bkt {
+  display: inline-block;
+  padding: 3px 9px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.6px;
+  font-weight: 500;
+  text-align: center;
+  min-width: 56px;
+  border: 1px solid;
+  line-height: 1.2;
+  border-radius: 2px;
+}
+.bkt.rich      { background: rgba(181,101,29,0.12); color: var(--warn);   border-color: var(--warn); }
+.bkt.rich-mild { background: rgba(181,101,29,0.05); color: var(--warn);   border-color: rgba(181,101,29,0.4); }
+.bkt.fair      { background: var(--paper-2);        color: var(--slate);  border-color: var(--rule); }
+.bkt.cheap     { background: var(--sage-pale);      color: var(--sage-deep); border-color: var(--sage-deep); }
+
+/* compact matrix — single-row reads, no sub-text */
+table.agdca-matrix.compact td {
+  padding: 12px 12px 12px 0;
+  vertical-align: middle;
+  border-bottom: 1px dotted var(--rule);
+}
+table.agdca-matrix.compact tr:last-child td { border-bottom: 0; }
+
+/* trade ticket */
+.trade-ticket .agdca-card-h { border-bottom: 1px solid var(--rule); padding-bottom: 12px; margin-bottom: 14px; }
+table.trade-legs {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+table.trade-legs th {
+  font-family: var(--font-text);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--dust);
+  text-align: left;
+  padding: 6px 12px 6px 0;
+  border-bottom: 1px solid var(--rule);
+}
+table.trade-legs td {
+  padding: 12px 12px 12px 0;
+  border-bottom: 1px dotted var(--rule);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink);
+}
+table.trade-legs tr:last-child td { border-bottom: 0; }
+table.trade-legs td:first-child {
+  color: var(--dust);
+  font-size: 10.5px;
+  letter-spacing: 0.4px;
+}
+table.trade-legs td.neu { color: var(--dust); }
+
+.side {
+  display: inline-block;
+  padding: 2px 9px;
+  font-family: var(--font-text);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  border-radius: 2px;
+  border: 1px solid;
+}
+.side.buy  { color: var(--sage-deep); border-color: var(--sage-deep); background: var(--sage-pale); }
+.side.sell { color: var(--warn);      border-color: var(--warn);      background: rgba(181,101,29,0.10); }
+
+.trade-notes {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--rule);
+}
+.trade-notes > div {
+  border-left: 1px solid var(--rule);
+  padding: 0 14px;
+  display: flex; flex-direction: column; gap: 3px;
+}
+.trade-notes > div:first-child { border-left: 0; padding-left: 0; }
+.trade-notes .k {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--dust);
+}
+.trade-notes .v {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--ink-2);
+  letter-spacing: -0.2px;
+  font-variant-numeric: tabular-nums;
+}
+@media (max-width: 700px) {
+  .trade-notes { grid-template-columns: repeat(2, 1fr); row-gap: 12px; }
+  .trade-notes > div:nth-child(3) { border-left: 0; padding-left: 0; }
+  table.trade-legs td { font-size: 11px; }
+}
+
+/* P&L proforma chart + table */
+.pl-proforma .agdca-card-h {
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 12px;
+  margin-bottom: 14px;
+}
+.pl-chart {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 4px 0 6px;
+}
+.proforma-axis {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  fill: var(--slate);
+  letter-spacing: 0.4px;
+}
+.proforma-axis.dim {
+  fill: var(--dust);
+  font-size: 9px;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+/* What-to-watch · catalyst card */
+.catalyst .agdca-card-h {
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+
+.catalyst-next {
+  background: var(--paper-2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--sage-deep);
+  border-radius: 4px;
+  padding: 16px 20px 18px;
+  margin-bottom: 18px;
+  transition: border-color 0.2s ease;
+}
+.catalyst-next.normal { border-left-color: var(--sage-deep); }
+.catalyst-next.soon   { border-left-color: var(--soy); }
+.catalyst-next.urgent { border-left-color: var(--warn); }
+.catalyst-next.urgent .catalyst-next-tag { color: var(--warn); }
+.catalyst-next.soon   .catalyst-next-tag { color: var(--warn); }
+.catalyst-next-head {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+.catalyst-next-tag {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--sage-deep);
+  font-weight: 500;
+}
+.catalyst-next-when {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--slate);
+  letter-spacing: 0.4px;
+}
+.catalyst-next-count {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.4px;
+  color: var(--slate);
+}
+.catalyst-next-count strong {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 18px;
+  color: var(--ink-2);
+  letter-spacing: -0.3px;
+  margin-right: 2px;
+}
+.catalyst-next-name {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 24px;
+  color: var(--ink-2);
+  letter-spacing: -0.4px;
+  line-height: 1.15;
+  margin: 2px 0 4px;
+}
+.catalyst-next-meta {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 12.5px;
+  color: var(--slate);
+  margin-bottom: 14px;
+}
+.catalyst-next-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.catalyst-side {
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  grid-template-rows: auto auto;
+  gap: 0 10px;
+  align-items: baseline;
+  padding: 10px 12px;
+  border-radius: 3px;
+  background: var(--cream);
+  border: 1px solid var(--border);
+}
+.catalyst-side.works { border-left: 2px solid var(--sage-deep); }
+.catalyst-side.kills { border-left: 2px solid var(--warn); }
+.catalyst-side .hash {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1;
+  grid-row: 1 / 3;
+  align-self: start;
+  margin-top: 1px;
+}
+.catalyst-side.works .hash { color: var(--sage-deep); }
+.catalyst-side.kills .hash { color: var(--warn); }
+.catalyst-side .lbl {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--slate);
+  margin-bottom: 3px;
+}
+.catalyst-side .val {
+  font-family: var(--font-display);
+  font-size: 13px;
+  color: var(--ink);
+  line-height: 1.45;
+  font-style: italic;
+  font-weight: 400;
+}
+.catalyst-side .tip {
+  display: block;
+  margin-top: 8px;
+  padding-left: 14px;
+  position: relative;
+  font-style: normal;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.2px;
+  color: var(--slate);
+  line-height: 1.5;
+}
+.catalyst-side .tip::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0.65em;
+  width: 8px; height: 1px;
+  background: var(--sage-deep);
+}
+
+/* guard-rail strip */
+.catalyst-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+.catalyst-grid .watch {
+  padding: 14px 16px;
+  border-left: 1px solid var(--rule);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.catalyst-grid .watch:first-child {
+  border-left: 0;
+  padding-left: 0;
+}
+.watch-h {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.watch .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.watch .dot.sage { background: var(--sage-deep); box-shadow: 0 0 0 2px rgba(92,143,96,0.18); }
+.watch .dot.gold { background: var(--soy);       box-shadow: 0 0 0 2px rgba(200,169,104,0.20); }
+.watch .dot.warn { background: var(--warn);      box-shadow: 0 0 0 2px rgba(181,101,29,0.20); }
+.watch-l {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--dust);
+}
+.watch-v {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.2px;
+  line-height: 1.15;
+}
+.watch-v .dim { color: var(--dust); font-weight: 400; }
+.watch-d {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 11.5px;
+  color: var(--slate);
+  line-height: 1.45;
+}
+
+@media (max-width: 980px) {
+  .catalyst-next-grid { grid-template-columns: 1fr; }
+  .catalyst-grid { grid-template-columns: repeat(2, 1fr); }
+  .catalyst-grid .watch:nth-child(3) { border-left: 0; padding-left: 0; }
+  .catalyst-grid .watch:nth-child(odd) { border-left: 0; padding-left: 0; }
+  .catalyst-grid .watch:nth-child(even) { border-top: 1px solid var(--rule); }
+  .catalyst-grid .watch:nth-child(odd):nth-last-child(-n+2) { border-top: 1px solid var(--rule); }
+}
+@media (max-width: 700px) {
+  .catalyst-next-name { font-size: 20px; }
+  .catalyst-grid { grid-template-columns: 1fr; }
+  .catalyst-grid .watch { border-left: 0; padding-left: 0; border-top: 1px solid var(--rule); }
+  .catalyst-grid .watch:first-child { border-top: 0; }
+}
+
+/* legend table */
+.matrix-legend {
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--rule);
+}
+.leg-h {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--dust);
+  margin-bottom: 14px;
+  font-weight: 500;
+}
+.leg-table {
+  display: grid;
+  grid-template-columns: 46px 46px 46px 1fr;
+  gap: 10px 16px;
+  align-items: center;
+  font-family: var(--font-display);
+  font-size: 12.5px;
+  color: var(--ink);
+  max-width: 760px;
+}
+.leg-table .lh {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--dust);
+  text-align: center;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--rule);
+}
+.leg-table .lh:last-child { text-align: left; }
+.leg-table .bkt { min-width: 30px; padding: 3px 0; font-size: 10px; }
+.leg-table .row-note { color: var(--ink); font-style: italic; line-height: 1.4; }
+.leg-table .row-note strong {
+  color: var(--ink-2);
+  font-style: normal;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+/* DCA decomposition table */
+table.agdca-decomp {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+table.agdca-decomp th {
+  font-family: var(--font-text);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--dust);
+  text-align: right;
+  padding: 8px 12px 8px 0;
+  border-bottom: 1px solid var(--rule);
+}
+table.agdca-decomp th:first-child { text-align: left; }
+table.agdca-decomp td {
+  padding: 8px 12px 8px 0;
+  border-bottom: 1px dotted var(--rule);
+  text-align: right;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--ink);
+}
+table.agdca-decomp td:first-child {
+  text-align: left;
+  font-family: var(--font-text);
+  font-weight: 500;
+  font-size: 12.5px;
+  color: var(--ink-2);
+}
+table.agdca-decomp tr:last-child td { border-bottom: 0; }
+table.agdca-decomp td.neu { color: var(--dust); }
+
+.agdca-foot-rule {
+  margin-top: 12px;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 11.5px;
+  color: var(--slate);
+  line-height: 1.5;
+}
+.agdca-foot-rule code {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  background: var(--paper-2);
+  padding: 2px 6px;
+  font-style: normal;
+  border-radius: 2px;
+  color: var(--ink);
+}
+
+@media (max-width: 980px) {
+  .agdca-head { grid-template-columns: 1fr; }
+  .agdca-head .stamp { text-align: left; }
+}
+@media (max-width: 700px) {
+  .agdca-page { padding: 16px; gap: 16px; }
+  .page-tabs { padding: 0 16px; }
+  .agdca-head h1 { font-size: 24px; }
+  table.agdca-matrix { font-size: 11.5px; }
+  table.agdca-matrix td { padding: 10px 8px 10px 0; }
+  .leg-table { grid-template-columns: 32px 32px 32px 1fr; gap: 6px 10px; }
+}
 </style>
 </head>
 <body>
@@ -657,18 +1383,26 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
   <a href="./" class="shell-brand">Freis <em>Farm</em></a>
   <div class="shell-tabs">
     <a href="./" class="shell-tab">Today's Call</a>
-    <a href="hedge.html" class="shell-tab here">Hedge</a>
+    <a href="hedge.html" class="shell-tab here">Trading</a>
     <a href="farm-ops.html" class="shell-tab">Farm Ops</a>
-    <a href="books.html" class="shell-tab">Books</a>
   </div>
   <div class="shell-meta"><span class="js-today" data-fmt="header">APR 30, 2026</span> · CT</div>
 </nav>
 
-<main class="A-page">
+<nav class="page-tabs" role="tablist" aria-label="Trading views">
+  <button type="button" class="page-tab active" data-page="hedge" role="tab" aria-selected="true">
+    <span class="dot"></span>Risk Management
+  </button>
+  <button type="button" class="page-tab" data-page="agdca" role="tab" aria-selected="false">
+    Speculation
+  </button>
+</nav>
+
+<main class="A-page" data-page="hedge">
 
   <div class="A-call">
     <div>
-      <p class="A-eyebrow">Hedge · What-if model · <span class="js-today" data-fmt="long">Apr 30, 2026</span></p>
+      <p class="A-eyebrow">Hedge · What-if model · Apr 30, 2026</p>
       <h1>If we bought protection — <em>nothing would trigger today</em>.</h1>
       <p>Both crops sit between modeled floor and ceiling. The collar costs nothing to keep in place. (Model only — no position open. We'd have to call Ritchie or a broker to set one up.)</p>
     </div>
@@ -791,7 +1525,223 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
 
 </main>
 
-<footer class="shell-foot">FREIS FARM · HEDGE · <span class="js-today" data-fmt="footer">APR 30 2026</span></footer>
+<!-- ═══════════════════════════════════════════════════════════
+     AgDCA — Event-weighted vol lens (Disagreement matrix + DCA decomposition)
+     Carved from Weatherhelm's Daily Call, restyled to Freis tokens.
+     ═══════════════════════════════════════════════════════════ -->
+<section class="agdca-page" data-page="agdca" role="tabpanel" aria-label="AgDCA event-weighted vol" hidden>
+
+  <header class="agdca-head compact">
+    <p class="eyebrow">AgDCA · Vol Lens · v0.3 · scan <span id="agdca-scan-ts">06:50 CT</span></p>
+  </header>
+
+  <!-- ───────── Pattern read · today's tape ───────── -->
+  <div class="agdca-banner">
+    <p class="banner-eyebrow">Today's tape · pattern read</p>
+    <ul class="banner-bullets">
+      <li><strong>All 3 reads agree: options are expensive</strong> — Giles, AgDCA, and realized vol on SN26</li>
+      <li><strong>Hedge funds still building</strong> — positions early, no crowded-trade spike risk</li>
+      <li><strong>Calendar is quiet</strong> — no big USDA reports or shocks in the next 21 days</li>
+      <li><strong>Market expects more movement than we'll get</strong> — model says the vol won't arrive</li>
+      <li><strong>Time decay works for us</strong> — every flat day, the call we sold loses value</li>
+      <li><strong>Sell options, capped risk</strong> — bet with the pattern, not against it</li>
+    </ul>
+    <p class="banner-closer"><em>The convergence is the conviction.</em></p>
+  </div>
+
+  <!-- ───────── Disagreement + Verdict (compact) ───────── -->
+  <div class="agdca-card">
+    <table class="agdca-matrix compact">
+      <thead>
+        <tr>
+          <th style="width:11%">Contract</th>
+          <th style="width:9%">Giles</th>
+          <th style="width:9%">AgDCA</th>
+          <th style="width:11%">Mkt vs HV</th>
+          <th>Verdict</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="ticker">ZS · SN26</span></td>
+          <td><span class="bkt rich">RICH</span></td>
+          <td><span class="bkt rich">RICH</span></td>
+          <td><span class="bkt rich-mild">RICH·MILD</span></td>
+          <td class="verdict"><strong>Sell premium</strong> — covered call against long futures. See ticket below.</td>
+        </tr>
+        <tr>
+          <td><span class="ticker">ZC · CN26</span></td>
+          <td><span class="bkt fair">FAIR</span></td>
+          <td><span class="bkt fair">FAIR</span></td>
+          <td><span class="bkt rich-mild">RICH·MILD</span></td>
+          <td class="verdict"><strong>Stand aside.</strong> Model overrides the HV/IV head-fake.</td>
+        </tr>
+        <tr>
+          <td><span class="ticker">ZW · WN26</span></td>
+          <td><span class="bkt cheap">CHEAP</span></td>
+          <td><span class="bkt fair">FAIR</span></td>
+          <td><span class="bkt cheap">CHEAP</span></td>
+          <td class="verdict"><strong>Investigate, no trade.</strong> Black Sea regime AgDCA can't see.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ───────── Trade ticket ───────── -->
+  <div class="agdca-card trade-ticket">
+    <div class="agdca-card-h">
+      <h2>Trade · SN26 covered call</h2>
+      <span class="src">2 legs · net credit ≈ $925</span>
+    </div>
+
+    <table class="trade-legs">
+      <thead>
+        <tr>
+          <th style="width:5%">#</th>
+          <th style="width:9%">Side</th>
+          <th style="width:6%">Qty</th>
+          <th>Instrument</th>
+          <th style="width:10%">Strike</th>
+          <th style="width:14%">Expiry</th>
+          <th style="width:18%">Price / Δ</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td><span class="side buy">BUY</span></td>
+          <td>1</td>
+          <td>ZS · Soybean future · Jul '26 (ZSN6)</td>
+          <td class="neu">—</td>
+          <td>14 Jul '26</td>
+          <td>~12030 (mkt)</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td><span class="side sell">SELL</span></td>
+          <td>1</td>
+          <td>OZS · Soybean call · Jul '26 (OZSN6 wk)</td>
+          <td>12200</td>
+          <td>22 May '26 · 3-wk serial</td>
+          <td>≈ 18.5¢ · 25Δ</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="trade-notes">
+      <div><span class="k">Net credit</span><span class="v">≈ $925</span></div>
+      <div><span class="k">Max gain</span><span class="v">+ $9,425</span></div>
+      <div><span class="k">Margin held</span><span class="v">~ $2,500</span></div>
+      <div><span class="k">Stop</span><span class="v">SN ATM IV &gt; 32</span></div>
+    </div>
+  </div>
+
+  <!-- ───────── What to watch ───────── -->
+  <div class="agdca-card catalyst">
+    <div class="agdca-card-h">
+      <h2>What to watch · the trade works or dies on this</h2>
+      <span class="src">live signals · expiry 22 May</span>
+    </div>
+
+    <!-- prominent next catalyst -->
+    <div class="catalyst-next" id="agdca-cat-card">
+      <div class="catalyst-next-head">
+        <span class="catalyst-next-tag" id="agdca-cat-tag">Next catalyst</span>
+        <span class="catalyst-next-when" id="agdca-cat-when">12 May 2026 · 11:00 CT</span>
+        <span class="catalyst-next-count" id="agdca-cat-count"><strong>7 d</strong> to print</span>
+      </div>
+      <div class="catalyst-next-name" id="agdca-cat-name">WASDE · S&amp;D update</div>
+      <div class="catalyst-next-meta" id="agdca-cat-meta">DCA weight 0.71 ATR · biggest scheduled vol event before expiry</div>
+      <div class="catalyst-next-grid">
+        <div class="catalyst-side works">
+          <span class="hash">✓</span>
+          <span class="lbl">Works if</span>
+          <span class="val">Bean stocks come in flat-to-bearish — price holds below 12200, you keep the $925 premium and any unrealized gain on the long futures.<span class="tip">Theta accrues each day spot stays below the strike — time is the silent contributor.</span></span>
+        </div>
+        <div class="catalyst-side kills">
+          <span class="hash">✗</span>
+          <span class="lbl">Kills if</span>
+          <span class="val">Bullish supply surprise — beans gap through 12200 and ATM IV jumps past 32. The future caps; the call you sold mid-vol now reprices on a higher surface.</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ───────── P&L proforma ───────── -->
+  <div class="agdca-card pl-proforma">
+    <div class="agdca-card-h">
+      <h2>P&amp;L proforma · at expiry, per contract</h2>
+      <span class="src">SN ±10% · 2.5% steps</span>
+    </div>
+
+    <svg viewBox="0 0 720 280" role="img" preserveAspectRatio="xMidYMid meet"
+         aria-label="Covered call payoff: linear loss to the downside, capped at +$9,425 above the 12200 strike."
+         class="pl-chart">
+
+      <!-- shaded zones (loss left of zero crossing, gain right of it) -->
+      <path d="M70,218.06 L380,67.69 L380,70 L70,70 Z" fill="var(--warn)" fill-opacity="0.10"/>
+      <path d="M380,67.69 L423.8,46.44 L690,46.44 L690,70 L380,70 Z" fill="var(--sage-pale)" fill-opacity="0.85"/>
+
+      <!-- frame -->
+      <line x1="70"  y1="40"  x2="70"  y2="220" stroke="var(--rule)" stroke-width="0.5"/>
+      <line x1="70"  y1="220" x2="690" y2="220" stroke="var(--ink)"  stroke-width="0.6"/>
+
+      <!-- zero P&L line -->
+      <line x1="70" y1="70" x2="690" y2="70" stroke="var(--ink)" stroke-width="0.5" stroke-dasharray="2,3"/>
+
+      <!-- strike marker -->
+      <line x1="423.8" y1="40" x2="423.8" y2="220" stroke="var(--sage-deep)" stroke-width="0.5" stroke-dasharray="1,3"/>
+      <text x="423.8" y="34" text-anchor="middle" class="proforma-axis" fill="var(--sage-deep)">strike $12.20</text>
+
+      <!-- y-axis labels -->
+      <text x="64" y="46"  text-anchor="end" class="proforma-axis">+$10k</text>
+      <text x="64" y="74"  text-anchor="end" class="proforma-axis">$0</text>
+      <text x="64" y="146" text-anchor="end" class="proforma-axis">−$30k</text>
+      <text x="64" y="222" text-anchor="end" class="proforma-axis">−$60k</text>
+
+      <!-- P&L curve: linear from −10% through strike, then flat -->
+      <path d="M70,218.06 L380,67.69 L423.8,46.44 L690,46.44"
+            fill="none" stroke="var(--ink-2)" stroke-width="1.6"
+            stroke-linejoin="round" stroke-linecap="round"/>
+
+      <!-- data dots at each 2.5% step -->
+      <circle cx="70"    cy="218" r="2.6" fill="var(--warn)"/>
+      <circle cx="147.5" cy="180" r="2.6" fill="var(--warn)"/>
+      <circle cx="225"   cy="143" r="2.6" fill="var(--warn)"/>
+      <circle cx="302.5" cy="105" r="2.6" fill="var(--warn)"/>
+      <circle cx="380"   cy="68"  r="2.8" fill="var(--ink-2)"/>
+      <circle cx="457.5" cy="46"  r="2.6" fill="var(--sage-deep)"/>
+      <circle cx="535"   cy="46"  r="2.6" fill="var(--sage-deep)"/>
+      <circle cx="612.5" cy="46"  r="2.6" fill="var(--sage-deep)"/>
+      <circle cx="690"   cy="46"  r="2.6" fill="var(--sage-deep)"/>
+
+      <!-- callouts: max loss / breakeven / max gain -->
+      <text x="70"  y="234" text-anchor="start" class="proforma-axis dim">max loss −$59,225</text>
+      <text x="380" y="62"  text-anchor="middle" class="proforma-axis" fill="var(--ink)">+$925 at flat</text>
+      <text x="690" y="40"  text-anchor="end"   class="proforma-axis" fill="var(--sage-deep)">capped +$9,425</text>
+
+      <!-- x-axis tick labels -->
+      <g class="proforma-axis">
+        <text x="70"    y="252" text-anchor="middle">−10%</text>
+        <text x="147.5" y="252" text-anchor="middle">−7.5</text>
+        <text x="225"   y="252" text-anchor="middle">−5</text>
+        <text x="302.5" y="252" text-anchor="middle">−2.5</text>
+        <text x="380"   y="252" text-anchor="middle">0</text>
+        <text x="457.5" y="252" text-anchor="middle">+2.5</text>
+        <text x="535"   y="252" text-anchor="middle">+5</text>
+        <text x="612.5" y="252" text-anchor="middle">+7.5</text>
+        <text x="690"   y="252" text-anchor="middle">+10%</text>
+      </g>
+      <text x="380" y="272" text-anchor="middle" class="proforma-axis dim">SN26 PRICE MOVE FROM 12030</text>
+    </svg>
+
+    <p class="agdca-foot-rule">At expiry, per 1 contract (5,000 bu). Cap kicks in at 12200 ≈ <em>+1.41%</em> from entry — every step ≥ +2.5% lands at +$9,425. Mark-to-market before expiry will differ as theta and IV evolve.</p>
+  </div>
+
+</section>
+
+<footer class="shell-foot">FREIS FARM · TRADING · <span class="js-today" data-fmt="footer">APR 30 2026</span></footer>
 
 <style>
 /* ===== TRADE ORDER WIDGET ===== */
@@ -1690,6 +2640,243 @@ renderTranches();
 loadDrafts();
 </script>
 
+<script>
+/* ─────────────────────────────────────────────────────────────
+   IN-PAGE TABS — Risk Management / Speculation
+   Toggles main[data-page="hedge"] vs section[data-page="agdca"].
+   Persists choice in URL hash (#agdca) so deep links work.
+   ───────────────────────────────────────────────────────────── */
+(function () {
+  const tabs  = document.querySelectorAll('.page-tab');
+  const panes = document.querySelectorAll('[data-page="hedge"], [data-page="agdca"]');
+  if (!tabs.length || !panes.length) return;
+
+  function show(name) {
+    tabs.forEach(t => {
+      const on = t.dataset.page === name;
+      t.classList.toggle('active', on);
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    panes.forEach(p => {
+      // only toggle hide on the page panes themselves (not nested data-page attrs)
+      if (p.matches('main.A-page, section.agdca-page')) {
+        p.hidden = (p.dataset.page !== name);
+      }
+    });
+    // sync hash without scrolling
+    const hash = name === 'agdca' ? '#agdca' : '';
+    if (location.hash !== hash) {
+      history.replaceState(null, '', location.pathname + location.search + hash);
+    }
+  }
+
+  tabs.forEach(t => t.addEventListener('click', () => show(t.dataset.page)));
+
+  // boot from hash
+  const initial = location.hash === '#agdca' ? 'agdca' : 'hedge';
+  show(initial);
+})();
+</script>
+
+<script>
+/* ─────────────────────────────────────────────────────────────
+   AgDCA — Live catalyst countdown
+   Reads advisor/usda_calendar.json on AgDCA tab show.
+   Picks the highest-DCA-weight event between today and the
+   currently-modeled position expiry, drives the catalyst card.
+   ───────────────────────────────────────────────────────────── */
+(function () {
+  // ── Position context (will become data-driven later) ──
+  const POSITION = {
+    name: 'SN26 covered call',
+    expiry: '2026-05-22',         // option-leg expiry
+    primary_crop: 'bean'           // which dca_weight key to optimize
+  };
+
+  let CAL_CACHE = null;
+
+  async function loadCalendar() {
+    if (CAL_CACHE) return CAL_CACHE;
+    try {
+      const r = await fetch('advisor/usda_calendar.json', { cache: 'default' });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      CAL_CACHE = await r.json();
+      return CAL_CACHE;
+    } catch (err) {
+      console.warn('[agdca] calendar fetch failed; keeping static fallback', err);
+      return null;
+    }
+  }
+
+  function dayDiff(future, now) {
+    // whole days from now → future, rounded up so "later today" reads as "0 d"
+    const ms = future.getTime() - now.getTime();
+    return Math.max(0, Math.ceil(ms / 86400000));
+  }
+  function fmtDate(d) {
+    return d.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+  function fmtClock(d) {
+    return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+  }
+  function setText(id, txt) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = txt;
+  }
+
+  function urgencyClass(days) {
+    if (days <= 1) return 'urgent';
+    if (days <= 3) return 'soon';
+    return 'normal';
+  }
+
+  async function refreshCatalyst() {
+    const cal = await loadCalendar();
+    if (!cal || !Array.isArray(cal.events)) return;
+
+    const now = new Date();
+    const expiry = new Date(POSITION.expiry + 'T23:59:59');
+    const crop = POSITION.primary_crop;
+
+    // events between now and expiry, sorted chronologically
+    const upcoming = cal.events
+      .map(e => Object.assign({}, e, {
+        dt: new Date(e.date + 'T' + (e.time || '00:00') + ':00')
+      }))
+      .filter(e => e.dt >= now && e.dt <= expiry)
+      .sort((a, b) => a.dt - b.dt);
+
+    if (upcoming.length === 0) {
+      // No events left in window — option is into pure-theta territory.
+      setText('agdca-cat-tag', 'No catalysts left');
+      setText('agdca-cat-name', 'Pure theta window');
+      setText('agdca-cat-when', 'no scheduled prints before expiry');
+      const countEl = document.getElementById('agdca-cat-count');
+      if (countEl) countEl.innerHTML = '';
+      setText('agdca-cat-meta', 'Position decays on time alone — only unscheduled risk (Black Sea, fund flow, weather) can move it now.');
+      return;
+    }
+
+    // pick max-weight event for the primary crop; tie-break on closer date
+    const primary = upcoming.reduce((best, e) => {
+      const w  = (e.dca_weight && e.dca_weight[crop]) || 0;
+      const bw = (best && best.dca_weight && best.dca_weight[crop]) || 0;
+      if (w > bw) return e;
+      if (w === bw && best && e.dt < best.dt) return e;
+      return best;
+    }, null);
+    if (!primary) return;
+
+    const days = dayDiff(primary.dt, now);
+    const w = (primary.dca_weight[crop] || 0).toFixed(2);
+
+    // Headline name: "WASDE · S&D update"
+    const fullName = primary.name + (primary.subtitle ? ' · ' + primary.subtitle : '');
+    setText('agdca-cat-name', fullName);
+
+    // When line: "12 May 2026 · 11:00 CT"
+    const when = fmtDate(primary.dt) +
+                 (primary.time ? ' · ' + primary.time : '') +
+                 (primary.tz   ? ' '   + primary.tz   : '');
+    setText('agdca-cat-when', when);
+
+    // Countdown: "7 d to print" / "today" / "tomorrow"
+    const countEl = document.getElementById('agdca-cat-count');
+    if (countEl) {
+      let label;
+      if (days === 0)      label = '<strong>today</strong>';
+      else if (days === 1) label = '<strong>tomorrow</strong>';
+      else                 label = '<strong>' + days + ' d</strong> to print';
+      countEl.innerHTML = label;
+    }
+
+    // Meta line: weight + relative ranking
+    let metaSuffix;
+    const isMax = upcoming.every(e => ((e.dca_weight && e.dca_weight[crop]) || 0) <= primary.dca_weight[crop]);
+    if (isMax && primary.dca_weight[crop] >= 0.50) {
+      metaSuffix = 'biggest scheduled vol event before expiry';
+    } else if (primary.dca_weight[crop] >= 0.50) {
+      metaSuffix = 'high-weight scheduled print';
+    } else if (primary.dca_weight[crop] >= 0.20) {
+      metaSuffix = 'moderate scheduled print';
+    } else {
+      metaSuffix = 'low-weight · approaching pure theta';
+    }
+    setText('agdca-cat-meta', 'DCA weight ' + w + ' ATR · ' + metaSuffix);
+
+    // Urgency on the strip — left-border accent on the card
+    const card = document.getElementById('agdca-cat-card');
+    if (card) {
+      card.classList.remove('urgent', 'soon', 'normal');
+      card.classList.add(urgencyClass(days));
+    }
+
+    // Live scan timestamp
+    setText('agdca-scan-ts', fmtClock(now) + ' CT');
+  }
+
+  // ── Live IV from IBKR (advisor/ib_iv.json, refreshed EOD by refresh_ib_iv.py) ──
+  let IV_CACHE = null;
+  async function loadIV() {
+    if (IV_CACHE) return IV_CACHE;
+    try {
+      const r = await fetch('advisor/ib_iv.json', { cache: 'default' });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      IV_CACHE = await r.json();
+      return IV_CACHE;
+    } catch (err) {
+      console.warn('[agdca] ib_iv fetch failed; keeping static fallback', err);
+      return null;
+    }
+  }
+
+  async function refreshIV() {
+    const data = await loadIV();
+    if (!data || !data.atm || !data.stop) return;
+
+    const ivPct       = data.atm.iv_pct;
+    const headroomPct = data.stop.headroom_pct;
+    const stopPct     = data.stop.stop_pct;
+    const status      = data.stop.status;
+
+    // Update the displayed IV value
+    setText('agdca-watch-vol-v', ivPct.toFixed(1));
+
+    // Update the descriptive line
+    let copy;
+    if (status === 'stop_zone') {
+      copy = headroomPct.toFixed(0) + '% headroom · stop zone, cover risk live';
+    } else if (status === 'warming') {
+      copy = headroomPct.toFixed(0) + '% headroom · vol expanding, watch closely';
+    } else {
+      copy = headroomPct.toFixed(0) + '% headroom · cover if ATM IV pushes past ' + stopPct;
+    }
+    setText('agdca-watch-vol-d', copy);
+
+    // Recolor the dot
+    const dot = document.getElementById('agdca-watch-vol-dot');
+    if (dot) {
+      dot.classList.remove('sage', 'gold', 'warn');
+      if (status === 'stop_zone')      dot.classList.add('warn');
+      else if (status === 'warming')   dot.classList.add('gold');
+      else                             dot.classList.add('sage');
+    }
+  }
+
+  // Run both on load + whenever the AgDCA tab is shown
+  refreshCatalyst();
+  refreshIV();
+  document.querySelectorAll('.page-tab').forEach(t => {
+    t.addEventListener('click', () => {
+      if (t.dataset.page === 'agdca') {
+        refreshCatalyst();
+        refreshIV();
+      }
+    });
+  });
+})();
+</script>
+
 
 <script id="js-today-updater">
 // Auto-fill any .js-today element with today's local date.
@@ -1713,5 +2900,6 @@ loadDrafts();
   });
 })();
 </script>
+
 </body>
 </html>
