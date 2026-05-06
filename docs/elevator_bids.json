@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-05-06T20:47:51",
+  "as_of": "2026-05-06T21:22:21",
   "freight_per_mile_cents_per_bu": 0.6,
   "freight_assumption_text": "$5/loaded mi \u00f7 ~890 bu/load corn \u2248 0.6\u00a2/bu per extra mile",
   "farm_anchor_address": "19076 W Peotone Rd, Wilmington, IL 60481",
@@ -19,9 +19,9 @@
       "fs_name": null,
       "address": "34511 Elevator Rd, Wilmington (Akron Services)",
       "miles": 5,
-      "corn_bid": 4.35,
+      "corn_bid": 4.33,
       "soy_bid": 11.88,
-      "corn_basis_cents": -33.0,
+      "corn_basis_cents": -35.0,
       "soy_basis_cents": -6.0,
       "corn_contract": "May",
       "soy_contract": "May",
@@ -30,7 +30,7 @@
       "source": "bushel:akronservices",
       "scraper_status": "wired",
       "is_baseline": true,
-      "as_of": "2026-05-06T20:47:50.269429Z"
+      "as_of": "2026-05-06T21:22:20.643895Z"
     },
     {
       "id": "mazon",
