@@ -1,0 +1,75 @@
+name: Freshness check (daily canary)
+
+# Daily 9am CT (14:00 UTC during CDT), Mon–Fri.
+#
+# Runs scripts/freshness_check.py against the dashboard's JSON feeds:
+#   docs/bushel.json
+#   docs/advisor/ritchie_live.json
+#   docs/advisor/advisor_context.json
+#   docs/elevator_bids.json
+#   docs/sales_log.json
+#
+# If any are older than STALE_HOURS (default 24), fires a TextBelt SMS to
+# every number in ALERT_PHONE. The point isn't to fix anything — it's to
+# catch silent workflow failures (Bushel auth break, runner outage, etc.)
+# within a day instead of letting the dashboard sit on stale numbers.
+#
+# Why 9am CT: lands after Jimmy's morning coffee, after the 6am
+# refresh-bushel and the 8am market-open refresh-bushel cycle have had
+# a chance to run. Matches the cadence of the rest of the alerts stack.
+#
+# DST note: cron is UTC. 14:00 UTC = 9:00 CDT (summer) / 8:00 CST (winter).
+# We don't auto-shift; same convention as refresh-bushel + build-advisor.
+#
+# Manual trigger via workflow_dispatch is supported and recommended any
+# time you want to confirm the alert path still works.
+
+on:
+  schedule:
+    - cron: "0 14 * * 1-5"   # 09:00 CT (CDT) / 08:00 CT (CST), Mon–Fri
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Don't actually send SMS, just log"
+        type: boolean
+        default: false
+      stale_hours:
+        description: "Override staleness threshold (default 24)"
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: freshness-check
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install deps
+        run: pip install requests
+
+      - name: Run freshness check
+        env:
+          TEXTBELT_KEY: ${{ secrets.TEXTBELT_KEY }}
+          ALERT_PHONE:  ${{ secrets.ALERT_PHONE }}
+          STALE_HOURS:  ${{ inputs.stale_hours != '' && inputs.stale_hours || '24' }}
+        run: |
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            python3 scripts/freshness_check.py --dry
+          else
+            python3 scripts/freshness_check.py
+          fi
