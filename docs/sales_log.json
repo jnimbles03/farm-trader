@@ -1,9 +1,10 @@
 {
   "marketing_year": "2025-2026",
-  "generated_at": "2026-05-07T00:00:00Z",
+  "generated_at": "2026-05-07T22:56:34Z",
   "data_source": {
-    "booked": "data/Finances/Freis_Farm_Books_and_Records.xlsx :: Ledger sheet (Direction=Income, Category=Grain, Date >= 2025-09-01)",
-    "pending": "delta between booked totals and live Ritchie storage in docs/advisor/ritchie_live.json"
+    "akron_ritchie": "docs/bushel_raw.json :: contracts.data (closed, priced, purchase-type)",
+    "posen_coop": "scripts/sales_log_static.json (hand-maintained; Bushel doesn't see PC)",
+    "remaining": "docs/advisor/ritchie_live.json :: storage"
   },
   "sales": [
     {
@@ -12,23 +13,11 @@
       "buyer": "Posen Coop",
       "bushels": 472.0,
       "price_per_bu": 9.82,
-      "total_amount": 4611.86
-    },
-    {
-      "date": "2025-10-30",
-      "crop": "soybeans",
-      "buyer": "Posen Coop",
-      "bushels": 336.0,
-      "price_per_bu": 9.89,
-      "total_amount": 3293.05
-    },
-    {
-      "date": "2025-10-30",
-      "crop": "soybeans",
-      "buyer": "Posen Coop",
-      "bushels": 428.79,
-      "price_per_bu": 9.90,
-      "total_amount": 4223.79
+      "total_amount": 4611.86,
+      "ticket_id": null,
+      "contract_type": null,
+      "location": "Posen, IL",
+      "source": "static"
     },
     {
       "date": "2025-10-30",
@@ -36,7 +25,35 @@
       "buyer": "Akron / Ritchie",
       "bushels": 1500.0,
       "price_per_bu": 10.61,
-      "total_amount": 15564.42
+      "total_amount": 15915.0,
+      "ticket_id": "S064274",
+      "contract_type": "Purchase - SPOT",
+      "location": "RIT",
+      "source": "bushel"
+    },
+    {
+      "date": "2025-10-30",
+      "crop": "soybeans",
+      "buyer": "Posen Coop",
+      "bushels": 336.0,
+      "price_per_bu": 9.89,
+      "total_amount": 3293.05,
+      "ticket_id": null,
+      "contract_type": null,
+      "location": "Posen, IL",
+      "source": "static"
+    },
+    {
+      "date": "2025-10-30",
+      "crop": "soybeans",
+      "buyer": "Posen Coop",
+      "bushels": 428.79,
+      "price_per_bu": 9.9,
+      "total_amount": 4223.79,
+      "ticket_id": null,
+      "contract_type": null,
+      "location": "Posen, IL",
+      "source": "static"
     },
     {
       "date": "2025-10-31",
@@ -44,53 +61,88 @@
       "buyer": "Posen Coop",
       "bushels": 161.17,
       "price_per_bu": 9.97,
-      "total_amount": 1589.20
+      "total_amount": 1589.2,
+      "ticket_id": null,
+      "contract_type": null,
+      "location": "Posen, IL",
+      "source": "static"
     },
     {
-      "date": "2025-11-11",
+      "date": "2025-11-01",
       "crop": "corn",
       "buyer": "Akron / Ritchie",
       "bushels": 3500.0,
       "price_per_bu": 4.03,
-      "total_amount": 12616.53
-    }
-  ],
-  "pending": [
+      "total_amount": 14105.0,
+      "ticket_id": "P073821",
+      "contract_type": "Purchase - PRICED",
+      "location": "RIT",
+      "source": "bushel"
+    },
     {
-      "date_observed": "2026-05-05",
+      "date": "2026-01-01",
+      "crop": "soybeans",
+      "buyer": "Akron / Ritchie",
+      "bushels": 750.0,
+      "price_per_bu": 11.04,
+      "total_amount": 8280.0,
+      "ticket_id": "P073549",
+      "contract_type": "Purchase - PRICED",
+      "location": "RIT",
+      "source": "bushel"
+    },
+    {
+      "date": "2026-02-01",
+      "crop": "soybeans",
+      "buyer": "Akron / Ritchie",
+      "bushels": 500.0,
+      "price_per_bu": 11.18,
+      "total_amount": 5590.0,
+      "ticket_id": "P074821",
+      "contract_type": "Purchase - PRICED",
+      "location": "RIT",
+      "source": "bushel"
+    },
+    {
+      "date": "2026-05-04",
       "crop": "soybeans",
       "buyer": "Akron / Ritchie",
       "bushels": 1000.0,
-      "price_per_bu": null,
-      "total_amount": null,
-      "note": "Detected via Bushel storage delta (1,967 → 967 bu). Not yet booked in xlsx — add ticket to record price."
+      "price_per_bu": 12.19,
+      "total_amount": 12190.0,
+      "ticket_id": "S066875",
+      "contract_type": "Purchase - SPOT",
+      "location": "RIT",
+      "source": "bushel"
     }
   ],
+  "pending": [],
   "season_totals": {
     "soybeans": {
-      "booked_bushels": 2897.96,
-      "booked_amount": 29282.32,
-      "weighted_avg_price": 10.10,
-      "sales_count": 5
+      "booked_bushels": 5147.96,
+      "booked_amount": 55692.9,
+      "sales_count": 8,
+      "weighted_avg_price": 10.8184
     },
     "corn": {
       "booked_bushels": 3500.0,
-      "booked_amount": 12616.53,
-      "weighted_avg_price": 4.03,
-      "sales_count": 1
+      "booked_amount": 14105.0,
+      "sales_count": 1,
+      "weighted_avg_price": 4.03
     },
     "combined": {
-      "booked_bushels": 6397.96,
-      "booked_amount": 41898.85
+      "booked_bushels": 8647.96,
+      "booked_amount": 69797.9
     }
   },
   "remaining_at_ritchie": {
     "corn_bu": 9115.28,
     "beans_bu": 967.12,
-    "as_of": "2026-05-05"
+    "as_of": "2026-05-07"
   },
   "notes": [
-    "Booked rows are calendar-basis through 2025-12-31 — all six fall-2025 tickets.",
-    "Pending row reflects the storage drop in Bushel; price will populate once the sale is entered in the books."
+    "5 Akron/Ritchie sales pulled live from Bushel; 4 Posen Coop sales from static backfill.",
+    "Sales appear here as soon as Bushel records them \u2014 no books-xlsx step in the loop.",
+    "To add a non-Bushel sale (Posen Coop, hand-sale, etc.), edit scripts/sales_log_static.json and commit."
   ]
 }

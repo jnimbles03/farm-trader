@@ -1,0 +1,45 @@
+{
+  "_comment": "Hand-maintained sales that Bushel can't see (different elevators / direct-to-buyer / cash). Posen Coop is the main one. Add a row when you deliver to PC; the build_sales_log_from_bushel.py script merges these with the live Bushel feed. Leave total_amount null and the script computes it from bushels * price_per_bu.",
+  "sales": [
+    {
+      "date": "2025-10-28",
+      "crop": "soybeans",
+      "buyer": "Posen Coop",
+      "bushels": 472.00,
+      "price_per_bu": 9.82,
+      "total_amount": 4611.86,
+      "ticket_id": null,
+      "location": "Posen, IL"
+    },
+    {
+      "date": "2025-10-30",
+      "crop": "soybeans",
+      "buyer": "Posen Coop",
+      "bushels": 336.00,
+      "price_per_bu": 9.89,
+      "total_amount": 3293.05,
+      "ticket_id": null,
+      "location": "Posen, IL"
+    },
+    {
+      "date": "2025-10-30",
+      "crop": "soybeans",
+      "buyer": "Posen Coop",
+      "bushels": 428.79,
+      "price_per_bu": 9.90,
+      "total_amount": 4223.79,
+      "ticket_id": null,
+      "location": "Posen, IL"
+    },
+    {
+      "date": "2025-10-31",
+      "crop": "soybeans",
+      "buyer": "Posen Coop",
+      "bushels": 161.17,
+      "price_per_bu": 9.97,
+      "total_amount": 1589.20,
+      "ticket_id": null,
+      "location": "Posen, IL"
+    }
+  ]
+}

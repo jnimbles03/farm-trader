@@ -83,11 +83,23 @@ jobs:
             echo "::warning::refresh_elevator_bids.py not present — skipping."
           fi
 
+      - name: Build sales_log.json from Bushel + static backfill
+        run: |
+          # Reads docs/bushel_raw.json (Akron sales) + scripts/sales_log_static.json
+          # (Posen Coop, etc.) and writes docs/sales_log.json — what home.html's
+          # Season-sales panel renders. No xlsx dependency, runs every cycle.
+          if [ -f "scripts/build_sales_log_from_bushel.py" ] && [ -f "docs/bushel_raw.json" ]; then
+            python3 scripts/build_sales_log_from_bushel.py || \
+              echo "::warning::build_sales_log_from_bushel.py failed — keeping previous JSON."
+          else
+            echo "::warning::sales-log builder or bushel_raw.json missing — skipping."
+          fi
+
       - name: Commit + push if changed
         run: |
           git config user.name  "freis-farm-bot"
           git config user.email "bot@users.noreply.github.com"
-          git add docs/bushel.json docs/bushel_raw.json docs/elevator_bids.json data/elevator_bids.json 2>/dev/null || true
+          git add docs/bushel.json docs/bushel_raw.json docs/elevator_bids.json data/elevator_bids.json docs/sales_log.json 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "No bid changes since last refresh."
             exit 0
