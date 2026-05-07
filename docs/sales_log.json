@@ -1,0 +1,96 @@
+{
+  "marketing_year": "2025-2026",
+  "generated_at": "2026-05-07T00:00:00Z",
+  "data_source": {
+    "booked": "data/Finances/Freis_Farm_Books_and_Records.xlsx :: Ledger sheet (Direction=Income, Category=Grain, Date >= 2025-09-01)",
+    "pending": "delta between booked totals and live Ritchie storage in docs/advisor/ritchie_live.json"
+  },
+  "sales": [
+    {
+      "date": "2025-10-28",
+      "crop": "soybeans",
+      "buyer": "Posen Coop",
+      "bushels": 472.0,
+      "price_per_bu": 9.82,
+      "total_amount": 4611.86
+    },
+    {
+      "date": "2025-10-30",
+      "crop": "soybeans",
+      "buyer": "Posen Coop",
+      "bushels": 336.0,
+      "price_per_bu": 9.89,
+      "total_amount": 3293.05
+    },
+    {
+      "date": "2025-10-30",
+      "crop": "soybeans",
+      "buyer": "Posen Coop",
+      "bushels": 428.79,
+      "price_per_bu": 9.90,
+      "total_amount": 4223.79
+    },
+    {
+      "date": "2025-10-30",
+      "crop": "soybeans",
+      "buyer": "Akron / Ritchie",
+      "bushels": 1500.0,
+      "price_per_bu": 10.61,
+      "total_amount": 15564.42
+    },
+    {
+      "date": "2025-10-31",
+      "crop": "soybeans",
+      "buyer": "Posen Coop",
+      "bushels": 161.17,
+      "price_per_bu": 9.97,
+      "total_amount": 1589.20
+    },
+    {
+      "date": "2025-11-11",
+      "crop": "corn",
+      "buyer": "Akron / Ritchie",
+      "bushels": 3500.0,
+      "price_per_bu": 4.03,
+      "total_amount": 12616.53
+    }
+  ],
+  "pending": [
+    {
+      "date_observed": "2026-05-05",
+      "crop": "soybeans",
+      "buyer": "Akron / Ritchie",
+      "bushels": 1000.0,
+      "price_per_bu": null,
+      "total_amount": null,
+      "note": "Detected via Bushel storage delta (1,967 → 967 bu). Not yet booked in xlsx — add ticket to record price."
+    }
+  ],
+  "season_totals": {
+    "soybeans": {
+      "booked_bushels": 2897.96,
+      "booked_amount": 29282.32,
+      "weighted_avg_price": 10.10,
+      "sales_count": 5
+    },
+    "corn": {
+      "booked_bushels": 3500.0,
+      "booked_amount": 12616.53,
+      "weighted_avg_price": 4.03,
+      "sales_count": 1
+    },
+    "combined": {
+      "booked_bushels": 6397.96,
+      "booked_amount": 41898.85
+    }
+  },
+  "remaining_at_ritchie": {
+    "corn_bu": 9115.28,
+    "beans_bu": 967.12,
+    "as_of": "2026-05-05"
+  },
+  "notes": [
+    "Booked rows are calendar-basis through 2025-12-31 — all six fall-2025 tickets.",
+    "Pending row reflects the storage drop in Bushel; price will populate once the sale is entered in the books."
+  ]
+}

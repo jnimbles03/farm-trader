@@ -886,6 +886,71 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
     </div>
   </section>
 
+  <!-- ───────── Season sales · MY 2025-26 ─────────
+       Quick-reference list of every old-crop sale this marketing year:
+       date, buyer, bushels, $/bu, total. Plus a pending row for any
+       sale Bushel detected but isn't booked yet. Reads sales_log.json. -->
+  <section class="A-main A-sales" aria-label="Season sales — MY 2025-26 grain marketing log">
+    <div class="A-main-head">
+      <span class="A-main-title">Season sales · <span class="sales-my-label">MY 2025-26</span></span>
+      <span class="A-main-sub">when we sold · what we got · running totals · <span class="sales-as-of">as of today</span></span>
+    </div>
+
+    <!-- Top strip: per-crop running totals -->
+    <div class="A-sales-totals">
+      <div class="A-sales-tot">
+        <div class="A-sales-tot-l">Soy sold</div>
+        <div class="A-sales-tot-v"><span class="sales-soy-bu">2,898</span><span class="u">bu</span></div>
+        <div class="A-sales-tot-d">avg <span class="sales-soy-avg">$10.10</span> · <span class="sales-soy-amt">$29,282</span></div>
+      </div>
+      <div class="A-sales-tot">
+        <div class="A-sales-tot-l">Corn sold</div>
+        <div class="A-sales-tot-v"><span class="sales-corn-bu">3,500</span><span class="u">bu</span></div>
+        <div class="A-sales-tot-d">avg <span class="sales-corn-avg">$4.03</span> · <span class="sales-corn-amt">$12,617</span></div>
+      </div>
+      <div class="A-sales-tot">
+        <div class="A-sales-tot-l">Combined</div>
+        <div class="A-sales-tot-v"><span class="sales-total-bu">6,398</span><span class="u">bu</span></div>
+        <div class="A-sales-tot-d"><span class="sales-total-amt">$41,899</span> gross</div>
+      </div>
+      <div class="A-sales-tot A-sales-tot-rem">
+        <div class="A-sales-tot-l">Still at Ritchie</div>
+        <div class="A-sales-tot-v"><span class="sales-rem-soy">967</span><span class="u">bu soy</span></div>
+        <div class="A-sales-tot-d"><span class="sales-rem-corn">9,115</span> bu corn</div>
+      </div>
+    </div>
+
+    <!-- Detail table: every ticket -->
+    <div class="A-sales-table-wrap">
+      <table class="A-sales-table" aria-label="Season sales detail">
+        <thead>
+          <tr>
+            <th class="num">Date</th>
+            <th>Crop</th>
+            <th>Buyer</th>
+            <th class="num">Bushels</th>
+            <th class="num">$/bu</th>
+            <th class="num">Total</th>
+          </tr>
+        </thead>
+        <tbody class="sales-tbody">
+          <!-- Hand-baked fallback rows render if fetch fails -->
+          <tr><td class="num">Oct 28 '25</td><td>Soy</td><td>Posen Coop</td><td class="num">472</td><td class="num">$9.82</td><td class="num">$4,612</td></tr>
+          <tr><td class="num">Oct 30 '25</td><td>Soy</td><td>Posen Coop</td><td class="num">336</td><td class="num">$9.89</td><td class="num">$3,293</td></tr>
+          <tr><td class="num">Oct 30 '25</td><td>Soy</td><td>Posen Coop</td><td class="num">429</td><td class="num">$9.90</td><td class="num">$4,224</td></tr>
+          <tr><td class="num">Oct 30 '25</td><td>Soy</td><td>Akron / Ritchie</td><td class="num">1,500</td><td class="num">$10.61</td><td class="num">$15,564</td></tr>
+          <tr><td class="num">Oct 31 '25</td><td>Soy</td><td>Posen Coop</td><td class="num">161</td><td class="num">$9.97</td><td class="num">$1,589</td></tr>
+          <tr><td class="num">Nov 11 '25</td><td>Corn</td><td>Akron / Ritchie</td><td class="num">3,500</td><td class="num">$4.03</td><td class="num">$12,617</td></tr>
+          <tr class="A-sales-pending"><td class="num">May 5 '26</td><td>Soy</td><td>Akron / Ritchie</td><td class="num">~1,000</td><td class="num">—</td><td class="num">pending</td></tr>
+        </tbody>
+      </table>
+      <p class="A-sales-foot">
+        Pending row reflects a Bushel storage drop not yet booked in the ledger.
+        Once entered, it'll move to a normal row with price + total.
+      </p>
+    </div>
+  </section>
+
   <!-- ───────── Illinois farmland · value over time ───────── -->
   <section class="A-main A-farmland" aria-label="Illinois farmland values, time-range toggle">
     <div class="A-main-head">
@@ -1673,6 +1738,71 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
     </div>
   </section>
 
+  <!-- ───────── Season sales · MY 2025-26 ─────────
+       Quick-reference list of every old-crop sale this marketing year:
+       date, buyer, bushels, $/bu, total. Plus a pending row for any
+       sale Bushel detected but isn't booked yet. Reads sales_log.json. -->
+  <section class="A-main A-sales" aria-label="Season sales — MY 2025-26 grain marketing log">
+    <div class="A-main-head">
+      <span class="A-main-title">Season sales · <span class="sales-my-label">MY 2025-26</span></span>
+      <span class="A-main-sub">when we sold · what we got · running totals · <span class="sales-as-of">as of today</span></span>
+    </div>
+
+    <!-- Top strip: per-crop running totals -->
+    <div class="A-sales-totals">
+      <div class="A-sales-tot">
+        <div class="A-sales-tot-l">Soy sold</div>
+        <div class="A-sales-tot-v"><span class="sales-soy-bu">2,898</span><span class="u">bu</span></div>
+        <div class="A-sales-tot-d">avg <span class="sales-soy-avg">$10.10</span> · <span class="sales-soy-amt">$29,282</span></div>
+      </div>
+      <div class="A-sales-tot">
+        <div class="A-sales-tot-l">Corn sold</div>
+        <div class="A-sales-tot-v"><span class="sales-corn-bu">3,500</span><span class="u">bu</span></div>
+        <div class="A-sales-tot-d">avg <span class="sales-corn-avg">$4.03</span> · <span class="sales-corn-amt">$12,617</span></div>
+      </div>
+      <div class="A-sales-tot">
+        <div class="A-sales-tot-l">Combined</div>
+        <div class="A-sales-tot-v"><span class="sales-total-bu">6,398</span><span class="u">bu</span></div>
+        <div class="A-sales-tot-d"><span class="sales-total-amt">$41,899</span> gross</div>
+      </div>
+      <div class="A-sales-tot A-sales-tot-rem">
+        <div class="A-sales-tot-l">Still at Ritchie</div>
+        <div class="A-sales-tot-v"><span class="sales-rem-soy">967</span><span class="u">bu soy</span></div>
+        <div class="A-sales-tot-d"><span class="sales-rem-corn">9,115</span> bu corn</div>
+      </div>
+    </div>
+
+    <!-- Detail table: every ticket -->
+    <div class="A-sales-table-wrap">
+      <table class="A-sales-table" aria-label="Season sales detail">
+        <thead>
+          <tr>
+            <th class="num">Date</th>
+            <th>Crop</th>
+            <th>Buyer</th>
+            <th class="num">Bushels</th>
+            <th class="num">$/bu</th>
+            <th class="num">Total</th>
+          </tr>
+        </thead>
+        <tbody class="sales-tbody">
+          <!-- Hand-baked fallback rows render if fetch fails -->
+          <tr><td class="num">Oct 28 '25</td><td>Soy</td><td>Posen Coop</td><td class="num">472</td><td class="num">$9.82</td><td class="num">$4,612</td></tr>
+          <tr><td class="num">Oct 30 '25</td><td>Soy</td><td>Posen Coop</td><td class="num">336</td><td class="num">$9.89</td><td class="num">$3,293</td></tr>
+          <tr><td class="num">Oct 30 '25</td><td>Soy</td><td>Posen Coop</td><td class="num">429</td><td class="num">$9.90</td><td class="num">$4,224</td></tr>
+          <tr><td class="num">Oct 30 '25</td><td>Soy</td><td>Akron / Ritchie</td><td class="num">1,500</td><td class="num">$10.61</td><td class="num">$15,564</td></tr>
+          <tr><td class="num">Oct 31 '25</td><td>Soy</td><td>Posen Coop</td><td class="num">161</td><td class="num">$9.97</td><td class="num">$1,589</td></tr>
+          <tr><td class="num">Nov 11 '25</td><td>Corn</td><td>Akron / Ritchie</td><td class="num">3,500</td><td class="num">$4.03</td><td class="num">$12,617</td></tr>
+          <tr class="A-sales-pending"><td class="num">May 5 '26</td><td>Soy</td><td>Akron / Ritchie</td><td class="num">~1,000</td><td class="num">—</td><td class="num">pending</td></tr>
+        </tbody>
+      </table>
+      <p class="A-sales-foot">
+        Pending row reflects a Bushel storage drop not yet booked in the ledger.
+        Once entered, it'll move to a normal row with price + total.
+      </p>
+    </div>
+  </section>
+
   <!-- ───────── Illinois farmland · value over time ───────── -->
   <section class="A-main A-farmland" aria-label="Illinois farmland values, time-range toggle">
     <div class="A-main-head">
@@ -1904,9 +2034,13 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
   setText('strip-days-to-jun', String(daysToJun));
 
   // ---- Live data fetch (best-effort) ----
-  let bushel = null, elev = null;
-  try { const r = await fetch('./bushel.json',         {cache:'no-store'}); if (r.ok) bushel = await r.json(); } catch (_) {}
-  try { const r = await fetch('./elevator_bids.json',  {cache:'no-store'}); if (r.ok) elev   = await r.json(); } catch (_) {}
+  let bushel = null, elev = null, live = null;
+  try { const r = await fetch('./bushel.json',                {cache:'no-store'}); if (r.ok) bushel = await r.json(); } catch (_) {}
+  try { const r = await fetch('./elevator_bids.json',         {cache:'no-store'}); if (r.ok) elev   = await r.json(); } catch (_) {}
+  // ritchie_live.json (refresh_ritchie.py via Bushel API) is the most
+  // reliable storage source; bushel.json (HTML scrape) sometimes lags
+  // for days when the GHA workflow can't auth. Prefer the freshest.
+  try { const r = await fetch('./advisor/ritchie_live.json',  {cache:'no-store'}); if (r.ok) live   = await r.json(); } catch (_) {}
 
   // Prefer elevator_bids.json's Ritchie row (it's normalized + always fresh
   // alongside the rest); fall back to bushel.json's bids node.
@@ -1915,8 +2049,17 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
   const soyBid  = ritchie?.soy_bid  ?? bushel?.bids?.soybeans?.price    ?? null;
   const cornBasis = ritchie?.corn_basis_cents ?? (bushel?.bids?.corn?.basis     != null ? bushel.bids.corn.basis     * 100 : null);
   const soyBasis  = ritchie?.soy_basis_cents  ?? (bushel?.bids?.soybeans?.basis != null ? bushel.bids.soybeans.basis * 100 : null);
-  const cornBu = bushel?.bushelsOnHand?.corn?.bushels     ?? null;
-  const soyBu  = bushel?.bushelsOnHand?.soybeans?.bushels ?? null;
+
+  // Storage: pick the freshest source between live (API) and bushel (scrape).
+  const liveDate   = live?.as_of      ? new Date(live.as_of)      : null;
+  const bushelDate = bushel?.fetchedAt? new Date(bushel.fetchedAt): null;
+  const preferLive = liveDate && (!bushelDate || liveDate >= bushelDate);
+  const liveCorn   = live?.storage?.corn_bu  ?? null;
+  const liveSoy    = live?.storage?.beans_bu ?? null;
+  const scrapeCorn = bushel?.bushelsOnHand?.corn?.bushels     ?? null;
+  const scrapeSoy  = bushel?.bushelsOnHand?.soybeans?.bushels ?? null;
+  const cornBu = preferLive ? (liveCorn ?? scrapeCorn) : (scrapeCorn ?? liveCorn);
+  const soyBu  = preferLive ? (liveSoy  ?? scrapeSoy)  : (scrapeSoy  ?? liveSoy);
 
   // ---- Formatters ----
   const fmtPrice = v => v == null ? null : '$' + Number(v).toFixed(2);
@@ -3016,9 +3159,26 @@ loadDrafts();
 // data-fmt: "price" | "bu" | "money" | "basis". Default "price".
 // Inline content stays as the fallback if fetch fails (file:// or offline).
 (async function(){
-  var elev = null, bushel = null;
-  try { var r = await fetch('./elevator_bids.json', {cache:'no-store'}); if (r.ok) elev   = await r.json(); } catch(_){}
-  try { var r = await fetch('./bushel.json',        {cache:'no-store'}); if (r.ok) bushel = await r.json(); } catch(_){}
+  var elev = null, bushel = null, live = null;
+  try { var r = await fetch('./elevator_bids.json',         {cache:'no-store'}); if (r.ok) elev   = await r.json(); } catch(_){}
+  try { var r = await fetch('./bushel.json',                {cache:'no-store'}); if (r.ok) bushel = await r.json(); } catch(_){}
+  // ritchie_live.json is the API-based puller (refresh_ritchie.py). It's
+  // the authoritative source for storage; bushel.json (HTML scrape) is
+  // kept as a secondary because its bid block is structured differently.
+  // Use whichever is freshest when both exist.
+  try { var r = await fetch('./advisor/ritchie_live.json',  {cache:'no-store'}); if (r.ok) live   = await r.json(); } catch(_){}
+
+  // Pick the freshest storage source. If live.as_of >= bushel.fetchedAt,
+  // prefer live; otherwise fall back to bushel.json. Either way, if the
+  // chosen source is missing the field, we try the other before giving up.
+  var liveDate   = live   && live.as_of      ? new Date(live.as_of)      : null;
+  var bushelDate = bushel && bushel.fetchedAt? new Date(bushel.fetchedAt): null;
+  var preferLive = liveDate && (!bushelDate || liveDate >= bushelDate);
+
+  function bushelCorn(){ return (bushel && bushel.bushelsOnHand && bushel.bushelsOnHand.corn)     ? bushel.bushelsOnHand.corn.bushels     : null; }
+  function bushelSoy() { return (bushel && bushel.bushelsOnHand && bushel.bushelsOnHand.soybeans) ? bushel.bushelsOnHand.soybeans.bushels : null; }
+  function liveCorn()  { return (live && live.storage && live.storage.corn_bu  != null) ? live.storage.corn_bu  : null; }
+  function liveSoy()   { return (live && live.storage && live.storage.beans_bu != null) ? live.storage.beans_bu : null; }
 
   var ritchie = (elev && elev.elevators) ? elev.elevators.find(function(e){return e.is_baseline;}) : null;
   var data = {
@@ -3026,8 +3186,8 @@ loadDrafts();
     'ritchie.soy_bid':          (ritchie && ritchie.soy_bid  != null) ? ritchie.soy_bid  : (bushel && bushel.bids && bushel.bids.soybeans ? bushel.bids.soybeans.price : null),
     'ritchie.corn_basis_cents': (ritchie && ritchie.corn_basis_cents != null) ? ritchie.corn_basis_cents : (bushel && bushel.bids && bushel.bids.corn && bushel.bids.corn.basis != null ? bushel.bids.corn.basis * 100 : null),
     'ritchie.soy_basis_cents':  (ritchie && ritchie.soy_basis_cents  != null) ? ritchie.soy_basis_cents  : (bushel && bushel.bids && bushel.bids.soybeans && bushel.bids.soybeans.basis != null ? bushel.bids.soybeans.basis * 100 : null),
-    'bushels.corn':             (bushel && bushel.bushelsOnHand && bushel.bushelsOnHand.corn)     ? bushel.bushelsOnHand.corn.bushels     : null,
-    'bushels.soy':              (bushel && bushel.bushelsOnHand && bushel.bushelsOnHand.soybeans) ? bushel.bushelsOnHand.soybeans.bushels : null,
+    'bushels.corn':             preferLive ? (liveCorn() != null ? liveCorn() : bushelCorn()) : (bushelCorn() != null ? bushelCorn() : liveCorn()),
+    'bushels.soy':              preferLive ? (liveSoy()  != null ? liveSoy()  : bushelSoy())  : (bushelSoy()  != null ? bushelSoy()  : liveSoy()),
   };
   if (data['bushels.corn'] != null && data['ritchie.corn_bid'] != null) data['corn.value'] = data['bushels.corn'] * data['ritchie.corn_bid'];
   if (data['bushels.soy']  != null && data['ritchie.soy_bid']  != null) data['soy.value']  = data['bushels.soy']  * data['ritchie.soy_bid'];
@@ -3125,6 +3285,156 @@ loadDrafts();
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape' && drawer.classList.contains('open')) closeDrawer();
   });
+})();
+</script>
+
+<style id="A-sales-styles">
+/* Season-sales panel — matches the cream/sage shell used by .A-main.
+   Class-scoped so it inherits from the page rather than fighting it. */
+.A-sales .A-sales-totals {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  padding: 8px 0 18px;
+  border-bottom: 0.5px solid var(--rule, rgba(58,61,54,0.18));
+  margin-bottom: 14px;
+}
+@media (max-width: 760px) {
+  .A-sales .A-sales-totals { grid-template-columns: repeat(2, 1fr); }
+}
+.A-sales-tot-l {
+  font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--ink-2, #5a6052); font-weight: 500; margin-bottom: 4px;
+}
+.A-sales-tot-v {
+  font-family: 'Fraunces', Georgia, serif; font-size: 26px;
+  font-weight: 500; color: var(--ink, #2d2f29);
+  font-variant-numeric: tabular-nums; line-height: 1.1;
+}
+.A-sales-tot-v .u {
+  font-family: 'DM Sans', sans-serif; font-size: 11px;
+  font-weight: 500; color: var(--ink-2); margin-left: 4px;
+  letter-spacing: 0.05em; text-transform: lowercase;
+}
+.A-sales-tot-d {
+  font-size: 12px; color: var(--ink-2); margin-top: 4px;
+  font-variant-numeric: tabular-nums;
+}
+.A-sales-tot-rem .A-sales-tot-v { color: var(--sage-deep, #5a6f54); }
+.A-sales-table-wrap { overflow-x: auto; }
+.A-sales-table {
+  width: 100%; border-collapse: collapse;
+  font-size: 13px; color: var(--ink, #2d2f29);
+}
+.A-sales-table th, .A-sales-table td {
+  text-align: left; padding: 8px 12px;
+  border-bottom: 0.5px solid var(--rule, rgba(58,61,54,0.10));
+  font-variant-numeric: tabular-nums;
+}
+.A-sales-table th.num, .A-sales-table td.num { text-align: right; }
+.A-sales-table th {
+  font-size: 11px; letter-spacing: 0.10em; text-transform: uppercase;
+  color: var(--ink-2); font-weight: 500;
+  border-bottom-color: var(--ink, #2d2f29);
+}
+.A-sales-table tr:last-child td { border-bottom: none; }
+.A-sales-table .A-sales-pending td {
+  background: var(--sage-pale, rgba(150,170,140,0.12));
+  color: var(--ink-2); font-style: italic;
+}
+.A-sales-foot {
+  font-size: 11.5px; color: var(--ink-2);
+  margin: 12px 2px 0; line-height: 1.5;
+}
+</style>
+
+<script id="A-sales-hydrate">
+/* Hydrate every .A-sales panel on the page from sales_log.json. The
+   panel may appear twice (the file has duplicate <main> bodies for
+   the auth-gate flow); we class-scope the selectors so both copies
+   stay in sync. Falls back to the hand-baked rows if fetch fails. */
+(async function(){
+  let log = null;
+  try { const r = await fetch('./sales_log.json', {cache:'no-store'}); if (r.ok) log = await r.json(); } catch(_){}
+  if (!log) return;
+
+  const fmtBu    = v => v == null ? '—' : Math.round(Number(v)).toLocaleString();
+  const fmtMoney = v => v == null ? '—' : '$' + Math.round(Number(v)).toLocaleString();
+  const fmtPrice = v => v == null ? '—' : '$' + Number(v).toFixed(2);
+  const fmtDate  = s => {
+    if (!s) return '—';
+    const d = new Date(s + 'T00:00:00');
+    if (isNaN(d)) return s;
+    const m = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()];
+    return m + ' ' + d.getDate() + " '" + String(d.getFullYear()).slice(2);
+  };
+  const cropLabel = c => {
+    if (!c) return '—';
+    const k = String(c).toLowerCase();
+    if (k.startsWith('soy') || k === 'soybean') return 'Soy';
+    if (k === 'corn') return 'Corn';
+    return c;
+  };
+  const setAll = (cls, val) => {
+    if (val == null) return;
+    document.querySelectorAll('.' + cls).forEach(el => { el.textContent = val; });
+  };
+
+  // Header
+  if (log.marketing_year) setAll('sales-my-label', 'MY ' + log.marketing_year);
+  if (log.generated_at)   setAll('sales-as-of',   'as of ' + log.generated_at.slice(0, 10));
+
+  // Totals strip
+  const tot = log.season_totals || {};
+  if (tot.soybeans) {
+    setAll('sales-soy-bu',  fmtBu(tot.soybeans.booked_bushels));
+    setAll('sales-soy-avg', fmtPrice(tot.soybeans.weighted_avg_price));
+    setAll('sales-soy-amt', fmtMoney(tot.soybeans.booked_amount));
+  }
+  if (tot.corn) {
+    setAll('sales-corn-bu',  fmtBu(tot.corn.booked_bushels));
+    setAll('sales-corn-avg', fmtPrice(tot.corn.weighted_avg_price));
+    setAll('sales-corn-amt', fmtMoney(tot.corn.booked_amount));
+  }
+  if (tot.combined) {
+    setAll('sales-total-bu',  fmtBu(tot.combined.booked_bushels));
+    setAll('sales-total-amt', fmtMoney(tot.combined.booked_amount));
+  }
+  const rem = log.remaining_at_ritchie || {};
+  if (rem.beans_bu != null) setAll('sales-rem-soy',  fmtBu(rem.beans_bu));
+  if (rem.corn_bu  != null) setAll('sales-rem-corn', fmtBu(rem.corn_bu));
+
+  // Detail rows — render into every .sales-tbody on the page
+  const buildRow = (s, pending) => {
+    const tr = document.createElement('tr');
+    if (pending) tr.className = 'A-sales-pending';
+    const buCell = pending
+      ? (s.bushels != null ? '~' + fmtBu(s.bushels) : 'pending')
+      : fmtBu(s.bushels);
+    const priceCell = pending ? '—' : fmtPrice(s.price_per_bu);
+    const totCell   = pending ? 'pending' : fmtMoney(s.total_amount);
+    tr.innerHTML =
+      '<td class="num">' + fmtDate(s.date || s.date_observed) + '</td>' +
+      '<td>' + cropLabel(s.crop) + '</td>' +
+      '<td>' + (s.buyer || '—') + '</td>' +
+      '<td class="num">' + buCell + '</td>' +
+      '<td class="num">' + priceCell + '</td>' +
+      '<td class="num">' + totCell + '</td>';
+    return tr;
+  };
+
+  document.querySelectorAll('.sales-tbody').forEach(tbody => {
+    tbody.innerHTML = '';
+    const rows = (log.sales || []).slice().sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+    rows.forEach(s => tbody.appendChild(buildRow(s, false)));
+    (log.pending || []).forEach(p => tbody.appendChild(buildRow(p, true)));
+  });
+
+  if (log.notes && log.notes.length) {
+    document.querySelectorAll('.A-sales-foot').forEach(el => {
+      el.textContent = log.notes.join(' · ');
+    });
+  }
 })();
 </script>
 
