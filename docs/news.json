@@ -1,6 +1,14 @@
 {
   "items": [
     {
+      "id": "usda-2026-05-10-Monthly_WASDE",
+      "date": "2026-05-10",
+      "title": "USDA: Monthly WASDE",
+      "impact": "L",
+      "affects": "both",
+      "source": "USDA"
+    },
+    {
       "id": "policy-2026-05-07-fomc_rate_decision",
       "date": "2026-05-07",
       "title": "FOMC rate decision",
@@ -10,5 +18,5 @@
       "category": "policy"
     }
   ],
-  "generated_at": "2026-05-09T23:31:03.805333+00:00"
+  "generated_at": "2026-05-10T00:02:11.149743+00:00"
 }
