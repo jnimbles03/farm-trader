@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-05-11T20:50:08.588727Z",
+  "fetchedAt": "2026-05-11T21:26:31.891961Z",
   "company": "akronservices",
   "account": "FREIS FARMS LLC",
   "bushelsOnHand": {
@@ -61,23 +61,7 @@
         "futuresSymbol": "ZCN26",
         "futuresPrice": 4.7525,
         "basis": -0.07,
-        "location": "Annawan"
-      },
-      {
-        "price": 4.67,
-        "period": "May",
-        "futuresSymbol": "ZCN26",
-        "futuresPrice": 4.7525,
-        "basis": -0.07,
         "location": "Havana"
-      },
-      {
-        "price": 4.66,
-        "period": "May",
-        "futuresSymbol": "ZCN26",
-        "futuresPrice": 4.7525,
-        "basis": -0.09,
-        "location": "Lacon"
       },
       {
         "price": 4.65,
@@ -88,12 +72,28 @@
         "location": "Big River Galva"
       },
       {
+        "price": 4.65,
+        "period": "May",
+        "futuresSymbol": "ZCN26",
+        "futuresPrice": 4.7525,
+        "basis": -0.1,
+        "location": "Lacon"
+      },
+      {
         "price": 4.64,
         "period": "May",
         "futuresSymbol": "ZCN26",
         "futuresPrice": 4.7525,
         "basis": -0.11,
         "location": "Creve Cr"
+      },
+      {
+        "price": 4.64,
+        "period": "May",
+        "futuresSymbol": "ZCN26",
+        "futuresPrice": 4.7525,
+        "basis": -0.1,
+        "location": "Marquis"
       }
     ],
     "soybeans": [
@@ -114,12 +114,12 @@
         "location": "Ritchie Grain Elevator"
       },
       {
-        "price": 12.0,
+        "price": 11.97,
         "period": "May",
         "futuresSymbol": "ZSN26",
         "futuresPrice": 12.13,
-        "basis": -0.13,
-        "location": "Strawn"
+        "basis": -0.16,
+        "location": "Havana"
       },
       {
         "price": 11.95,
@@ -130,12 +130,12 @@
         "location": "Lacon"
       },
       {
-        "price": 11.94,
+        "price": 11.95,
         "period": "May",
         "futuresSymbol": "ZSN26",
         "futuresPrice": 12.13,
-        "basis": -0.19,
-        "location": "Havana"
+        "basis": -0.18,
+        "location": "Strawn"
       }
     ]
   },
@@ -189,8 +189,8 @@
         "id": "CNCRG000OAVX",
         "type": "cash",
         "period": "Oct",
-        "bidPrice": 4.56,
-        "basisPrice": -0.41,
+        "bidPrice": 4.55,
+        "basisPrice": -0.42,
         "futuresPrice": 4.9775,
         "futuresSymbol": "ZCZ26",
         "canMakeOffer": true

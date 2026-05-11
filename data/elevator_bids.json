@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-05-11T20:50:09",
+  "as_of": "2026-05-11T21:26:32",
   "freight_per_mile_cents_per_bu": 0.6,
   "freight_assumption_text": "$5/loaded mi \u00f7 ~890 bu/load corn \u2248 0.6\u00a2/bu per extra mile",
   "farm_anchor_address": "19076 W Peotone Rd, Wilmington, IL 60481",
@@ -30,7 +30,7 @@
       "source": "bushel:akronservices",
       "scraper_status": "wired",
       "is_baseline": true,
-      "as_of": "2026-05-11T20:50:08.588727Z"
+      "as_of": "2026-05-11T21:26:31.891961Z"
     },
     {
       "id": "mazon",
@@ -54,9 +54,9 @@
       "name": "CHS Morris",
       "fs_name": "CHS - Elburn/ Morris",
       "miles": 14,
-      "corn_bid": 4.5825,
+      "corn_bid": 4.5925,
       "soy_bid": 11.92,
-      "corn_basis_cents": -17.0,
+      "corn_basis_cents": -16.0,
       "soy_basis_cents": -21.0,
       "corn_contract": "K26",
       "soy_contract": "K26",
@@ -72,9 +72,9 @@
       "fs_name": "ADM - Morris",
       "miles": 14,
       "corn_bid": 4.6125,
-      "soy_bid": 11.88,
+      "soy_bid": 11.92,
       "corn_basis_cents": -14.0,
-      "soy_basis_cents": -25.0,
+      "soy_basis_cents": -21.0,
       "corn_contract": "K26",
       "soy_contract": "K26",
       "corn_futures": "ZCN26",
