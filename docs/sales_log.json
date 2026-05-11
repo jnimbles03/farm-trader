@@ -1,6 +1,6 @@
 {
   "marketing_year": "2025-2026",
-  "generated_at": "2026-05-11T17:52:45Z",
+  "generated_at": "2026-05-11T18:31:52Z",
   "data_source": {
     "akron_ritchie": "docs/bushel_raw.json :: contracts.data (closed, priced, purchase-type)",
     "posen_coop": "scripts/sales_log_static.json (hand-maintained; Bushel doesn't see PC)",
