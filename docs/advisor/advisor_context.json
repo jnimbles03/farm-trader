@@ -572,7 +572,7 @@
       "beans_at_pcfs": 0.0,
       "avg_pricing_corn": 1500.0,
       "avg_pricing_soy": 500.0,
-      "notes": "Live from bushel.commodity-balances + bids at 2026-05-12T15:04:07Z \u00b7 Account FREIS FARMS LLC \u00b7 PC/FS values carried from prior xlsx row (not scraped). \u00b7 Fetch warnings: bids: HTTPSConnectionPool(host='api.bushelpowered.com', port=443): Read timed out. (read timeout=30); avg_pricing: 'str' object has no attribute 'get'"
+      "notes": "Live from bushel.commodity-balances + bids at 2026-05-12T16:19:07Z \u00b7 Account FREIS FARMS LLC \u00b7 PC/FS values carried from prior xlsx row (not scraped). \u00b7 Fetch warnings: avg_pricing: 'str' object has no attribute 'get'"
     }
   ],
   "inputs_by_year": {
@@ -1255,7 +1255,7 @@
   },
   "recent_alerts_7d": [],
   "ritchie_live": {
-    "as_of": "2026-05-12T15:04:07Z",
+    "as_of": "2026-05-12T16:19:07Z",
     "source": "bushel.commodity-balances + bids",
     "account": "FREIS FARMS LLC",
     "location": "Ritchie Grain Elevator",
@@ -1267,11 +1267,99 @@
       "corn_bu": null,
       "soy_bu": null
     },
-    "bids": {},
+    "bids": {
+      "corn": [
+        {
+          "month": "May",
+          "cash": 4.48,
+          "basis": -0.32,
+          "futures": 4.8,
+          "futures_symbol": "ZCN26"
+        },
+        {
+          "month": "Jun",
+          "cash": 4.52,
+          "basis": -0.28,
+          "futures": 4.8,
+          "futures_symbol": "ZCN26"
+        },
+        {
+          "month": "Jul",
+          "cash": 4.53,
+          "basis": -0.27,
+          "futures": 4.8,
+          "futures_symbol": "ZCN26"
+        },
+        {
+          "month": "Oct",
+          "cash": 4.59,
+          "basis": -0.42,
+          "futures": 5.0125,
+          "futures_symbol": "ZCZ26"
+        },
+        {
+          "month": "Dec",
+          "cash": 4.68,
+          "basis": -0.33,
+          "futures": 5.0125,
+          "futures_symbol": "ZCZ26"
+        },
+        {
+          "month": "Jan",
+          "cash": 4.74,
+          "basis": -0.4,
+          "futures": 5.145,
+          "futures_symbol": "ZCH27"
+        }
+      ],
+      "soy": [
+        {
+          "month": "May",
+          "cash": 12.25,
+          "basis": -0.06,
+          "futures": 12.31,
+          "futures_symbol": "ZSN26"
+        },
+        {
+          "month": "Jun",
+          "cash": 12.25,
+          "basis": -0.06,
+          "futures": 12.31,
+          "futures_symbol": "ZSN26"
+        },
+        {
+          "month": "Jul",
+          "cash": 12.3,
+          "basis": -0.01,
+          "futures": 12.31,
+          "futures_symbol": "ZSN26"
+        },
+        {
+          "month": "Oct",
+          "cash": 11.72,
+          "basis": -0.36,
+          "futures": 12.0875,
+          "futures_symbol": "ZSX26"
+        },
+        {
+          "month": "Dec",
+          "cash": 11.64,
+          "basis": -0.56,
+          "futures": 12.2025,
+          "futures_symbol": "ZSF27"
+        },
+        {
+          "month": "Jan",
+          "cash": 11.79,
+          "basis": -0.41,
+          "futures": 12.2025,
+          "futures_symbol": "ZSF27"
+        }
+      ]
+    },
     "fetch_errors": [
-      "bids: HTTPSConnectionPool(host='api.bushelpowered.com', port=443): Read timed out. (read timeout=30)",
       "avg_pricing: 'str' object has no attribute 'get'"
     ]
   },
-  "last_refreshed_at": "2026-05-12T15:04:07Z"
+  "last_refreshed_at": "2026-05-12T16:19:07Z"
 }
