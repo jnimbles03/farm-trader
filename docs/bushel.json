@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-05-12T20:59:15.415471Z",
+  "fetchedAt": "2026-05-12T21:35:30.785315Z",
   "company": "akronservices",
   "account": "FREIS FARMS LLC",
   "bushelsOnHand": {
@@ -56,7 +56,7 @@
   "bidsByLocation": {
     "corn": [
       {
-        "price": 4.72,
+        "price": 4.73,
         "period": "May",
         "futuresSymbol": "ZCN26",
         "futuresPrice": 4.8,
@@ -80,20 +80,20 @@
         "location": "Lacon"
       },
       {
-        "price": 4.69,
-        "period": "May",
-        "futuresSymbol": "ZCN26",
-        "futuresPrice": 4.8,
-        "basis": -0.11,
-        "location": "Creve Cr"
-      },
-      {
-        "price": 4.69,
+        "price": 4.7,
         "period": "May",
         "futuresSymbol": "ZCN26",
         "futuresPrice": 4.8,
         "basis": -0.1,
         "location": "Marquis"
+      },
+      {
+        "price": 4.68,
+        "period": "May",
+        "futuresSymbol": "ZCN26",
+        "futuresPrice": 4.8,
+        "basis": -0.12,
+        "location": "Creve Cr"
       }
     ],
     "soybeans": [
@@ -114,6 +114,14 @@
         "location": "Ritchie Grain Elevator"
       },
       {
+        "price": 12.13,
+        "period": "May",
+        "futuresSymbol": "ZSN26",
+        "futuresPrice": 12.2675,
+        "basis": -0.13,
+        "location": "Strawn"
+      },
+      {
         "price": 12.1,
         "period": "May",
         "futuresSymbol": "ZSN26",
@@ -128,14 +136,6 @@
         "futuresPrice": 12.2675,
         "basis": -0.18,
         "location": "Lacon"
-      },
-      {
-        "price": 12.08,
-        "period": "May",
-        "futuresSymbol": "ZSN26",
-        "futuresPrice": 12.2675,
-        "basis": -0.18,
-        "location": "Strawn"
       }
     ]
   },
