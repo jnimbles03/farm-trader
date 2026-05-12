@@ -563,6 +563,16 @@
       "avg_pricing_corn": 1500.0,
       "avg_pricing_soy": 500.0,
       "notes": "Live from bushel.commodity-balances + bids at 2026-05-11T19:11:25Z \u00b7 Account FREIS FARMS LLC \u00b7 PC/FS values carried from prior xlsx row (not scraped). \u00b7 Fetch warnings: avg_pricing: 'str' object has no attribute 'get'"
+    },
+    {
+      "as_of": "2026-05-12",
+      "corn_at_ritchie": 9115.28,
+      "beans_at_ritchie": 967.12,
+      "corn_at_pcfs": 0.0,
+      "beans_at_pcfs": 0.0,
+      "avg_pricing_corn": 1500.0,
+      "avg_pricing_soy": 500.0,
+      "notes": "Live from bushel.commodity-balances + bids at 2026-05-12T11:40:23Z \u00b7 Account FREIS FARMS LLC \u00b7 PC/FS values carried from prior xlsx row (not scraped). \u00b7 Fetch warnings: avg_pricing: 'str' object has no attribute 'get'"
     }
   ],
   "inputs_by_year": {
@@ -1245,7 +1255,7 @@
   },
   "recent_alerts_7d": [],
   "ritchie_live": {
-    "as_of": "2026-05-11T19:11:25Z",
+    "as_of": "2026-05-12T11:40:23Z",
     "source": "bushel.commodity-balances + bids",
     "account": "FREIS FARMS LLC",
     "location": "Ritchie Grain Elevator",
@@ -1261,88 +1271,88 @@
       "corn": [
         {
           "month": "May",
-          "cash": 4.43,
+          "cash": 4.45,
           "basis": -0.32,
-          "futures": 4.7525,
+          "futures": 4.7725,
           "futures_symbol": "ZCN26"
         },
         {
           "month": "Jun",
-          "cash": 4.47,
+          "cash": 4.49,
           "basis": -0.28,
-          "futures": 4.7525,
+          "futures": 4.7725,
           "futures_symbol": "ZCN26"
         },
         {
           "month": "Jul",
-          "cash": 4.48,
+          "cash": 4.5,
           "basis": -0.27,
-          "futures": 4.7525,
+          "futures": 4.7725,
           "futures_symbol": "ZCN26"
         },
         {
           "month": "Oct",
-          "cash": 4.56,
-          "basis": -0.41,
-          "futures": 4.9775,
+          "cash": 4.57,
+          "basis": -0.42,
+          "futures": 4.9975,
           "futures_symbol": "ZCZ26"
         },
         {
           "month": "Dec",
-          "cash": 4.64,
+          "cash": 4.66,
           "basis": -0.33,
-          "futures": 4.9775,
+          "futures": 4.9975,
           "futures_symbol": "ZCZ26"
         },
         {
           "month": "Jan",
-          "cash": 4.71,
+          "cash": 4.73,
           "basis": -0.4,
-          "futures": 5.115,
+          "futures": 5.1375,
           "futures_symbol": "ZCH27"
         }
       ],
       "soy": [
         {
           "month": "May",
-          "cash": 12.07,
+          "cash": 12.09,
           "basis": -0.06,
-          "futures": 12.13,
+          "futures": 12.1525,
           "futures_symbol": "ZSN26"
         },
         {
           "month": "Jun",
-          "cash": 12.07,
+          "cash": 12.09,
           "basis": -0.06,
-          "futures": 12.13,
+          "futures": 12.1525,
           "futures_symbol": "ZSN26"
         },
         {
           "month": "Jul",
-          "cash": 12.12,
+          "cash": 12.14,
           "basis": -0.01,
-          "futures": 12.13,
+          "futures": 12.1525,
           "futures_symbol": "ZSN26"
         },
         {
           "month": "Oct",
-          "cash": 11.58,
+          "cash": 11.59,
           "basis": -0.36,
-          "futures": 11.9475,
+          "futures": 11.955,
           "futures_symbol": "ZSX26"
         },
         {
           "month": "Dec",
-          "cash": 11.5,
+          "cash": 11.51,
           "basis": -0.56,
-          "futures": 12.0625,
+          "futures": 12.0725,
           "futures_symbol": "ZSF27"
         },
         {
           "month": "Jan",
-          "cash": 11.65,
+          "cash": 11.66,
           "basis": -0.41,
-          "futures": 12.0625,
+          "futures": 12.0725,
           "futures_symbol": "ZSF27"
         }
       ]
@@ -1351,5 +1361,5 @@
       "avg_pricing: 'str' object has no attribute 'get'"
     ]
   },
-  "last_refreshed_at": "2026-05-11T19:11:25Z"
+  "last_refreshed_at": "2026-05-12T11:40:23Z"
 }
