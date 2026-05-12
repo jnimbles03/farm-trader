@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-05-12T13:42:11Z",
+  "as_of": "2026-05-12T15:04:07Z",
   "source": "bushel.commodity-balances + bids",
   "account": "FREIS FARMS LLC",
   "location": "Ritchie Grain Elevator",
@@ -11,97 +11,9 @@
     "corn_bu": null,
     "soy_bu": null
   },
-  "bids": {
-    "corn": [
-      {
-        "month": "May",
-        "cash": 4.46,
-        "basis": -0.32,
-        "futures": 4.785,
-        "futures_symbol": "ZCN26"
-      },
-      {
-        "month": "Jun",
-        "cash": 4.5,
-        "basis": -0.28,
-        "futures": 4.785,
-        "futures_symbol": "ZCN26"
-      },
-      {
-        "month": "Jul",
-        "cash": 4.51,
-        "basis": -0.27,
-        "futures": 4.785,
-        "futures_symbol": "ZCN26"
-      },
-      {
-        "month": "Oct",
-        "cash": 4.58,
-        "basis": -0.42,
-        "futures": 5.0075,
-        "futures_symbol": "ZCZ26"
-      },
-      {
-        "month": "Dec",
-        "cash": 4.67,
-        "basis": -0.33,
-        "futures": 5.0075,
-        "futures_symbol": "ZCZ26"
-      },
-      {
-        "month": "Jan",
-        "cash": 4.74,
-        "basis": -0.4,
-        "futures": 5.1425,
-        "futures_symbol": "ZCH27"
-      }
-    ],
-    "soy": [
-      {
-        "month": "May",
-        "cash": 12.13,
-        "basis": -0.06,
-        "futures": 12.1925,
-        "futures_symbol": "ZSN26"
-      },
-      {
-        "month": "Jun",
-        "cash": 12.13,
-        "basis": -0.06,
-        "futures": 12.1925,
-        "futures_symbol": "ZSN26"
-      },
-      {
-        "month": "Jul",
-        "cash": 12.18,
-        "basis": -0.01,
-        "futures": 12.1925,
-        "futures_symbol": "ZSN26"
-      },
-      {
-        "month": "Oct",
-        "cash": 11.63,
-        "basis": -0.36,
-        "futures": 11.9925,
-        "futures_symbol": "ZSX26"
-      },
-      {
-        "month": "Dec",
-        "cash": 11.55,
-        "basis": -0.56,
-        "futures": 12.1125,
-        "futures_symbol": "ZSF27"
-      },
-      {
-        "month": "Jan",
-        "cash": 11.7,
-        "basis": -0.41,
-        "futures": 12.1125,
-        "futures_symbol": "ZSF27"
-      }
-    ]
-  },
+  "bids": {},
   "fetch_errors": [
+    "bids: HTTPSConnectionPool(host='api.bushelpowered.com', port=443): Read timed out. (read timeout=30)",
     "avg_pricing: 'str' object has no attribute 'get'"
   ]
 }
