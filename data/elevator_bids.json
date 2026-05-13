@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-05-13T20:20:36",
+  "as_of": "2026-05-13T21:01:41",
   "freight_per_mile_cents_per_bu": 0.6,
   "freight_assumption_text": "$5/loaded mi \u00f7 ~890 bu/load corn \u2248 0.6\u00a2/bu per extra mile",
   "farm_anchor_address": "19076 W Peotone Rd, Wilmington, IL 60481",
@@ -30,7 +30,7 @@
       "source": "bushel:akronservices",
       "scraper_status": "wired",
       "is_baseline": true,
-      "as_of": "2026-05-13T20:20:35.335383Z"
+      "as_of": "2026-05-13T21:01:40.193901Z"
     },
     {
       "id": "mazon",
@@ -72,9 +72,9 @@
       "fs_name": "ADM - Morris",
       "miles": 14,
       "corn_bid": 4.6675,
-      "soy_bid": 12.08,
+      "soy_bid": 12.09,
       "corn_basis_cents": -14.0,
-      "soy_basis_cents": -21.0,
+      "soy_basis_cents": -20.0,
       "corn_contract": "K26",
       "soy_contract": "K26",
       "corn_futures": "ZCN26",
@@ -106,9 +106,9 @@
       "fs_name": "CGB - Dwight",
       "miles": 22,
       "corn_bid": 4.6875,
-      "soy_bid": 12.26,
+      "soy_bid": 12.36,
       "corn_basis_cents": -12.0,
-      "soy_basis_cents": -3.0,
+      "soy_basis_cents": 7.0,
       "corn_contract": "K26",
       "soy_contract": "K26",
       "corn_futures": "ZCN26",
