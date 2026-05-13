@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-05-13T15:39:43.166637Z",
+  "fetchedAt": "2026-05-13T16:32:07.704664Z",
   "company": "akronservices",
   "account": "FREIS FARMS LLC",
   "bushelsOnHand": {
@@ -16,18 +16,18 @@
   },
   "bids": {
     "corn": {
-      "price": 4.51,
+      "price": 4.5,
       "period": "May",
       "futuresSymbol": "ZCN26",
-      "futuresPrice": 4.8375,
+      "futuresPrice": 4.8225,
       "basis": -0.32,
       "location": "Ritchie Grain Elevator"
     },
     "soybeans": {
-      "price": 12.25,
+      "price": 12.24,
       "period": "May",
       "futuresSymbol": "ZSN26",
-      "futuresPrice": 12.3175,
+      "futuresPrice": 12.3025,
       "basis": -0.06,
       "location": "Ritchie Grain Elevator"
     }
@@ -56,84 +56,84 @@
   "bidsByLocation": {
     "corn": [
       {
-        "price": 4.76,
+        "price": 4.75,
         "period": "May",
         "futuresSymbol": "ZCN26",
-        "futuresPrice": 4.8375,
+        "futuresPrice": 4.8225,
         "basis": -0.07,
         "location": "Havana"
       },
       {
-        "price": 4.73,
+        "price": 4.72,
         "period": "Jun",
         "futuresSymbol": "ZCN26",
-        "futuresPrice": 4.8375,
+        "futuresPrice": 4.8225,
         "basis": -0.1,
         "location": "Big River Galva"
       },
       {
-        "price": 4.73,
+        "price": 4.72,
         "period": "May",
         "futuresSymbol": "ZCN26",
-        "futuresPrice": 4.8375,
+        "futuresPrice": 4.8225,
         "basis": -0.1,
         "location": "Lacon"
       },
       {
-        "price": 4.73,
+        "price": 4.72,
         "period": "May",
         "futuresSymbol": "ZCN26",
-        "futuresPrice": 4.8375,
+        "futuresPrice": 4.8225,
         "basis": -0.1,
         "location": "Marquis"
       },
       {
-        "price": 4.71,
+        "price": 4.7,
         "period": "May",
         "futuresSymbol": "ZCN26",
-        "futuresPrice": 4.8375,
+        "futuresPrice": 4.8225,
         "basis": -0.12,
         "location": "Creve Cr"
       }
     ],
     "soybeans": [
       {
-        "price": 12.27,
+        "price": 12.26,
         "period": "May",
         "futuresSymbol": "ZSN26",
-        "futuresPrice": 12.3175,
+        "futuresPrice": 12.3025,
         "basis": -0.04,
         "location": "Cargill Bloomington"
       },
       {
-        "price": 12.25,
+        "price": 12.24,
         "period": "May",
         "futuresSymbol": "ZSN26",
-        "futuresPrice": 12.3175,
+        "futuresPrice": 12.3025,
         "basis": -0.06,
         "location": "Ritchie Grain Elevator"
       },
       {
-        "price": 12.18,
+        "price": 12.17,
         "period": "May",
         "futuresSymbol": "ZSN26",
-        "futuresPrice": 12.3175,
+        "futuresPrice": 12.3025,
         "basis": -0.13,
         "location": "Strawn"
       },
       {
-        "price": 12.15,
+        "price": 12.14,
         "period": "May",
         "futuresSymbol": "ZSN26",
-        "futuresPrice": 12.3175,
+        "futuresPrice": 12.3025,
         "basis": -0.16,
         "location": "Havana"
       },
       {
-        "price": 12.13,
+        "price": 12.12,
         "period": "May",
         "futuresSymbol": "ZSN26",
-        "futuresPrice": 12.3175,
+        "futuresPrice": 12.3025,
         "basis": -0.18,
         "location": "Lacon"
       }
@@ -159,9 +159,9 @@
         "id": "CNCRG000OAVQ",
         "type": "cash",
         "period": "May",
-        "bidPrice": 4.51,
+        "bidPrice": 4.5,
         "basisPrice": -0.32,
-        "futuresPrice": 4.8375,
+        "futuresPrice": 4.8225,
         "futuresSymbol": "ZCN26",
         "canMakeOffer": true
       },
@@ -169,9 +169,9 @@
         "id": "CNCRG000OCM7",
         "type": "cash",
         "period": "Jun",
-        "bidPrice": 4.55,
+        "bidPrice": 4.54,
         "basisPrice": -0.28,
-        "futuresPrice": 4.8375,
+        "futuresPrice": 4.8225,
         "futuresSymbol": "ZCN26",
         "canMakeOffer": true
       },
@@ -179,9 +179,9 @@
         "id": "CNCRG000OAVU",
         "type": "cash",
         "period": "Jul",
-        "bidPrice": 4.56,
+        "bidPrice": 4.55,
         "basisPrice": -0.27,
-        "futuresPrice": 4.8375,
+        "futuresPrice": 4.8225,
         "futuresSymbol": "ZCN26",
         "canMakeOffer": true
       },
@@ -189,9 +189,9 @@
         "id": "CNCRG000OAVX",
         "type": "cash",
         "period": "Oct",
-        "bidPrice": 4.63,
+        "bidPrice": 4.61,
         "basisPrice": -0.42,
-        "futuresPrice": 5.0575,
+        "futuresPrice": 5.0375,
         "futuresSymbol": "ZCZ26",
         "canMakeOffer": true
       },
@@ -199,9 +199,9 @@
         "id": "CNCRG000ODGJ",
         "type": "cash",
         "period": "Dec",
-        "bidPrice": 4.72,
+        "bidPrice": 4.7,
         "basisPrice": -0.33,
-        "futuresPrice": 5.0575,
+        "futuresPrice": 5.0375,
         "futuresSymbol": "ZCZ26",
         "canMakeOffer": true
       },
@@ -209,9 +209,9 @@
         "id": "CNCRG000OQNJ",
         "type": "cash",
         "period": "Jan",
-        "bidPrice": 4.79,
+        "bidPrice": 4.77,
         "basisPrice": -0.4,
-        "futuresPrice": 5.19,
+        "futuresPrice": 5.17,
         "futuresSymbol": "ZCH27",
         "canMakeOffer": true
       }
@@ -221,9 +221,9 @@
         "id": "SBCRG000OAVZ",
         "type": "cash",
         "period": "May",
-        "bidPrice": 12.25,
+        "bidPrice": 12.24,
         "basisPrice": -0.06,
-        "futuresPrice": 12.3175,
+        "futuresPrice": 12.3025,
         "futuresSymbol": "ZSN26",
         "canMakeOffer": true
       },
@@ -231,9 +231,9 @@
         "id": "SBCRG000OCNA",
         "type": "cash",
         "period": "Jun",
-        "bidPrice": 12.25,
+        "bidPrice": 12.24,
         "basisPrice": -0.06,
-        "futuresPrice": 12.3175,
+        "futuresPrice": 12.3025,
         "futuresSymbol": "ZSN26",
         "canMakeOffer": true
       },
@@ -241,9 +241,9 @@
         "id": "SBCRG000N27N",
         "type": "cash",
         "period": "Jul",
-        "bidPrice": 12.3,
+        "bidPrice": 12.29,
         "basisPrice": -0.01,
-        "futuresPrice": 12.3175,
+        "futuresPrice": 12.3025,
         "futuresSymbol": "ZSN26",
         "canMakeOffer": true
       },
@@ -251,9 +251,9 @@
         "id": "SBCRG000OAV3",
         "type": "cash",
         "period": "Oct",
-        "bidPrice": 11.75,
+        "bidPrice": 11.73,
         "basisPrice": -0.36,
-        "futuresPrice": 12.11,
+        "futuresPrice": 12.09,
         "futuresSymbol": "ZSX26",
         "canMakeOffer": true
       },
@@ -261,9 +261,9 @@
         "id": "SBCRG000ODGK",
         "type": "cash",
         "period": "Dec",
-        "bidPrice": 11.66,
+        "bidPrice": 11.64,
         "basisPrice": -0.56,
-        "futuresPrice": 12.2225,
+        "futuresPrice": 12.205,
         "futuresSymbol": "ZSF27",
         "canMakeOffer": true
       },
@@ -271,9 +271,9 @@
         "id": "SBCRG000OJYI",
         "type": "cash",
         "period": "Jan",
-        "bidPrice": 11.81,
+        "bidPrice": 11.79,
         "basisPrice": -0.41,
-        "futuresPrice": 12.2225,
+        "futuresPrice": 12.205,
         "futuresSymbol": "ZSF27",
         "canMakeOffer": true
       }
