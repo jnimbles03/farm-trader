@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-05-14T16:47:36Z",
+  "as_of": "2026-05-14T17:39:38Z",
   "source": "bushel.commodity-balances + bids",
   "account": "FREIS FARMS LLC",
   "location": "Ritchie Grain Elevator",
@@ -38,65 +38,65 @@
         "month": "Oct",
         "cash": 4.47,
         "basis": -0.42,
-        "futures": 4.895,
+        "futures": 4.8975,
         "futures_symbol": "ZCZ26"
       },
       {
         "month": "Dec",
         "cash": 4.56,
         "basis": -0.33,
-        "futures": 4.895,
+        "futures": 4.8975,
         "futures_symbol": "ZCZ26"
       },
       {
         "month": "Jan",
         "cash": 4.63,
         "basis": -0.4,
-        "futures": 5.0325,
+        "futures": 5.035,
         "futures_symbol": "ZCH27"
       }
     ],
     "soy": [
       {
         "month": "May",
-        "cash": 11.78,
+        "cash": 11.8,
         "basis": -0.06,
-        "futures": 11.845,
+        "futures": 11.8625,
         "futures_symbol": "ZSN26"
       },
       {
         "month": "Jun",
-        "cash": 11.78,
+        "cash": 11.8,
         "basis": -0.06,
-        "futures": 11.845,
+        "futures": 11.8625,
         "futures_symbol": "ZSN26"
       },
       {
         "month": "Jul",
-        "cash": 11.83,
+        "cash": 11.85,
         "basis": -0.01,
-        "futures": 11.845,
+        "futures": 11.8625,
         "futures_symbol": "ZSN26"
       },
       {
         "month": "Oct",
-        "cash": 11.39,
+        "cash": 11.41,
         "basis": -0.36,
-        "futures": 11.755,
+        "futures": 11.7725,
         "futures_symbol": "ZSX26"
       },
       {
         "month": "Dec",
-        "cash": 11.32,
+        "cash": 11.33,
         "basis": -0.55,
-        "futures": 11.875,
+        "futures": 11.89,
         "futures_symbol": "ZSF27"
       },
       {
         "month": "Jan",
-        "cash": 11.47,
+        "cash": 11.48,
         "basis": -0.4,
-        "futures": 11.875,
+        "futures": 11.89,
         "futures_symbol": "ZSF27"
       }
     ]
