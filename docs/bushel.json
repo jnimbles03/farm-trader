@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-05-15T17:32:32.572587Z",
+  "fetchedAt": "2026-05-15T18:13:10.912850Z",
   "company": "akronservices",
   "account": "FREIS FARMS LLC",
   "bushelsOnHand": {
@@ -19,15 +19,15 @@
       "price": 4.24,
       "period": "May",
       "futuresSymbol": "ZCN26",
-      "futuresPrice": 4.5675,
+      "futuresPrice": 4.5625,
       "basis": -0.32,
       "location": "Ritchie Grain Elevator"
     },
     "soybeans": {
-      "price": 11.7,
+      "price": 11.71,
       "period": "May",
       "futuresSymbol": "ZSN26",
-      "futuresPrice": 11.7575,
+      "futuresPrice": 11.7725,
       "basis": -0.05,
       "location": "Ritchie Grain Elevator"
     }
@@ -38,7 +38,7 @@
       "commodity": "Soybeans",
       "type": "Purchase - NPE CONTRACT",
       "remainingBushels": 500.0,
-      "displayRemaining": "500.00 bu",
+      "displayRemaining": "500 bu",
       "delivery": "Edelstein \u00b7 11/01/2026 - 11/01/2026",
       "pricingStatus": "Unpriced"
     },
@@ -47,7 +47,7 @@
       "commodity": "Corn",
       "type": "Purchase - NPE CONTRACT",
       "remainingBushels": 1500.0,
-      "displayRemaining": "1,500.00 bu",
+      "displayRemaining": "1,500 bu",
       "delivery": "Edelstein \u00b7 12/01/2026 - 12/01/2026",
       "pricingStatus": "Unpriced"
     }
@@ -56,10 +56,10 @@
   "bidsByLocation": {
     "corn": [
       {
-        "price": 4.48,
+        "price": 4.47,
         "period": "May",
         "futuresSymbol": "ZCN26",
-        "futuresPrice": 4.5675,
+        "futuresPrice": 4.5625,
         "basis": -0.08,
         "location": "Havana"
       },
@@ -67,7 +67,7 @@
         "price": 4.46,
         "period": "Jun",
         "futuresSymbol": "ZCN26",
-        "futuresPrice": 4.5675,
+        "futuresPrice": 4.5625,
         "basis": -0.1,
         "location": "Big River Galva"
       },
@@ -75,15 +75,15 @@
         "price": 4.46,
         "period": "May",
         "futuresSymbol": "ZCN26",
-        "futuresPrice": 4.5675,
+        "futuresPrice": 4.5625,
         "basis": -0.1,
         "location": "Lacon"
       },
       {
-        "price": 4.46,
+        "price": 4.45,
         "period": "May",
         "futuresSymbol": "ZCN26",
-        "futuresPrice": 4.5675,
+        "futuresPrice": 4.5625,
         "basis": -0.1,
         "location": "Marquis"
       },
@@ -91,51 +91,51 @@
         "price": 4.44,
         "period": "May",
         "futuresSymbol": "ZCN26",
-        "futuresPrice": 4.5675,
+        "futuresPrice": 4.5625,
         "basis": -0.12,
         "location": "Creve Cr"
       }
     ],
     "soybeans": [
       {
-        "price": 11.71,
+        "price": 11.73,
         "period": "May",
         "futuresSymbol": "ZSN26",
-        "futuresPrice": 11.7575,
+        "futuresPrice": 11.7725,
         "basis": -0.04,
         "location": "Cargill Bloomington"
       },
       {
-        "price": 11.7,
+        "price": 11.71,
         "period": "May",
         "futuresSymbol": "ZSN26",
-        "futuresPrice": 11.7575,
+        "futuresPrice": 11.7725,
         "basis": -0.05,
         "location": "Ritchie Grain Elevator"
       },
       {
-        "price": 11.62,
+        "price": 11.63,
         "period": "May",
         "futuresSymbol": "ZSN26",
-        "futuresPrice": 11.7575,
+        "futuresPrice": 11.7725,
         "basis": -0.13,
         "location": "Havana"
       },
       {
-        "price": 11.58,
+        "price": 11.59,
         "period": "May",
         "futuresSymbol": "ZSN26",
-        "futuresPrice": 11.7575,
-        "basis": -0.17,
-        "location": "Strawn"
-      },
-      {
-        "price": 11.57,
-        "period": "May",
-        "futuresSymbol": "ZSN26",
-        "futuresPrice": 11.7575,
+        "futuresPrice": 11.7725,
         "basis": -0.18,
         "location": "Lacon"
+      },
+      {
+        "price": 11.59,
+        "period": "May",
+        "futuresSymbol": "ZSN26",
+        "futuresPrice": 11.7725,
+        "basis": -0.17,
+        "location": "Strawn"
       }
     ]
   },
@@ -144,13 +144,13 @@
       "displayId": "086-FRELLC",
       "accountName": "FREIS FARMS LLC",
       "balance": 0.0,
-      "displayBalance": "$0.00"
+      "displayBalance": "$0.00 USD"
     },
     {
       "displayId": "091-FRELLC",
       "accountName": "FREIS FARMS LLC",
       "balance": 0.0,
-      "displayBalance": "$0.00"
+      "displayBalance": "$0.00 USD"
     }
   ],
   "ritchieBidLadder": {
@@ -161,7 +161,7 @@
         "period": "May",
         "bidPrice": 4.24,
         "basisPrice": -0.32,
-        "futuresPrice": 4.5675,
+        "futuresPrice": 4.5625,
         "futuresSymbol": "ZCN26",
         "canMakeOffer": true
       },
@@ -171,7 +171,7 @@
         "period": "Jun",
         "bidPrice": 4.28,
         "basisPrice": -0.28,
-        "futuresPrice": 4.5675,
+        "futuresPrice": 4.5625,
         "futuresSymbol": "ZCN26",
         "canMakeOffer": true
       },
@@ -181,7 +181,7 @@
         "period": "Jul",
         "bidPrice": 4.29,
         "basisPrice": -0.27,
-        "futuresPrice": 4.5675,
+        "futuresPrice": 4.5625,
         "futuresSymbol": "ZCN26",
         "canMakeOffer": true
       },
@@ -191,7 +191,7 @@
         "period": "Oct",
         "bidPrice": 4.39,
         "basisPrice": -0.42,
-        "futuresPrice": 4.82,
+        "futuresPrice": 4.815,
         "futuresSymbol": "ZCZ26",
         "canMakeOffer": true
       },
@@ -199,9 +199,9 @@
         "id": "CNCRG000ODGJ",
         "type": "cash",
         "period": "Dec",
-        "bidPrice": 4.49,
+        "bidPrice": 4.48,
         "basisPrice": -0.33,
-        "futuresPrice": 4.82,
+        "futuresPrice": 4.815,
         "futuresSymbol": "ZCZ26",
         "canMakeOffer": true
       },
@@ -209,9 +209,9 @@
         "id": "CNCRG000OQNJ",
         "type": "cash",
         "period": "Jan",
-        "bidPrice": 4.56,
+        "bidPrice": 4.55,
         "basisPrice": -0.4,
-        "futuresPrice": 4.96,
+        "futuresPrice": 4.9575,
         "futuresSymbol": "ZCH27",
         "canMakeOffer": true
       }
@@ -221,9 +221,9 @@
         "id": "SBCRG000OAVZ",
         "type": "cash",
         "period": "May",
-        "bidPrice": 11.7,
+        "bidPrice": 11.71,
         "basisPrice": -0.05,
-        "futuresPrice": 11.7575,
+        "futuresPrice": 11.7725,
         "futuresSymbol": "ZSN26",
         "canMakeOffer": true
       },
@@ -231,9 +231,9 @@
         "id": "SBCRG000OCNA",
         "type": "cash",
         "period": "Jun",
-        "bidPrice": 11.7,
+        "bidPrice": 11.71,
         "basisPrice": -0.05,
-        "futuresPrice": 11.7575,
+        "futuresPrice": 11.7725,
         "futuresSymbol": "ZSN26",
         "canMakeOffer": true
       },
@@ -241,9 +241,9 @@
         "id": "SBCRG000N27N",
         "type": "cash",
         "period": "Jul",
-        "bidPrice": 11.75,
+        "bidPrice": 11.76,
         "basisPrice": -0.0,
-        "futuresPrice": 11.7575,
+        "futuresPrice": 11.7725,
         "futuresSymbol": "ZSN26",
         "canMakeOffer": true
       },
@@ -251,9 +251,9 @@
         "id": "SBCRG000OAV3",
         "type": "cash",
         "period": "Oct",
-        "bidPrice": 11.33,
+        "bidPrice": 11.34,
         "basisPrice": -0.36,
-        "futuresPrice": 11.695,
+        "futuresPrice": 11.7125,
         "futuresSymbol": "ZSX26",
         "canMakeOffer": true
       },
@@ -261,9 +261,9 @@
         "id": "SBCRG000ODGK",
         "type": "cash",
         "period": "Dec",
-        "bidPrice": 11.26,
+        "bidPrice": 11.27,
         "basisPrice": -0.56,
-        "futuresPrice": 11.82,
+        "futuresPrice": 11.8375,
         "futuresSymbol": "ZSF27",
         "canMakeOffer": true
       },
@@ -271,9 +271,9 @@
         "id": "SBCRG000OJYI",
         "type": "cash",
         "period": "Jan",
-        "bidPrice": 11.41,
+        "bidPrice": 11.42,
         "basisPrice": -0.41,
-        "futuresPrice": 11.82,
+        "futuresPrice": 11.8375,
         "futuresSymbol": "ZSF27",
         "canMakeOffer": true
       }
@@ -286,9 +286,9 @@
       "type": "Purchase - NPE CONTRACT",
       "isClosed": false,
       "remainingBushels": 500.0,
-      "displayContracted": "500.00 bu",
-      "displayDelivered": "0.00 bu",
-      "displayRemaining": "500.00 bu",
+      "displayContracted": "500 bu",
+      "displayDelivered": "0 bu",
+      "displayRemaining": "500 bu",
       "delivery": "Edelstein \u00b7 11/01/2026 - 11/01/2026",
       "pricingStatus": "Unpriced"
     },
@@ -298,9 +298,9 @@
       "type": "Purchase - NPE CONTRACT",
       "isClosed": false,
       "remainingBushels": 1500.0,
-      "displayContracted": "1,500.00 bu",
-      "displayDelivered": "0.00 bu",
-      "displayRemaining": "1,500.00 bu",
+      "displayContracted": "1,500 bu",
+      "displayDelivered": "0 bu",
+      "displayRemaining": "1,500 bu",
       "delivery": "Edelstein \u00b7 12/01/2026 - 12/01/2026",
       "pricingStatus": "Unpriced"
     },
@@ -310,9 +310,9 @@
       "type": "Purchase - SPOT",
       "isClosed": true,
       "remainingBushels": 0.0,
-      "displayContracted": "1,000.00 bu",
-      "displayDelivered": "1,000.00 bu",
-      "displayRemaining": "0.00 bu",
+      "displayContracted": "1,000 bu",
+      "displayDelivered": "1,000 bu",
+      "displayRemaining": "0 bu",
       "delivery": "RIT \u00b7 05/04/2026 - 05/04/2026",
       "pricingStatus": "$12.19 USD"
     },
@@ -322,9 +322,9 @@
       "type": "Purchase - PRICED",
       "isClosed": true,
       "remainingBushels": 0.0,
-      "displayContracted": "500.00 bu",
-      "displayDelivered": "500.00 bu",
-      "displayRemaining": "0.00 bu",
+      "displayContracted": "500 bu",
+      "displayDelivered": "500 bu",
+      "displayRemaining": "0 bu",
       "delivery": "RIT \u00b7 02/01/2026 - 02/28/2026",
       "pricingStatus": "$11.18 USD"
     },
@@ -334,9 +334,9 @@
       "type": "Purchase - PRICED",
       "isClosed": true,
       "remainingBushels": 0.0,
-      "displayContracted": "750.00 bu",
-      "displayDelivered": "750.00 bu",
-      "displayRemaining": "0.00 bu",
+      "displayContracted": "750 bu",
+      "displayDelivered": "750 bu",
+      "displayRemaining": "0 bu",
       "delivery": "RIT \u00b7 01/01/2026 - 01/31/2026",
       "pricingStatus": "$11.04 USD"
     },
@@ -346,9 +346,9 @@
       "type": "Purchase - PRICED",
       "isClosed": true,
       "remainingBushels": 0.0,
-      "displayContracted": "3,500.00 bu",
-      "displayDelivered": "3,500.00 bu",
-      "displayRemaining": "0.00 bu",
+      "displayContracted": "3,500 bu",
+      "displayDelivered": "3,500 bu",
+      "displayRemaining": "0 bu",
       "delivery": "RIT \u00b7 11/01/2025 - 11/30/2025",
       "pricingStatus": "$4.03 USD"
     },
@@ -358,9 +358,9 @@
       "type": "Purchase - SPOT",
       "isClosed": true,
       "remainingBushels": 0.0,
-      "displayContracted": "0.00 bu",
-      "displayDelivered": "0.00 bu",
-      "displayRemaining": "0.00 bu",
+      "displayContracted": "0 bu",
+      "displayDelivered": "0 bu",
+      "displayRemaining": "0 bu",
       "delivery": "RIT \u00b7 10/29/2025 - 10/31/2025",
       "pricingStatus": "Unpriced"
     },
@@ -370,9 +370,9 @@
       "type": "Purchase - SPOT",
       "isClosed": true,
       "remainingBushels": 0.0,
-      "displayContracted": "1,500.00 bu",
-      "displayDelivered": "1,500.00 bu",
-      "displayRemaining": "0.00 bu",
+      "displayContracted": "1,500 bu",
+      "displayDelivered": "1,500 bu",
+      "displayRemaining": "0 bu",
       "delivery": "RIT \u00b7 10/30/2025 - 10/31/2025",
       "pricingStatus": "$10.61 USD"
     },
@@ -382,9 +382,9 @@
       "type": "Purchase - SPOT",
       "isClosed": true,
       "remainingBushels": 0.0,
-      "displayContracted": "4,000.00 bu",
-      "displayDelivered": "4,000.00 bu",
-      "displayRemaining": "0.00 bu",
+      "displayContracted": "4,000 bu",
+      "displayDelivered": "4,000 bu",
+      "displayRemaining": "0 bu",
       "delivery": "RIT \u00b7 07/01/2025 - 07/31/2025",
       "pricingStatus": "$3.89 USD"
     },
@@ -394,9 +394,9 @@
       "type": "Purchase - SPOT",
       "isClosed": true,
       "remainingBushels": 0.0,
-      "displayContracted": "4,329.00 bu",
-      "displayDelivered": "4,329.00 bu",
-      "displayRemaining": "0.00 bu",
+      "displayContracted": "4,329 bu",
+      "displayDelivered": "4,329 bu",
+      "displayRemaining": "0 bu",
       "delivery": "RIT \u00b7 07/01/2025 - 07/31/2025",
       "pricingStatus": "$3.83 USD"
     },
@@ -408,7 +408,7 @@
       "remainingBushels": 0.0,
       "displayContracted": "849.58 bu",
       "displayDelivered": "849.58 bu",
-      "displayRemaining": "0.00 bu",
+      "displayRemaining": "0 bu",
       "delivery": "RIT \u00b7 07/01/2025 - 07/30/2025",
       "pricingStatus": "$10.07 USD"
     },
@@ -418,9 +418,9 @@
       "type": "Purchase - SPOT",
       "isClosed": true,
       "remainingBushels": 0.0,
-      "displayContracted": "3,600.00 bu",
-      "displayDelivered": "3,600.00 bu",
-      "displayRemaining": "0.00 bu",
+      "displayContracted": "3,600 bu",
+      "displayDelivered": "3,600 bu",
+      "displayRemaining": "0 bu",
       "delivery": "RIT \u00b7 08/01/2024 - 08/31/2024",
       "pricingStatus": "$3.58 USD"
     },
@@ -430,9 +430,9 @@
       "type": "Purchase - SPOT",
       "isClosed": true,
       "remainingBushels": 0.0,
-      "displayContracted": "695.00 bu",
-      "displayDelivered": "695.00 bu",
-      "displayRemaining": "0.00 bu",
+      "displayContracted": "695 bu",
+      "displayDelivered": "695 bu",
+      "displayRemaining": "0 bu",
       "delivery": "RIT \u00b7 08/01/2024 - 08/31/2024",
       "pricingStatus": "$9.87 USD"
     },
@@ -444,7 +444,7 @@
       "remainingBushels": 0.0,
       "displayContracted": "3,627.95 bu",
       "displayDelivered": "3,627.95 bu",
-      "displayRemaining": "0.00 bu",
+      "displayRemaining": "0 bu",
       "delivery": "RIT \u00b7 08/01/2024 - 08/31/2024",
       "pricingStatus": "$3.66 USD"
     },
@@ -456,7 +456,7 @@
       "remainingBushels": 0.0,
       "displayContracted": "694.31 bu",
       "displayDelivered": "694.31 bu",
-      "displayRemaining": "0.00 bu",
+      "displayRemaining": "0 bu",
       "delivery": "RIT \u00b7 08/01/2024 - 08/31/2024",
       "pricingStatus": "$9.78 USD"
     },
@@ -466,9 +466,9 @@
       "type": "Purchase - SPOT",
       "isClosed": true,
       "remainingBushels": 0.0,
-      "displayContracted": "1,500.00 bu",
-      "displayDelivered": "1,500.00 bu",
-      "displayRemaining": "0.00 bu",
+      "displayContracted": "1,500 bu",
+      "displayDelivered": "1,500 bu",
+      "displayRemaining": "0 bu",
       "delivery": "RIT \u00b7 07/01/2024 - 07/30/2024",
       "pricingStatus": "$3.68 USD"
     }
