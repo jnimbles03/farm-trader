@@ -1,13 +1,13 @@
 {
-  "corn": null,
-  "soy": null,
-  "wheat": null,
-  "corn_dec": null,
-  "soy_nov": null,
-  "wheat_jul": null,
+  "corn": 4.9075,
+  "soy": 12.05,
+  "wheat": 6.705,
+  "corn_dec": 4.9075,
+  "soy_nov": 12.05,
+  "wheat_jul": 6.705,
   "corn_basis_il": null,
   "soy_basis_il": null,
-  "feeder_cattle": null,
+  "feeder_cattle": 373.86,
   "detail": {
     "corn": {
       "prev_close": 4.9,
@@ -48,5 +48,5 @@
   },
   "date": "2026-05-15",
   "source": "stooq (end-of-day close)",
-  "generated_at": "2026-05-15T00:32:44.288163+00:00"
+  "generated_at": "2026-05-15T01:21:58.392888+00:00"
 }
