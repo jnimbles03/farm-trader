@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-05-19T20:59:49.602304Z",
+  "fetchedAt": "2026-05-19T21:38:54.908291Z",
   "company": "akronservices",
   "account": "FREIS FARMS LLC",
   "bushelsOnHand": {
@@ -16,11 +16,11 @@
   },
   "bids": {
     "corn": {
-      "price": 4.53,
+      "price": 4.43,
       "period": "May",
       "futuresSymbol": "ZCN26",
       "futuresPrice": 4.7525,
-      "basis": -0.22,
+      "basis": -0.32,
       "location": "Ritchie Grain Elevator"
     },
     "soybeans": {
@@ -56,7 +56,7 @@
   "bidsByLocation": {
     "corn": [
       {
-        "price": 4.68,
+        "price": 4.67,
         "period": "May",
         "futuresSymbol": "ZCN26",
         "futuresPrice": 4.7525,
@@ -72,7 +72,7 @@
         "location": "Lacon"
       },
       {
-        "price": 4.65,
+        "price": 4.64,
         "period": "May",
         "futuresSymbol": "ZCN26",
         "futuresPrice": 4.7525,
@@ -159,8 +159,8 @@
         "id": "CNCRG000OAVQ",
         "type": "cash",
         "period": "May",
-        "bidPrice": 4.53,
-        "basisPrice": -0.22,
+        "bidPrice": 4.43,
+        "basisPrice": -0.32,
         "futuresPrice": 4.7525,
         "futuresSymbol": "ZCN26",
         "canMakeOffer": true
@@ -169,8 +169,8 @@
         "id": "CNCRG000OCM7",
         "type": "cash",
         "period": "Jun",
-        "bidPrice": 4.47,
-        "basisPrice": -0.28,
+        "bidPrice": 4.48,
+        "basisPrice": -0.27,
         "futuresPrice": 4.7525,
         "futuresSymbol": "ZCN26",
         "canMakeOffer": true
@@ -179,8 +179,8 @@
         "id": "CNCRG000OAVU",
         "type": "cash",
         "period": "Jul",
-        "bidPrice": 4.48,
-        "basisPrice": -0.27,
+        "bidPrice": 4.49,
+        "basisPrice": -0.26,
         "futuresPrice": 4.7525,
         "futuresSymbol": "ZCN26",
         "canMakeOffer": true
@@ -241,8 +241,8 @@
         "id": "SBCRG000N27N",
         "type": "cash",
         "period": "Jul",
-        "bidPrice": 12.08,
-        "basisPrice": -0.01,
+        "bidPrice": 12.09,
+        "basisPrice": -0.0,
         "futuresPrice": 12.095,
         "futuresSymbol": "ZSN26",
         "canMakeOffer": true
