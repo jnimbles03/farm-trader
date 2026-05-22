@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-05-22T16:20:09Z",
+  "as_of": "2026-05-22T17:16:52Z",
   "source": "bushel.commodity-balances + bids",
   "account": "FREIS FARMS LLC",
   "location": "Ritchie Grain Elevator",
@@ -15,44 +15,44 @@
     "corn": [
       {
         "month": "May",
-        "cash": 4.32,
+        "cash": 4.3,
         "basis": -0.32,
-        "futures": 4.6425,
+        "futures": 4.625,
         "futures_symbol": "ZCN26"
       },
       {
         "month": "Jun",
-        "cash": 4.37,
+        "cash": 4.35,
         "basis": -0.27,
-        "futures": 4.6425,
+        "futures": 4.625,
         "futures_symbol": "ZCN26"
       },
       {
         "month": "Jul",
-        "cash": 4.38,
+        "cash": 4.36,
         "basis": -0.26,
-        "futures": 4.6425,
+        "futures": 4.625,
         "futures_symbol": "ZCN26"
       },
       {
         "month": "Oct",
-        "cash": 4.45,
+        "cash": 4.43,
         "basis": -0.42,
-        "futures": 4.8725,
+        "futures": 4.855,
         "futures_symbol": "ZCZ26"
       },
       {
         "month": "Dec",
-        "cash": 4.54,
+        "cash": 4.52,
         "basis": -0.33,
-        "futures": 4.8725,
+        "futures": 4.855,
         "futures_symbol": "ZCZ26"
       },
       {
         "month": "Jan",
-        "cash": 4.61,
+        "cash": 4.59,
         "basis": -0.4,
-        "futures": 5.015,
+        "futures": 4.9975,
         "futures_symbol": "ZCH27"
       }
     ],
@@ -82,21 +82,21 @@
         "month": "Oct",
         "cash": 11.52,
         "basis": -0.36,
-        "futures": 11.8875,
+        "futures": 11.88,
         "futures_symbol": "ZSX26"
       },
       {
         "month": "Dec",
-        "cash": 11.44,
+        "cash": 11.43,
         "basis": -0.56,
-        "futures": 12.0075,
+        "futures": 11.9975,
         "futures_symbol": "ZSF27"
       },
       {
         "month": "Jan",
-        "cash": 11.59,
+        "cash": 11.58,
         "basis": -0.41,
-        "futures": 12.0075,
+        "futures": 11.9975,
         "futures_symbol": "ZSF27"
       }
     ]
