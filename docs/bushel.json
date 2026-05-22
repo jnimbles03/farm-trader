@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-05-22T20:50:56.769985Z",
+  "fetchedAt": "2026-05-22T21:23:19.259555Z",
   "company": "akronservices",
   "account": "FREIS FARMS LLC",
   "bushelsOnHand": {
@@ -114,11 +114,11 @@
         "location": "Ritchie Grain Elevator"
       },
       {
-        "price": 11.84,
+        "price": 11.85,
         "period": "May",
         "futuresSymbol": "ZSN26",
         "futuresPrice": 11.965,
-        "basis": -0.12,
+        "basis": -0.11,
         "location": "Havana"
       },
       {
@@ -135,7 +135,7 @@
         "futuresSymbol": "ZSN26",
         "futuresPrice": 11.965,
         "basis": -0.18,
-        "location": "Strawn"
+        "location": "Creve Cr"
       }
     ]
   },
@@ -179,8 +179,8 @@
         "id": "CNCRG000OAVU",
         "type": "cash",
         "period": "Jul",
-        "bidPrice": 4.37,
-        "basisPrice": -0.26,
+        "bidPrice": 4.38,
+        "basisPrice": -0.25,
         "futuresPrice": 4.6325,
         "futuresSymbol": "ZCN26",
         "canMakeOffer": true
@@ -189,8 +189,8 @@
         "id": "CNCRG000OAVX",
         "type": "cash",
         "period": "Oct",
-        "bidPrice": 4.44,
-        "basisPrice": -0.42,
+        "bidPrice": 4.45,
+        "basisPrice": -0.41,
         "futuresPrice": 4.865,
         "futuresSymbol": "ZCZ26",
         "canMakeOffer": true
