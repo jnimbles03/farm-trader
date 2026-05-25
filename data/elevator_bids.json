@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-05-25T20:07:12",
+  "as_of": "2026-05-25T20:44:02",
   "freight_per_mile_cents_per_bu": 0.6,
   "freight_assumption_text": "$5/loaded mi \u00f7 ~890 bu/load corn \u2248 0.6\u00a2/bu per extra mile",
   "farm_anchor_address": "19076 W Peotone Rd, Wilmington, IL 60481",
@@ -30,7 +30,7 @@
       "source": "bushel:akronservices",
       "scraper_status": "wired",
       "is_baseline": true,
-      "as_of": "2026-05-25T20:07:11.873313Z"
+      "as_of": "2026-05-25T20:44:01.200192Z"
     },
     {
       "id": "mazon",
