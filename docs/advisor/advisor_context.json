@@ -672,7 +672,7 @@
       "beans_at_pcfs": 0.0,
       "avg_pricing_corn": 1500.0,
       "avg_pricing_soy": 500.0,
-      "notes": "Live from bushel.commodity-balances + bids at 2026-05-26T17:15:52Z \u00b7 Account FREIS FARMS LLC \u00b7 PC/FS values carried from prior xlsx row (not scraped). \u00b7 Fetch warnings: avg_pricing: 'str' object has no attribute 'get'"
+      "notes": "Live from bushel.commodity-balances + bids at 2026-05-26T18:20:06Z \u00b7 Account FREIS FARMS LLC \u00b7 PC/FS values carried from prior xlsx row (not scraped). \u00b7 Fetch warnings: avg_pricing: 'str' object has no attribute 'get'"
     }
   ],
   "inputs_by_year": {
@@ -1355,7 +1355,7 @@
   },
   "recent_alerts_7d": [],
   "ritchie_live": {
-    "as_of": "2026-05-26T17:15:52Z",
+    "as_of": "2026-05-26T18:20:06Z",
     "source": "bushel.commodity-balances + bids",
     "account": "FREIS FARMS LLC",
     "location": "Ritchie Grain Elevator",
@@ -1394,14 +1394,14 @@
           "month": "Oct",
           "cash": 4.41,
           "basis": -0.41,
-          "futures": 4.825,
+          "futures": 4.8275,
           "futures_symbol": "ZCZ26"
         },
         {
           "month": "Dec",
           "cash": 4.49,
           "basis": -0.33,
-          "futures": 4.825,
+          "futures": 4.8275,
           "futures_symbol": "ZCZ26"
         },
         {
@@ -1415,23 +1415,23 @@
       "soy": [
         {
           "month": "May",
-          "cash": 11.81,
+          "cash": 11.79,
           "basis": -0.06,
-          "futures": 11.875,
+          "futures": 11.8625,
           "futures_symbol": "ZSN26"
         },
         {
           "month": "Jun",
-          "cash": 11.81,
+          "cash": 11.79,
           "basis": -0.06,
-          "futures": 11.875,
+          "futures": 11.8625,
           "futures_symbol": "ZSN26"
         },
         {
           "month": "Jul",
-          "cash": 11.86,
+          "cash": 11.84,
           "basis": -0.01,
-          "futures": 11.875,
+          "futures": 11.8625,
           "futures_symbol": "ZSN26"
         },
         {
@@ -1461,5 +1461,5 @@
       "avg_pricing: 'str' object has no attribute 'get'"
     ]
   },
-  "last_refreshed_at": "2026-05-26T17:15:52Z"
+  "last_refreshed_at": "2026-05-26T18:20:06Z"
 }
