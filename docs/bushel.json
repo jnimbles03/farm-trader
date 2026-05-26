@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-05-26T17:46:41.668869Z",
+  "fetchedAt": "2026-05-26T18:43:36.454802Z",
   "company": "akronservices",
   "account": "FREIS FARMS LLC",
   "bushelsOnHand": {
@@ -19,7 +19,7 @@
       "price": 4.25,
       "period": "May",
       "futuresSymbol": "ZCN26",
-      "futuresPrice": 4.57,
+      "futuresPrice": 4.575,
       "basis": -0.32,
       "location": "Ritchie Grain Elevator"
     },
@@ -27,7 +27,7 @@
       "price": 11.79,
       "period": "May",
       "futuresSymbol": "ZSN26",
-      "futuresPrice": 11.855,
+      "futuresPrice": 11.86,
       "basis": -0.06,
       "location": "Ritchie Grain Elevator"
     }
@@ -56,10 +56,10 @@
   "bidsByLocation": {
     "corn": [
       {
-        "price": 4.52,
+        "price": 4.53,
         "period": "May",
         "futuresSymbol": "ZCN26",
-        "futuresPrice": 4.57,
+        "futuresPrice": 4.575,
         "basis": -0.04,
         "location": "Havana"
       },
@@ -67,15 +67,15 @@
         "price": 4.47,
         "period": "May",
         "futuresSymbol": "ZCN26",
-        "futuresPrice": 4.57,
+        "futuresPrice": 4.575,
         "basis": -0.1,
         "location": "Lacon"
       },
       {
-        "price": 4.46,
+        "price": 4.47,
         "period": "May",
         "futuresSymbol": "ZCN26",
-        "futuresPrice": 4.57,
+        "futuresPrice": 4.575,
         "basis": -0.1,
         "location": "Marquis"
       },
@@ -83,7 +83,7 @@
         "price": 4.45,
         "period": "Jun",
         "futuresSymbol": "ZCN26",
-        "futuresPrice": 4.57,
+        "futuresPrice": 4.575,
         "basis": -0.12,
         "location": "Big River Galva"
       },
@@ -91,17 +91,17 @@
         "price": 4.45,
         "period": "May",
         "futuresSymbol": "ZCN26",
-        "futuresPrice": 4.57,
+        "futuresPrice": 4.575,
         "basis": -0.12,
         "location": "Creve Cr"
       }
     ],
     "soybeans": [
       {
-        "price": 11.81,
+        "price": 11.82,
         "period": "May",
         "futuresSymbol": "ZSN26",
-        "futuresPrice": 11.855,
+        "futuresPrice": 11.86,
         "basis": -0.04,
         "location": "Cargill Bloomington"
       },
@@ -109,7 +109,7 @@
         "price": 11.79,
         "period": "May",
         "futuresSymbol": "ZSN26",
-        "futuresPrice": 11.855,
+        "futuresPrice": 11.86,
         "basis": -0.06,
         "location": "Ritchie Grain Elevator"
       },
@@ -117,23 +117,23 @@
         "price": 11.74,
         "period": "May",
         "futuresSymbol": "ZSN26",
-        "futuresPrice": 11.855,
+        "futuresPrice": 11.86,
         "basis": -0.11,
         "location": "Havana"
       },
       {
-        "price": 11.69,
+        "price": 11.7,
         "period": "May",
         "futuresSymbol": "ZSN26",
-        "futuresPrice": 11.855,
+        "futuresPrice": 11.86,
         "basis": -0.16,
         "location": "Lacon"
       },
       {
-        "price": 11.67,
+        "price": 11.68,
         "period": "May",
         "futuresSymbol": "ZSN26",
-        "futuresPrice": 11.855,
+        "futuresPrice": 11.86,
         "basis": -0.18,
         "location": "Creve Cr"
       }
@@ -161,7 +161,7 @@
         "period": "May",
         "bidPrice": 4.25,
         "basisPrice": -0.32,
-        "futuresPrice": 4.57,
+        "futuresPrice": 4.575,
         "futuresSymbol": "ZCN26",
         "canMakeOffer": true
       },
@@ -171,7 +171,7 @@
         "period": "Jun",
         "bidPrice": 4.3,
         "basisPrice": -0.27,
-        "futuresPrice": 4.57,
+        "futuresPrice": 4.575,
         "futuresSymbol": "ZCN26",
         "canMakeOffer": true
       },
@@ -181,7 +181,7 @@
         "period": "Jul",
         "bidPrice": 4.32,
         "basisPrice": -0.25,
-        "futuresPrice": 4.57,
+        "futuresPrice": 4.575,
         "futuresSymbol": "ZCN26",
         "canMakeOffer": true
       },
@@ -223,7 +223,7 @@
         "period": "May",
         "bidPrice": 11.79,
         "basisPrice": -0.06,
-        "futuresPrice": 11.855,
+        "futuresPrice": 11.86,
         "futuresSymbol": "ZSN26",
         "canMakeOffer": true
       },
@@ -233,7 +233,7 @@
         "period": "Jun",
         "bidPrice": 11.79,
         "basisPrice": -0.06,
-        "futuresPrice": 11.855,
+        "futuresPrice": 11.86,
         "futuresSymbol": "ZSN26",
         "canMakeOffer": true
       },
@@ -243,7 +243,7 @@
         "period": "Jul",
         "bidPrice": 11.84,
         "basisPrice": -0.01,
-        "futuresPrice": 11.855,
+        "futuresPrice": 11.86,
         "futuresSymbol": "ZSN26",
         "canMakeOffer": true
       },
@@ -251,9 +251,9 @@
         "id": "SBCRG000OAV3",
         "type": "cash",
         "period": "Oct",
-        "bidPrice": 11.43,
+        "bidPrice": 11.44,
         "basisPrice": -0.36,
-        "futuresPrice": 11.7925,
+        "futuresPrice": 11.8025,
         "futuresSymbol": "ZSX26",
         "canMakeOffer": true
       },
@@ -261,9 +261,9 @@
         "id": "SBCRG000ODGK",
         "type": "cash",
         "period": "Dec",
-        "bidPrice": 11.36,
+        "bidPrice": 11.37,
         "basisPrice": -0.56,
-        "futuresPrice": 11.9275,
+        "futuresPrice": 11.935,
         "futuresSymbol": "ZSF27",
         "canMakeOffer": true
       },
@@ -271,9 +271,9 @@
         "id": "SBCRG000OJYI",
         "type": "cash",
         "period": "Jan",
-        "bidPrice": 11.51,
+        "bidPrice": 11.52,
         "basisPrice": -0.41,
-        "futuresPrice": 11.9275,
+        "futuresPrice": 11.935,
         "futuresSymbol": "ZSF27",
         "canMakeOffer": true
       }
@@ -482,7 +482,7 @@
       "status": "filled",
       "expirationDate": null,
       "raw": {
-        "id": "963351142",
+        "id": "2a8a03ba-db5d-40cb-8a71-e2ae617ebf93",
         "displayId": "963351142",
         "offerType": "cash",
         "commodityName": "Soybeans",
@@ -514,7 +514,7 @@
       "status": "filled",
       "expirationDate": null,
       "raw": {
-        "id": "555620373",
+        "id": "9831d2e7-60dd-4b42-82fb-2420e73e6b0f",
         "displayId": "555620373",
         "offerType": "cash",
         "commodityName": "Corn",
@@ -546,7 +546,7 @@
       "status": "filled",
       "expirationDate": null,
       "raw": {
-        "id": "542359824",
+        "id": "88602238-35a8-4ce9-af8d-f7b1a79330e7",
         "displayId": "542359824",
         "offerType": "cash",
         "commodityName": "Soybeans",
