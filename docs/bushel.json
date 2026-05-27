@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-05-27T21:13:46.403680Z",
+  "fetchedAt": "2026-05-27T21:56:39.227489Z",
   "company": "akronservices",
   "account": "FREIS FARMS LLC",
   "bushelsOnHand": {
@@ -24,7 +24,7 @@
       "location": "Ritchie Grain Elevator"
     },
     "soybeans": {
-      "price": 11.79,
+      "price": 11.78,
       "period": "May",
       "futuresSymbol": "ZSN26",
       "futuresPrice": 11.8525,
@@ -56,11 +56,11 @@
   "bidsByLocation": {
     "corn": [
       {
-        "price": 4.49,
+        "price": 4.45,
         "period": "May",
         "futuresSymbol": "ZCN26",
         "futuresPrice": 4.525,
-        "basis": -0.03,
+        "basis": -0.07,
         "location": "Havana"
       },
       {
@@ -106,7 +106,7 @@
         "location": "Cargill Bloomington"
       },
       {
-        "price": 11.79,
+        "price": 11.78,
         "period": "May",
         "futuresSymbol": "ZSN26",
         "futuresPrice": 11.8525,
@@ -114,7 +114,7 @@
         "location": "Ritchie Grain Elevator"
       },
       {
-        "price": 11.77,
+        "price": 11.76,
         "period": "May",
         "futuresSymbol": "ZSN26",
         "futuresPrice": 11.8525,
@@ -122,7 +122,7 @@
         "location": "Strawn"
       },
       {
-        "price": 11.73,
+        "price": 11.72,
         "period": "May",
         "futuresSymbol": "ZSN26",
         "futuresPrice": 11.8525,
@@ -189,8 +189,8 @@
         "id": "CNCRG000OAVX",
         "type": "cash",
         "period": "Oct",
-        "bidPrice": 4.35,
-        "basisPrice": -0.42,
+        "bidPrice": 4.36,
+        "basisPrice": -0.41,
         "futuresPrice": 4.775,
         "futuresSymbol": "ZCZ26",
         "canMakeOffer": true
@@ -221,7 +221,7 @@
         "id": "SBCRG000OAVZ",
         "type": "cash",
         "period": "May",
-        "bidPrice": 11.79,
+        "bidPrice": 11.78,
         "basisPrice": -0.06,
         "futuresPrice": 11.8525,
         "futuresSymbol": "ZSN26",
@@ -231,7 +231,7 @@
         "id": "SBCRG000OCNA",
         "type": "cash",
         "period": "Jun",
-        "bidPrice": 11.79,
+        "bidPrice": 11.78,
         "basisPrice": -0.06,
         "futuresPrice": 11.8525,
         "futuresSymbol": "ZSN26",
@@ -241,7 +241,7 @@
         "id": "SBCRG000N27N",
         "type": "cash",
         "period": "Jul",
-        "bidPrice": 11.84,
+        "bidPrice": 11.83,
         "basisPrice": -0.01,
         "futuresPrice": 11.8525,
         "futuresSymbol": "ZSN26",
