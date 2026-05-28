@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-05-28T21:35:54.721134Z",
+  "fetchedAt": "2026-05-28T22:18:46.347669Z",
   "company": "akronservices",
   "account": "FREIS FARMS LLC",
   "bushelsOnHand": {
@@ -56,11 +56,11 @@
   "bidsByLocation": {
     "corn": [
       {
-        "price": 4.48,
+        "price": 4.5,
         "period": "May",
         "futuresSymbol": "ZCN26",
         "futuresPrice": 4.5575,
-        "basis": -0.07,
+        "basis": -0.05,
         "location": "Havana"
       },
       {
@@ -122,11 +122,11 @@
         "location": "Strawn"
       },
       {
-        "price": 11.82,
+        "price": 11.83,
         "period": "May",
         "futuresSymbol": "ZSN26",
         "futuresPrice": 11.945,
-        "basis": -0.12,
+        "basis": -0.11,
         "location": "Havana"
       },
       {
@@ -169,8 +169,8 @@
         "id": "CNCRG000OCM7",
         "type": "cash",
         "period": "Jun",
-        "bidPrice": 4.27,
-        "basisPrice": -0.28,
+        "bidPrice": 4.26,
+        "basisPrice": -0.29,
         "futuresPrice": 4.5575,
         "futuresSymbol": "ZCN26",
         "canMakeOffer": true
@@ -179,8 +179,8 @@
         "id": "CNCRG000OAVU",
         "type": "cash",
         "period": "Jul",
-        "bidPrice": 4.3,
-        "basisPrice": -0.25,
+        "bidPrice": 4.29,
+        "basisPrice": -0.26,
         "futuresPrice": 4.5575,
         "futuresSymbol": "ZCN26",
         "canMakeOffer": true
@@ -189,8 +189,8 @@
         "id": "CNCRG000OAVX",
         "type": "cash",
         "period": "Oct",
-        "bidPrice": 4.4,
-        "basisPrice": -0.41,
+        "bidPrice": 4.39,
+        "basisPrice": -0.42,
         "futuresPrice": 4.8225,
         "futuresSymbol": "ZCZ26",
         "canMakeOffer": true
@@ -199,8 +199,8 @@
         "id": "CNCRG000ODGJ",
         "type": "cash",
         "period": "Dec",
-        "bidPrice": 4.49,
-        "basisPrice": -0.33,
+        "bidPrice": 4.46,
+        "basisPrice": -0.36,
         "futuresPrice": 4.8225,
         "futuresSymbol": "ZCZ26",
         "canMakeOffer": true
@@ -241,8 +241,8 @@
         "id": "SBCRG000N27N",
         "type": "cash",
         "period": "Jul",
-        "bidPrice": 11.93,
-        "basisPrice": -0.01,
+        "bidPrice": 11.94,
+        "basisPrice": -0.0,
         "futuresPrice": 11.945,
         "futuresSymbol": "ZSN26",
         "canMakeOffer": true
@@ -251,7 +251,7 @@
         "id": "SBCRG000OAV3",
         "type": "cash",
         "period": "Oct",
-        "bidPrice": 11.57,
+        "bidPrice": 11.58,
         "basisPrice": -0.36,
         "futuresPrice": 11.94,
         "futuresSymbol": "ZSX26",

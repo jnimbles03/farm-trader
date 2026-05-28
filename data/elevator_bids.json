@@ -1,16 +1,16 @@
 {
-  "as_of": "2026-05-28T21:35:57",
+  "as_of": "2026-05-28T22:18:47",
   "freight_per_mile_cents_per_bu": 0.6,
   "freight_assumption_text": "$5/loaded mi \u00f7 ~890 bu/load corn \u2248 0.6\u00a2/bu per extra mile",
   "farm_anchor_address": "19076 W Peotone Rd, Wilmington, IL 60481",
   "baseline_id": "ritchie",
   "futures": {
-    "ZCN26": null,
-    "ZCZ26": null,
-    "ZCH27": null,
-    "ZSN26": null,
-    "ZSX26": null,
-    "ZSF27": null
+    "ZCN26": 456.25,
+    "ZCZ26": 482.5,
+    "ZCH27": 496.75,
+    "ZSN26": 1195.75,
+    "ZSX26": 1195.25,
+    "ZSF27": 1207.5
   },
   "elevators": [
     {
@@ -30,15 +30,15 @@
       "source": "bushel:akronservices",
       "scraper_status": "wired",
       "is_baseline": true,
-      "as_of": "2026-05-28T21:35:54.721134Z"
+      "as_of": "2026-05-28T22:18:46.347669Z"
     },
     {
       "id": "mazon",
       "name": "Mazon (FS Grain)",
       "fs_name": "Mazon",
       "miles": 10,
-      "corn_bid": null,
-      "soy_bid": null,
+      "corn_bid": 4.4125,
+      "soy_bid": 11.8075,
       "corn_basis_cents": -15.0,
       "soy_basis_cents": -15.0,
       "corn_contract": "K26",
@@ -46,7 +46,7 @@
       "corn_futures": "ZCN26",
       "soy_futures": "ZSN26",
       "source": "fsgrain.com/markets/cashgrid.php",
-      "scraper_status": "no-data",
+      "scraper_status": "live",
       "is_baseline": false
     },
     {
@@ -54,8 +54,8 @@
       "name": "CHS Morris",
       "fs_name": "CHS - Elburn/ Morris",
       "miles": 14,
-      "corn_bid": null,
-      "soy_bid": null,
+      "corn_bid": 4.4325,
+      "soy_bid": 11.7675,
       "corn_basis_cents": -13.0,
       "soy_basis_cents": -19.0,
       "corn_contract": "K26",
@@ -63,7 +63,7 @@
       "corn_futures": "ZCN26",
       "soy_futures": "ZSN26",
       "source": "fsgrain.com/markets/cashgrid.php",
-      "scraper_status": "no-data",
+      "scraper_status": "live",
       "is_baseline": false
     },
     {
@@ -71,8 +71,8 @@
       "name": "ADM Morris (river)",
       "fs_name": "ADM - Morris",
       "miles": 14,
-      "corn_bid": null,
-      "soy_bid": null,
+      "corn_bid": 4.4225,
+      "soy_bid": 11.7675,
       "corn_basis_cents": -14.0,
       "soy_basis_cents": -19.0,
       "corn_contract": "K26",
@@ -80,7 +80,7 @@
       "corn_futures": "ZCN26",
       "soy_futures": "ZSN26",
       "source": "fsgrain.com/markets/cashgrid.php",
-      "scraper_status": "no-data",
+      "scraper_status": "live",
       "is_baseline": false
     },
     {
@@ -89,7 +89,7 @@
       "fs_name": "Lisbon Center",
       "miles": 15,
       "corn_bid": null,
-      "soy_bid": null,
+      "soy_bid": 11.7475,
       "corn_basis_cents": null,
       "soy_basis_cents": -21.0,
       "corn_contract": null,
@@ -97,7 +97,7 @@
       "corn_futures": null,
       "soy_futures": "ZSN26",
       "source": "fsgrain.com/markets/cashgrid.php",
-      "scraper_status": "no-data",
+      "scraper_status": "live",
       "is_baseline": false
     },
     {
@@ -105,8 +105,8 @@
       "name": "CGB Dwight",
       "fs_name": "CGB - Dwight",
       "miles": 22,
-      "corn_bid": null,
-      "soy_bid": null,
+      "corn_bid": 4.4425,
+      "soy_bid": 11.9275,
       "corn_basis_cents": -12.0,
       "soy_basis_cents": -3.0,
       "corn_contract": "K26",
@@ -114,7 +114,7 @@
       "corn_futures": "ZCN26",
       "soy_futures": "ZSN26",
       "source": "fsgrain.com/markets/cashgrid.php",
-      "scraper_status": "no-data",
+      "scraper_status": "live",
       "is_baseline": false
     },
     {
@@ -122,8 +122,8 @@
       "name": "Ransom (FS Grain)",
       "fs_name": "Ransom",
       "miles": 22,
-      "corn_bid": null,
-      "soy_bid": null,
+      "corn_bid": 4.2325,
+      "soy_bid": 11.5875,
       "corn_basis_cents": -33.0,
       "soy_basis_cents": -37.0,
       "corn_contract": "K26",
@@ -131,7 +131,7 @@
       "corn_futures": "ZCN26",
       "soy_futures": "ZSN26",
       "source": "fsgrain.com/markets/cashgrid.php",
-      "scraper_status": "no-data",
+      "scraper_status": "live",
       "is_baseline": false
     },
     {
@@ -139,8 +139,8 @@
       "name": "Bourbonnais (FS Grain / Heritage)",
       "fs_name": "Bourbonnais",
       "miles": 22,
-      "corn_bid": null,
-      "soy_bid": null,
+      "corn_bid": 4.2825,
+      "soy_bid": 11.7975,
       "corn_basis_cents": -28.0,
       "soy_basis_cents": -16.0,
       "corn_contract": "K26",
@@ -148,7 +148,7 @@
       "corn_futures": "ZCN26",
       "soy_futures": "ZSN26",
       "source": "fsgrain.com/markets/cashgrid.php",
-      "scraper_status": "no-data",
+      "scraper_status": "live",
       "is_baseline": false
     },
     {
@@ -156,8 +156,8 @@
       "name": "Grand Ridge (FS Grain)",
       "fs_name": "Grand Ridge",
       "miles": 28,
-      "corn_bid": null,
-      "soy_bid": null,
+      "corn_bid": 4.2325,
+      "soy_bid": 11.5675,
       "corn_basis_cents": -33.0,
       "soy_basis_cents": -39.0,
       "corn_contract": "K26",
@@ -165,7 +165,7 @@
       "corn_futures": "ZCN26",
       "soy_futures": "ZSN26",
       "source": "fsgrain.com/markets/cashgrid.php",
-      "scraper_status": "no-data",
+      "scraper_status": "live",
       "is_baseline": false
     },
     {
@@ -174,7 +174,7 @@
       "fs_name": "Exline",
       "miles": 28,
       "corn_bid": null,
-      "soy_bid": null,
+      "soy_bid": 11.7475,
       "corn_basis_cents": null,
       "soy_basis_cents": -21.0,
       "corn_contract": null,
@@ -182,7 +182,7 @@
       "corn_futures": null,
       "soy_futures": "ZSN26",
       "source": "fsgrain.com/markets/cashgrid.php",
-      "scraper_status": "no-data",
+      "scraper_status": "live",
       "is_baseline": false
     },
     {
@@ -190,8 +190,8 @@
       "name": "St Anne (FS Grain)",
       "fs_name": "St Anne",
       "miles": 28,
-      "corn_bid": null,
-      "soy_bid": null,
+      "corn_bid": 4.2225,
+      "soy_bid": 11.6975,
       "corn_basis_cents": -34.0,
       "soy_basis_cents": -26.0,
       "corn_contract": "K26",
@@ -199,7 +199,7 @@
       "corn_futures": "ZCN26",
       "soy_futures": "ZSN26",
       "source": "fsgrain.com/markets/cashgrid.php",
-      "scraper_status": "no-data",
+      "scraper_status": "live",
       "is_baseline": false
     }
   ],
