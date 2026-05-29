@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-05-29T20:44:11.397154Z",
+  "fetchedAt": "2026-05-29T21:24:26.310041Z",
   "company": "akronservices",
   "account": "FREIS FARMS LLC",
   "bushelsOnHand": {
@@ -56,11 +56,11 @@
   "bidsByLocation": {
     "corn": [
       {
-        "price": 4.41,
+        "price": 4.39,
         "period": "May",
         "futuresSymbol": "ZCN26",
         "futuresPrice": 4.4675,
-        "basis": -0.05,
+        "basis": -0.07,
         "location": "Havana"
       },
       {
@@ -122,11 +122,11 @@
         "location": "Strawn"
       },
       {
-        "price": 11.75,
+        "price": 11.73,
         "period": "May",
         "futuresSymbol": "ZSN26",
         "futuresPrice": 11.8675,
-        "basis": -0.11,
+        "basis": -0.13,
         "location": "Havana"
       },
       {
@@ -189,8 +189,8 @@
         "id": "CNCRG000OAVX",
         "type": "cash",
         "period": "Oct",
-        "bidPrice": 4.32,
-        "basisPrice": -0.42,
+        "bidPrice": 4.3,
+        "basisPrice": -0.45,
         "futuresPrice": 4.75,
         "futuresSymbol": "ZCZ26",
         "canMakeOffer": true
@@ -199,8 +199,8 @@
         "id": "CNCRG000ODGJ",
         "type": "cash",
         "period": "Dec",
-        "bidPrice": 4.39,
-        "basisPrice": -0.36,
+        "bidPrice": 4.42,
+        "basisPrice": -0.33,
         "futuresPrice": 4.75,
         "futuresSymbol": "ZCZ26",
         "canMakeOffer": true
@@ -241,8 +241,8 @@
         "id": "SBCRG000N27N",
         "type": "cash",
         "period": "Jul",
-        "bidPrice": 11.86,
-        "basisPrice": -0.0,
+        "bidPrice": 11.85,
+        "basisPrice": -0.01,
         "futuresPrice": 11.8675,
         "futuresSymbol": "ZSN26",
         "canMakeOffer": true
