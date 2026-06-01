@@ -16,7 +16,16 @@
       "affects": "both",
       "source": "Fed",
       "category": "policy"
+    },
+    {
+      "id": "geopolitical-2026-06-01-southern_hemisphere_export_w",
+      "date": "2026-06-01",
+      "title": "Southern-hemisphere export window opens",
+      "impact": "S",
+      "affects": "both",
+      "source": "Global supply",
+      "category": "geopolitical"
     }
   ],
-  "generated_at": "2026-05-31T23:37:55.120767+00:00"
+  "generated_at": "2026-06-01T00:07:52.202775+00:00"
 }
