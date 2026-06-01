@@ -712,7 +712,7 @@
       "beans_at_pcfs": 0.0,
       "avg_pricing_corn": 1500.0,
       "avg_pricing_soy": 500.0,
-      "notes": "Live from bushel.commodity-balances + bids at 2026-06-01T15:10:54Z \u00b7 Account FREIS FARMS LLC \u00b7 PC/FS values carried from prior xlsx row (not scraped). \u00b7 Fetch warnings: avg_pricing: 'str' object has no attribute 'get'"
+      "notes": "Live from bushel.commodity-balances + bids at 2026-06-01T17:20:43Z \u00b7 Account FREIS FARMS LLC \u00b7 PC/FS values carried from prior xlsx row (not scraped). \u00b7 Fetch warnings: avg_pricing: 'str' object has no attribute 'get'"
     }
   ],
   "inputs_by_year": {
@@ -1395,7 +1395,7 @@
   },
   "recent_alerts_7d": [],
   "ritchie_live": {
-    "as_of": "2026-06-01T15:10:54Z",
+    "as_of": "2026-06-01T17:20:43Z",
     "source": "bushel.commodity-balances + bids",
     "account": "FREIS FARMS LLC",
     "location": "Ritchie Grain Elevator",
@@ -1411,74 +1411,74 @@
       "corn": [
         {
           "month": "Jun",
-          "cash": 4.13,
+          "cash": 4.12,
           "basis": -0.29,
-          "futures": 4.425,
+          "futures": 4.41,
           "futures_symbol": "ZCN26"
         },
         {
           "month": "Jul",
-          "cash": 4.16,
+          "cash": 4.15,
           "basis": -0.26,
-          "futures": 4.425,
+          "futures": 4.41,
           "futures_symbol": "ZCN26"
         },
         {
           "month": "Oct",
-          "cash": 4.26,
+          "cash": 4.25,
           "basis": -0.45,
-          "futures": 4.7125,
+          "futures": 4.7025,
           "futures_symbol": "ZCZ26"
         },
         {
           "month": "Dec",
-          "cash": 4.38,
+          "cash": 4.37,
           "basis": -0.33,
-          "futures": 4.7125,
+          "futures": 4.7025,
           "futures_symbol": "ZCZ26"
         },
         {
           "month": "Jan",
-          "cash": 4.46,
+          "cash": 4.44,
           "basis": -0.4,
-          "futures": 4.86,
+          "futures": 4.8475,
           "futures_symbol": "ZCH27"
         }
       ],
       "soy": [
         {
           "month": "Jun",
-          "cash": 11.78,
+          "cash": 11.73,
           "basis": -0.06,
-          "futures": 11.845,
+          "futures": 11.7925,
           "futures_symbol": "ZSN26"
         },
         {
           "month": "Jul",
-          "cash": 11.83,
+          "cash": 11.78,
           "basis": -0.01,
-          "futures": 11.845,
+          "futures": 11.7925,
           "futures_symbol": "ZSN26"
         },
         {
           "month": "Oct",
-          "cash": 11.55,
+          "cash": 11.5,
           "basis": -0.36,
-          "futures": 11.91,
+          "futures": 11.8675,
           "futures_symbol": "ZSX26"
         },
         {
           "month": "Dec",
-          "cash": 11.48,
+          "cash": 11.44,
           "basis": -0.56,
-          "futures": 12.045,
+          "futures": 12.005,
           "futures_symbol": "ZSF27"
         },
         {
           "month": "Jan",
-          "cash": 11.63,
+          "cash": 11.59,
           "basis": -0.41,
-          "futures": 12.045,
+          "futures": 12.005,
           "futures_symbol": "ZSF27"
         }
       ]
@@ -1487,5 +1487,5 @@
       "avg_pricing: 'str' object has no attribute 'get'"
     ]
   },
-  "last_refreshed_at": "2026-06-01T15:10:54Z"
+  "last_refreshed_at": "2026-06-01T17:20:43Z"
 }
