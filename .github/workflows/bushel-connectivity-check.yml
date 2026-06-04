@@ -1,0 +1,36 @@
+name: Bushel Connectivity Check
+
+on:
+  schedule:
+    # 7am, 9am, 11am, 1pm, 3pm CT Mon-Fri (UTC offsets: CT=UTC-6 standard / UTC-5 daylight)
+    # Cron uses UTC: 12,14,16,18,20 UTC = 7,9,11,13,15 CT (CDT, UTC-5)
+    - cron: '0 12,14,16,18,20 * * 1-5'
+  workflow_dispatch:
+
+concurrency:
+  group: bushel-connectivity-check
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run Bushel connectivity check
+        run: python scripts/test_bushel_connectivity.py
+        env:
+          BUSHEL_USER: ${{ secrets.BUSHEL_USER }}
+          BUSHEL_PASS: ${{ secrets.BUSHEL_PASS }}
+          TEXTBELT_KEY: ${{ secrets.TEXTBELT_KEY }}
+          ALERT_PHONE: ${{ secrets.ALERT_PHONE }}
