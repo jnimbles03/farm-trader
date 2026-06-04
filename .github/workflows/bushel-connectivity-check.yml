@@ -2,10 +2,12 @@ name: Bushel Connectivity Check
 
 on:
   schedule:
-    # 7am, 9am, 11am, 1pm, 3pm CT Mon-Fri (UTC offsets: CT=UTC-6 standard / UTC-5 daylight)
-    # Cron uses UTC: 12,14,16,18,20 UTC = 7,9,11,13,15 CT (CDT, UTC-5)
+    # 7am, 9am, 11am, 1pm, 3pm CT Mon-Fri (CDT = UTC-5)
     - cron: '0 12,14,16,18,20 * * 1-5'
   workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 concurrency:
   group: bushel-connectivity-check
@@ -25,7 +27,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install requests
+        run: pip install requests beautifulsoup4
 
       - name: Run Bushel connectivity check
         run: python scripts/test_bushel_connectivity.py
