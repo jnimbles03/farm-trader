@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-06-04T20:55:34.896154Z",
+  "fetchedAt": "2026-06-04T21:30:20.476436Z",
   "company": "akronservices",
   "account": "FREIS FARMS LLC",
   "bushelsOnHand": {
@@ -64,12 +64,12 @@
         "location": "Havana"
       },
       {
-        "price": 4.2,
+        "price": 4.18,
         "period": "Jun",
         "futuresSymbol": "ZCN26",
         "futuresPrice": 4.245,
-        "basis": -0.04,
-        "location": "Lacon"
+        "basis": -0.06,
+        "location": "Creve Cr"
       },
       {
         "price": 4.18,
@@ -77,7 +77,7 @@
         "futuresSymbol": "ZCN26",
         "futuresPrice": 4.245,
         "basis": -0.06,
-        "location": "Creve Cr"
+        "location": "Lacon"
       },
       {
         "price": 4.18,
@@ -114,6 +114,14 @@
         "location": "Ritchie Grain Elevator"
       },
       {
+        "price": 11.24,
+        "period": "Jun",
+        "futuresSymbol": "ZSN26",
+        "futuresPrice": 11.295,
+        "basis": -0.05,
+        "location": "Havana"
+      },
+      {
         "price": 11.21,
         "period": "Jun",
         "futuresSymbol": "ZSN26",
@@ -122,20 +130,12 @@
         "location": "Strawn"
       },
       {
-        "price": 11.2,
+        "price": 11.17,
         "period": "Jun",
         "futuresSymbol": "ZSN26",
         "futuresPrice": 11.295,
-        "basis": -0.09,
-        "location": "Havana"
-      },
-      {
-        "price": 11.19,
-        "period": "Jun",
-        "futuresSymbol": "ZSN26",
-        "futuresPrice": 11.295,
-        "basis": -0.1,
-        "location": "Lacon"
+        "basis": -0.12,
+        "location": "Creve Cr"
       }
     ]
   },
@@ -169,8 +169,8 @@
         "id": "CNCRG000OAVU",
         "type": "cash",
         "period": "Jul",
-        "bidPrice": 4.0,
-        "basisPrice": -0.24,
+        "bidPrice": 3.99,
+        "basisPrice": -0.25,
         "futuresPrice": 4.245,
         "futuresSymbol": "ZCN26",
         "canMakeOffer": true
@@ -251,8 +251,8 @@
         "id": "SBCRG000OYFM",
         "type": "cash",
         "period": "Aug",
-        "bidPrice": 11.32,
-        "basisPrice": -0.0,
+        "bidPrice": 11.34,
+        "basisPrice": 0.01,
         "futuresPrice": 11.325,
         "futuresSymbol": "ZSQ26",
         "canMakeOffer": true
