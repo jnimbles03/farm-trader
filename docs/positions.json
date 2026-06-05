@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-05T15:32:50.074337+00:00",
+  "generated_at": "2026-06-05T16:35:23.818718+00:00",
   "positions": [
     {
       "contract_id": "APP-CORN-2026",
@@ -25,7 +25,7 @@
       "basis_cost": null,
       "quantity": 500,
       "note": "Ritchie Avg Pricing Program \u2014 2026 crop delivery, priced as avg cash Apr\u2013Jul 2026",
-      "live": 11.07,
+      "live": null,
       "mtm_per_bu": null,
       "total_mtm": null
     },
