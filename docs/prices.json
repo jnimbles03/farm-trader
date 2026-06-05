@@ -7,7 +7,7 @@
   "wheat_jul": 5.7575,
   "corn_basis_il": null,
   "soy_basis_il": null,
-  "feeder_cattle": 359.21,
+  "feeder_cattle": null,
   "detail": {
     "corn": {
       "prev_close": 4.395,
@@ -48,5 +48,5 @@
   },
   "date": "2026-06-05",
   "source": "stooq (end-of-day close)",
-  "generated_at": "2026-06-05T22:14:59.003710+00:00"
+  "generated_at": "2026-06-05T22:44:09.592953+00:00"
 }
