@@ -1,8 +1,8 @@
 {
-  "corn": 4.325,
-  "soy": null,
-  "wheat": 5.7575,
-  "corn_dec": 4.325,
+  "corn": null,
+  "soy": 11.07,
+  "wheat": null,
+  "corn_dec": null,
   "soy_nov": 11.07,
   "wheat_jul": 5.7575,
   "corn_basis_il": null,
@@ -48,5 +48,5 @@
   },
   "date": "2026-06-05",
   "source": "stooq (end-of-day close)",
-  "generated_at": "2026-06-05T20:23:59.406603+00:00"
+  "generated_at": "2026-06-05T21:02:42.222973+00:00"
 }
