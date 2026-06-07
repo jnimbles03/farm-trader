@@ -9,15 +9,6 @@
       "source": "USDA"
     },
     {
-      "id": "policy-2026-05-07-fomc_rate_decision",
-      "date": "2026-05-07",
-      "title": "FOMC rate decision",
-      "impact": "M",
-      "affects": "both",
-      "source": "Fed",
-      "category": "policy"
-    },
-    {
       "id": "geopolitical-2026-06-01-southern_hemisphere_export_w",
       "date": "2026-06-01",
       "title": "Southern-hemisphere export window opens",
@@ -27,5 +18,5 @@
       "category": "geopolitical"
     }
   ],
-  "generated_at": "2026-06-06T23:37:17.436286+00:00"
+  "generated_at": "2026-06-07T00:07:41.878283+00:00"
 }
