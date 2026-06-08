@@ -26,9 +26,9 @@
                 "description": "Jun",
                 "bidPrice": "4.05",
                 "basisPrice": "-0.12",
-                "futuresPrice": "4.1750",
-                "futuresChange": "-0.0700",
-                "futuresChangeSign": -1,
+                "futuresPrice": "4.1775",
+                "futuresChange": "0.0025",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZCN26",
                 "operations": {
                   "makeOffer": true
@@ -40,9 +40,9 @@
                 "description": "Jul",
                 "bidPrice": "4.10",
                 "basisPrice": "-0.07",
-                "futuresPrice": "4.1750",
-                "futuresChange": "-0.0700",
-                "futuresChangeSign": -1,
+                "futuresPrice": "4.1775",
+                "futuresChange": "0.0025",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZCN26",
                 "operations": {
                   "makeOffer": true
@@ -55,8 +55,8 @@
                 "bidPrice": "4.20",
                 "basisPrice": "-0.07",
                 "futuresPrice": "4.2700",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCU26",
                 "operations": {
                   "makeOffer": true
@@ -90,9 +90,9 @@
                 "description": "Jun",
                 "bidPrice": "4.02",
                 "basisPrice": "-0.15",
-                "futuresPrice": "4.1750",
-                "futuresChange": "-0.0700",
-                "futuresChangeSign": -1,
+                "futuresPrice": "4.1775",
+                "futuresChange": "0.0025",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZCN26",
                 "operations": {
                   "makeOffer": true
@@ -104,9 +104,9 @@
                 "description": "Jul",
                 "bidPrice": "4.06",
                 "basisPrice": "-0.11",
-                "futuresPrice": "4.1750",
-                "futuresChange": "-0.0700",
-                "futuresChangeSign": -1,
+                "futuresPrice": "4.1775",
+                "futuresChange": "0.0025",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZCN26",
                 "operations": {
                   "makeOffer": true
@@ -119,8 +119,8 @@
                 "bidPrice": "4.18",
                 "basisPrice": "-0.09",
                 "futuresPrice": "4.2700",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCU26",
                 "operations": {
                   "makeOffer": true
@@ -133,8 +133,8 @@
                 "bidPrice": "4.24",
                 "basisPrice": "-0.22",
                 "futuresPrice": "4.4600",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCZ26",
                 "operations": {
                   "makeOffer": true
@@ -147,8 +147,8 @@
                 "bidPrice": "4.44",
                 "basisPrice": "-0.02",
                 "futuresPrice": "4.4600",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCZ26",
                 "operations": {
                   "makeOffer": true
@@ -158,11 +158,11 @@
                 "id": "CNCAN000OQMA",
                 "bidType": "cash",
                 "description": "Jan",
-                "bidPrice": "4.49",
-                "basisPrice": "-0.12",
+                "bidPrice": "4.50",
+                "basisPrice": "-0.11",
                 "futuresPrice": "4.6150",
-                "futuresChange": "-0.0525",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCH27",
                 "operations": {
                   "makeOffer": true
@@ -172,11 +172,11 @@
                 "id": "CNCAN000OQMC",
                 "bidType": "cash",
                 "description": "Feb",
-                "bidPrice": "4.52",
-                "basisPrice": "-0.09",
+                "bidPrice": "4.53",
+                "basisPrice": "-0.08",
                 "futuresPrice": "4.6150",
-                "futuresChange": "-0.0525",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCH27",
                 "operations": {
                   "makeOffer": true
@@ -186,11 +186,11 @@
                 "id": "CNCAN000OQMH",
                 "bidType": "cash",
                 "description": "Mar",
-                "bidPrice": "4.54",
-                "basisPrice": "-0.07",
+                "bidPrice": "4.55",
+                "basisPrice": "-0.06",
                 "futuresPrice": "4.6150",
-                "futuresChange": "-0.0525",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCH27",
                 "operations": {
                   "makeOffer": true
@@ -224,9 +224,9 @@
                 "description": "Jun",
                 "bidPrice": "4.05",
                 "basisPrice": "-0.12",
-                "futuresPrice": "4.1750",
-                "futuresChange": "-0.0700",
-                "futuresChangeSign": -1,
+                "futuresPrice": "4.1775",
+                "futuresChange": "0.0025",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZCN26",
                 "operations": {
                   "makeOffer": true
@@ -239,8 +239,8 @@
                 "bidPrice": "4.15",
                 "basisPrice": "-0.12",
                 "futuresPrice": "4.2700",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCU26",
                 "operations": {
                   "makeOffer": true
@@ -253,8 +253,8 @@
                 "bidPrice": "4.05",
                 "basisPrice": "-0.41",
                 "futuresPrice": "4.4600",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCZ26",
                 "operations": {
                   "makeOffer": true
@@ -267,8 +267,8 @@
                 "bidPrice": "4.21",
                 "basisPrice": "-0.25",
                 "futuresPrice": "4.4600",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCZ26",
                 "operations": {
                   "makeOffer": true
@@ -281,8 +281,8 @@
                 "bidPrice": "4.31",
                 "basisPrice": "-0.15",
                 "futuresPrice": "4.4600",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCZ26",
                 "operations": {
                   "makeOffer": true
@@ -295,8 +295,8 @@
                 "bidPrice": "4.41",
                 "basisPrice": "-0.20",
                 "futuresPrice": "4.6150",
-                "futuresChange": "-0.0525",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCH27",
                 "operations": {
                   "makeOffer": true
@@ -309,8 +309,8 @@
                 "bidPrice": "4.45",
                 "basisPrice": "-0.16",
                 "futuresPrice": "4.6150",
-                "futuresChange": "-0.0525",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCH27",
                 "operations": {
                   "makeOffer": true
@@ -323,8 +323,8 @@
                 "bidPrice": "4.49",
                 "basisPrice": "-0.12",
                 "futuresPrice": "4.6150",
-                "futuresChange": "-0.0525",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCH27",
                 "operations": {
                   "makeOffer": true
@@ -336,9 +336,9 @@
                 "description": "Jul",
                 "bidPrice": "4.09",
                 "basisPrice": "-0.08",
-                "futuresPrice": "4.1750",
-                "futuresChange": "-0.0700",
-                "futuresChangeSign": -1,
+                "futuresPrice": "4.1775",
+                "futuresChange": "0.0025",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZCN26",
                 "operations": {
                   "makeOffer": true
@@ -370,11 +370,11 @@
                 "id": "CNCBP000OCNF",
                 "bidType": "cash",
                 "description": "Jun",
-                "bidPrice": "4.05",
-                "basisPrice": "-0.12",
-                "futuresPrice": "4.1750",
-                "futuresChange": "-0.0700",
-                "futuresChangeSign": -1,
+                "bidPrice": "4.08",
+                "basisPrice": "-0.09",
+                "futuresPrice": "4.1775",
+                "futuresChange": "0.0025",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZCN26",
                 "operations": {
                   "makeOffer": true
@@ -386,9 +386,9 @@
                 "description": "Jul",
                 "bidPrice": "4.10",
                 "basisPrice": "-0.07",
-                "futuresPrice": "4.1750",
-                "futuresChange": "-0.0700",
-                "futuresChangeSign": -1,
+                "futuresPrice": "4.1775",
+                "futuresChange": "0.0025",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZCN26",
                 "operations": {
                   "makeOffer": true
@@ -398,11 +398,11 @@
                 "id": "CNCBP000OYEK",
                 "bidType": "cash",
                 "description": "Aug",
-                "bidPrice": "4.19",
-                "basisPrice": "-0.08",
+                "bidPrice": "4.20",
+                "basisPrice": "-0.07",
                 "futuresPrice": "4.2700",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCU26",
                 "operations": {
                   "makeOffer": true
@@ -412,11 +412,11 @@
                 "id": "CNCBP000OYEV",
                 "bidType": "cash",
                 "description": "Sep",
-                "bidPrice": "4.19",
-                "basisPrice": "-0.27",
+                "bidPrice": "4.20",
+                "basisPrice": "-0.26",
                 "futuresPrice": "4.4600",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCZ26",
                 "operations": {
                   "makeOffer": true
@@ -426,11 +426,11 @@
                 "id": "CNCBP000OMML",
                 "bidType": "cash",
                 "description": "Oct",
-                "bidPrice": "4.23",
-                "basisPrice": "-0.23",
+                "bidPrice": "4.24",
+                "basisPrice": "-0.22",
                 "futuresPrice": "4.4600",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCZ26",
                 "operations": {
                   "makeOffer": true
@@ -440,11 +440,11 @@
                 "id": "CNCBP000OMMN",
                 "bidType": "cash",
                 "description": "Dec",
-                "bidPrice": "4.38",
-                "basisPrice": "-0.08",
+                "bidPrice": "4.39",
+                "basisPrice": "-0.07",
                 "futuresPrice": "4.4600",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCZ26",
                 "operations": {
                   "makeOffer": true
@@ -476,11 +476,11 @@
                 "id": "CNCBR000OCNS",
                 "bidType": "cash",
                 "description": "Jun",
-                "bidPrice": "3.93",
-                "basisPrice": "-0.24",
-                "futuresPrice": "4.1750",
-                "futuresChange": "-0.0700",
-                "futuresChangeSign": -1,
+                "bidPrice": "3.90",
+                "basisPrice": "-0.27",
+                "futuresPrice": "4.1775",
+                "futuresChange": "0.0025",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZCN26",
                 "operations": {
                   "makeOffer": true
@@ -492,9 +492,9 @@
                 "description": "Jul",
                 "bidPrice": "3.99",
                 "basisPrice": "-0.18",
-                "futuresPrice": "4.1750",
-                "futuresChange": "-0.0700",
-                "futuresChangeSign": -1,
+                "futuresPrice": "4.1775",
+                "futuresChange": "0.0025",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZCN26",
                 "operations": {
                   "makeOffer": true
@@ -504,11 +504,11 @@
                 "id": "CNCBR000OYE3",
                 "bidType": "cash",
                 "description": "Aug",
-                "bidPrice": "4.01",
-                "basisPrice": "-0.26",
+                "bidPrice": "4.02",
+                "basisPrice": "-0.25",
                 "futuresPrice": "4.2700",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCU26",
                 "operations": {
                   "makeOffer": true
@@ -518,11 +518,11 @@
                 "id": "CNCBR000OYEL",
                 "bidType": "cash",
                 "description": "Sep",
-                "bidPrice": "4.01",
-                "basisPrice": "-0.45",
+                "bidPrice": "4.02",
+                "basisPrice": "-0.44",
                 "futuresPrice": "4.4600",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCZ26",
                 "operations": {
                   "makeOffer": true
@@ -532,11 +532,11 @@
                 "id": "CNCBR000N2T3",
                 "bidType": "cash",
                 "description": "Oct",
-                "bidPrice": "4.05",
-                "basisPrice": "-0.41",
+                "bidPrice": "4.06",
+                "basisPrice": "-0.40",
                 "futuresPrice": "4.4600",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCZ26",
                 "operations": {
                   "makeOffer": true
@@ -549,8 +549,8 @@
                 "bidPrice": "4.21",
                 "basisPrice": "-0.25",
                 "futuresPrice": "4.4600",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCZ26",
                 "operations": {
                   "makeOffer": true
@@ -563,8 +563,8 @@
                 "bidPrice": "4.28",
                 "basisPrice": "-0.33",
                 "futuresPrice": "4.6150",
-                "futuresChange": "-0.0525",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCH27",
                 "operations": {
                   "makeOffer": true
@@ -577,8 +577,8 @@
                 "bidPrice": "4.35",
                 "basisPrice": "-0.26",
                 "futuresPrice": "4.6150",
-                "futuresChange": "-0.0525",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCH27",
                 "operations": {
                   "makeOffer": true
@@ -591,8 +591,8 @@
                 "bidPrice": "4.40",
                 "basisPrice": "-0.21",
                 "futuresPrice": "4.6150",
-                "futuresChange": "-0.0525",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCH27",
                 "operations": {
                   "makeOffer": true
@@ -618,11 +618,11 @@
                 "id": "SBCBR000OCNH",
                 "bidType": "cash",
                 "description": "Jun",
-                "bidPrice": "10.90",
-                "basisPrice": "-0.31",
-                "futuresPrice": "11.2150",
-                "futuresChange": "-0.0800",
-                "futuresChangeSign": -1,
+                "bidPrice": "10.87",
+                "basisPrice": "-0.35",
+                "futuresPrice": "11.2200",
+                "futuresChange": "0.0050",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSN26",
                 "operations": {
                   "makeOffer": true
@@ -634,9 +634,9 @@
                 "description": "Jul",
                 "bidPrice": "10.96",
                 "basisPrice": "-0.25",
-                "futuresPrice": "11.2150",
-                "futuresChange": "-0.0800",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.2200",
+                "futuresChange": "0.0050",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSN26",
                 "operations": {
                   "makeOffer": true
@@ -646,11 +646,11 @@
                 "id": "SBCBR000OYEM",
                 "bidType": "cash",
                 "description": "Aug",
-                "bidPrice": "10.87",
-                "basisPrice": "-0.38",
-                "futuresPrice": "11.2600",
-                "futuresChange": "-0.0650",
-                "futuresChangeSign": -1,
+                "bidPrice": "10.88",
+                "basisPrice": "-0.39",
+                "futuresPrice": "11.2700",
+                "futuresChange": "0.0100",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSQ26",
                 "operations": {
                   "makeOffer": true
@@ -660,11 +660,11 @@
                 "id": "SBCBR000OYEZ",
                 "bidType": "cash",
                 "description": "Sep",
-                "bidPrice": "10.79",
+                "bidPrice": "10.81",
                 "basisPrice": "-0.58",
-                "futuresPrice": "11.3750",
-                "futuresChange": "-0.0400",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.3975",
+                "futuresChange": "0.0225",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSX26",
                 "operations": {
                   "makeOffer": true
@@ -674,11 +674,11 @@
                 "id": "SBCBR000N2UV",
                 "bidType": "cash",
                 "description": "Oct",
-                "bidPrice": "10.79",
+                "bidPrice": "10.81",
                 "basisPrice": "-0.58",
-                "futuresPrice": "11.3750",
-                "futuresChange": "-0.0400",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.3975",
+                "futuresChange": "0.0225",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSX26",
                 "operations": {
                   "makeOffer": true
@@ -688,11 +688,11 @@
                 "id": "SBCBR000OC2F",
                 "bidType": "cash",
                 "description": "Dec",
-                "bidPrice": "11.02",
+                "bidPrice": "11.05",
                 "basisPrice": "-0.50",
-                "futuresPrice": "11.5225",
-                "futuresChange": "-0.0400",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.5500",
+                "futuresChange": "0.0275",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSF27",
                 "operations": {
                   "makeOffer": true
@@ -702,11 +702,11 @@
                 "id": "SBCBR000OJX3",
                 "bidType": "cash",
                 "description": "Jan",
-                "bidPrice": "11.14",
+                "bidPrice": "11.17",
                 "basisPrice": "-0.38",
-                "futuresPrice": "11.5225",
-                "futuresChange": "-0.0400",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.5500",
+                "futuresChange": "0.0275",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSF27",
                 "operations": {
                   "makeOffer": true
@@ -716,11 +716,11 @@
                 "id": "SBCBR000OQMX",
                 "bidType": "cash",
                 "description": "Feb",
-                "bidPrice": "11.15",
-                "basisPrice": "-0.43",
-                "futuresPrice": "11.5925",
-                "futuresChange": "-0.0325",
-                "futuresChangeSign": -1,
+                "bidPrice": "11.17",
+                "basisPrice": "-0.44",
+                "futuresPrice": "11.6150",
+                "futuresChange": "0.0225",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSH27",
                 "operations": {
                   "makeOffer": true
@@ -730,11 +730,11 @@
                 "id": "SBCBR000OQMF",
                 "bidType": "cash",
                 "description": "Mar",
-                "bidPrice": "11.20",
-                "basisPrice": "-0.38",
-                "futuresPrice": "11.5925",
-                "futuresChange": "-0.0325",
-                "futuresChangeSign": -1,
+                "bidPrice": "11.22",
+                "basisPrice": "-0.39",
+                "futuresPrice": "11.6150",
+                "futuresChange": "0.0225",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSH27",
                 "operations": {
                   "makeOffer": true
@@ -766,11 +766,11 @@
                 "id": "SBCCA000OCNI",
                 "bidType": "cash",
                 "description": "Jun",
-                "bidPrice": "11.27",
-                "basisPrice": "0.06",
-                "futuresPrice": "11.2150",
-                "futuresChange": "-0.0800",
-                "futuresChangeSign": -1,
+                "bidPrice": "11.38",
+                "basisPrice": "0.16",
+                "futuresPrice": "11.2200",
+                "futuresChange": "0.0050",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSN26",
                 "operations": {
                   "makeOffer": true
@@ -780,11 +780,11 @@
                 "id": "SBCCA000N4CS",
                 "bidType": "cash",
                 "description": "Jul",
-                "bidPrice": "11.32",
+                "bidPrice": "11.33",
                 "basisPrice": "0.11",
-                "futuresPrice": "11.2150",
-                "futuresChange": "-0.0800",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.2200",
+                "futuresChange": "0.0050",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSN26",
                 "operations": {
                   "makeOffer": true
@@ -794,11 +794,11 @@
                 "id": "SBCCA000OIDM",
                 "bidType": "cash",
                 "description": "Oct",
-                "bidPrice": "11.03",
+                "bidPrice": "11.05",
                 "basisPrice": "-0.34",
-                "futuresPrice": "11.3750",
-                "futuresChange": "-0.0400",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.3975",
+                "futuresChange": "0.0225",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSX26",
                 "operations": {
                   "makeOffer": true
@@ -808,11 +808,11 @@
                 "id": "SBCCA000OIDN",
                 "bidType": "cash",
                 "description": "Dec",
-                "bidPrice": "11.23",
+                "bidPrice": "11.26",
                 "basisPrice": "-0.29",
-                "futuresPrice": "11.5225",
-                "futuresChange": "-0.0400",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.5500",
+                "futuresChange": "0.0275",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSF27",
                 "operations": {
                   "makeOffer": true
@@ -822,11 +822,11 @@
                 "id": "SBCCA000OJX5",
                 "bidType": "cash",
                 "description": "Jan",
-                "bidPrice": "11.28",
+                "bidPrice": "11.31",
                 "basisPrice": "-0.24",
-                "futuresPrice": "11.5225",
-                "futuresChange": "-0.0400",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.5500",
+                "futuresChange": "0.0275",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSF27",
                 "operations": {
                   "makeOffer": true
@@ -836,11 +836,11 @@
                 "id": "SBCCA000OUP6",
                 "bidType": "cash",
                 "description": "Feb",
-                "bidPrice": "11.39",
+                "bidPrice": "11.41",
                 "basisPrice": "-0.20",
-                "futuresPrice": "11.5925",
-                "futuresChange": "-0.0325",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.6150",
+                "futuresChange": "0.0225",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSH27",
                 "operations": {
                   "makeOffer": true
@@ -872,11 +872,11 @@
                 "id": "CNCCR000OCNT",
                 "bidType": "cash",
                 "description": "Jun",
-                "bidPrice": "3.95",
-                "basisPrice": "-0.22",
-                "futuresPrice": "4.1750",
-                "futuresChange": "-0.0700",
-                "futuresChangeSign": -1,
+                "bidPrice": "3.92",
+                "basisPrice": "-0.25",
+                "futuresPrice": "4.1775",
+                "futuresChange": "0.0025",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZCN26",
                 "operations": {
                   "makeOffer": true
@@ -888,9 +888,9 @@
                 "description": "Jul",
                 "bidPrice": "4.01",
                 "basisPrice": "-0.16",
-                "futuresPrice": "4.1750",
-                "futuresChange": "-0.0700",
-                "futuresChangeSign": -1,
+                "futuresPrice": "4.1775",
+                "futuresChange": "0.0025",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZCN26",
                 "operations": {
                   "makeOffer": true
@@ -903,8 +903,8 @@
                 "bidPrice": "4.03",
                 "basisPrice": "-0.24",
                 "futuresPrice": "4.2700",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCU26",
                 "operations": {
                   "makeOffer": true
@@ -914,11 +914,11 @@
                 "id": "CNCCR000OYEY",
                 "bidType": "cash",
                 "description": "Sep",
-                "bidPrice": "4.01",
-                "basisPrice": "-0.45",
+                "bidPrice": "4.02",
+                "basisPrice": "-0.44",
                 "futuresPrice": "4.4600",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCZ26",
                 "operations": {
                   "makeOffer": true
@@ -928,11 +928,11 @@
                 "id": "CNCCR000N2UH",
                 "bidType": "cash",
                 "description": "Oct",
-                "bidPrice": "4.05",
-                "basisPrice": "-0.41",
+                "bidPrice": "4.06",
+                "basisPrice": "-0.40",
                 "futuresPrice": "4.4600",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCZ26",
                 "operations": {
                   "makeOffer": true
@@ -942,11 +942,11 @@
                 "id": "CNCCR000OCNJ",
                 "bidType": "cash",
                 "description": "Dec",
-                "bidPrice": "4.20",
-                "basisPrice": "-0.26",
+                "bidPrice": "4.21",
+                "basisPrice": "-0.25",
                 "futuresPrice": "4.4600",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCZ26",
                 "operations": {
                   "makeOffer": true
@@ -956,11 +956,11 @@
                 "id": "CNCCR000OQM6",
                 "bidType": "cash",
                 "description": "Jan",
-                "bidPrice": "4.29",
-                "basisPrice": "-0.32",
+                "bidPrice": "4.30",
+                "basisPrice": "-0.31",
                 "futuresPrice": "4.6150",
-                "futuresChange": "-0.0525",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCH27",
                 "operations": {
                   "makeOffer": true
@@ -970,11 +970,11 @@
                 "id": "CNCCR000OQMI",
                 "bidType": "cash",
                 "description": "Feb",
-                "bidPrice": "4.34",
-                "basisPrice": "-0.27",
+                "bidPrice": "4.35",
+                "basisPrice": "-0.26",
                 "futuresPrice": "4.6150",
-                "futuresChange": "-0.0525",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCH27",
                 "operations": {
                   "makeOffer": true
@@ -984,11 +984,11 @@
                 "id": "CNCCR000OQMS",
                 "bidType": "cash",
                 "description": "Mar",
-                "bidPrice": "4.38",
-                "basisPrice": "-0.23",
+                "bidPrice": "4.39",
+                "basisPrice": "-0.22",
                 "futuresPrice": "4.6150",
-                "futuresChange": "-0.0525",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCH27",
                 "operations": {
                   "makeOffer": true
@@ -1014,11 +1014,11 @@
                 "id": "SBCCR000OCNK",
                 "bidType": "cash",
                 "description": "Jun",
-                "bidPrice": "10.90",
-                "basisPrice": "-0.31",
-                "futuresPrice": "11.2150",
-                "futuresChange": "-0.0800",
-                "futuresChangeSign": -1,
+                "bidPrice": "10.87",
+                "basisPrice": "-0.35",
+                "futuresPrice": "11.2200",
+                "futuresChange": "0.0050",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSN26",
                 "operations": {
                   "makeOffer": true
@@ -1030,9 +1030,9 @@
                 "description": "Jul",
                 "bidPrice": "10.98",
                 "basisPrice": "-0.23",
-                "futuresPrice": "11.2150",
-                "futuresChange": "-0.0800",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.2200",
+                "futuresChange": "0.0050",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSN26",
                 "operations": {
                   "makeOffer": true
@@ -1042,11 +1042,11 @@
                 "id": "SBCCR000OYEO",
                 "bidType": "cash",
                 "description": "Aug",
-                "bidPrice": "10.89",
-                "basisPrice": "-0.36",
-                "futuresPrice": "11.2600",
-                "futuresChange": "-0.0650",
-                "futuresChangeSign": -1,
+                "bidPrice": "10.90",
+                "basisPrice": "-0.37",
+                "futuresPrice": "11.2700",
+                "futuresChange": "0.0100",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSQ26",
                 "operations": {
                   "makeOffer": true
@@ -1056,11 +1056,11 @@
                 "id": "SBCCR000OYE2",
                 "bidType": "cash",
                 "description": "Sep",
-                "bidPrice": "10.81",
+                "bidPrice": "10.83",
                 "basisPrice": "-0.56",
-                "futuresPrice": "11.3750",
-                "futuresChange": "-0.0400",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.3975",
+                "futuresChange": "0.0225",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSX26",
                 "operations": {
                   "makeOffer": true
@@ -1070,11 +1070,11 @@
                 "id": "SBCCR000N2UI",
                 "bidType": "cash",
                 "description": "Oct",
-                "bidPrice": "10.81",
+                "bidPrice": "10.83",
                 "basisPrice": "-0.56",
-                "futuresPrice": "11.3750",
-                "futuresChange": "-0.0400",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.3975",
+                "futuresChange": "0.0225",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSX26",
                 "operations": {
                   "makeOffer": true
@@ -1084,11 +1084,11 @@
                 "id": "SBCCR000OC2G",
                 "bidType": "cash",
                 "description": "Dec",
-                "bidPrice": "10.99",
+                "bidPrice": "11.02",
                 "basisPrice": "-0.53",
-                "futuresPrice": "11.5225",
-                "futuresChange": "-0.0400",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.5500",
+                "futuresChange": "0.0275",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSF27",
                 "operations": {
                   "makeOffer": true
@@ -1098,11 +1098,11 @@
                 "id": "SBCCR000OJX7",
                 "bidType": "cash",
                 "description": "Jan",
-                "bidPrice": "11.14",
+                "bidPrice": "11.17",
                 "basisPrice": "-0.37",
-                "futuresPrice": "11.5225",
-                "futuresChange": "-0.0400",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.5500",
+                "futuresChange": "0.0275",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSF27",
                 "operations": {
                   "makeOffer": true
@@ -1112,11 +1112,11 @@
                 "id": "SBCCR000OQMJ",
                 "bidType": "cash",
                 "description": "Feb",
-                "bidPrice": "11.17",
-                "basisPrice": "-0.41",
-                "futuresPrice": "11.5925",
-                "futuresChange": "-0.0325",
-                "futuresChangeSign": -1,
+                "bidPrice": "11.19",
+                "basisPrice": "-0.42",
+                "futuresPrice": "11.6150",
+                "futuresChange": "0.0225",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSH27",
                 "operations": {
                   "makeOffer": true
@@ -1126,11 +1126,11 @@
                 "id": "SBCCR000OQMV",
                 "bidType": "cash",
                 "description": "Mar",
-                "bidPrice": "11.22",
-                "basisPrice": "-0.36",
-                "futuresPrice": "11.5925",
-                "futuresChange": "-0.0325",
-                "futuresChangeSign": -1,
+                "bidPrice": "11.24",
+                "basisPrice": "-0.37",
+                "futuresPrice": "11.6150",
+                "futuresChange": "0.0225",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSH27",
                 "operations": {
                   "makeOffer": true
@@ -1162,11 +1162,11 @@
                 "id": "CNCCV000OCNL",
                 "bidType": "cash",
                 "description": "Jun",
-                "bidPrice": "4.11",
-                "basisPrice": "-0.06",
-                "futuresPrice": "4.1750",
-                "futuresChange": "-0.0700",
-                "futuresChangeSign": -1,
+                "bidPrice": "4.08",
+                "basisPrice": "-0.09",
+                "futuresPrice": "4.1775",
+                "futuresChange": "0.0025",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZCN26",
                 "operations": {
                   "makeOffer": true
@@ -1176,11 +1176,11 @@
                 "id": "CNCCV000OBYD",
                 "bidType": "cash",
                 "description": "Jul",
-                "bidPrice": "4.15",
-                "basisPrice": "-0.02",
-                "futuresPrice": "4.1750",
-                "futuresChange": "-0.0700",
-                "futuresChangeSign": -1,
+                "bidPrice": "4.14",
+                "basisPrice": "-0.03",
+                "futuresPrice": "4.1775",
+                "futuresChange": "0.0025",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZCN26",
                 "operations": {
                   "makeOffer": true
@@ -1193,8 +1193,8 @@
                 "bidPrice": "4.19",
                 "basisPrice": "-0.08",
                 "futuresPrice": "4.2700",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCU26",
                 "operations": {
                   "makeOffer": true
@@ -1207,8 +1207,8 @@
                 "bidPrice": "4.02",
                 "basisPrice": "-0.44",
                 "futuresPrice": "4.4600",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCZ26",
                 "operations": {
                   "makeOffer": true
@@ -1221,8 +1221,8 @@
                 "bidPrice": "4.14",
                 "basisPrice": "-0.32",
                 "futuresPrice": "4.4600",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCZ26",
                 "operations": {
                   "makeOffer": true
@@ -1235,8 +1235,8 @@
                 "bidPrice": "4.36",
                 "basisPrice": "-0.10",
                 "futuresPrice": "4.4600",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCZ26",
                 "operations": {
                   "makeOffer": true
@@ -1249,8 +1249,8 @@
                 "bidPrice": "4.44",
                 "basisPrice": "-0.17",
                 "futuresPrice": "4.6150",
-                "futuresChange": "-0.0525",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCH27",
                 "operations": {
                   "makeOffer": true
@@ -1263,8 +1263,8 @@
                 "bidPrice": "4.49",
                 "basisPrice": "-0.12",
                 "futuresPrice": "4.6150",
-                "futuresChange": "-0.0525",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCH27",
                 "operations": {
                   "makeOffer": true
@@ -1277,8 +1277,8 @@
                 "bidPrice": "4.54",
                 "basisPrice": "-0.07",
                 "futuresPrice": "4.6150",
-                "futuresChange": "-0.0525",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCH27",
                 "operations": {
                   "makeOffer": true
@@ -1304,11 +1304,11 @@
                 "id": "SBCCV000OCNM",
                 "bidType": "cash",
                 "description": "Jun",
-                "bidPrice": "11.09",
-                "basisPrice": "-0.12",
-                "futuresPrice": "11.2150",
-                "futuresChange": "-0.0800",
-                "futuresChangeSign": -1,
+                "bidPrice": "11.06",
+                "basisPrice": "-0.16",
+                "futuresPrice": "11.2200",
+                "futuresChange": "0.0050",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSN26",
                 "operations": {
                   "makeOffer": true
@@ -1318,11 +1318,11 @@
                 "id": "SBCCV000N27P",
                 "bidType": "cash",
                 "description": "Jul",
-                "bidPrice": "11.14",
+                "bidPrice": "11.15",
                 "basisPrice": "-0.07",
-                "futuresPrice": "11.2150",
-                "futuresChange": "-0.0800",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.2200",
+                "futuresChange": "0.0050",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSN26",
                 "operations": {
                   "makeOffer": true
@@ -1332,11 +1332,11 @@
                 "id": "SBCCV000OYEQ",
                 "bidType": "cash",
                 "description": "Aug",
-                "bidPrice": "11.04",
+                "bidPrice": "11.05",
                 "basisPrice": "-0.22",
-                "futuresPrice": "11.2600",
-                "futuresChange": "-0.0650",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.2700",
+                "futuresChange": "0.0100",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSQ26",
                 "operations": {
                   "makeOffer": true
@@ -1346,11 +1346,11 @@
                 "id": "SBCCV000OYE4",
                 "bidType": "cash",
                 "description": "Sep",
-                "bidPrice": "10.95",
+                "bidPrice": "10.97",
                 "basisPrice": "-0.42",
-                "futuresPrice": "11.3750",
-                "futuresChange": "-0.0400",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.3975",
+                "futuresChange": "0.0225",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSX26",
                 "operations": {
                   "makeOffer": true
@@ -1360,11 +1360,11 @@
                 "id": "SBCCV000N2TU",
                 "bidType": "cash",
                 "description": "Oct",
-                "bidPrice": "10.95",
+                "bidPrice": "10.97",
                 "basisPrice": "-0.42",
-                "futuresPrice": "11.3750",
-                "futuresChange": "-0.0400",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.3975",
+                "futuresChange": "0.0225",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSX26",
                 "operations": {
                   "makeOffer": true
@@ -1374,11 +1374,11 @@
                 "id": "SBCCV000ODGI",
                 "bidType": "cash",
                 "description": "Dec",
-                "bidPrice": "11.18",
+                "bidPrice": "11.21",
                 "basisPrice": "-0.34",
-                "futuresPrice": "11.5225",
-                "futuresChange": "-0.0400",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.5500",
+                "futuresChange": "0.0275",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSF27",
                 "operations": {
                   "makeOffer": true
@@ -1388,11 +1388,11 @@
                 "id": "SBCCV000OKQ5",
                 "bidType": "cash",
                 "description": "Jan",
-                "bidPrice": "11.33",
+                "bidPrice": "11.36",
                 "basisPrice": "-0.19",
-                "futuresPrice": "11.5225",
-                "futuresChange": "-0.0400",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.5500",
+                "futuresChange": "0.0275",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSF27",
                 "operations": {
                   "makeOffer": true
@@ -1424,11 +1424,11 @@
                 "id": "CNCED000OCNN",
                 "bidType": "cash",
                 "description": "Jun",
-                "bidPrice": "3.95",
-                "basisPrice": "-0.22",
-                "futuresPrice": "4.1750",
-                "futuresChange": "-0.0700",
-                "futuresChangeSign": -1,
+                "bidPrice": "3.92",
+                "basisPrice": "-0.25",
+                "futuresPrice": "4.1775",
+                "futuresChange": "0.0025",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZCN26",
                 "operations": {
                   "makeOffer": true
@@ -1438,11 +1438,11 @@
                 "id": "CNCED000NSVH",
                 "bidType": "cash",
                 "description": "Jul",
-                "bidPrice": "4.00",
-                "basisPrice": "-0.17",
-                "futuresPrice": "4.1750",
-                "futuresChange": "-0.0700",
-                "futuresChangeSign": -1,
+                "bidPrice": "3.98",
+                "basisPrice": "-0.19",
+                "futuresPrice": "4.1775",
+                "futuresChange": "0.0025",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZCN26",
                 "operations": {
                   "makeOffer": true
@@ -1455,8 +1455,8 @@
                 "bidPrice": "4.03",
                 "basisPrice": "-0.24",
                 "futuresPrice": "4.2700",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCU26",
                 "operations": {
                   "makeOffer": true
@@ -1466,11 +1466,11 @@
                 "id": "CNCED000OYE6",
                 "bidType": "cash",
                 "description": "Sep",
-                "bidPrice": "4.01",
-                "basisPrice": "-0.45",
+                "bidPrice": "4.02",
+                "basisPrice": "-0.44",
                 "futuresPrice": "4.4600",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCZ26",
                 "operations": {
                   "makeOffer": true
@@ -1480,11 +1480,11 @@
                 "id": "CNCED000N2TZ",
                 "bidType": "cash",
                 "description": "Oct",
-                "bidPrice": "4.05",
-                "basisPrice": "-0.41",
+                "bidPrice": "4.06",
+                "basisPrice": "-0.40",
                 "futuresPrice": "4.4600",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCZ26",
                 "operations": {
                   "makeOffer": true
@@ -1497,8 +1497,8 @@
                 "bidPrice": "4.23",
                 "basisPrice": "-0.23",
                 "futuresPrice": "4.4600",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCZ26",
                 "operations": {
                   "makeOffer": true
@@ -1511,8 +1511,8 @@
                 "bidPrice": "4.31",
                 "basisPrice": "-0.30",
                 "futuresPrice": "4.6150",
-                "futuresChange": "-0.0525",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCH27",
                 "operations": {
                   "makeOffer": true
@@ -1525,8 +1525,8 @@
                 "bidPrice": "4.38",
                 "basisPrice": "-0.23",
                 "futuresPrice": "4.6150",
-                "futuresChange": "-0.0525",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCH27",
                 "operations": {
                   "makeOffer": true
@@ -1539,8 +1539,8 @@
                 "bidPrice": "4.43",
                 "basisPrice": "-0.18",
                 "futuresPrice": "4.6150",
-                "futuresChange": "-0.0525",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCH27",
                 "operations": {
                   "makeOffer": true
@@ -1566,11 +1566,11 @@
                 "id": "SBCED000OCNO",
                 "bidType": "cash",
                 "description": "Jun",
-                "bidPrice": "10.90",
-                "basisPrice": "-0.31",
-                "futuresPrice": "11.2150",
-                "futuresChange": "-0.0800",
-                "futuresChangeSign": -1,
+                "bidPrice": "10.89",
+                "basisPrice": "-0.33",
+                "futuresPrice": "11.2200",
+                "futuresChange": "0.0050",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSN26",
                 "operations": {
                   "makeOffer": true
@@ -1581,10 +1581,10 @@
                 "bidType": "cash",
                 "description": "Jul",
                 "bidPrice": "10.98",
-                "basisPrice": "-0.23",
-                "futuresPrice": "11.2150",
-                "futuresChange": "-0.0800",
-                "futuresChangeSign": -1,
+                "basisPrice": "-0.24",
+                "futuresPrice": "11.2200",
+                "futuresChange": "0.0050",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSN26",
                 "operations": {
                   "makeOffer": true
@@ -1594,11 +1594,11 @@
                 "id": "SBCED000OYES",
                 "bidType": "cash",
                 "description": "Aug",
-                "bidPrice": "10.90",
+                "bidPrice": "10.91",
                 "basisPrice": "-0.36",
-                "futuresPrice": "11.2600",
-                "futuresChange": "-0.0650",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.2700",
+                "futuresChange": "0.0100",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSQ26",
                 "operations": {
                   "makeOffer": true
@@ -1608,11 +1608,11 @@
                 "id": "SBCED000OYFA",
                 "bidType": "cash",
                 "description": "Sep",
-                "bidPrice": "10.78",
+                "bidPrice": "10.80",
                 "basisPrice": "-0.59",
-                "futuresPrice": "11.3750",
-                "futuresChange": "-0.0400",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.3975",
+                "futuresChange": "0.0225",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSX26",
                 "operations": {
                   "makeOffer": true
@@ -1622,11 +1622,11 @@
                 "id": "SBCED000N2UM",
                 "bidType": "cash",
                 "description": "Oct",
-                "bidPrice": "10.78",
+                "bidPrice": "10.80",
                 "basisPrice": "-0.59",
-                "futuresPrice": "11.3750",
-                "futuresChange": "-0.0400",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.3975",
+                "futuresChange": "0.0225",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSX26",
                 "operations": {
                   "makeOffer": true
@@ -1636,11 +1636,11 @@
                 "id": "SBCED000OC2C",
                 "bidType": "cash",
                 "description": "Dec",
-                "bidPrice": "11.06",
+                "bidPrice": "11.09",
                 "basisPrice": "-0.46",
-                "futuresPrice": "11.5225",
-                "futuresChange": "-0.0400",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.5500",
+                "futuresChange": "0.0275",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSF27",
                 "operations": {
                   "makeOffer": true
@@ -1650,11 +1650,11 @@
                 "id": "SBCED000OJYA",
                 "bidType": "cash",
                 "description": "Jan",
-                "bidPrice": "11.16",
+                "bidPrice": "11.19",
                 "basisPrice": "-0.36",
-                "futuresPrice": "11.5225",
-                "futuresChange": "-0.0400",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.5500",
+                "futuresChange": "0.0275",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSF27",
                 "operations": {
                   "makeOffer": true
@@ -1664,11 +1664,11 @@
                 "id": "SBCED000OQMM",
                 "bidType": "cash",
                 "description": "Feb",
-                "bidPrice": "11.13",
+                "bidPrice": "11.15",
                 "basisPrice": "-0.46",
-                "futuresPrice": "11.5925",
-                "futuresChange": "-0.0325",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.6150",
+                "futuresChange": "0.0225",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSH27",
                 "operations": {
                   "makeOffer": true
@@ -1678,11 +1678,11 @@
                 "id": "SBCED000OQM2",
                 "bidType": "cash",
                 "description": "Mar",
-                "bidPrice": "11.23",
+                "bidPrice": "11.25",
                 "basisPrice": "-0.36",
-                "futuresPrice": "11.5925",
-                "futuresChange": "-0.0325",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.6150",
+                "futuresChange": "0.0225",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSH27",
                 "operations": {
                   "makeOffer": true
@@ -1714,11 +1714,11 @@
                 "id": "CNCGL000OCNP",
                 "bidType": "cash",
                 "description": "Jun",
-                "bidPrice": "3.97",
-                "basisPrice": "-0.20",
-                "futuresPrice": "4.1750",
-                "futuresChange": "-0.0700",
-                "futuresChangeSign": -1,
+                "bidPrice": "3.94",
+                "basisPrice": "-0.23",
+                "futuresPrice": "4.1775",
+                "futuresChange": "0.0025",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZCN26",
                 "operations": {
                   "makeOffer": true
@@ -1730,9 +1730,9 @@
                 "description": "Jul",
                 "bidPrice": "4.03",
                 "basisPrice": "-0.14",
-                "futuresPrice": "4.1750",
-                "futuresChange": "-0.0700",
-                "futuresChangeSign": -1,
+                "futuresPrice": "4.1775",
+                "futuresChange": "0.0025",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZCN26",
                 "operations": {
                   "makeOffer": true
@@ -1745,8 +1745,8 @@
                 "bidPrice": "4.05",
                 "basisPrice": "-0.22",
                 "futuresPrice": "4.2700",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCU26",
                 "operations": {
                   "makeOffer": true
@@ -1756,11 +1756,11 @@
                 "id": "CNCGL000OYFB",
                 "bidType": "cash",
                 "description": "Sep",
-                "bidPrice": "4.03",
-                "basisPrice": "-0.43",
+                "bidPrice": "4.04",
+                "basisPrice": "-0.42",
                 "futuresPrice": "4.4600",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCZ26",
                 "operations": {
                   "makeOffer": true
@@ -1770,11 +1770,11 @@
                 "id": "CNCGL000N2T4",
                 "bidType": "cash",
                 "description": "Oct",
-                "bidPrice": "4.07",
-                "basisPrice": "-0.39",
+                "bidPrice": "4.08",
+                "basisPrice": "-0.38",
                 "futuresPrice": "4.4600",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCZ26",
                 "operations": {
                   "makeOffer": true
@@ -1784,11 +1784,11 @@
                 "id": "CNCGL000OCN5",
                 "bidType": "cash",
                 "description": "Dec",
-                "bidPrice": "4.22",
-                "basisPrice": "-0.24",
+                "bidPrice": "4.23",
+                "basisPrice": "-0.23",
                 "futuresPrice": "4.4600",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCZ26",
                 "operations": {
                   "makeOffer": true
@@ -1798,11 +1798,11 @@
                 "id": "CNCGL000OQM4",
                 "bidType": "cash",
                 "description": "Jan",
-                "bidPrice": "4.31",
-                "basisPrice": "-0.30",
+                "bidPrice": "4.32",
+                "basisPrice": "-0.29",
                 "futuresPrice": "4.6150",
-                "futuresChange": "-0.0525",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCH27",
                 "operations": {
                   "makeOffer": true
@@ -1812,11 +1812,11 @@
                 "id": "CNCGL000OQMN",
                 "bidType": "cash",
                 "description": "Feb",
-                "bidPrice": "4.36",
-                "basisPrice": "-0.25",
+                "bidPrice": "4.37",
+                "basisPrice": "-0.24",
                 "futuresPrice": "4.6150",
-                "futuresChange": "-0.0525",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCH27",
                 "operations": {
                   "makeOffer": true
@@ -1826,11 +1826,11 @@
                 "id": "CNCGL000OQNE",
                 "bidType": "cash",
                 "description": "Mar",
-                "bidPrice": "4.40",
-                "basisPrice": "-0.21",
+                "bidPrice": "4.41",
+                "basisPrice": "-0.20",
                 "futuresPrice": "4.6150",
-                "futuresChange": "-0.0525",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCH27",
                 "operations": {
                   "makeOffer": true
@@ -1856,11 +1856,11 @@
                 "id": "SBCGL000OCN6",
                 "bidType": "cash",
                 "description": "Jun",
-                "bidPrice": "10.92",
-                "basisPrice": "-0.29",
-                "futuresPrice": "11.2150",
-                "futuresChange": "-0.0800",
-                "futuresChangeSign": -1,
+                "bidPrice": "10.89",
+                "basisPrice": "-0.33",
+                "futuresPrice": "11.2200",
+                "futuresChange": "0.0050",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSN26",
                 "operations": {
                   "makeOffer": true
@@ -1872,9 +1872,9 @@
                 "description": "Jul",
                 "bidPrice": "11.00",
                 "basisPrice": "-0.21",
-                "futuresPrice": "11.2150",
-                "futuresChange": "-0.0800",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.2200",
+                "futuresChange": "0.0050",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSN26",
                 "operations": {
                   "makeOffer": true
@@ -1884,11 +1884,11 @@
                 "id": "SBCGL000OYE7",
                 "bidType": "cash",
                 "description": "Aug",
-                "bidPrice": "10.91",
-                "basisPrice": "-0.34",
-                "futuresPrice": "11.2600",
-                "futuresChange": "-0.0650",
-                "futuresChangeSign": -1,
+                "bidPrice": "10.92",
+                "basisPrice": "-0.35",
+                "futuresPrice": "11.2700",
+                "futuresChange": "0.0100",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSQ26",
                 "operations": {
                   "makeOffer": true
@@ -1898,11 +1898,11 @@
                 "id": "SBCGL000OYEU",
                 "bidType": "cash",
                 "description": "Sep",
-                "bidPrice": "10.83",
+                "bidPrice": "10.85",
                 "basisPrice": "-0.54",
-                "futuresPrice": "11.3750",
-                "futuresChange": "-0.0400",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.3975",
+                "futuresChange": "0.0225",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSX26",
                 "operations": {
                   "makeOffer": true
@@ -1912,11 +1912,11 @@
                 "id": "SBCGL000N2UQ",
                 "bidType": "cash",
                 "description": "Oct",
-                "bidPrice": "10.83",
+                "bidPrice": "10.85",
                 "basisPrice": "-0.54",
-                "futuresPrice": "11.3750",
-                "futuresChange": "-0.0400",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.3975",
+                "futuresChange": "0.0225",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSX26",
                 "operations": {
                   "makeOffer": true
@@ -1926,11 +1926,11 @@
                 "id": "SBCGL000OC2D",
                 "bidType": "cash",
                 "description": "Dec",
-                "bidPrice": "11.01",
+                "bidPrice": "11.04",
                 "basisPrice": "-0.51",
-                "futuresPrice": "11.5225",
-                "futuresChange": "-0.0400",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.5500",
+                "futuresChange": "0.0275",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSF27",
                 "operations": {
                   "makeOffer": true
@@ -1940,11 +1940,11 @@
                 "id": "SBCGL000OJYD",
                 "bidType": "cash",
                 "description": "Jan",
-                "bidPrice": "11.16",
+                "bidPrice": "11.19",
                 "basisPrice": "-0.35",
-                "futuresPrice": "11.5225",
-                "futuresChange": "-0.0400",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.5500",
+                "futuresChange": "0.0275",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSF27",
                 "operations": {
                   "makeOffer": true
@@ -1954,11 +1954,11 @@
                 "id": "SBCGL000OQMO",
                 "bidType": "cash",
                 "description": "Feb",
-                "bidPrice": "11.19",
-                "basisPrice": "-0.39",
-                "futuresPrice": "11.5925",
-                "futuresChange": "-0.0325",
-                "futuresChangeSign": -1,
+                "bidPrice": "11.21",
+                "basisPrice": "-0.40",
+                "futuresPrice": "11.6150",
+                "futuresChange": "0.0225",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSH27",
                 "operations": {
                   "makeOffer": true
@@ -1968,11 +1968,11 @@
                 "id": "SBCGL000OQM3",
                 "bidType": "cash",
                 "description": "Mar",
-                "bidPrice": "11.24",
-                "basisPrice": "-0.34",
-                "futuresPrice": "11.5925",
-                "futuresChange": "-0.0325",
-                "futuresChangeSign": -1,
+                "bidPrice": "11.26",
+                "basisPrice": "-0.35",
+                "futuresPrice": "11.6150",
+                "futuresChange": "0.0225",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSH27",
                 "operations": {
                   "makeOffer": true
@@ -2004,11 +2004,11 @@
                 "id": "CNCHA000OCN7",
                 "bidType": "cash",
                 "description": "Jun",
-                "bidPrice": "4.17",
-                "basisPrice": "-0.00",
-                "futuresPrice": "4.1750",
-                "futuresChange": "-0.0700",
-                "futuresChangeSign": -1,
+                "bidPrice": "4.14",
+                "basisPrice": "-0.03",
+                "futuresPrice": "4.1775",
+                "futuresChange": "0.0025",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZCN26",
                 "operations": {
                   "makeOffer": true
@@ -2020,9 +2020,9 @@
                 "description": "Jul",
                 "bidPrice": "4.23",
                 "basisPrice": "0.05",
-                "futuresPrice": "4.1750",
-                "futuresChange": "-0.0700",
-                "futuresChangeSign": -1,
+                "futuresPrice": "4.1775",
+                "futuresChange": "0.0025",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZCN26",
                 "operations": {
                   "makeOffer": true
@@ -2035,8 +2035,8 @@
                 "bidPrice": "4.25",
                 "basisPrice": "-0.02",
                 "futuresPrice": "4.2700",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCU26",
                 "operations": {
                   "makeOffer": true
@@ -2049,8 +2049,8 @@
                 "bidPrice": "4.19",
                 "basisPrice": "-0.27",
                 "futuresPrice": "4.4600",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCZ26",
                 "operations": {
                   "makeOffer": true
@@ -2063,8 +2063,8 @@
                 "bidPrice": "4.19",
                 "basisPrice": "-0.27",
                 "futuresPrice": "4.4600",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCZ26",
                 "operations": {
                   "makeOffer": true
@@ -2077,8 +2077,8 @@
                 "bidPrice": "4.39",
                 "basisPrice": "-0.07",
                 "futuresPrice": "4.4600",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCZ26",
                 "operations": {
                   "makeOffer": true
@@ -2088,11 +2088,11 @@
                 "id": "CNCHA000OQNF",
                 "bidType": "cash",
                 "description": "Jan",
-                "bidPrice": "4.51",
-                "basisPrice": "-0.10",
+                "bidPrice": "4.52",
+                "basisPrice": "-0.09",
                 "futuresPrice": "4.6150",
-                "futuresChange": "-0.0525",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCH27",
                 "operations": {
                   "makeOffer": true
@@ -2102,11 +2102,11 @@
                 "id": "CNCHA000OQMQ",
                 "bidType": "cash",
                 "description": "Feb",
-                "bidPrice": "4.56",
-                "basisPrice": "-0.05",
+                "bidPrice": "4.57",
+                "basisPrice": "-0.04",
                 "futuresPrice": "4.6150",
-                "futuresChange": "-0.0525",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCH27",
                 "operations": {
                   "makeOffer": true
@@ -2116,11 +2116,11 @@
                 "id": "CNCHA000OQM5",
                 "bidType": "cash",
                 "description": "Mar",
-                "bidPrice": "4.60",
-                "basisPrice": "-0.01",
+                "bidPrice": "4.61",
+                "basisPrice": "-0.00",
                 "futuresPrice": "4.6150",
-                "futuresChange": "-0.0525",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCH27",
                 "operations": {
                   "makeOffer": true
@@ -2146,11 +2146,11 @@
                 "id": "SBCHA000OCOA",
                 "bidType": "cash",
                 "description": "Jun",
-                "bidPrice": "11.16",
-                "basisPrice": "-0.05",
-                "futuresPrice": "11.2150",
-                "futuresChange": "-0.0800",
-                "futuresChangeSign": -1,
+                "bidPrice": "11.12",
+                "basisPrice": "-0.09",
+                "futuresPrice": "11.2200",
+                "futuresChange": "0.0050",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSN26",
                 "operations": {
                   "makeOffer": true
@@ -2162,9 +2162,9 @@
                 "description": "Jul",
                 "bidPrice": "11.21",
                 "basisPrice": "-0.00",
-                "futuresPrice": "11.2150",
-                "futuresChange": "-0.0800",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.2200",
+                "futuresChange": "0.0050",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSN26",
                 "operations": {
                   "makeOffer": true
@@ -2174,11 +2174,11 @@
                 "id": "SBCHA000OYFE",
                 "bidType": "cash",
                 "description": "Aug",
-                "bidPrice": "11.12",
-                "basisPrice": "-0.13",
-                "futuresPrice": "11.2600",
-                "futuresChange": "-0.0650",
-                "futuresChangeSign": -1,
+                "bidPrice": "11.13",
+                "basisPrice": "-0.14",
+                "futuresPrice": "11.2700",
+                "futuresChange": "0.0100",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSQ26",
                 "operations": {
                   "makeOffer": true
@@ -2188,11 +2188,11 @@
                 "id": "SBCHA000OYFO",
                 "bidType": "cash",
                 "description": "Sep",
-                "bidPrice": "11.04",
+                "bidPrice": "11.06",
                 "basisPrice": "-0.33",
-                "futuresPrice": "11.3750",
-                "futuresChange": "-0.0400",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.3975",
+                "futuresChange": "0.0225",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSX26",
                 "operations": {
                   "makeOffer": true
@@ -2202,11 +2202,11 @@
                 "id": "SBCHA000N2U2",
                 "bidType": "cash",
                 "description": "Oct",
-                "bidPrice": "11.04",
+                "bidPrice": "11.06",
                 "basisPrice": "-0.33",
-                "futuresPrice": "11.3750",
-                "futuresChange": "-0.0400",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.3975",
+                "futuresChange": "0.0225",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSX26",
                 "operations": {
                   "makeOffer": true
@@ -2216,11 +2216,11 @@
                 "id": "SBCHA000OEAM",
                 "bidType": "cash",
                 "description": "Dec",
-                "bidPrice": "11.37",
+                "bidPrice": "11.40",
                 "basisPrice": "-0.14",
-                "futuresPrice": "11.5225",
-                "futuresChange": "-0.0400",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.5500",
+                "futuresChange": "0.0275",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSF27",
                 "operations": {
                   "makeOffer": true
@@ -2230,11 +2230,11 @@
                 "id": "SBCHA000OLEC",
                 "bidType": "cash",
                 "description": "Jan",
-                "bidPrice": "11.37",
+                "bidPrice": "11.40",
                 "basisPrice": "-0.14",
-                "futuresPrice": "11.5225",
-                "futuresChange": "-0.0400",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.5500",
+                "futuresChange": "0.0275",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSF27",
                 "operations": {
                   "makeOffer": true
@@ -2244,11 +2244,11 @@
                 "id": "SBCHA000OQMR",
                 "bidType": "cash",
                 "description": "Feb",
-                "bidPrice": "11.40",
-                "basisPrice": "-0.18",
-                "futuresPrice": "11.5925",
-                "futuresChange": "-0.0325",
-                "futuresChangeSign": -1,
+                "bidPrice": "11.42",
+                "basisPrice": "-0.19",
+                "futuresPrice": "11.6150",
+                "futuresChange": "0.0225",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSH27",
                 "operations": {
                   "makeOffer": true
@@ -2258,11 +2258,11 @@
                 "id": "SBCHA000OQM7",
                 "bidType": "cash",
                 "description": "Mar",
-                "bidPrice": "11.45",
-                "basisPrice": "-0.13",
-                "futuresPrice": "11.5925",
-                "futuresChange": "-0.0325",
-                "futuresChangeSign": -1,
+                "bidPrice": "11.47",
+                "basisPrice": "-0.14",
+                "futuresPrice": "11.6150",
+                "futuresChange": "0.0225",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSH27",
                 "operations": {
                   "makeOffer": true
@@ -2296,9 +2296,9 @@
                 "description": "Jun",
                 "bidPrice": "3.85",
                 "basisPrice": "-0.32",
-                "futuresPrice": "4.1750",
-                "futuresChange": "-0.0700",
-                "futuresChangeSign": -1,
+                "futuresPrice": "4.1775",
+                "futuresChange": "0.0025",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZCN26",
                 "operations": {
                   "makeOffer": true
@@ -2308,11 +2308,11 @@
                 "id": "CNCKE000NSXV",
                 "bidType": "cash",
                 "description": "Jul",
-                "bidPrice": "3.91",
-                "basisPrice": "-0.26",
-                "futuresPrice": "4.1750",
-                "futuresChange": "-0.0700",
-                "futuresChangeSign": -1,
+                "bidPrice": "3.89",
+                "basisPrice": "-0.28",
+                "futuresPrice": "4.1775",
+                "futuresChange": "0.0025",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZCN26",
                 "operations": {
                   "makeOffer": true
@@ -2325,8 +2325,8 @@
                 "bidPrice": "3.98",
                 "basisPrice": "-0.29",
                 "futuresPrice": "4.2700",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCU26",
                 "operations": {
                   "makeOffer": true
@@ -2336,11 +2336,11 @@
                 "id": "CNCKE000OYFK",
                 "bidType": "cash",
                 "description": "Sep",
-                "bidPrice": "3.89",
-                "basisPrice": "-0.57",
+                "bidPrice": "3.90",
+                "basisPrice": "-0.56",
                 "futuresPrice": "4.4600",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCZ26",
                 "operations": {
                   "makeOffer": true
@@ -2353,8 +2353,8 @@
                 "bidPrice": "4.04",
                 "basisPrice": "-0.42",
                 "futuresPrice": "4.4600",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCZ26",
                 "operations": {
                   "makeOffer": true
@@ -2367,8 +2367,8 @@
                 "bidPrice": "4.24",
                 "basisPrice": "-0.22",
                 "futuresPrice": "4.4600",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCZ26",
                 "operations": {
                   "makeOffer": true
@@ -2378,11 +2378,11 @@
                 "id": "CNCKE000OQNB",
                 "bidType": "cash",
                 "description": "Jan",
-                "bidPrice": "4.29",
-                "basisPrice": "-0.32",
+                "bidPrice": "4.30",
+                "basisPrice": "-0.31",
                 "futuresPrice": "4.6150",
-                "futuresChange": "-0.0525",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCH27",
                 "operations": {
                   "makeOffer": true
@@ -2392,11 +2392,11 @@
                 "id": "CNCKE000OQMT",
                 "bidType": "cash",
                 "description": "Feb",
-                "bidPrice": "4.32",
-                "basisPrice": "-0.29",
+                "bidPrice": "4.33",
+                "basisPrice": "-0.28",
                 "futuresPrice": "4.6150",
-                "futuresChange": "-0.0525",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCH27",
                 "operations": {
                   "makeOffer": true
@@ -2406,11 +2406,11 @@
                 "id": "CNCKE000OQNH",
                 "bidType": "cash",
                 "description": "Mar",
-                "bidPrice": "4.34",
-                "basisPrice": "-0.27",
+                "bidPrice": "4.35",
+                "basisPrice": "-0.26",
                 "futuresPrice": "4.6150",
-                "futuresChange": "-0.0525",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCH27",
                 "operations": {
                   "makeOffer": true
@@ -2437,10 +2437,10 @@
                 "bidType": "cash",
                 "description": "Jun",
                 "bidPrice": "10.77",
-                "basisPrice": "-0.44",
-                "futuresPrice": "11.2150",
-                "futuresChange": "-0.0800",
-                "futuresChangeSign": -1,
+                "basisPrice": "-0.45",
+                "futuresPrice": "11.2200",
+                "futuresChange": "0.0050",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSN26",
                 "operations": {
                   "makeOffer": true
@@ -2451,10 +2451,10 @@
                 "bidType": "cash",
                 "description": "Jul",
                 "bidPrice": "10.86",
-                "basisPrice": "-0.35",
-                "futuresPrice": "11.2150",
-                "futuresChange": "-0.0800",
-                "futuresChangeSign": -1,
+                "basisPrice": "-0.36",
+                "futuresPrice": "11.2200",
+                "futuresChange": "0.0050",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSN26",
                 "operations": {
                   "makeOffer": true
@@ -2464,11 +2464,11 @@
                 "id": "SBCKE000OYFH",
                 "bidType": "cash",
                 "description": "Aug",
-                "bidPrice": "10.79",
+                "bidPrice": "10.80",
                 "basisPrice": "-0.47",
-                "futuresPrice": "11.2600",
-                "futuresChange": "-0.0650",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.2700",
+                "futuresChange": "0.0100",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSQ26",
                 "operations": {
                   "makeOffer": true
@@ -2478,11 +2478,11 @@
                 "id": "SBCKE000OYFS",
                 "bidType": "cash",
                 "description": "Sep",
-                "bidPrice": "10.66",
+                "bidPrice": "10.68",
                 "basisPrice": "-0.71",
-                "futuresPrice": "11.3750",
-                "futuresChange": "-0.0400",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.3975",
+                "futuresChange": "0.0225",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSX26",
                 "operations": {
                   "makeOffer": true
@@ -2492,11 +2492,11 @@
                 "id": "SBCKE000N2UT",
                 "bidType": "cash",
                 "description": "Oct",
-                "bidPrice": "10.66",
+                "bidPrice": "10.68",
                 "basisPrice": "-0.71",
-                "futuresPrice": "11.3750",
-                "futuresChange": "-0.0400",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.3975",
+                "futuresChange": "0.0225",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSX26",
                 "operations": {
                   "makeOffer": true
@@ -2506,11 +2506,11 @@
                 "id": "SBCKE000OC2E",
                 "bidType": "cash",
                 "description": "Dec",
-                "bidPrice": "10.94",
+                "bidPrice": "10.97",
                 "basisPrice": "-0.57",
-                "futuresPrice": "11.5225",
-                "futuresChange": "-0.0400",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.5500",
+                "futuresChange": "0.0275",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSF27",
                 "operations": {
                   "makeOffer": true
@@ -2520,11 +2520,11 @@
                 "id": "SBCKE000OJYF",
                 "bidType": "cash",
                 "description": "Jan",
-                "bidPrice": "11.04",
+                "bidPrice": "11.07",
                 "basisPrice": "-0.48",
-                "futuresPrice": "11.5225",
-                "futuresChange": "-0.0400",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.5500",
+                "futuresChange": "0.0275",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSF27",
                 "operations": {
                   "makeOffer": true
@@ -2534,11 +2534,11 @@
                 "id": "SBCKE000OQNA",
                 "bidType": "cash",
                 "description": "Feb",
-                "bidPrice": "11.01",
+                "bidPrice": "11.03",
                 "basisPrice": "-0.58",
-                "futuresPrice": "11.5925",
-                "futuresChange": "-0.0325",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.6150",
+                "futuresChange": "0.0225",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSH27",
                 "operations": {
                   "makeOffer": true
@@ -2548,11 +2548,11 @@
                 "id": "SBCKE000OQMU",
                 "bidType": "cash",
                 "description": "Mar",
-                "bidPrice": "11.11",
+                "bidPrice": "11.13",
                 "basisPrice": "-0.48",
-                "futuresPrice": "11.5925",
-                "futuresChange": "-0.0325",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.6150",
+                "futuresChange": "0.0225",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSH27",
                 "operations": {
                   "makeOffer": true
@@ -2584,11 +2584,11 @@
                 "id": "CNCLA000OCOD",
                 "bidType": "cash",
                 "description": "Jun",
-                "bidPrice": "4.11",
-                "basisPrice": "-0.06",
-                "futuresPrice": "4.1750",
-                "futuresChange": "-0.0700",
-                "futuresChangeSign": -1,
+                "bidPrice": "4.10",
+                "basisPrice": "-0.07",
+                "futuresPrice": "4.1775",
+                "futuresChange": "0.0025",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZCN26",
                 "operations": {
                   "makeOffer": true
@@ -2598,11 +2598,11 @@
                 "id": "CNCLA000NSYA",
                 "bidType": "cash",
                 "description": "Jul",
-                "bidPrice": "4.18",
-                "basisPrice": "0.01",
-                "futuresPrice": "4.1750",
-                "futuresChange": "-0.0700",
-                "futuresChangeSign": -1,
+                "bidPrice": "4.16",
+                "basisPrice": "-0.01",
+                "futuresPrice": "4.1775",
+                "futuresChange": "0.0025",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZCN26",
                 "operations": {
                   "makeOffer": true
@@ -2615,8 +2615,22 @@
                 "bidPrice": "4.17",
                 "basisPrice": "-0.10",
                 "futuresPrice": "4.2700",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
+                "futuresSymbol": "ZCU26",
+                "operations": {
+                  "makeOffer": true
+                }
+              },
+              {
+                "id": "CNCLA000OYOU",
+                "bidType": "cash",
+                "description": "Aug",
+                "bidPrice": "4.17",
+                "basisPrice": "-0.10",
+                "futuresPrice": "4.2700",
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCU26",
                 "operations": {
                   "makeOffer": true
@@ -2629,8 +2643,8 @@
                 "bidPrice": "4.07",
                 "basisPrice": "-0.39",
                 "futuresPrice": "4.4600",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCZ26",
                 "operations": {
                   "makeOffer": true
@@ -2643,8 +2657,8 @@
                 "bidPrice": "4.16",
                 "basisPrice": "-0.30",
                 "futuresPrice": "4.4600",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCZ26",
                 "operations": {
                   "makeOffer": true
@@ -2657,8 +2671,8 @@
                 "bidPrice": "4.41",
                 "basisPrice": "-0.05",
                 "futuresPrice": "4.4600",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCZ26",
                 "operations": {
                   "makeOffer": true
@@ -2671,8 +2685,8 @@
                 "bidPrice": "4.49",
                 "basisPrice": "-0.12",
                 "futuresPrice": "4.6150",
-                "futuresChange": "-0.0525",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCH27",
                 "operations": {
                   "makeOffer": true
@@ -2685,8 +2699,8 @@
                 "bidPrice": "4.56",
                 "basisPrice": "-0.05",
                 "futuresPrice": "4.6150",
-                "futuresChange": "-0.0525",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCH27",
                 "operations": {
                   "makeOffer": true
@@ -2699,8 +2713,8 @@
                 "bidPrice": "4.61",
                 "basisPrice": "0.00",
                 "futuresPrice": "4.6150",
-                "futuresChange": "-0.0525",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCH27",
                 "operations": {
                   "makeOffer": true
@@ -2727,10 +2741,10 @@
                 "bidType": "cash",
                 "description": "Jun",
                 "bidPrice": "11.08",
-                "basisPrice": "-0.13",
-                "futuresPrice": "11.2150",
-                "futuresChange": "-0.0800",
-                "futuresChangeSign": -1,
+                "basisPrice": "-0.14",
+                "futuresPrice": "11.2200",
+                "futuresChange": "0.0050",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSN26",
                 "operations": {
                   "makeOffer": true
@@ -2741,10 +2755,10 @@
                 "bidType": "cash",
                 "description": "Jul",
                 "bidPrice": "11.17",
-                "basisPrice": "-0.04",
-                "futuresPrice": "11.2150",
-                "futuresChange": "-0.0800",
-                "futuresChangeSign": -1,
+                "basisPrice": "-0.05",
+                "futuresPrice": "11.2200",
+                "futuresChange": "0.0050",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSN26",
                 "operations": {
                   "makeOffer": true
@@ -2754,11 +2768,11 @@
                 "id": "SBCLA000OYFI",
                 "bidType": "cash",
                 "description": "Aug",
-                "bidPrice": "11.09",
+                "bidPrice": "11.10",
                 "basisPrice": "-0.17",
-                "futuresPrice": "11.2600",
-                "futuresChange": "-0.0650",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.2700",
+                "futuresChange": "0.0100",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSQ26",
                 "operations": {
                   "makeOffer": true
@@ -2768,11 +2782,11 @@
                 "id": "SBCLA000OYFU",
                 "bidType": "cash",
                 "description": "Sep",
-                "bidPrice": "10.97",
+                "bidPrice": "10.99",
                 "basisPrice": "-0.40",
-                "futuresPrice": "11.3750",
-                "futuresChange": "-0.0400",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.3975",
+                "futuresChange": "0.0225",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSX26",
                 "operations": {
                   "makeOffer": true
@@ -2782,11 +2796,11 @@
                 "id": "SBCLA000N4HG",
                 "bidType": "cash",
                 "description": "Oct",
-                "bidPrice": "10.97",
+                "bidPrice": "10.99",
                 "basisPrice": "-0.40",
-                "futuresPrice": "11.3750",
-                "futuresChange": "-0.0400",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.3975",
+                "futuresChange": "0.0225",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSX26",
                 "operations": {
                   "makeOffer": true
@@ -2796,11 +2810,11 @@
                 "id": "SBCLA000ODQL",
                 "bidType": "cash",
                 "description": "Dec",
-                "bidPrice": "11.25",
+                "bidPrice": "11.28",
                 "basisPrice": "-0.27",
-                "futuresPrice": "11.5225",
-                "futuresChange": "-0.0400",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.5500",
+                "futuresChange": "0.0275",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSF27",
                 "operations": {
                   "makeOffer": true
@@ -2810,11 +2824,11 @@
                 "id": "SBCLA000OJYH",
                 "bidType": "cash",
                 "description": "Jan",
-                "bidPrice": "11.35",
+                "bidPrice": "11.38",
                 "basisPrice": "-0.17",
-                "futuresPrice": "11.5225",
-                "futuresChange": "-0.0400",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.5500",
+                "futuresChange": "0.0275",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSF27",
                 "operations": {
                   "makeOffer": true
@@ -2824,11 +2838,11 @@
                 "id": "SBCLA000OQNI",
                 "bidType": "cash",
                 "description": "Feb",
-                "bidPrice": "11.32",
+                "bidPrice": "11.34",
                 "basisPrice": "-0.27",
-                "futuresPrice": "11.5925",
-                "futuresChange": "-0.0325",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.6150",
+                "futuresChange": "0.0225",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSH27",
                 "operations": {
                   "makeOffer": true
@@ -2838,11 +2852,11 @@
                 "id": "SBCLA000OQNL",
                 "bidType": "cash",
                 "description": "Mar",
-                "bidPrice": "11.42",
+                "bidPrice": "11.44",
                 "basisPrice": "-0.17",
-                "futuresPrice": "11.5925",
-                "futuresChange": "-0.0325",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.6150",
+                "futuresChange": "0.0225",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSH27",
                 "operations": {
                   "makeOffer": true
@@ -2876,9 +2890,9 @@
                 "description": "Jun",
                 "bidPrice": "4.11",
                 "basisPrice": "-0.06",
-                "futuresPrice": "4.1750",
-                "futuresChange": "-0.0700",
-                "futuresChangeSign": -1,
+                "futuresPrice": "4.1775",
+                "futuresChange": "0.0025",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZCN26",
                 "operations": {
                   "makeOffer": true
@@ -2890,9 +2904,9 @@
                 "description": "Jul",
                 "bidPrice": "4.14",
                 "basisPrice": "-0.03",
-                "futuresPrice": "4.1750",
-                "futuresChange": "-0.0700",
-                "futuresChangeSign": -1,
+                "futuresPrice": "4.1775",
+                "futuresChange": "0.0025",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZCN26",
                 "operations": {
                   "makeOffer": true
@@ -2926,9 +2940,9 @@
                 "description": "Jun",
                 "bidPrice": "3.88",
                 "basisPrice": "-0.29",
-                "futuresPrice": "4.1750",
-                "futuresChange": "-0.0700",
-                "futuresChangeSign": -1,
+                "futuresPrice": "4.1775",
+                "futuresChange": "0.0025",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZCN26",
                 "operations": {
                   "makeOffer": true
@@ -2938,11 +2952,11 @@
                 "id": "CNCRG000OAVU",
                 "bidType": "cash",
                 "description": "Jul",
-                "bidPrice": "3.92",
-                "basisPrice": "-0.25",
-                "futuresPrice": "4.1750",
-                "futuresChange": "-0.0700",
-                "futuresChangeSign": -1,
+                "bidPrice": "3.91",
+                "basisPrice": "-0.26",
+                "futuresPrice": "4.1775",
+                "futuresChange": "0.0025",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZCN26",
                 "operations": {
                   "makeOffer": true
@@ -2955,8 +2969,8 @@
                 "bidPrice": "3.98",
                 "basisPrice": "-0.29",
                 "futuresPrice": "4.2700",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCU26",
                 "operations": {
                   "makeOffer": true
@@ -2969,8 +2983,8 @@
                 "bidPrice": "4.00",
                 "basisPrice": "-0.46",
                 "futuresPrice": "4.4600",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCZ26",
                 "operations": {
                   "makeOffer": true
@@ -2983,8 +2997,8 @@
                 "bidPrice": "4.04",
                 "basisPrice": "-0.42",
                 "futuresPrice": "4.4600",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCZ26",
                 "operations": {
                   "makeOffer": true
@@ -2994,11 +3008,11 @@
                 "id": "CNCRG000ODGJ",
                 "bidType": "cash",
                 "description": "Dec",
-                "bidPrice": "4.13",
-                "basisPrice": "-0.33",
+                "bidPrice": "4.12",
+                "basisPrice": "-0.34",
                 "futuresPrice": "4.4600",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCZ26",
                 "operations": {
                   "makeOffer": true
@@ -3011,8 +3025,8 @@
                 "bidPrice": "4.21",
                 "basisPrice": "-0.40",
                 "futuresPrice": "4.6150",
-                "futuresChange": "-0.0525",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCH27",
                 "operations": {
                   "makeOffer": true
@@ -3038,11 +3052,11 @@
                 "id": "SBCRG000OCNA",
                 "bidType": "cash",
                 "description": "Jun",
-                "bidPrice": "11.20",
-                "basisPrice": "-0.01",
-                "futuresPrice": "11.2150",
-                "futuresChange": "-0.0800",
-                "futuresChangeSign": -1,
+                "bidPrice": "10.98",
+                "basisPrice": "-0.23",
+                "futuresPrice": "11.2200",
+                "futuresChange": "0.0050",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSN26",
                 "operations": {
                   "makeOffer": true
@@ -3052,11 +3066,11 @@
                 "id": "SBCRG000N27N",
                 "bidType": "cash",
                 "description": "Jul",
-                "bidPrice": "11.20",
-                "basisPrice": "-0.01",
-                "futuresPrice": "11.2150",
-                "futuresChange": "-0.0800",
-                "futuresChangeSign": -1,
+                "bidPrice": "11.08",
+                "basisPrice": "-0.13",
+                "futuresPrice": "11.2200",
+                "futuresChange": "0.0050",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSN26",
                 "operations": {
                   "makeOffer": true
@@ -3066,11 +3080,11 @@
                 "id": "SBCRG000OYFM",
                 "bidType": "cash",
                 "description": "Aug",
-                "bidPrice": "11.27",
-                "basisPrice": "0.01",
-                "futuresPrice": "11.2600",
-                "futuresChange": "-0.0650",
-                "futuresChangeSign": -1,
+                "bidPrice": "11.14",
+                "basisPrice": "-0.13",
+                "futuresPrice": "11.2700",
+                "futuresChange": "0.0100",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSQ26",
                 "operations": {
                   "makeOffer": true
@@ -3080,11 +3094,11 @@
                 "id": "SBCRG000OYFV",
                 "bidType": "cash",
                 "description": "Sep",
-                "bidPrice": "11.01",
-                "basisPrice": "-0.36",
-                "futuresPrice": "11.3750",
-                "futuresChange": "-0.0400",
-                "futuresChangeSign": -1,
+                "bidPrice": "10.91",
+                "basisPrice": "-0.48",
+                "futuresPrice": "11.3975",
+                "futuresChange": "0.0225",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSX26",
                 "operations": {
                   "makeOffer": true
@@ -3094,11 +3108,11 @@
                 "id": "SBCRG000OAV3",
                 "bidType": "cash",
                 "description": "Oct",
-                "bidPrice": "11.01",
-                "basisPrice": "-0.36",
-                "futuresPrice": "11.3750",
-                "futuresChange": "-0.0400",
-                "futuresChangeSign": -1,
+                "bidPrice": "10.91",
+                "basisPrice": "-0.48",
+                "futuresPrice": "11.3975",
+                "futuresChange": "0.0225",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSX26",
                 "operations": {
                   "makeOffer": true
@@ -3108,11 +3122,11 @@
                 "id": "SBCRG000ODGK",
                 "bidType": "cash",
                 "description": "Dec",
-                "bidPrice": "10.96",
+                "bidPrice": "10.99",
                 "basisPrice": "-0.56",
-                "futuresPrice": "11.5225",
-                "futuresChange": "-0.0400",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.5500",
+                "futuresChange": "0.0275",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSF27",
                 "operations": {
                   "makeOffer": true
@@ -3122,11 +3136,11 @@
                 "id": "SBCRG000OJYI",
                 "bidType": "cash",
                 "description": "Jan",
-                "bidPrice": "11.11",
-                "basisPrice": "-0.41",
-                "futuresPrice": "11.5225",
-                "futuresChange": "-0.0400",
-                "futuresChangeSign": -1,
+                "bidPrice": "11.17",
+                "basisPrice": "-0.37",
+                "futuresPrice": "11.5500",
+                "futuresChange": "0.0275",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSF27",
                 "operations": {
                   "makeOffer": true
@@ -3160,9 +3174,9 @@
                 "description": "Jun",
                 "bidPrice": "3.98",
                 "basisPrice": "-0.19",
-                "futuresPrice": "4.1750",
-                "futuresChange": "-0.0700",
-                "futuresChangeSign": -1,
+                "futuresPrice": "4.1775",
+                "futuresChange": "0.0025",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZCN26",
                 "operations": {
                   "makeOffer": true
@@ -3174,9 +3188,9 @@
                 "description": "Jul",
                 "bidPrice": "4.00",
                 "basisPrice": "-0.17",
-                "futuresPrice": "4.1750",
-                "futuresChange": "-0.0700",
-                "futuresChangeSign": -1,
+                "futuresPrice": "4.1775",
+                "futuresChange": "0.0025",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZCN26",
                 "operations": {
                   "makeOffer": true
@@ -3189,8 +3203,8 @@
                 "bidPrice": "4.05",
                 "basisPrice": "-0.22",
                 "futuresPrice": "4.2700",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCU26",
                 "operations": {
                   "makeOffer": true
@@ -3203,8 +3217,8 @@
                 "bidPrice": "4.09",
                 "basisPrice": "-0.37",
                 "futuresPrice": "4.4600",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCZ26",
                 "operations": {
                   "makeOffer": true
@@ -3217,8 +3231,8 @@
                 "bidPrice": "4.11",
                 "basisPrice": "-0.35",
                 "futuresPrice": "4.4600",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCZ26",
                 "operations": {
                   "makeOffer": true
@@ -3231,8 +3245,8 @@
                 "bidPrice": "4.16",
                 "basisPrice": "-0.30",
                 "futuresPrice": "4.4600",
-                "futuresChange": "-0.0575",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCZ26",
                 "operations": {
                   "makeOffer": true
@@ -3242,11 +3256,11 @@
                 "id": "CNCST000OQNK",
                 "bidType": "cash",
                 "description": "Jan",
-                "bidPrice": "4.31",
-                "basisPrice": "-0.30",
+                "bidPrice": "4.32",
+                "basisPrice": "-0.29",
                 "futuresPrice": "4.6150",
-                "futuresChange": "-0.0525",
-                "futuresChangeSign": -1,
+                "futuresChange": "0.0000",
+                "futuresChangeSign": 0,
                 "futuresSymbol": "ZCH27",
                 "operations": {
                   "makeOffer": true
@@ -3272,11 +3286,11 @@
                 "id": "SBCST000OCNC",
                 "bidType": "cash",
                 "description": "Jun",
-                "bidPrice": "11.13",
-                "basisPrice": "-0.08",
-                "futuresPrice": "11.2150",
-                "futuresChange": "-0.0800",
-                "futuresChangeSign": -1,
+                "bidPrice": "11.11",
+                "basisPrice": "-0.11",
+                "futuresPrice": "11.2200",
+                "futuresChange": "0.0050",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSN26",
                 "operations": {
                   "makeOffer": true
@@ -3288,9 +3302,9 @@
                 "description": "Jul",
                 "bidPrice": "11.13",
                 "basisPrice": "-0.08",
-                "futuresPrice": "11.2150",
-                "futuresChange": "-0.0800",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.2200",
+                "futuresChange": "0.0050",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSN26",
                 "operations": {
                   "makeOffer": true
@@ -3301,10 +3315,10 @@
                 "bidType": "cash",
                 "description": "Aug",
                 "bidPrice": "11.19",
-                "basisPrice": "-0.06",
-                "futuresPrice": "11.2600",
-                "futuresChange": "-0.0650",
-                "futuresChangeSign": -1,
+                "basisPrice": "-0.08",
+                "futuresPrice": "11.2700",
+                "futuresChange": "0.0100",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSQ26",
                 "operations": {
                   "makeOffer": true
@@ -3314,11 +3328,11 @@
                 "id": "SBCST000OYFP",
                 "bidType": "cash",
                 "description": "Sep",
-                "bidPrice": "10.94",
+                "bidPrice": "10.96",
                 "basisPrice": "-0.43",
-                "futuresPrice": "11.3750",
-                "futuresChange": "-0.0400",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.3975",
+                "futuresChange": "0.0225",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSX26",
                 "operations": {
                   "makeOffer": true
@@ -3328,11 +3342,11 @@
                 "id": "SBCST000OAV2",
                 "bidType": "cash",
                 "description": "Oct",
-                "bidPrice": "10.89",
-                "basisPrice": "-0.48",
-                "futuresPrice": "11.3750",
-                "futuresChange": "-0.0400",
-                "futuresChangeSign": -1,
+                "bidPrice": "10.96",
+                "basisPrice": "-0.43",
+                "futuresPrice": "11.3975",
+                "futuresChange": "0.0225",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSX26",
                 "operations": {
                   "makeOffer": true
@@ -3342,11 +3356,11 @@
                 "id": "SBCST000ODGM",
                 "bidType": "cash",
                 "description": "Dec",
-                "bidPrice": "11.09",
+                "bidPrice": "11.12",
                 "basisPrice": "-0.43",
-                "futuresPrice": "11.5225",
-                "futuresChange": "-0.0400",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.5500",
+                "futuresChange": "0.0275",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSF27",
                 "operations": {
                   "makeOffer": true
@@ -3356,11 +3370,11 @@
                 "id": "SBCST000OJYL",
                 "bidType": "cash",
                 "description": "Jan",
-                "bidPrice": "11.14",
+                "bidPrice": "11.17",
                 "basisPrice": "-0.38",
-                "futuresPrice": "11.5225",
-                "futuresChange": "-0.0400",
-                "futuresChangeSign": -1,
+                "futuresPrice": "11.5500",
+                "futuresChange": "0.0275",
+                "futuresChangeSign": 1,
                 "futuresSymbol": "ZSF27",
                 "operations": {
                   "makeOffer": true
@@ -3372,7 +3386,7 @@
       }
     ],
     "meta": {
-      "lastUpdated": "2026-06-05T22:01:45Z"
+      "lastUpdated": "2026-06-08T14:23:12Z"
     }
   },
   "contractsSummary": {
