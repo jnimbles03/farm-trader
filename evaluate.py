@@ -250,18 +250,26 @@ _cache: dict[str, float] = {}
 # own history in state/price_history.json across runs.
 def _fetch_raw(symbol: str) -> tuple[float, str]:
     url = f"https://stooq.com/q/l/?s={symbol}&f=sd2t2ohlcv&h&e=csv"
-    with httpx.Client(timeout=10, follow_redirects=True) as c:
-        r = c.get(url)
-        r.raise_for_status()
-    lines = r.text.strip().splitlines()
-    if len(lines) < 2:
-        raise RuntimeError(f"no rows for {symbol}")
-    cols = lines[1].split(",")
-    date  = cols[1] if len(cols) > 1 else ""
-    close = cols[6] if len(cols) > 6 else "N/D"
-    if close in ("N/D", ""):
-        raise RuntimeError(f"no close for {symbol}")
-    return float(close), date
+    last_exc: Exception | None = None
+    for attempt in range(3):
+        try:
+            with httpx.Client(timeout=10, follow_redirects=True) as c:
+                r = c.get(url)
+                r.raise_for_status()
+            lines = r.text.strip().splitlines()
+            if len(lines) < 2:
+                raise RuntimeError(f"no rows for {symbol}")
+            cols = lines[1].split(",")
+            date  = cols[1] if len(cols) > 1 else ""
+            close = cols[6] if len(cols) > 6 else "N/D"
+            if close in ("N/D", ""):
+                raise RuntimeError(f"no close for {symbol}")
+            return float(close), date
+        except Exception as e:
+            last_exc = e
+            if attempt < 2:
+                time.sleep(2 ** attempt)  # 1s, 2s back-off
+    raise last_exc  # type: ignore[misc]
 
 
 # ---------------------------------------------------------------------------
@@ -416,7 +424,7 @@ class Signal:
     futures_year: int
     futures_month: int
     action: str              # SELL | BUY_BACK
-    target_price: float
+    target_price: float | None   # None = calendar-only (sell regardless of price)
     note: str
 
 
@@ -428,28 +436,108 @@ def load_contracts() -> list[Contract]:
 
 def model(contracts: list[Contract]) -> list[Signal]:
     """
-    Toy schedule: every open HTA gets a SELL at locked + $0.20.
-    Replace with real schedule logic when it's defined.
+    Plan-driven signal model — replaces the old HTA-only stub.
+
+    Reads plan.json to get tranche targets for each commodity, then
+    generates one SELL signal per open tranche window that has unsold
+    inventory to cover.
+
+    Signal key format: ``<commodity>|<tranche_id>|SELL|<target_or_CAL>``
+    — stable across runs so cooldown state survives between evaluations.
+
+    For each commodity the function:
+      1. Sums inventory (INVENTORY contracts) and APP program bushels.
+      2. Walks the tranche plan in order, allocating bushels to each
+         tranche based on ``pct``.
+      3. Only emits a signal if today is inside the tranche window.
+      4. Target price = oct_low * mult, rounded to 4dp.
+         Calendar-only tranches (mult=null) get target_price=None —
+         signal_hit() treats those as always-HIT when the window is open.
     """
-    out: list[Signal] = []
+    now = datetime.now(timezone.utc)
+    today = now.date()
+    plan = load_plan()
+    comm_plan = plan.get("commodities", {})
+
+    # Index contracts by commodity for quick lookup
+    by_commodity: dict[str, list[Contract]] = {}
     for c in contracts:
-        if c.contract_type == "HTA" and c.futures_price is not None:
-            tgt = round(c.futures_price + 0.20, 4)
-            key = f"{c.commodity}|{c.futures_year}-{c.futures_month:02d}|SELL|{tgt:.4f}"
+        key = c.commodity.lower().rstrip("s")  # normalise "soybeans" -> "soybean"
+        by_commodity.setdefault(key, []).append(c)
+
+    out: list[Signal] = []
+
+    for comm_key, comm_cfg in comm_plan.items():
+        # Normalise commodity key for matching contracts
+        norm = comm_key.lower().rstrip("s")
+        these = by_commodity.get(norm, []) + by_commodity.get(comm_key, [])
+
+        # Total sellable bushels = sum of INVENTORY + APP quantities
+        total_bu = sum(
+            c.quantity for c in these
+            if c.contract_type in ("INVENTORY", "APP")
+        )
+        if total_bu <= 0:
+            log.debug("tranche_model: no inventory for %s, skipping", comm_key)
+            continue
+
+        oct_low = comm_cfg.get("oct_low")
+        if not oct_low:
+            log.warning("tranche_model: no oct_low for %s, skipping", comm_key)
+            continue
+
+        crop_year = now.year  # signals re-key by calendar year
+        futures_year = now.year
+        futures_month = 12 if norm == "corn" else 11  # Dec corn, Nov beans
+
+        for tr in comm_cfg.get("tranches", []):
+            # Tranche window check
+            ws = tr.get("win_start")  # [month, day]
+            we = tr.get("win_end")    # [month, day]
+            if not ws or not we:
+                continue
+            win_start = today.replace(month=ws[0], day=ws[1])
+            win_end   = today.replace(month=we[0], day=we[1])
+            if not (win_start <= today <= win_end):
+                continue  # outside the seasonal window
+
+            mult = tr.get("mult")  # None for calendar-only tranches
+            target = round(oct_low * mult, 4) if mult is not None else None
+
+            # Allocated bushels for this tranche
+            alloc_bu = round(total_bu * tr["pct"] / 100)
+
+            tgt_str = f"{target:.4f}" if target is not None else "CAL"
+            sig_key = f"{comm_key}|{tr['id']}|SELL|{tgt_str}"
+
             out.append(Signal(
-                signal_key=key,
-                contract_id=c.contract_id,
-                commodity=c.commodity,
-                futures_year=c.futures_year,
-                futures_month=c.futures_month,
-                action="SELL",
-                target_price=tgt,
-                note=f"locked + $0.20 on {c.contract_id}",
+                signal_key   = sig_key,
+                contract_id  = f"{comm_key.upper()}-{tr['id']}",
+                commodity    = comm_key,
+                futures_year = futures_year,
+                futures_month= futures_month,
+                action       = "SELL",
+                target_price = target,
+                note         = (
+                    f"{tr.get('label', tr['id'])} — {alloc_bu:,} bu "
+                    f"({tr['pct']}% of {int(total_bu):,}) "
+                    f"| {tr.get('note', '')}"
+                ),
             ))
+            log.info(
+                "tranche_model: %s %s window OPEN %s→%s target=%s alloc=%s bu",
+                comm_key, tr["id"], win_start, win_end,
+                f"${target:.4f}" if target else "CALENDAR", alloc_bu,
+            )
+
+    if not out:
+        log.info("tranche_model: no tranche windows open today")
     return out
 
 
-def signal_hit(action: str, live: float, target: float) -> bool:
+def signal_hit(action: str, live: float, target: float | None) -> bool:
+    if target is None:
+        return action == "SELL"   # calendar tranche: always HIT when window is open
     if action == "SELL":     return live >= target
     if action == "BUY_BACK": return live <= target
     return False
@@ -1411,9 +1499,20 @@ def evaluate_signals(state: dict[str, dict[str, Any]]) -> tuple[list[dict[str, A
     """
     Walk the signals, compare live vs target, mutate `state` in place,
     fire SMS on fresh hits. Returns (rows, sms_fired_count).
+
+    Also prunes stale keys from `state` that no longer correspond to any
+    signal the current model generates — prevents orphaned WAIT entries
+    from April/prior seasons from cluttering the state file forever.
     """
     contracts = load_contracts()
     signals = model(contracts)
+    active_keys = {s.signal_key for s in signals}
+
+    # Prune orphaned state keys (signals no longer generated by the model)
+    stale_keys = [k for k in list(state.keys()) if k not in active_keys]
+    for k in stale_keys:
+        log.info("evaluate_signals: pruning stale state key %s", k)
+        del state[k]
 
     fired = 0
     rows: list[dict[str, Any]] = []
@@ -1476,19 +1575,16 @@ def evaluate_signals(state: dict[str, dict[str, Any]]) -> tuple[list[dict[str, A
         if should_fire:
             now = datetime.now(timezone.utc)
             recipients = _recipients()
-            # Human-readable SMS body: lead with the action, then the
-            # contract in plain English ("Corn Dec '26"), then the two
-            # prices that explain WHY this fired. Note (e.g. "locked +
-            # $0.20 on ABC") is stored in state but not shown on SMS —
-            # recipients have their own context for what the target is.
             month_abbr = _MONTH_ABBR[s.futures_month]
             yr2 = f"'{s.futures_year % 100:02d}"
             verb = "SELL" if s.action == "SELL" else "BUY BACK"
-            # [FARM] prefix is added centrally in _send_sms_textbelt;
-            # don't repeat the brand here.
-            # If this same signal_key has fired before, surface the
-            # price at that prior firing so the user can see WHAT
-            # CHANGED since they last weighed in.
+
+            # Build target clause — calendar tranches have no price target
+            if s.target_price is not None:
+                target_clause = f"target ${s.target_price:.2f}"
+            else:
+                target_clause = "calendar window — sell regardless of price"
+
             prior_price_tag = ""
             if last_fired_price:
                 delta = live - last_fired_price
@@ -1499,21 +1595,12 @@ def evaluate_signals(state: dict[str, dict[str, Any]]) -> tuple[list[dict[str, A
                 )
             base_msg = (f"{verb} alert: "
                         f"{s.commodity.capitalize()} {month_abbr} {yr2} is at "
-                        f"${live:.2f} (target ${s.target_price:.2f})"
+                        f"${live:.2f} ({target_clause})"
                         f"{prior_price_tag}")
 
-            # If the webhook is configured, record the outbound so the
-            # inbound collector can match a plain Y/N reply against the
-            # most recent pending for that phone. Short_id is kept in
-            # state for dashboard/debugging but no longer sent to the
-            # recipient — just say "Reply Y / N".
             sid: str | None = None
             if REPLY_WEBHOOK_URL and recipients:
                 sid = _short_id(s.signal_key, now)
-                # Idiot-proof reply prompt: state the code in caps so the
-                # user can see exactly what to type, and tell them to
-                # reply to THIS text. The short_id is what disambiguates
-                # if multiple alerts are pending at once.
                 msg = base_msg + ". Just reply Y or N."
                 _record_outbound(
                     sid, s.signal_key, msg, recipients,
@@ -1528,12 +1615,8 @@ def evaluate_signals(state: dict[str, dict[str, Any]]) -> tuple[list[dict[str, A
                 last_fired = now_iso
                 last_fired_price = round(live, 4)
             else:
-                # Don't set last_fired on failure — we want the next run
-                # to try again rather than silently sitting in cooldown.
                 log.warning("SMS did NOT land for %s — will retry next run",
                             s.signal_key)
-                # Drop the outbound record too so a retry can re-mint a
-                # fresh short_id rather than leaving a pending ghost.
                 if sid is not None:
                     data = _load_confirmations()
                     data.pop(sid, None)
