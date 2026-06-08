@@ -762,7 +762,7 @@
       "beans_at_pcfs": 0.0,
       "avg_pricing_corn": 1500.0,
       "avg_pricing_soy": 500.0,
-      "notes": "Live from bushel.commodity-balances + bids at 2026-06-08T18:20:05Z \u00b7 Account FREIS FARMS LLC \u00b7 PC/FS values carried from prior xlsx row (not scraped). \u00b7 Fetch warnings: avg_pricing: 'str' object has no attribute 'get'"
+      "notes": "Live from bushel.commodity-balances + bids at 2026-06-08T19:19:34Z \u00b7 Account FREIS FARMS LLC \u00b7 PC/FS values carried from prior xlsx row (not scraped). \u00b7 Fetch warnings: avg_pricing: 'str' object has no attribute 'get'"
     }
   ],
   "inputs_by_year": {
@@ -1445,7 +1445,7 @@
   },
   "recent_alerts_7d": [],
   "ritchie_live": {
-    "as_of": "2026-06-08T18:20:05Z",
+    "as_of": "2026-06-08T19:19:34Z",
     "source": "bushel.commodity-balances + bids",
     "account": "FREIS FARMS LLC",
     "location": "Ritchie Grain Elevator",
@@ -1461,102 +1461,102 @@
       "corn": [
         {
           "month": "Jun",
-          "cash": 3.9,
+          "cash": 3.89,
           "basis": -0.29,
-          "futures": 4.1925,
+          "futures": 4.1875,
           "futures_symbol": "ZCN26"
         },
         {
           "month": "Jul",
-          "cash": 3.93,
+          "cash": 3.92,
           "basis": -0.26,
-          "futures": 4.1925,
+          "futures": 4.1875,
           "futures_symbol": "ZCN26"
         },
         {
           "month": "Aug",
           "cash": 3.98,
           "basis": -0.29,
-          "futures": 4.2775,
+          "futures": 4.275,
           "futures_symbol": "ZCU26"
         },
         {
           "month": "Sep",
           "cash": 4.0,
           "basis": -0.46,
-          "futures": 4.4675,
+          "futures": 4.46,
           "futures_symbol": "ZCZ26"
         },
         {
           "month": "Oct",
           "cash": 4.04,
           "basis": -0.42,
-          "futures": 4.4675,
+          "futures": 4.46,
           "futures_symbol": "ZCZ26"
         },
         {
           "month": "Dec",
           "cash": 4.12,
           "basis": -0.34,
-          "futures": 4.4675,
+          "futures": 4.46,
           "futures_symbol": "ZCZ26"
         },
         {
           "month": "Jan",
-          "cash": 4.21,
+          "cash": 4.2,
           "basis": -0.4,
-          "futures": 4.615,
+          "futures": 4.6075,
           "futures_symbol": "ZCH27"
         }
       ],
       "soy": [
         {
           "month": "Jun",
-          "cash": 10.93,
+          "cash": 10.92,
           "basis": -0.23,
-          "futures": 11.1675,
+          "futures": 11.1575,
           "futures_symbol": "ZSN26"
         },
         {
           "month": "Jul",
-          "cash": 11.03,
+          "cash": 11.02,
           "basis": -0.13,
-          "futures": 11.1675,
+          "futures": 11.1575,
           "futures_symbol": "ZSN26"
         },
         {
           "month": "Aug",
-          "cash": 11.09,
+          "cash": 11.08,
           "basis": -0.13,
-          "futures": 11.2225,
+          "futures": 11.2125,
           "futures_symbol": "ZSQ26"
         },
         {
           "month": "Sep",
-          "cash": 10.88,
+          "cash": 10.87,
           "basis": -0.48,
-          "futures": 11.365,
+          "futures": 11.355,
           "futures_symbol": "ZSX26"
         },
         {
           "month": "Oct",
-          "cash": 10.88,
+          "cash": 10.87,
           "basis": -0.48,
-          "futures": 11.365,
+          "futures": 11.355,
           "futures_symbol": "ZSX26"
         },
         {
           "month": "Dec",
-          "cash": 10.95,
+          "cash": 10.94,
           "basis": -0.56,
-          "futures": 11.51,
+          "futures": 11.5,
           "futures_symbol": "ZSF27"
         },
         {
           "month": "Jan",
-          "cash": 11.13,
+          "cash": 11.12,
           "basis": -0.37,
-          "futures": 11.51,
+          "futures": 11.5,
           "futures_symbol": "ZSF27"
         }
       ]
@@ -1565,5 +1565,5 @@
       "avg_pricing: 'str' object has no attribute 'get'"
     ]
   },
-  "last_refreshed_at": "2026-06-08T18:20:05Z"
+  "last_refreshed_at": "2026-06-08T19:19:34Z"
 }
