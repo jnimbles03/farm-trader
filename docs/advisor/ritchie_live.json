@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-06-10T15:48:14Z",
+  "as_of": "2026-06-10T17:12:39Z",
   "source": "bushel.commodity-balances + bids",
   "account": "FREIS FARMS LLC",
   "location": "Ritchie Grain Elevator",
@@ -15,74 +15,74 @@
     "corn": [
       {
         "month": "Jun",
-        "cash": 3.92,
+        "cash": 3.9,
         "basis": -0.29,
-        "futures": 4.2125,
+        "futures": 4.19,
         "futures_symbol": "ZCN26"
       },
       {
         "month": "Jul",
-        "cash": 3.97,
+        "cash": 3.95,
         "basis": -0.24,
-        "futures": 4.2125,
+        "futures": 4.19,
         "futures_symbol": "ZCN26"
       },
       {
         "month": "Aug",
-        "cash": 4.0,
+        "cash": 3.98,
         "basis": -0.29,
-        "futures": 4.2925,
+        "futures": 4.275,
         "futures_symbol": "ZCU26"
       },
       {
         "month": "Sep",
-        "cash": 4.0,
+        "cash": 3.99,
         "basis": -0.47,
-        "futures": 4.4825,
+        "futures": 4.4675,
         "futures_symbol": "ZCZ26"
       },
       {
         "month": "Oct",
-        "cash": 4.06,
+        "cash": 4.04,
         "basis": -0.42,
-        "futures": 4.4825,
+        "futures": 4.4675,
         "futures_symbol": "ZCZ26"
       },
       {
         "month": "Dec",
-        "cash": 4.18,
+        "cash": 4.16,
         "basis": -0.3,
-        "futures": 4.4825,
+        "futures": 4.4675,
         "futures_symbol": "ZCZ26"
       },
       {
         "month": "Jan",
-        "cash": 4.22,
+        "cash": 4.21,
         "basis": -0.4,
-        "futures": 4.6275,
+        "futures": 4.615,
         "futures_symbol": "ZCH27"
       }
     ],
     "soy": [
       {
         "month": "Jun",
-        "cash": 11.25,
+        "cash": 11.23,
         "basis": -0.01,
-        "futures": 11.26,
+        "futures": 11.245,
         "futures_symbol": "ZSN26"
       },
       {
         "month": "Jul",
-        "cash": 11.25,
+        "cash": 11.23,
         "basis": -0.01,
-        "futures": 11.26,
+        "futures": 11.245,
         "futures_symbol": "ZSN26"
       },
       {
         "month": "Aug",
-        "cash": 11.29,
+        "cash": 11.28,
         "basis": -0.01,
-        "futures": 11.3,
+        "futures": 11.2925,
         "futures_symbol": "ZSQ26"
       },
       {
