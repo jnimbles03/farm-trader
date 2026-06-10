@@ -1,14 +1,6 @@
 {
   "items": [
     {
-      "id": "usda-2026-05-10-Monthly_WASDE",
-      "date": "2026-05-10",
-      "title": "USDA: Monthly WASDE",
-      "impact": "L",
-      "affects": "both",
-      "source": "USDA"
-    },
-    {
       "id": "geopolitical-2026-06-01-southern_hemisphere_export_w",
       "date": "2026-06-01",
       "title": "Southern-hemisphere export window opens",
@@ -18,5 +10,5 @@
       "category": "geopolitical"
     }
   ],
-  "generated_at": "2026-06-09T23:30:02.703905+00:00"
+  "generated_at": "2026-06-10T00:00:01.733340+00:00"
 }
