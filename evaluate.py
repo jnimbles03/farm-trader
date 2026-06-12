@@ -226,49 +226,95 @@ GRAIN_SCALE = {
 }
 
 
+# ---------------------------------------------------------------------------
+# Yahoo Finance symbol mapping  (yfinance, no API key required)
+# ---------------------------------------------------------------------------
+# yfinance continuous futures: ZC=F (corn), ZS=F (soy), ZW=F (wheat),
+# GF=F (feeder cattle). Specific contract months use CBT suffix, e.g.
+# ZCZ26.CBT = Dec 2026 corn, ZSX26.CBT = Nov 2026 soy.
+# All CBOT grain quotes are in cents/bu — same GRAIN_SCALE factors apply.
+
+_YFINANCE_CONTINUOUS = {
+    "corn":         "ZC=F",
+    "soybean":      "ZS=F",
+    "soybeans":     "ZS=F",
+    "wheat":        "ZW=F",
+    "kc_wheat":     "KE=F",
+    "soybean_meal": "ZM=F",
+    "soybean_oil":  "ZL=F",
+    "oats":         "ZO=F",
+    "feeder_cattle": "GF=F",
+}
+
+# Month-code letter for CME-style contract symbols (e.g. ZCZ26.CBT)
+_MONTH_CODE = {
+    1:"F", 2:"G", 3:"H", 4:"J", 5:"K", 6:"M",
+    7:"N", 8:"Q", 9:"U", 10:"V", 11:"X", 12:"Z",
+}
+
+_ROOT_TICKER = {
+    "corn":         "ZC",
+    "soybean":      "ZS",
+    "soybeans":     "ZS",
+    "wheat":        "ZW",
+    "kc_wheat":     "KE",
+    "soybean_meal": "ZM",
+    "soybean_oil":  "ZL",
+    "oats":         "ZO",
+    "feeder_cattle": "GF",
+}
+
+
+def yf_symbol(commodity: str,
+              year: int | None = None,
+              month: int | None = None) -> str:
+    """Return the yfinance ticker for a commodity, optionally a specific contract."""
+    comm = commodity.lower()
+    if year and month:
+        root = _ROOT_TICKER.get(comm, "ZC")
+        mc   = _MONTH_CODE.get(month, "Z")
+        yr2  = str(year)[-2:]
+        return f"{root}{mc}{yr2}.CBT"
+    return _YFINANCE_CONTINUOUS.get(comm, "ZC=F")
+
+
+# Stooq compatibility shim — callers that still reference stooq_symbol get
+# a harmless string; unused downstream since _fetch_raw is now yf-based.
 def stooq_symbol(commodity: str,
                  year: int | None = None,
                  month: int | None = None) -> str:
-    # Stooq's free CSV feed only carries continuous front-month for CBOT
-    # grains — specific contract months return N/D. year/month are accepted
-    # for API parity; callers get continuous regardless.
-    return f"{GRAIN_ROOT[commodity.lower()]}.c"
+    return yf_symbol(commodity, year, month)
 
 
 # ---------------------------------------------------------------------------
-# Price fetch
+# Price fetch (yfinance — no API key, works from GitHub Actions)
 # ---------------------------------------------------------------------------
 
 _cache: dict[str, float] = {}
 
-# Stooq is happy to serve CSV from datacenter IPs (GitHub Actions, etc.),
-# unlike Yahoo which blocks yfinance and the chart API with 429s.
-# Row format: Symbol,Date,Time,Open,High,Low,Close,Volume
-#
-# Returns (close, date_str). Stooq's free daily-history endpoint now requires
-# an API key, so we only use this light quote endpoint and accumulate our
-# own history in state/price_history.json across runs.
+
 def _fetch_raw(symbol: str) -> tuple[float, str]:
-    url = f"https://stooq.com/q/l/?s={symbol}&f=sd2t2ohlcv&h&e=csv"
+    """Fetch last price via yfinance. Returns (raw_price, date_str).
+
+    yfinance returns grains in cents/bu — same as Stooq, so GRAIN_SCALE
+    factors are unchanged. feeder cattle (GF=F) returns ¢/lb likewise.
+    """
+    import yfinance as yf
+    from datetime import date as _date
+
     last_exc: Exception | None = None
     for attempt in range(3):
         try:
-            with httpx.Client(timeout=10, follow_redirects=True) as c:
-                r = c.get(url)
-                r.raise_for_status()
-            lines = r.text.strip().splitlines()
-            if len(lines) < 2:
-                raise RuntimeError(f"no rows for {symbol}")
-            cols = lines[1].split(",")
-            date  = cols[1] if len(cols) > 1 else ""
-            close = cols[6] if len(cols) > 6 else "N/D"
-            if close in ("N/D", ""):
-                raise RuntimeError(f"no close for {symbol}")
-            return float(close), date
+            ticker = yf.Ticker(symbol)
+            price  = ticker.fast_info.last_price
+            if price is None or price != price:  # None or NaN
+                raise RuntimeError(f"no price for {symbol}")
+            today  = _date.today().isoformat()
+            return float(price), today
         except Exception as e:
             last_exc = e
             if attempt < 2:
-                time.sleep(2 ** attempt)  # 1s, 2s back-off
+                time.sleep(2 ** attempt)
     raise last_exc  # type: ignore[misc]
 
 
@@ -1350,7 +1396,7 @@ def build_prices_snapshot() -> dict[str, Any]:
             "feeder_cattle": _price_detail("feeder_cattle", hist, fc_front,    fc_date),
         },
         "date":           datetime.now(timezone.utc).strftime("%Y-%m-%d"),
-        "source":         "stooq (end-of-day close)",
+        "source":         "yahoo finance (yfinance)",
         "generated_at":   datetime.now(timezone.utc).isoformat(),
     }
 
