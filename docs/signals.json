@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-12T14:25:03.114187+00:00",
+  "generated_at": "2026-06-12T15:39:04.537427+00:00",
   "signals": [
     {
       "signal_key": "corn|C3|SELL|4.5920",
@@ -10,8 +10,10 @@
       "action": "SELL",
       "target_price": 4.592,
       "note": "T3 \u00b7 June \u2014 8,492 bu (40% of 21,230) | Weather peak",
-      "live": null,
-      "status": "NO_DATA"
+      "live": 4.4325,
+      "status": "WAIT",
+      "prior_status": "WAIT",
+      "last_fired": null
     },
     {
       "signal_key": "soybean|S3|SELL|11.4400",
@@ -22,8 +24,10 @@
       "action": "SELL",
       "target_price": 11.44,
       "note": "T3 \u00b7 Jun\u2013Jul \u2014 1,974 bu (40% of 4,934) | Weather peak",
-      "live": null,
-      "status": "NO_DATA"
+      "live": 11.355,
+      "status": "WAIT",
+      "prior_status": "WAIT",
+      "last_fired": null
     }
   ]
 }
