@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-12T15:39:05.127800+00:00",
+  "generated_at": "2026-06-12T16:39:52.406649+00:00",
   "positions": [
     {
       "contract_id": "APP-CORN-2026",
@@ -11,7 +11,7 @@
       "basis_cost": null,
       "quantity": 1500,
       "note": "Ritchie Avg Pricing Program \u2014 2026 crop delivery, priced as avg cash Apr\u2013Jul 2026",
-      "live": 4.1575,
+      "live": 4.1475,
       "mtm_per_bu": null,
       "total_mtm": null
     },
@@ -25,7 +25,7 @@
       "basis_cost": null,
       "quantity": 500,
       "note": "Ritchie Avg Pricing Program \u2014 2026 crop delivery, priced as avg cash Apr\u2013Jul 2026",
-      "live": 11.1775,
+      "live": 11.175,
       "mtm_per_bu": null,
       "total_mtm": null
     },
@@ -39,7 +39,7 @@
       "basis_cost": null,
       "quantity": 9115,
       "note": "Unsold 2025 crop stored at Ritchie \u2014 available to sell",
-      "live": 4.1575,
+      "live": 4.1475,
       "mtm_per_bu": null,
       "total_mtm": null
     },
@@ -51,16 +51,16 @@
       "futures_month": 7,
       "futures_price": null,
       "basis_cost": null,
-      "quantity": 1967,
+      "quantity": 967,
       "note": "Unsold 2025 crop stored at Ritchie \u2014 available to sell",
-      "live": 11.1775,
+      "live": 11.175,
       "mtm_per_bu": null,
       "total_mtm": null
     }
   ],
   "open_bushels": {
     "corn": 10615,
-    "soybean": 2467,
+    "soybean": 1467,
     "wheat": 0
   }
 }
