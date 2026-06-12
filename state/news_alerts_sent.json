@@ -1,5 +1,5 @@
 {
-  "last_sent_at": "2026-05-10T00:02:11.941126+00:00",
+  "last_sent_at": "2026-06-12T00:44:45.864946+00:00",
   "sent_ids": [
     "trigger-corn-C1-2026",
     "trigger-corn-C2-2026",
@@ -7,6 +7,7 @@
     "trigger-soybean-S1-2026",
     "trigger-soybean-S2-2026",
     "trigger-soybean-S4-2026",
-    "usda-2026-05-10-Monthly_WASDE"
+    "usda-2026-05-10-Monthly_WASDE",
+    "usda-2026-06-12-Monthly_WASDE"
   ]
 }
