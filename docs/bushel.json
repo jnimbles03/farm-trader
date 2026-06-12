@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-06-12T21:18:05.977436Z",
+  "fetchedAt": "2026-06-12T22:02:22.372399Z",
   "company": "akronservices",
   "account": "FREIS FARMS LLC",
   "bushelsOnHand": {
@@ -98,11 +98,11 @@
     ],
     "soybeans": [
       {
-        "price": 11.24,
+        "price": 11.19,
         "period": "Jun",
         "futuresSymbol": "ZSN26",
         "futuresPrice": 11.135,
-        "basis": 0.11,
+        "basis": 0.06,
         "location": "Cargill Bloomington"
       },
       {
@@ -114,19 +114,19 @@
         "location": "Ritchie Grain Elevator"
       },
       {
-        "price": 11.03,
+        "price": 11.04,
         "period": "Jun",
         "futuresSymbol": "ZSN26",
         "futuresPrice": 11.135,
-        "basis": -0.1,
+        "basis": -0.09,
         "location": "Havana"
       },
       {
-        "price": 11.02,
+        "price": 11.0,
         "period": "Jun",
         "futuresSymbol": "ZSN26",
         "futuresPrice": 11.135,
-        "basis": -0.11,
+        "basis": -0.13,
         "location": "Strawn"
       },
       {
@@ -189,8 +189,8 @@
         "id": "CNCRG000OYFT",
         "type": "cash",
         "period": "Sep",
-        "bidPrice": 3.93,
-        "basisPrice": -0.46,
+        "bidPrice": 3.9,
+        "basisPrice": -0.49,
         "futuresPrice": 4.4025,
         "futuresSymbol": "ZCZ26",
         "canMakeOffer": true
@@ -199,8 +199,8 @@
         "id": "CNCRG000OAVX",
         "type": "cash",
         "period": "Oct",
-        "bidPrice": 3.98,
-        "basisPrice": -0.41,
+        "bidPrice": 3.97,
+        "basisPrice": -0.42,
         "futuresPrice": 4.4025,
         "futuresSymbol": "ZCZ26",
         "canMakeOffer": true
