@@ -1,18 +1,18 @@
 {
-  "corn": 4.1375,
-  "soy": 11.2875,
-  "wheat": 5.845,
-  "corn_dec": 4.4,
-  "soy_nov": 11.2875,
-  "wheat_jul": 5.845,
+  "corn": 4.1325,
+  "soy": 11.2675,
+  "wheat": 5.835,
+  "corn_dec": 4.3975,
+  "soy_nov": 11.2675,
+  "wheat_jul": 5.835,
   "corn_basis_il": null,
   "soy_basis_il": null,
   "feeder_cattle": 361.375,
   "detail": {
     "corn": {
       "prev_close": 4.155,
-      "day_chg": -0.0175,
-      "day_chg_pct": -0.42,
+      "day_chg": -0.0225,
+      "day_chg_pct": -0.54,
       "high_range": 4.9075,
       "low_range": 3.715,
       "range_days": 260,
@@ -20,8 +20,8 @@
     },
     "soy": {
       "prev_close": 11.345,
-      "day_chg": -0.0575,
-      "day_chg_pct": -0.51,
+      "day_chg": -0.0775,
+      "day_chg_pct": -0.68,
       "high_range": 12.13,
       "low_range": 9.615,
       "range_days": 260,
@@ -29,8 +29,8 @@
     },
     "wheat": {
       "prev_close": 5.9,
-      "day_chg": -0.055,
-      "day_chg_pct": -0.93,
+      "day_chg": -0.065,
+      "day_chg_pct": -1.1,
       "high_range": 6.74,
       "low_range": 4.95,
       "range_days": 260,
@@ -48,5 +48,5 @@
   },
   "date": "2026-06-16",
   "source": "yahoo finance (yfinance)",
-  "generated_at": "2026-06-16T03:08:12.995828+00:00"
+  "generated_at": "2026-06-16T04:30:43.980019+00:00"
 }
