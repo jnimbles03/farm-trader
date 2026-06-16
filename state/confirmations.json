@@ -215,6 +215,7 @@
     "live_price": 11.485,
     "message": "SELL alert: Soybean Nov '26 is at $11.48 (target $11.44). Just reply Y or N.",
     "prior_fired_price": null,
+    "pulses": {},
     "recipients": {
       "+16232937553": {
         "vote": null
