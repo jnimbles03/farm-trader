@@ -54,6 +54,9 @@ REPLY_TEXT        = os.environ.get("REPLY_TEXT", "").strip()
 REPLY_RECEIVED_AT = os.environ.get("REPLY_RECEIVED_AT", "").strip()
 TEXTBELT_KEY      = os.environ.get("TEXTBELT_KEY", "")
 ALERT_PHONE       = os.environ.get("ALERT_PHONE", "")
+# How many Y votes are needed to confirm a trade alert.
+# Default 1 = first Y wins; raise to 2 or 3 for unanimous-style quorum.
+REQUIRED_YES      = int(os.environ.get("REQUIRED_YES", "1"))
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger("collect_reply")
@@ -413,14 +416,15 @@ def main() -> int:
     recipients[REPLY_PHONE]["raw"]        = REPLY_TEXT
 
     # Aggregate status:
-    #   any "N"         → vetoed (terminal)
-    #   all "Y"         → confirmed (terminal)
-    #   otherwise       → pending (waiting on more replies)
+    #   any "N"                    → vetoed (terminal, immediate)
+    #   yes_count >= REQUIRED_YES  → confirmed (terminal)
+    #   otherwise                  → pending (waiting on more replies)
     prior_status = entry.get("status", "pending")
     votes = [r.get("vote") for r in recipients.values()]
+    yes_count = sum(1 for v in votes if v == "Y")
     if "N" in votes:
         entry["status"] = "vetoed"
-    elif votes and all(v == "Y" for v in votes):
+    elif yes_count >= REQUIRED_YES:
         entry["status"] = "confirmed"
     else:
         entry["status"] = "pending"
@@ -438,7 +442,7 @@ def main() -> int:
         if entry["status"] == "confirmed":
             send_follow_up(
                 phones,
-                f"FREIS FARM OK  All confirmed — {sig_key}",
+                f"FREIS FARM OK  Authorized — {sig_key}",
             )
         else:
             vetoers = [
