@@ -472,6 +472,7 @@ class Signal:
     action: str              # SELL | BUY_BACK
     target_price: float | None   # None = calendar-only (sell regardless of price)
     note: str
+    alloc_bu: int = 0            # allocated bushels for this tranche
 
 
 def load_contracts() -> list[Contract]:
@@ -569,6 +570,7 @@ def model(contracts: list[Contract]) -> list[Signal]:
                     f"({tr['pct']}% of {int(total_bu):,}) "
                     f"| {tr.get('note', '')}"
                 ),
+                alloc_bu     = alloc_bu,
             ))
             log.info(
                 "tranche_model: %s %s window OPEN %s→%s target=%s alloc=%s bu",
@@ -1623,31 +1625,46 @@ def evaluate_signals(state: dict[str, dict[str, Any]]) -> tuple[list[dict[str, A
             recipients = _recipients()
             month_abbr = _MONTH_ABBR[s.futures_month]
             yr2 = f"'{s.futures_year % 100:02d}"
-            verb = "SELL" if s.action == "SELL" else "BUY BACK"
+            bu_str = f"{s.alloc_bu:,} bu " if s.alloc_bu else ""
+            comm = s.commodity.capitalize()
 
-            # Build target clause — calendar tranches have no price target
-            if s.target_price is not None:
-                target_clause = f"target ${s.target_price:.2f}"
-            else:
-                target_clause = "calendar window — sell regardless of price"
+            # Sell/buy limit order language — an actionable brokerage
+            # instruction, not just a price alert.
+            if s.action == "SELL":
+                if s.target_price is not None:
+                    order_clause = (
+                        f"SELL LIMIT {bu_str}{comm} {month_abbr} {yr2}"
+                        f" @ ${s.target_price:.2f} — live ${live:.2f}"
+                    )
+                else:
+                    order_clause = (
+                        f"SELL {bu_str}{comm} {month_abbr} {yr2}"
+                        f" — seasonal window open, live ${live:.2f}"
+                    )
+            else:  # BUY_BACK
+                if s.target_price is not None:
+                    order_clause = (
+                        f"BUY LIMIT {bu_str}{comm} {month_abbr} {yr2}"
+                        f" @ ${s.target_price:.2f} — live ${live:.2f}"
+                    )
+                else:
+                    order_clause = (
+                        f"BUY {bu_str}{comm} {month_abbr} {yr2}"
+                        f" — live ${live:.2f}"
+                    )
 
             prior_price_tag = ""
             if last_fired_price:
                 delta = live - last_fired_price
                 sign  = "+" if delta >= 0 else ""
-                prior_price_tag = (
-                    f" [prior alert ${last_fired_price:.2f}, "
-                    f"{sign}${delta:.2f}]"
-                )
-            base_msg = (f"{verb} alert: "
-                        f"{s.commodity.capitalize()} {month_abbr} {yr2} is at "
-                        f"${live:.2f} ({target_clause})"
-                        f"{prior_price_tag}")
+                prior_price_tag = f" [{sign}${delta:.2f} since last alert]"
+
+            base_msg = order_clause + prior_price_tag
 
             sid: str | None = None
             if REPLY_WEBHOOK_URL and recipients:
                 sid = _short_id(s.signal_key, now)
-                msg = base_msg + ". Just reply Y or N."
+                msg = base_msg + ". Reply Y to authorize or N to hold."
                 _record_outbound(
                     sid, s.signal_key, msg, recipients,
                     live_price=round(live, 4),

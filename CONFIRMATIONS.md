@@ -1,9 +1,11 @@
 # SMS confirmation flow
 
-When a signal fires, every recipient in `ALERT_PHONE` gets a text and
-simply replies `Y` to confirm or `N` to veto. When everyone confirms,
-the group gets a follow-up "all confirmed" SMS. Any veto immediately
-notifies the group.
+When a signal fires, every recipient in `ALERT_PHONE` gets a text
+phrased as a direct brokerage instruction (e.g. `SELL LIMIT 5,000 bu
+Corn Dec 26 @ $4.85 — live $4.72`) and replies `Y` to authorize or `N`
+to hold. **The first `Y` from any recipient clears the trade** — no
+waiting on the others. Any `N` from any recipient immediately vetoes.
+The group gets a follow-up SMS on either terminal outcome.
 
 A 6-char `short_id` is still minted internally so the dashboard / state
 file can distinguish simultaneous firings, but it's no longer printed
@@ -30,7 +32,7 @@ TextBelt ──── delivers SMS ───▶ recipient phones
                                      ▼
                      scripts/collect_reply.py
                      - updates state/confirmations.json
-                     - on "all Y" → send group "confirmed" SMS
+                     - on REQUIRED_YES Y votes → send group "authorized" SMS
                      - on any "N" → send group "vetoed" SMS
                      - commits + pushes
 ```
@@ -98,6 +100,7 @@ Default cadence (all configurable via workflow env vars):
 
 | Env var                | Default | Meaning                                        |
 |------------------------|---------|------------------------------------------------|
+| `REQUIRED_YES`         | 1       | Y votes needed to authorize (set secret to 2 or 3 for stricter quorum) |
 | `FIRST_REMINDER_DELAY` | 300     | Seconds after `sent_at` before the 1st nudge   |
 | `REMINDER_INTERVAL`    | 60      | Seconds between subsequent nudges              |
 | `MAX_REMINDERS`        | 5       | Hard cap per recipient — after this, give up   |
@@ -148,12 +151,12 @@ and commit. `workflow_dispatch` still works for on-demand testing.
    get a plain test SMS (no confirmation tracking — `test-sms.yml`
    deliberately doesn't invoke the confirmation path).
 2. Wait for the next scheduled `Evaluate grain signals` run (or dispatch it
-   manually) with a signal in HIT state. You'll get an SMS ending with
-   `Reply Y to confirm, N to veto.`
-3. Reply `Y`. Within ~20s, a new commit should appear on `main`
-   from `freis-farm-bot` updating `state/confirmations.json`.
-4. When every recipient has replied Y, a final group SMS lands:
-   `FREIS FARM OK All confirmed — <signal_key>`.
+   manually) with a signal in HIT state. You'll get an SMS like:
+   `SELL LIMIT Corn Dec 26 @ $4.85 — live $4.72. Reply Y to authorize or N to hold.`
+3. Reply `Y` from any authorized phone. Within ~20s, a new commit should
+   appear on `main` from `freis-farm-bot` updating `state/confirmations.json`.
+4. The group gets a final SMS: `FREIS FARM OK  Authorized — <signal_key>`.
+   (A `N` from anyone at any point sends `FREIS FARM X  Vetoed by ... — <signal_key>`.)
 
 ## Rotating the TextBelt key
 
