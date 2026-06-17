@@ -508,5 +508,515 @@
     "mtime": 1781723977.0736685,
     "ast_hash": "e9144fdd184e706aa1885867002db617",
     "semantic_hash": ""
+  },
+  "/home/user/farm-trader/.claude/settings.json": {
+    "mtime": 1781725426.9152315,
+    "ast_hash": "e1073342e958ac9f00716938c8f165e3",
+    "semantic_hash": "e1073342e958ac9f00716938c8f165e3"
+  },
+  "/home/user/farm-trader/cloudflare-worker/package.json": {
+    "mtime": 1781723977.031869,
+    "ast_hash": "c1a3bc4248374d94af34ba26e11ec1f6",
+    "semantic_hash": "c1a3bc4248374d94af34ba26e11ec1f6"
+  },
+  "/home/user/farm-trader/cloudflare-worker/src/index.ts": {
+    "mtime": 1781723977.031869,
+    "ast_hash": "f6cb10dd8380f70a4bbe62b8f4480180",
+    "semantic_hash": "f6cb10dd8380f70a4bbe62b8f4480180"
+  },
+  "/home/user/farm-trader/cloudflare-worker/tsconfig.json": {
+    "mtime": 1781723977.031869,
+    "ast_hash": "2e686816941e7b82e5e14e85056baa11",
+    "semantic_hash": "2e686816941e7b82e5e14e85056baa11"
+  },
+  "/home/user/farm-trader/contracts.demo.json": {
+    "mtime": 1781723977.031869,
+    "ast_hash": "8ee97ccaab8d497a785914e5212ba79a",
+    "semantic_hash": "8ee97ccaab8d497a785914e5212ba79a"
+  },
+  "/home/user/farm-trader/contracts.json": {
+    "mtime": 1781723977.031869,
+    "ast_hash": "1eae2d061391ca11a1c31d2ebf433c11",
+    "semantic_hash": "1eae2d061391ca11a1c31d2ebf433c11"
+  },
+  "/home/user/farm-trader/data/elevator_bids.json": {
+    "mtime": 1781723977.031869,
+    "ast_hash": "9b7cd707d215966f3ed04e5c2ef7728c",
+    "semantic_hash": "9b7cd707d215966f3ed04e5c2ef7728c"
+  },
+  "/home/user/farm-trader/data/recipients.json": {
+    "mtime": 1781723977.036424,
+    "ast_hash": "cccb1b1725417a0ecb4a0c933f9c2877",
+    "semantic_hash": "cccb1b1725417a0ecb4a0c933f9c2877"
+  },
+  "/home/user/farm-trader/docs/advisor/advisor_context.json": {
+    "mtime": 1781723977.0416687,
+    "ast_hash": "4d7060c5635e229bccfc53e7b886600a",
+    "semantic_hash": "4d7060c5635e229bccfc53e7b886600a"
+  },
+  "/home/user/farm-trader/docs/advisor/ritchie_live.json": {
+    "mtime": 1781723977.0416687,
+    "ast_hash": "d1915f704741bf18f707d7aa7606d64e",
+    "semantic_hash": "d1915f704741bf18f707d7aa7606d64e"
+  },
+  "/home/user/farm-trader/docs/advisor/usda_calendar.json": {
+    "mtime": 1781723977.0416687,
+    "ast_hash": "9638454c0cc2c9c14023fb3d1aa76de4",
+    "semantic_hash": "9638454c0cc2c9c14023fb3d1aa76de4"
+  },
+  "/home/user/farm-trader/docs/bushel.json": {
+    "mtime": 1781723977.0416687,
+    "ast_hash": "8a8378140db562723a82dcebce07acb3",
+    "semantic_hash": "8a8378140db562723a82dcebce07acb3"
+  },
+  "/home/user/farm-trader/docs/bushel_raw.json": {
+    "mtime": 1781723977.0456686,
+    "ast_hash": "2ededb527b2a24e03a93d2570f2fe9eb",
+    "semantic_hash": "2ededb527b2a24e03a93d2570f2fe9eb"
+  },
+  "/home/user/farm-trader/docs/confirmations.json": {
+    "mtime": 1781723977.0456686,
+    "ast_hash": "ec8c2cfe784280f131269e71d22ac961",
+    "semantic_hash": "ec8c2cfe784280f131269e71d22ac961"
+  },
+  "/home/user/farm-trader/docs/elevator_bids.json": {
+    "mtime": 1781723977.0456686,
+    "ast_hash": "9b7cd707d215966f3ed04e5c2ef7728c",
+    "semantic_hash": "9b7cd707d215966f3ed04e5c2ef7728c"
+  },
+  "/home/user/farm-trader/docs/last_run.json": {
+    "mtime": 1781723977.0736685,
+    "ast_hash": "478e088deac84c2f13b9eb6f28cd61e1",
+    "semantic_hash": "478e088deac84c2f13b9eb6f28cd61e1"
+  },
+  "/home/user/farm-trader/docs/ledger.json": {
+    "mtime": 1781723977.0736685,
+    "ast_hash": "91510fb11b438c5ca4dfdb55002d0565",
+    "semantic_hash": "91510fb11b438c5ca4dfdb55002d0565"
+  },
+  "/home/user/farm-trader/docs/news.json": {
+    "mtime": 1781723977.0736685,
+    "ast_hash": "672398b815a30265b1f9d1433742be8f",
+    "semantic_hash": "672398b815a30265b1f9d1433742be8f"
+  },
+  "/home/user/farm-trader/docs/orders.json": {
+    "mtime": 1781723977.0736685,
+    "ast_hash": "d794a1345aae4ff71b433f0563ae0773",
+    "semantic_hash": "d794a1345aae4ff71b433f0563ae0773"
+  },
+  "/home/user/farm-trader/docs/plan.json": {
+    "mtime": 1781723977.0736685,
+    "ast_hash": "84be2ec9961f427e203beac44aceb906",
+    "semantic_hash": "84be2ec9961f427e203beac44aceb906"
+  },
+  "/home/user/farm-trader/docs/positions.json": {
+    "mtime": 1781723977.0736685,
+    "ast_hash": "d32de6dd916fab6f98f721e07d695f0d",
+    "semantic_hash": "d32de6dd916fab6f98f721e07d695f0d"
+  },
+  "/home/user/farm-trader/docs/prices.json": {
+    "mtime": 1781723977.0776687,
+    "ast_hash": "2917378d26b823ef951ade684b8cb3f3",
+    "semantic_hash": "2917378d26b823ef951ade684b8cb3f3"
+  },
+  "/home/user/farm-trader/docs/sales_log.json": {
+    "mtime": 1781723977.0776687,
+    "ast_hash": "1f14b11c8b30fc9d4f1206067b0895e0",
+    "semantic_hash": "1f14b11c8b30fc9d4f1206067b0895e0"
+  },
+  "/home/user/farm-trader/docs/signals.json": {
+    "mtime": 1781723977.0776687,
+    "ast_hash": "39f217e9d3aac26cccb03c9653754b3c",
+    "semantic_hash": "39f217e9d3aac26cccb03c9653754b3c"
+  },
+  "/home/user/farm-trader/evaluate.py": {
+    "mtime": 1781723977.0776687,
+    "ast_hash": "45925c9da975b7e0db72c50e2facf8c5",
+    "semantic_hash": "45925c9da975b7e0db72c50e2facf8c5"
+  },
+  "/home/user/farm-trader/patch_advisor_bundle.py": {
+    "mtime": 1781723977.0776687,
+    "ast_hash": "2050c3cef0aea7b11113d621dc6c4181",
+    "semantic_hash": "2050c3cef0aea7b11113d621dc6c4181"
+  },
+  "/home/user/farm-trader/pull_bushel_settlements.py": {
+    "mtime": 1781723977.0776687,
+    "ast_hash": "4b744d1c77252fecf176a4aa8a95edfd",
+    "semantic_hash": "4b744d1c77252fecf176a4aa8a95edfd"
+  },
+  "/home/user/farm-trader/refresh_elevator_bids.py": {
+    "mtime": 1781723977.0776687,
+    "ast_hash": "2c35e28bc88f7bf8e3e1aaeb0eb42bdf",
+    "semantic_hash": "2c35e28bc88f7bf8e3e1aaeb0eb42bdf"
+  },
+  "/home/user/farm-trader/refresh_ib_iv.py": {
+    "mtime": 1781723977.0776687,
+    "ast_hash": "6f7c074bafcb0873820ac84b6ec5b138",
+    "semantic_hash": "6f7c074bafcb0873820ac84b6ec5b138"
+  },
+  "/home/user/farm-trader/refresh_ib_iv.sh": {
+    "mtime": 1781723977.0776687,
+    "ast_hash": "238517b92b2e8e12c810d89c24affeb6",
+    "semantic_hash": "238517b92b2e8e12c810d89c24affeb6"
+  },
+  "/home/user/farm-trader/refresh_ritchie.py": {
+    "mtime": 1781723977.0776687,
+    "ast_hash": "b1cb83977aacc68dad5f11f90d5b0af7",
+    "semantic_hash": "b1cb83977aacc68dad5f11f90d5b0af7"
+  },
+  "/home/user/farm-trader/sales_ledger.json": {
+    "mtime": 1781723977.0816686,
+    "ast_hash": "f7865d2f5cdc3fd7f60403972c5a842e",
+    "semantic_hash": "f7865d2f5cdc3fd7f60403972c5a842e"
+  },
+  "/home/user/farm-trader/scrape_bushel_bids.py": {
+    "mtime": 1781723977.0816686,
+    "ast_hash": "de437e446b41f83d4b91eb217c6ae229",
+    "semantic_hash": "de437e446b41f83d4b91eb217c6ae229"
+  },
+  "/home/user/farm-trader/scripts/accept_order.py": {
+    "mtime": 1781723977.0816686,
+    "ast_hash": "a89940365e8d5901ceedb7509bfdf8a5",
+    "semantic_hash": "a89940365e8d5901ceedb7509bfdf8a5"
+  },
+  "/home/user/farm-trader/scripts/bootstrap_history.py": {
+    "mtime": 1781723977.0862775,
+    "ast_hash": "5af98ad75f643d94b10b9c75f493eb9c",
+    "semantic_hash": "5af98ad75f643d94b10b9c75f493eb9c"
+  },
+  "/home/user/farm-trader/scripts/build_sales_log_from_bushel.py": {
+    "mtime": 1781723977.0862775,
+    "ast_hash": "9cba1aafb9b8311ff2206016c462e3c4",
+    "semantic_hash": "9cba1aafb9b8311ff2206016c462e3c4"
+  },
+  "/home/user/farm-trader/scripts/collect_reply.py": {
+    "mtime": 1781723977.0862775,
+    "ast_hash": "09f178d4e8aee282dccda917f970ebd6",
+    "semantic_hash": "09f178d4e8aee282dccda917f970ebd6"
+  },
+  "/home/user/farm-trader/scripts/freshness_check.py": {
+    "mtime": 1781723977.0862775,
+    "ast_hash": "6ee9bc375b73fac3a7a6554c42b1883b",
+    "semantic_hash": "6ee9bc375b73fac3a7a6554c42b1883b"
+  },
+  "/home/user/farm-trader/scripts/pulse_status.py": {
+    "mtime": 1781723977.0862775,
+    "ast_hash": "d063f6b244b2dbb06220a3f55047dc52",
+    "semantic_hash": "d063f6b244b2dbb06220a3f55047dc52"
+  },
+  "/home/user/farm-trader/scripts/remind_pending.py": {
+    "mtime": 1781723977.0862775,
+    "ast_hash": "4c186e1331624267ebe2afd824d3faec",
+    "semantic_hash": "4c186e1331624267ebe2afd824d3faec"
+  },
+  "/home/user/farm-trader/scripts/sales_log_static.json": {
+    "mtime": 1781723977.0862775,
+    "ast_hash": "5a94435eec1f7f988435620779e6c333",
+    "semantic_hash": "5a94435eec1f7f988435620779e6c333"
+  },
+  "/home/user/farm-trader/scripts/scrape_bushel.py": {
+    "mtime": 1781723977.0862775,
+    "ast_hash": "a658e8b831839eeb46eb7d0912a9f824",
+    "semantic_hash": "a658e8b831839eeb46eb7d0912a9f824"
+  },
+  "/home/user/farm-trader/scripts/send_farm_test_broadcast.py": {
+    "mtime": 1781723977.0862775,
+    "ast_hash": "956c44205e7e3209e4cf7e37e733cf56",
+    "semantic_hash": "956c44205e7e3209e4cf7e37e733cf56"
+  },
+  "/home/user/farm-trader/scripts/send_realistic_test.py": {
+    "mtime": 1781723977.0862775,
+    "ast_hash": "ab8f1c46c3714e7915eff61584093837",
+    "semantic_hash": "ab8f1c46c3714e7915eff61584093837"
+  },
+  "/home/user/farm-trader/scripts/send_realistic_test_nowebhook.py": {
+    "mtime": 1781723977.0862775,
+    "ast_hash": "52ffe889ecdf1508e6f96b4c7fba2b4c",
+    "semantic_hash": "52ffe889ecdf1508e6f96b4c7fba2b4c"
+  },
+  "/home/user/farm-trader/scripts/send_realistic_test_plain.py": {
+    "mtime": 1781723977.0862775,
+    "ast_hash": "547c57c1334a72972a0c13015106ed49",
+    "semantic_hash": "547c57c1334a72972a0c13015106ed49"
+  },
+  "/home/user/farm-trader/scripts/test_bushel_connectivity.py": {
+    "mtime": 1781723977.0862775,
+    "ast_hash": "63eb1459f94608a7b34b126cd4084325",
+    "semantic_hash": "63eb1459f94608a7b34b126cd4084325"
+  },
+  "/home/user/farm-trader/scripts/who_replied.py": {
+    "mtime": 1781723977.0862775,
+    "ast_hash": "88d76c7106df25dedaa8d4d65aa87d4f",
+    "semantic_hash": "88d76c7106df25dedaa8d4d65aa87d4f"
+  },
+  "/home/user/farm-trader/state/alerts_state.json": {
+    "mtime": 1781723977.0862775,
+    "ast_hash": "6fbf91d017a189175055a2c73d6d69ad",
+    "semantic_hash": "6fbf91d017a189175055a2c73d6d69ad"
+  },
+  "/home/user/farm-trader/state/confirmations.json": {
+    "mtime": 1781723977.0914543,
+    "ast_hash": "55755e8976ba5909c942351147f24c7d",
+    "semantic_hash": "55755e8976ba5909c942351147f24c7d"
+  },
+  "/home/user/farm-trader/state/news_alerts_sent.json": {
+    "mtime": 1781723977.0914543,
+    "ast_hash": "92a9f72e89acdc53abc1c4d8b07f6db6",
+    "semantic_hash": "92a9f72e89acdc53abc1c4d8b07f6db6"
+  },
+  "/home/user/farm-trader/state/price_history.json": {
+    "mtime": 1781723977.0914543,
+    "ast_hash": "36b73c80b54b564b73b50266a01eeb86",
+    "semantic_hash": "36b73c80b54b564b73b50266a01eeb86"
+  },
+  "/home/user/farm-trader/usda_alerts.py": {
+    "mtime": 1781723977.0914543,
+    "ast_hash": "6358af885e4ba98f080ee70c8093a521",
+    "semantic_hash": "6358af885e4ba98f080ee70c8093a521"
+  },
+  "/home/user/farm-trader/.claude/CLAUDE.md": {
+    "mtime": 1781725426.9148746,
+    "ast_hash": "db73b0edd7ffbc61ceac177130730865",
+    "semantic_hash": "db73b0edd7ffbc61ceac177130730865"
+  },
+  "/home/user/farm-trader/.claude/skills/graphify/SKILL.md": {
+    "mtime": 1781725426.9142094,
+    "ast_hash": "9789fc1893135c6f4088d1012f2a1f62",
+    "semantic_hash": "9789fc1893135c6f4088d1012f2a1f62"
+  },
+  "/home/user/farm-trader/.claude/skills/graphify/references/add-watch.md": {
+    "mtime": 1781725423.261336,
+    "ast_hash": "0df0589623217ca38a12bdcabfb42f4c",
+    "semantic_hash": "0df0589623217ca38a12bdcabfb42f4c"
+  },
+  "/home/user/farm-trader/.claude/skills/graphify/references/exports.md": {
+    "mtime": 1781725423.261336,
+    "ast_hash": "c04ddf8f1f5ef5e262ebec491a523c74",
+    "semantic_hash": "c04ddf8f1f5ef5e262ebec491a523c74"
+  },
+  "/home/user/farm-trader/.claude/skills/graphify/references/extraction-spec.md": {
+    "mtime": 1781725423.261336,
+    "ast_hash": "24808b03abfeaf5f6435bb69c0125b2c",
+    "semantic_hash": "24808b03abfeaf5f6435bb69c0125b2c"
+  },
+  "/home/user/farm-trader/.claude/skills/graphify/references/github-and-merge.md": {
+    "mtime": 1781725423.261336,
+    "ast_hash": "cde13df085e4c492aeb7ba298a996d0d",
+    "semantic_hash": "cde13df085e4c492aeb7ba298a996d0d"
+  },
+  "/home/user/farm-trader/.claude/skills/graphify/references/hooks.md": {
+    "mtime": 1781725423.261336,
+    "ast_hash": "3f545db6ce646650bb9de588f5512a27",
+    "semantic_hash": "3f545db6ce646650bb9de588f5512a27"
+  },
+  "/home/user/farm-trader/.claude/skills/graphify/references/query.md": {
+    "mtime": 1781725423.265336,
+    "ast_hash": "7d1ff295a0e0aa1cc9a14e52c3a19202",
+    "semantic_hash": "7d1ff295a0e0aa1cc9a14e52c3a19202"
+  },
+  "/home/user/farm-trader/.claude/skills/graphify/references/transcribe.md": {
+    "mtime": 1781725423.265336,
+    "ast_hash": "70f6aa30d6211f3a2c7e9fc45479f50c",
+    "semantic_hash": "70f6aa30d6211f3a2c7e9fc45479f50c"
+  },
+  "/home/user/farm-trader/.claude/skills/graphify/references/update.md": {
+    "mtime": 1781725423.265336,
+    "ast_hash": "0662e1a77b21d670132cd5855954bfff",
+    "semantic_hash": "0662e1a77b21d670132cd5855954bfff"
+  },
+  "/home/user/farm-trader/.github/workflows/accept-order.yml": {
+    "mtime": 1781723977.0216687,
+    "ast_hash": "d1f2680030b4a8bce165a7e612583ad3",
+    "semantic_hash": "d1f2680030b4a8bce165a7e612583ad3"
+  },
+  "/home/user/farm-trader/.github/workflows/alerts-config-audit.yml": {
+    "mtime": 1781723977.026399,
+    "ast_hash": "36b27b717b020ba84baf5eec189c991a",
+    "semantic_hash": "36b27b717b020ba84baf5eec189c991a"
+  },
+  "/home/user/farm-trader/.github/workflows/build-advisor-context.yml": {
+    "mtime": 1781723977.026399,
+    "ast_hash": "ac37bcda1baa52ae2a7f5361fb47c406",
+    "semantic_hash": "ac37bcda1baa52ae2a7f5361fb47c406"
+  },
+  "/home/user/farm-trader/.github/workflows/bushel-connectivity-check.yml": {
+    "mtime": 1781723977.026399,
+    "ast_hash": "bc0ae416fd1dbf71636df167baa225ad",
+    "semantic_hash": "bc0ae416fd1dbf71636df167baa225ad"
+  },
+  "/home/user/farm-trader/.github/workflows/collect-reply.yml": {
+    "mtime": 1781723977.026399,
+    "ast_hash": "206ef59a103fea34050a78954eace3f5",
+    "semantic_hash": "206ef59a103fea34050a78954eace3f5"
+  },
+  "/home/user/farm-trader/.github/workflows/evaluate.yml": {
+    "mtime": 1781723977.026399,
+    "ast_hash": "0ba6b7cb678e098ab7374898e6a30bde",
+    "semantic_hash": "0ba6b7cb678e098ab7374898e6a30bde"
+  },
+  "/home/user/farm-trader/.github/workflows/farm-test-broadcast.yml": {
+    "mtime": 1781723977.026399,
+    "ast_hash": "84d5ba7650f615eb81a792237f1d854a",
+    "semantic_hash": "84d5ba7650f615eb81a792237f1d854a"
+  },
+  "/home/user/farm-trader/.github/workflows/freshness-check.yml": {
+    "mtime": 1781723977.026399,
+    "ast_hash": "21991e1f7f41bebdd1a0b6a5ce7c0c46",
+    "semantic_hash": "21991e1f7f41bebdd1a0b6a5ce7c0c46"
+  },
+  "/home/user/farm-trader/.github/workflows/pulse-status.yml": {
+    "mtime": 1781723977.026399,
+    "ast_hash": "e31217a2dba6c365f55ae8742aa89640",
+    "semantic_hash": "e31217a2dba6c365f55ae8742aa89640"
+  },
+  "/home/user/farm-trader/.github/workflows/recipients-audit.yml": {
+    "mtime": 1781723977.026399,
+    "ast_hash": "449e95e2f8e2689ebb80e938429ecbe9",
+    "semantic_hash": "449e95e2f8e2689ebb80e938429ecbe9"
+  },
+  "/home/user/farm-trader/.github/workflows/refresh-bushel.yml": {
+    "mtime": 1781723977.026399,
+    "ast_hash": "2a509c879c416139feed6d5331585c3e",
+    "semantic_hash": "2a509c879c416139feed6d5331585c3e"
+  },
+  "/home/user/farm-trader/.github/workflows/remind-pending.yml": {
+    "mtime": 1781723977.026399,
+    "ast_hash": "70835e0005ba29e8d4f218798bac1d40",
+    "semantic_hash": "70835e0005ba29e8d4f218798bac1d40"
+  },
+  "/home/user/farm-trader/.github/workflows/static.yml": {
+    "mtime": 1781723977.026399,
+    "ast_hash": "3d6bebaf18a20fc4a573fe6104b5d64c",
+    "semantic_hash": "3d6bebaf18a20fc4a573fe6104b5d64c"
+  },
+  "/home/user/farm-trader/.github/workflows/test-confirmation.yml": {
+    "mtime": 1781723977.026399,
+    "ast_hash": "858a7d8a3dfaf9932b4975f3e7190f3b",
+    "semantic_hash": "858a7d8a3dfaf9932b4975f3e7190f3b"
+  },
+  "/home/user/farm-trader/.github/workflows/test-realistic-alert.yml": {
+    "mtime": 1781723977.026399,
+    "ast_hash": "dd440fae6e003ea7badd7232438047b7",
+    "semantic_hash": "dd440fae6e003ea7badd7232438047b7"
+  },
+  "/home/user/farm-trader/.github/workflows/test-sms.yml": {
+    "mtime": 1781723977.026399,
+    "ast_hash": "569bd8102d63964f249fecc6a0104764",
+    "semantic_hash": "569bd8102d63964f249fecc6a0104764"
+  },
+  "/home/user/farm-trader/CLAUDE.md": {
+    "mtime": 1781725426.915032,
+    "ast_hash": "82efb97a359f5c7290bf2513d14686be",
+    "semantic_hash": "82efb97a359f5c7290bf2513d14686be"
+  },
+  "/home/user/farm-trader/CONFIRMATIONS.md": {
+    "mtime": 1781723977.026399,
+    "ast_hash": "20583d5768a1d4ca8c0305dcf9b94941",
+    "semantic_hash": "20583d5768a1d4ca8c0305dcf9b94941"
+  },
+  "/home/user/farm-trader/IB_GATEWAY_SETUP.md": {
+    "mtime": 1781723977.026399,
+    "ast_hash": "e589a9290e2f9e1d1fa47c2c9cac48f1",
+    "semantic_hash": "e589a9290e2f9e1d1fa47c2c9cac48f1"
+  },
+  "/home/user/farm-trader/README.md": {
+    "mtime": 1781723977.026399,
+    "ast_hash": "da8628e026fae26a8cfcaca795c8e558",
+    "semantic_hash": "da8628e026fae26a8cfcaca795c8e558"
+  },
+  "/home/user/farm-trader/cloudflare-worker/BOT_PROMPT.md": {
+    "mtime": 1781723977.031869,
+    "ast_hash": "6dd1c94fc3c19b8cf9a06688271208fc",
+    "semantic_hash": "6dd1c94fc3c19b8cf9a06688271208fc"
+  },
+  "/home/user/farm-trader/cloudflare-worker/README.md": {
+    "mtime": 1781723977.031869,
+    "ast_hash": "ea32f3ede6489a4050723b003adb6340",
+    "semantic_hash": "ea32f3ede6489a4050723b003adb6340"
+  },
+  "/home/user/farm-trader/docs/_pre_unify_backup/farm-ops.html": {
+    "mtime": 1781723977.0372717,
+    "ast_hash": "ceb00e486edcb5e5821fc7d0e2e16d1e",
+    "semantic_hash": "ceb00e486edcb5e5821fc7d0e2e16d1e"
+  },
+  "/home/user/farm-trader/docs/_pre_unify_backup/hedge.html": {
+    "mtime": 1781723977.0387342,
+    "ast_hash": "e98ae7960798ff5ab826b1051f254f64",
+    "semantic_hash": "e98ae7960798ff5ab826b1051f254f64"
+  },
+  "/home/user/farm-trader/docs/_pre_unify_backup/home.html": {
+    "mtime": 1781723977.0387342,
+    "ast_hash": "dee801bacb1b441eead99bdd4b072302",
+    "semantic_hash": "dee801bacb1b441eead99bdd4b072302"
+  },
+  "/home/user/farm-trader/docs/_pre_unify_backup/index.html": {
+    "mtime": 1781723977.0387342,
+    "ast_hash": "e3d63ad749314a4752c56d7a3bc884ab",
+    "semantic_hash": "e3d63ad749314a4752c56d7a3bc884ab"
+  },
+  "/home/user/farm-trader/docs/admin.html": {
+    "mtime": 1781723977.0387342,
+    "ast_hash": "ec341fd3289594e8b4c6350256895b4e",
+    "semantic_hash": "ec341fd3289594e8b4c6350256895b4e"
+  },
+  "/home/user/farm-trader/docs/books.html": {
+    "mtime": 1781723977.0416687,
+    "ast_hash": "f54851ba1760df91d455be997467ed5d",
+    "semantic_hash": "f54851ba1760df91d455be997467ed5d"
+  },
+  "/home/user/farm-trader/docs/devices.html": {
+    "mtime": 1781723977.0456686,
+    "ast_hash": "2e40afdd0c51a3a316661eba249c4729",
+    "semantic_hash": "2e40afdd0c51a3a316661eba249c4729"
+  },
+  "/home/user/farm-trader/docs/farm-ops.html": {
+    "mtime": 1781723977.0456686,
+    "ast_hash": "86ae9da7478e8e17bdc54b809dfb12bc",
+    "semantic_hash": "86ae9da7478e8e17bdc54b809dfb12bc"
+  },
+  "/home/user/farm-trader/docs/hedge.html": {
+    "mtime": 1781723977.0696685,
+    "ast_hash": "54c210f4b4f1ad49f9792b980e45e4cc",
+    "semantic_hash": "54c210f4b4f1ad49f9792b980e45e4cc"
+  },
+  "/home/user/farm-trader/docs/home.html": {
+    "mtime": 1781723977.0696685,
+    "ast_hash": "ba14f27c5e73333c19c3506788a17d07",
+    "semantic_hash": "ba14f27c5e73333c19c3506788a17d07"
+  },
+  "/home/user/farm-trader/docs/index-legacy.html": {
+    "mtime": 1781723977.0736685,
+    "ast_hash": "65554fce1099944e9b0b3ee9c650e402",
+    "semantic_hash": "65554fce1099944e9b0b3ee9c650e402"
+  },
+  "/home/user/farm-trader/docs/index.html": {
+    "mtime": 1781723977.0736685,
+    "ast_hash": "f698510d1d7c3d2ea325413d9bb9b348",
+    "semantic_hash": "f698510d1d7c3d2ea325413d9bb9b348"
+  },
+  "/home/user/farm-trader/jsx-patch.md": {
+    "mtime": 1781723977.0776687,
+    "ast_hash": "bf1bb76f07632737ab32496968780df9",
+    "semantic_hash": "bf1bb76f07632737ab32496968780df9"
+  },
+  "/home/user/farm-trader/requirements.txt": {
+    "mtime": 1781723977.0816686,
+    "ast_hash": "933873d706b5d864f4a1278811403e1f",
+    "semantic_hash": "933873d706b5d864f4a1278811403e1f"
+  },
+  "/home/user/farm-trader/docs/freisfarm-dark.png": {
+    "mtime": 1781723977.0576684,
+    "ast_hash": "aff3f6882178450399274d92966bdd59",
+    "semantic_hash": "aff3f6882178450399274d92966bdd59"
+  },
+  "/home/user/farm-trader/docs/freisfarm-light.png": {
+    "mtime": 1781723977.0656686,
+    "ast_hash": "91593b41c25964129b1c9dd4863977bf",
+    "semantic_hash": "91593b41c25964129b1c9dd4863977bf"
+  },
+  "/home/user/farm-trader/docs/logo.svg": {
+    "mtime": 1781723977.0736685,
+    "ast_hash": "e9144fdd184e706aa1885867002db617",
+    "semantic_hash": "e9144fdd184e706aa1885867002db617"
   }
 }
