@@ -1,6 +1,15 @@
 {
   "items": [
     {
+      "id": "policy-2026-06-18-fomc_rate_decision_sep",
+      "date": "2026-06-18",
+      "title": "FOMC rate decision + SEP",
+      "impact": "L",
+      "affects": "both",
+      "source": "Fed",
+      "category": "policy"
+    },
+    {
       "id": "usda-2026-06-12-Monthly_WASDE",
       "date": "2026-06-12",
       "title": "USDA: Monthly WASDE",
@@ -18,5 +27,5 @@
       "category": "geopolitical"
     }
   ],
-  "generated_at": "2026-06-17T23:49:53.953432+00:00"
+  "generated_at": "2026-06-18T00:44:01.355579+00:00"
 }
