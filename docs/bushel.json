@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-06-18T21:28:49.099094Z",
+  "fetchedAt": "2026-06-18T22:18:11.285601Z",
   "company": "akronservices",
   "account": "FREIS FARMS LLC",
   "bushelsOnHand": {
@@ -56,19 +56,19 @@
   "bidsByLocation": {
     "corn": [
       {
-        "price": 4.15,
+        "price": 4.16,
         "period": "Jun",
         "futuresSymbol": "ZCN26",
         "futuresPrice": 4.175,
-        "basis": -0.02,
+        "basis": -0.01,
         "location": "Havana"
       },
       {
-        "price": 4.12,
+        "price": 4.14,
         "period": "Jun",
         "futuresSymbol": "ZCN26",
         "futuresPrice": 4.175,
-        "basis": -0.05,
+        "basis": -0.03,
         "location": "Lacon"
       },
       {
@@ -85,15 +85,15 @@
         "futuresSymbol": "ZCN26",
         "futuresPrice": 4.175,
         "basis": -0.07,
-        "location": "Annawan"
+        "location": "Creve Cr"
       },
       {
-        "price": 4.1,
+        "price": 4.08,
         "period": "Jun",
         "futuresSymbol": "ZCN26",
         "futuresPrice": 4.175,
-        "basis": -0.07,
-        "location": "Creve Cr"
+        "basis": -0.09,
+        "location": "Biourja Peoria"
       }
     ],
     "soybeans": [
@@ -122,12 +122,12 @@
         "location": "Havana"
       },
       {
-        "price": 11.11,
+        "price": 11.09,
         "period": "Jun",
         "futuresSymbol": "ZSN26",
         "futuresPrice": 11.2275,
-        "basis": -0.11,
-        "location": "Strawn"
+        "basis": -0.13,
+        "location": "Lacon"
       },
       {
         "price": 11.09,
@@ -135,7 +135,7 @@
         "futuresSymbol": "ZSN26",
         "futuresPrice": 11.2275,
         "basis": -0.13,
-        "location": "Lacon"
+        "location": "Strawn"
       }
     ]
   },
@@ -179,8 +179,8 @@
         "id": "CNCRG000OYFL",
         "type": "cash",
         "period": "Aug",
-        "bidPrice": 3.97,
-        "basisPrice": -0.28,
+        "bidPrice": 3.98,
+        "basisPrice": -0.27,
         "futuresPrice": 4.2525,
         "futuresSymbol": "ZCU26",
         "canMakeOffer": true
@@ -251,7 +251,7 @@
         "id": "SBCRG000OYFM",
         "type": "cash",
         "period": "Aug",
-        "bidPrice": 11.27,
+        "bidPrice": 11.26,
         "basisPrice": -0.01,
         "futuresPrice": 11.2825,
         "futuresSymbol": "ZSQ26",
