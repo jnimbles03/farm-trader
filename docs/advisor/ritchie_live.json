@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-06-18T19:20:08Z",
+  "as_of": "2026-06-19T12:22:13Z",
   "source": "bushel.commodity-balances + bids",
   "account": "FREIS FARMS LLC",
   "location": "Ritchie Grain Elevator",
@@ -29,8 +29,8 @@
       },
       {
         "month": "Aug",
-        "cash": 3.97,
-        "basis": -0.28,
+        "cash": 3.98,
+        "basis": -0.27,
         "futures": 4.2525,
         "futures_symbol": "ZCU26"
       },
@@ -80,7 +80,7 @@
       },
       {
         "month": "Aug",
-        "cash": 11.27,
+        "cash": 11.26,
         "basis": -0.01,
         "futures": 11.2825,
         "futures_symbol": "ZSQ26"

@@ -843,6 +843,16 @@
       "avg_pricing_corn": 1500.0,
       "avg_pricing_soy": 500.0,
       "notes": "Live from bushel.commodity-balances + bids at 2026-06-18T19:20:08Z \u00b7 Account FREIS FARMS LLC \u00b7 PC/FS values carried from prior xlsx row (not scraped). \u00b7 Fetch warnings: avg_pricing: 'str' object has no attribute 'get'"
+    },
+    {
+      "as_of": "2026-06-19",
+      "corn_at_ritchie": 9115.28,
+      "beans_at_ritchie": 967.12,
+      "corn_at_pcfs": 0.0,
+      "beans_at_pcfs": 0.0,
+      "avg_pricing_corn": 1500.0,
+      "avg_pricing_soy": 500.0,
+      "notes": "Live from bushel.commodity-balances + bids at 2026-06-19T12:22:13Z \u00b7 Account FREIS FARMS LLC \u00b7 PC/FS values carried from prior xlsx row (not scraped). \u00b7 Fetch warnings: avg_pricing: 'str' object has no attribute 'get'"
     }
   ],
   "inputs_by_year": {
@@ -1525,7 +1535,7 @@
   },
   "recent_alerts_7d": [],
   "ritchie_live": {
-    "as_of": "2026-06-18T19:20:08Z",
+    "as_of": "2026-06-19T12:22:13Z",
     "source": "bushel.commodity-balances + bids",
     "account": "FREIS FARMS LLC",
     "location": "Ritchie Grain Elevator",
@@ -1555,8 +1565,8 @@
         },
         {
           "month": "Aug",
-          "cash": 3.97,
-          "basis": -0.28,
+          "cash": 3.98,
+          "basis": -0.27,
           "futures": 4.2525,
           "futures_symbol": "ZCU26"
         },
@@ -1606,7 +1616,7 @@
         },
         {
           "month": "Aug",
-          "cash": 11.27,
+          "cash": 11.26,
           "basis": -0.01,
           "futures": 11.2825,
           "futures_symbol": "ZSQ26"
@@ -1645,5 +1655,5 @@
       "avg_pricing: 'str' object has no attribute 'get'"
     ]
   },
-  "last_refreshed_at": "2026-06-18T19:20:08Z"
+  "last_refreshed_at": "2026-06-19T12:22:13Z"
 }
