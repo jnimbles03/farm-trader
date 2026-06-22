@@ -2684,8 +2684,8 @@ const TRADE_PHONE     = "+16302479950";          // whitelist target
 const TRADE_PHONE_FMT = "+1 (630) 247-9950";
 const ORDERS_JSON_URL = "orders.json";           // sibling of home.html under docs/
 
-const BIDS  = { soy: 11.68, corn: 4.47 };
-const AVAIL = { soy: 1967,  corn: 9115 };
+let BIDS  = { soy: 11.68, corn: 4.47 };  // fallbacks; overwritten by loadTradePrices()
+let AVAIL = { soy: 1967,  corn: 9115 };
 const CROP_LABEL = { soy: "Soy", corn: "Corn" };
 
 let tradeCrop = 'soy';
@@ -3121,6 +3121,26 @@ document.addEventListener('keydown', (e) => {
 TRANCHES = [defaultTranche()];
 renderTranches();
 loadDrafts();
+
+(async function loadTradePrices() {
+  try {
+    const r = await fetch('./bushel.json', { cache: 'no-store' });
+    if (!r.ok) return;
+    const b = await r.json();
+    const cornBid = b?.bids?.corn?.price;
+    const soyBid  = b?.bids?.soybeans?.price;
+    const cornBu  = b?.bushelsOnHand?.corn?.bushels;
+    const soyBu   = b?.bushelsOnHand?.soybeans?.bushels;
+    if (cornBid > 0) BIDS.corn  = cornBid;
+    if (soyBid  > 0) BIDS.soy   = soyBid;
+    if (cornBu  > 0) AVAIL.corn = Math.floor(cornBu);
+    if (soyBu   > 0) AVAIL.soy  = Math.floor(soyBu);
+    document.getElementById('trade-bid').textContent   = '$' + BIDS[tradeCrop].toFixed(2);
+    document.getElementById('trade-avail').textContent = fmtBu(AVAIL[tradeCrop]);
+    TRANCHES = [defaultTranche()];
+    renderTranches();
+  } catch (_) {}
+})();
 </script>
 
 
