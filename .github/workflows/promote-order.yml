@@ -1,0 +1,58 @@
+name: Promote and submit order
+
+# Run from the Actions tab: supply the order ID (UUID from docs/orders.json).
+# Flips the order draft → live, authenticates with Akron/Bushel, and calls
+# MakeOffer. The result (submitted / submit_error + Bushel offer ID) is written
+# back to docs/orders.json and committed.
+
+on:
+  workflow_dispatch:
+    inputs:
+      order_id:
+        description: "Order ID (UUID from docs/orders.json) to promote draft → live and submit to Akron"
+        required: true
+
+concurrency:
+  group: promote-order-${{ github.event.inputs.order_id }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install deps
+        run: pip install requests beautifulsoup4 lxml python-dotenv
+
+      - name: Promote draft → live
+        run: python scripts/promote_order.py "${{ github.event.inputs.order_id }}"
+
+      - name: Submit to Akron via Bushel MakeOffer
+        env:
+          BUSHEL_USER: ${{ secrets.BUSHEL_USER }}
+          BUSHEL_PASS: ${{ secrets.BUSHEL_PASS }}
+          AKRON_USER:  ${{ secrets.BUSHEL_USER }}
+          AKRON_PASS:  ${{ secrets.BUSHEL_PASS }}
+        run: python scripts/submit_offer.py
+
+      - name: Commit result
+        run: |
+          git config user.name  "freis-farm-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add docs/orders.json
+          if git diff --cached --quiet; then
+            echo "no changes to commit"
+            exit 0
+          fi
+          git commit -m "order submit: ${{ github.event.inputs.order_id }} @ $(date -u +'%Y-%m-%dT%H:%MZ')"
+          git push
