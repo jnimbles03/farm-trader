@@ -820,13 +820,8 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
   <!-- Market wire blotter -->
   <aside class="A-side" aria-label="Market wire — headlines and what they mean for our bushels">
     <h3>Market wire</h3>
-    <ul class="A-blotter">
-      <li><span class="A-tag corn">CORN ↑</span><span class="A-blot-text">USDA: 28% planted vs 5-yr avg 32% — supportive for our <b>9,115 bu</b>.</span><span class="A-blot-time">2h</span></li>
-      <li><span class="A-tag soy">SOY ↑</span><span class="A-blot-text">China books 240k MT US soy for July — first new-crop buy in 3 wks.</span><span class="A-blot-time">4h</span></li>
-      <li><span class="A-tag corn">CORN ↑</span><span class="A-blot-text">Brazil safrinha trimmed to 121M MT — props up our $4.47 bid.</span><span class="A-blot-time">6h</span></li>
-      <li><span class="A-tag macro">MACRO</span><span class="A-blot-text">DXY 102.8, weakest in 6 wks — small tailwind both crops.</span><span class="A-blot-time">1d</span></li>
-      <li><span class="A-tag soy">SOY ↓</span><span class="A-blot-text">Argentina harvest 47% complete · 50.5M MT crop caps near-term ceiling.</span><span class="A-blot-time">1d</span></li>
-      <li><span class="A-tag watch">WATCH</span><span class="A-blot-text">May 10 WASDE — first new-crop balance sheet. Set a reminder.</span><span class="A-blot-time">12d</span></li>
+    <ul class="A-blotter" data-live="market-wire">
+      <li><span class="A-blot-text" style="color:var(--dust)">Loading…</span></li>
     </ul>
   </aside>
 
@@ -1672,13 +1667,8 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
   <!-- Market wire blotter -->
   <aside class="A-side" aria-label="Market wire — headlines and what they mean for our bushels">
     <h3>Market wire</h3>
-    <ul class="A-blotter">
-      <li><span class="A-tag corn">CORN ↑</span><span class="A-blot-text">USDA: 28% planted vs 5-yr avg 32% — supportive for our <b>9,115 bu</b>.</span><span class="A-blot-time">2h</span></li>
-      <li><span class="A-tag soy">SOY ↑</span><span class="A-blot-text">China books 240k MT US soy for July — first new-crop buy in 3 wks.</span><span class="A-blot-time">4h</span></li>
-      <li><span class="A-tag corn">CORN ↑</span><span class="A-blot-text">Brazil safrinha trimmed to 121M MT — props up our $4.47 bid.</span><span class="A-blot-time">6h</span></li>
-      <li><span class="A-tag macro">MACRO</span><span class="A-blot-text">DXY 102.8, weakest in 6 wks — small tailwind both crops.</span><span class="A-blot-time">1d</span></li>
-      <li><span class="A-tag soy">SOY ↓</span><span class="A-blot-text">Argentina harvest 47% complete · 50.5M MT crop caps near-term ceiling.</span><span class="A-blot-time">1d</span></li>
-      <li><span class="A-tag watch">WATCH</span><span class="A-blot-text">May 10 WASDE — first new-crop balance sheet. Set a reminder.</span><span class="A-blot-time">12d</span></li>
+    <ul class="A-blotter" data-live="market-wire">
+      <li><span class="A-blot-text" style="color:var(--dust)">Loading…</span></li>
     </ul>
   </aside>
 
@@ -3455,6 +3445,30 @@ loadDrafts();
       el.textContent = log.notes.join(' · ');
     });
   }
+})();
+</script>
+
+<script id="js-market-wire">
+(function(){
+  function relAge(iso){
+    var mins=(Date.now()-new Date(iso).getTime())/60000;
+    if(mins<60) return Math.max(1,Math.round(mins))+'m';
+    if(mins<1440) return Math.round(mins/60)+'h';
+    return Math.round(mins/1440)+'d';
+  }
+  fetch('./news.json',{cache:'no-store'})
+    .then(function(r){return r.ok?r.json():Promise.reject(r.status);})
+    .then(function(data){
+      var items=(data.items||[]).slice(0,6);
+      var html=items.map(function(it){
+        return '<li><span class="A-tag '+it.tag_class+'">'+it.tag+
+               '</span><span class="A-blot-text">'+it.text+
+               '</span><span class="A-blot-time">'+relAge(it.published_at)+'</span></li>';
+      }).join('');
+      if(!html) html='<li><span class="A-blot-text" style="color:var(--dust)">No items.</span></li>';
+      document.querySelectorAll('[data-live="market-wire"]').forEach(function(ul){ul.innerHTML=html;});
+    })
+    .catch(function(){});
 })();
 </script>
 
