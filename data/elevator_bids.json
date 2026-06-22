@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-06-22T20:21:35",
+  "as_of": "2026-06-22T21:23:06",
   "freight_per_mile_cents_per_bu": 0.6,
   "freight_assumption_text": "$5/loaded mi \u00f7 ~890 bu/load corn \u2248 0.6\u00a2/bu per extra mile",
   "farm_anchor_address": "19076 W Peotone Rd, Wilmington, IL 60481",
@@ -30,7 +30,7 @@
       "source": "bushel:akronservices",
       "scraper_status": "wired",
       "is_baseline": true,
-      "as_of": "2026-06-22T20:21:34.541709Z"
+      "as_of": "2026-06-22T21:23:05.731450Z"
     },
     {
       "id": "mazon",
@@ -71,9 +71,9 @@
       "name": "ADM Morris (river)",
       "fs_name": "ADM - Morris",
       "miles": 14,
-      "corn_bid": 4.025,
+      "corn_bid": 4.045,
       "soy_bid": 10.9575,
-      "corn_basis_cents": -9.0,
+      "corn_basis_cents": -7.0,
       "soy_basis_cents": -20.0,
       "corn_contract": "M26",
       "soy_contract": "M26",
@@ -156,9 +156,9 @@
       "name": "Grand Ridge (FS Grain)",
       "fs_name": "Grand Ridge",
       "miles": 28,
-      "corn_bid": 3.865,
+      "corn_bid": 3.885,
       "soy_bid": 11.0075,
-      "corn_basis_cents": -25.0,
+      "corn_basis_cents": -23.0,
       "soy_basis_cents": -15.0,
       "corn_contract": "M26",
       "soy_contract": "M26",
