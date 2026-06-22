@@ -1289,6 +1289,14 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
     font-variant-numeric: tabular-nums oldstyle-nums; letter-spacing: -0.015em;
   }
 .trade-bid-unit { font-size: 14px; color: var(--slate); font-style: italic; margin-left: 4px; }
+.market-status-badge {
+    display: inline-block;
+    font-family: "DM Sans", sans-serif; font-size: 11px; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 2px 8px; border-radius: 20px;
+  }
+.market-status-badge.open   { background: #d1fae5; color: #065f46; }
+.market-status-badge.closed { background: #f1f5f9; color: #94a3b8; }
 .trade-total {
     margin: 8px 0 4px;
     padding: 18px 0;
@@ -1593,6 +1601,10 @@ button.trade-cta { cursor: pointer; }
       <div>
         <div class="trade-avail-k">Today's bid</div>
         <div class="trade-avail-v"><span id="trade-bid">$11.68</span><span class="trade-bid-unit"> / bu</span></div>
+      </div>
+      <div>
+        <div class="trade-avail-k">Market</div>
+        <div class="trade-avail-v"><span id="trade-market-status" class="market-status-badge closed">Closed</span></div>
       </div>
     </div>
 
@@ -2148,6 +2160,19 @@ loadDrafts();
     document.getElementById('trade-avail').textContent = fmtBu(AVAIL[tradeCrop]);
     TRANCHES = [defaultTranche()];
     renderTranches();
+
+    const ladder    = b?.ritchieBidLadder || {};
+    const anyOpen   = Object.values(ladder).some(bids =>
+      Array.isArray(bids) && bids.some(bid => bid.canMakeOffer)
+    );
+    const fetchedAt = b?.fetchedAt ? new Date(b.fetchedAt) : null;
+    const ageMin    = fetchedAt ? (Date.now() - fetchedAt) / 60000 : 999;
+    const isOpen    = anyOpen && ageMin < 75;
+    const badge     = document.getElementById('trade-market-status');
+    if (badge) {
+      badge.textContent = isOpen ? 'Open' : 'Closed';
+      badge.className   = 'market-status-badge ' + (isOpen ? 'open' : 'closed');
+    }
   } catch (_) {}
 })();
 </script>
