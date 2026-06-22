@@ -669,8 +669,8 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
   <div class="A-call">
     <div>
       <p class="A-eyebrow">For Mom · Grain marketing · <span class="js-today" data-fmt="long">Apr 30, 2026</span></p>
-      <h1>Hold corn. Sell <em>~1,000 bu soy</em> by June 1.</h1>
-      <p>Soy is +5pp ahead of seasonal pace and slowly losing value as it sits — turn ~1,000 bu into cash before the June bills land. Corn is on pace and worth holding through summer.</p>
+      <h1>Sell <em>~1,000 bu soy</em> now. Hold corn.</h1>
+      <p>Soy hit its $11.44 seasonal target — still +5pp ahead of pace but starting to give back value. June bills are landing now; sell before prices drift lower. Corn is on pace and worth holding through summer.</p>
     </div>
     <div class="A-kpis">
       <div class="A-kpi">
@@ -769,37 +769,39 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
                  C 738  80, 762 124, 788 140
                  C 812 156, 838 220, 860 240"/>
 
-        <!-- Today (Apr 30 → x ≈ 564) -->
+        <!-- Today (Jun 22 → x ≈ 642) -->
         <!-- Soy halos + dot — heaviest, this is the headline -->
-        <circle cx="564" cy="74" r="28" fill="var(--sage)" opacity="0.10"/>
-        <circle cx="564" cy="74" r="18" fill="var(--sage)" opacity="0.20"/>
-        <circle cx="564" cy="74" r="11" fill="var(--sage)" opacity="0.36"/>
-        <circle cx="564" cy="74" r="6.5" fill="var(--sage-deep)" stroke="var(--cream)" stroke-width="2"/>
+        <circle cx="642" cy="86" r="28" fill="var(--sage)" opacity="0.10"/>
+        <circle cx="642" cy="86" r="18" fill="var(--sage)" opacity="0.20"/>
+        <circle cx="642" cy="86" r="11" fill="var(--sage)" opacity="0.36"/>
+        <circle cx="642" cy="86" r="6.5" fill="var(--sage-deep)" stroke="var(--cream)" stroke-width="2"/>
         <!-- Corn halos + dot — secondary signal, on pace -->
-        <circle cx="564" cy="140" r="14" fill="var(--sage)" opacity="0.14"/>
-        <circle cx="564" cy="140" r="9"  fill="var(--sage)" opacity="0.26"/>
-        <circle cx="564" cy="140" r="5"  fill="var(--sage-deep)" stroke="var(--cream)" stroke-width="2"/>
+        <circle cx="642" cy="106" r="14" fill="var(--sage)" opacity="0.14"/>
+        <circle cx="642" cy="106" r="9"  fill="var(--sage)" opacity="0.26"/>
+        <circle cx="642" cy="106" r="5"  fill="var(--sage-deep)" stroke="var(--cream)" stroke-width="2"/>
 
         <!-- Soy chip: price + status -->
-        <text x="510" y="68" text-anchor="end"
+        <text class="js-bid" data-key="ritchie.soy_bid" data-fmt="price"
+              x="628" y="78" text-anchor="end"
               font-family="DM Sans, sans-serif" font-weight="600" font-size="22"
               fill="var(--sage-deep)" font-variant-numeric="tabular-nums">$11.68</text>
-        <text x="510" y="86" text-anchor="end"
+        <text x="628" y="94" text-anchor="end"
               font-family="DM Sans, sans-serif" font-weight="500" font-size="11"
-              letter-spacing="0.12em" fill="var(--sage-deep)">+5PP AHEAD OF PACE</text>
+              letter-spacing="0.12em" fill="var(--sage-deep)">TARGET HIT · SELL NOW</text>
 
         <!-- Corn chip: price only -->
-        <text x="510" y="160" text-anchor="end"
+        <text class="js-bid" data-key="ritchie.corn_bid" data-fmt="price"
+              x="628" y="122" text-anchor="end"
               font-family="DM Sans, sans-serif" font-weight="600" font-size="16"
               fill="var(--ink-2)" font-variant-numeric="tabular-nums">$4.47</text>
 
-        <!-- May → June obligations label inside the band -->
+        <!-- June obligations label inside the band -->
         <text x="641" y="206" text-anchor="middle"
               font-family="DM Sans, sans-serif" font-weight="600" font-size="18"
-              fill="var(--sage-deep)" font-variant-numeric="tabular-nums">$20,500</text>
+              fill="var(--sage-deep)" font-variant-numeric="tabular-nums">~$30k</text>
         <text x="641" y="224" text-anchor="middle"
               font-family="DM Sans, sans-serif" font-weight="500" font-size="10"
-              letter-spacing="0.14em" fill="var(--sage-deep)">MAY → JUNE</text>
+              letter-spacing="0.14em" fill="var(--sage-deep)">DUE · JUN</text>
 
         <!-- Legend -->
         <g>
@@ -812,7 +814,7 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
         </g>
       </svg>
     </figure>
-    <p class="A-caption">Soy is +5pp ahead of the typical pace and starts giving back value after May. The shaded window is when the bills land — sell into the strength while it's there.</p>
+    <p class="A-caption">Soy hit its seasonal target in June — still slightly ahead of pace but losing ground. The shaded window marks the June bill window; sell into any strength before the curve rolls over.</p>
   </section>
 
   <!-- Market wire blotter -->
