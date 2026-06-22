@@ -2152,6 +2152,7 @@ const CROP_LABEL = { soy: "Soy", corn: "Corn" };
 let tradeCrop = 'soy';
 let TRANCHES = [];       // [{bushels, type:'limit'|'market', limit_price, expiry}]
 let OTP = null;          // {nonce, hmac, expires_at, payload_hash}
+let PENDING_PAYLOAD = null; // locked at /start; reused verbatim at /submit
 let OTP_TIMER = null;
 
 const round2   = (n) => Math.round(n * 100) / 100;
@@ -2296,7 +2297,8 @@ document.getElementById('trade-send-code').addEventListener('click', async () =>
   btn.disabled = true;
   document.getElementById('trade-build-error').textContent = '';
   try {
-    OTP = await orderApiStart(buildPayload());
+    PENDING_PAYLOAD = buildPayload();
+    OTP = await orderApiStart(PENDING_PAYLOAD);
     document.getElementById('trade-otp').value = '';
     document.getElementById('trade-otp-error').textContent = '';
     document.getElementById('trade-submit').disabled = true;
@@ -2329,7 +2331,8 @@ document.getElementById('trade-otp-resend').addEventListener('click', async () =
   const btn = document.getElementById('trade-otp-resend');
   btn.disabled = true;
   try {
-    OTP = await orderApiStart(buildPayload());
+    PENDING_PAYLOAD = buildPayload();
+    OTP = await orderApiStart(PENDING_PAYLOAD);
     document.getElementById('trade-otp').value = '';
     document.getElementById('trade-submit').disabled = true;
     document.getElementById('trade-otp-error').textContent = '';
@@ -2346,7 +2349,7 @@ document.getElementById('trade-submit').addEventListener('click', async () => {
   btn.disabled = true;
   document.getElementById('trade-otp-error').textContent = '';
   try {
-    await orderApiSubmit(buildPayload(), code);
+    await orderApiSubmit(PENDING_PAYLOAD, code);
     if (OTP_TIMER) clearInterval(OTP_TIMER);
     OTP = null;
     showStage('done');
