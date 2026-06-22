@@ -828,18 +828,18 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
   <!-- Sparkline strip across the bottom -->
   <section class="A-strip" aria-label="Live levels with sparklines">
     <div class="A-strip-cell">
-      <div class="A-strip-l">Corn · Jul</div>
+      <div class="A-strip-l">Corn · Ritchie</div>
       <div class="A-strip-v"><span class="js-bid" data-key="ritchie.corn_bid" data-fmt="price">$4.47</span></div>
-      <div class="A-strip-d">+3¢ / 5d</div>
+      <div class="A-strip-d">elevator bid</div>
       <svg viewBox="0 0 100 28" class="A-strip-spark" style="width:100%;height:28px">
         <path d="M0,18 L10,16 L20,20 L30,15 L40,12 L50,14 L60,10 L70,13 L80,11 L90,9 L100,8" class="spark-line"/>
         <circle cx="100" cy="8" r="2" class="spark-dot"/>
       </svg>
     </div>
     <div class="A-strip-cell">
-      <div class="A-strip-l">Soy · Jul</div>
+      <div class="A-strip-l">Soy · Ritchie</div>
       <div class="A-strip-v"><span class="js-bid" data-key="ritchie.soy_bid" data-fmt="price">$10.84</span></div>
-      <div class="A-strip-d">−7¢ / 5d</div>
+      <div class="A-strip-d">elevator bid</div>
       <svg viewBox="0 0 100 28" class="A-strip-spark" style="width:100%;height:28px">
         <path d="M0,8 L10,10 L20,12 L30,11 L40,15 L50,14 L60,18 L70,16 L80,20 L90,19 L100,21" class="spark-line warn"/>
         <circle cx="100" cy="21" r="2" fill="var(--warn)"/>
@@ -3456,14 +3456,25 @@ loadDrafts();
     if(mins<1440) return Math.round(mins/60)+'h';
     return Math.round(mins/1440)+'d';
   }
+  function tagFrom(it){
+    if(it.tag) return {label:it.tag,cls:it.tag_class||'watch'};
+    var a=it.affects||'';
+    if(a==='corn') return {label:'CORN',cls:'corn'};
+    if(a==='soy'||a==='soybeans') return {label:'SOY',cls:'soy'};
+    return {label:'WATCH',cls:'watch'};
+  }
   fetch('./news.json',{cache:'no-store'})
     .then(function(r){return r.ok?r.json():Promise.reject(r.status);})
     .then(function(data){
       var items=(data.items||[]).slice(0,6);
       var html=items.map(function(it){
-        return '<li><span class="A-tag '+it.tag_class+'">'+it.tag+
-               '</span><span class="A-blot-text">'+it.text+
-               '</span><span class="A-blot-time">'+relAge(it.published_at)+'</span></li>';
+        var t=tagFrom(it);
+        var txt=it.text||it.title||'';
+        var ts=it.published_at||(it.date?it.date+'T12:00:00Z':'');
+        var age=ts?relAge(ts):'';
+        return '<li><span class="A-tag '+t.cls+'">'+t.label+
+               '</span><span class="A-blot-text">'+txt+
+               '</span>'+(age?'<span class="A-blot-time">'+age+'</span>':'')+'</li>';
       }).join('');
       if(!html) html='<li><span class="A-blot-text" style="color:var(--dust)">No items.</span></li>';
       document.querySelectorAll('[data-live="market-wire"]').forEach(function(ul){ul.innerHTML=html;});

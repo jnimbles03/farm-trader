@@ -828,18 +828,18 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
   <!-- Sparkline strip across the bottom -->
   <section class="A-strip" aria-label="Live levels with sparklines">
     <div class="A-strip-cell">
-      <div class="A-strip-l">Corn · Jul</div>
-      <div class="A-strip-v">$4.47<span style="font-size:11px">¾</span></div>
-      <div class="A-strip-d">+3¢ / 5d</div>
+      <div class="A-strip-l">Corn · Ritchie</div>
+      <div class="A-strip-v"><span class="js-bid" data-key="ritchie.corn_bid" data-fmt="price">$4.47</span></div>
+      <div class="A-strip-d">elevator bid</div>
       <svg viewBox="0 0 100 28" class="A-strip-spark" style="width:100%;height:28px">
         <path d="M0,18 L10,16 L20,20 L30,15 L40,12 L50,14 L60,10 L70,13 L80,11 L90,9 L100,8" class="spark-line"/>
         <circle cx="100" cy="8" r="2" class="spark-dot"/>
       </svg>
     </div>
     <div class="A-strip-cell">
-      <div class="A-strip-l">Soy · Jul</div>
-      <div class="A-strip-v">$10.84</div>
-      <div class="A-strip-d">−7¢ / 5d</div>
+      <div class="A-strip-l">Soy · Ritchie</div>
+      <div class="A-strip-v"><span class="js-bid" data-key="ritchie.soy_bid" data-fmt="price">$10.84</span></div>
+      <div class="A-strip-d">elevator bid</div>
       <svg viewBox="0 0 100 28" class="A-strip-spark" style="width:100%;height:28px">
         <path d="M0,8 L10,10 L20,12 L30,11 L40,15 L50,14 L60,18 L70,16 L80,20 L90,19 L100,21" class="spark-line warn"/>
         <circle cx="100" cy="21" r="2" fill="var(--warn)"/>
@@ -847,8 +847,8 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
     </div>
     <div class="A-strip-cell">
       <div class="A-strip-l">Basis · Ritchie</div>
-      <div class="A-strip-v">−18¢</div>
-      <div class="A-strip-d">narrowing</div>
+      <div class="A-strip-v"><span class="js-bid" data-key="ritchie.corn_basis_cents" data-fmt="basis">−18¢</span></div>
+      <div class="A-strip-d">corn basis</div>
       <svg viewBox="0 0 100 28" class="A-strip-spark" style="width:100%;height:28px">
         <path d="M0,14 L10,15 L20,13 L30,14 L40,12 L50,13 L60,11 L70,10 L80,11 L90,9 L100,8" class="spark-line"/>
       </svg>
@@ -2612,6 +2612,45 @@ loadDrafts();
   });
 })();
 </script>
+<script id="js-bid-updater">
+(async function(){
+  var elev=null,bushel=null,live=null;
+  try{var r=await fetch('./elevator_bids.json',{cache:'no-store'});if(r.ok)elev=await r.json();}catch(_){}
+  try{var r=await fetch('./bushel.json',{cache:'no-store'});if(r.ok)bushel=await r.json();}catch(_){}
+  try{var r=await fetch('./advisor/ritchie_live.json',{cache:'no-store'});if(r.ok)live=await r.json();}catch(_){}
+  var liveDate=live&&live.as_of?new Date(live.as_of):null;
+  var bushelDate=bushel&&bushel.fetchedAt?new Date(bushel.fetchedAt):null;
+  var preferLive=liveDate&&(!bushelDate||liveDate>=bushelDate);
+  function bushelCorn(){return(bushel&&bushel.bushelsOnHand&&bushel.bushelsOnHand.corn)?bushel.bushelsOnHand.corn.bushels:null;}
+  function bushelSoy(){return(bushel&&bushel.bushelsOnHand&&bushel.bushelsOnHand.soybeans)?bushel.bushelsOnHand.soybeans.bushels:null;}
+  function liveCorn(){return(live&&live.storage&&live.storage.corn_bu!=null)?live.storage.corn_bu:null;}
+  function liveSoy(){return(live&&live.storage&&live.storage.beans_bu!=null)?live.storage.beans_bu:null;}
+  var ritchie=(elev&&elev.elevators)?elev.elevators.find(function(e){return e.is_baseline;}):null;
+  var data={
+    'ritchie.corn_bid':(ritchie&&ritchie.corn_bid!=null)?ritchie.corn_bid:(bushel&&bushel.bids&&bushel.bids.corn?bushel.bids.corn.price:null),
+    'ritchie.soy_bid':(ritchie&&ritchie.soy_bid!=null)?ritchie.soy_bid:(bushel&&bushel.bids&&bushel.bids.soybeans?bushel.bids.soybeans.price:null),
+    'ritchie.corn_basis_cents':(ritchie&&ritchie.corn_basis_cents!=null)?ritchie.corn_basis_cents:(bushel&&bushel.bids&&bushel.bids.corn&&bushel.bids.corn.basis!=null?bushel.bids.corn.basis*100:null),
+    'ritchie.soy_basis_cents':(ritchie&&ritchie.soy_basis_cents!=null)?ritchie.soy_basis_cents:(bushel&&bushel.bids&&bushel.bids.soybeans&&bushel.bids.soybeans.basis!=null?bushel.bids.soybeans.basis*100:null),
+    'bushels.corn':preferLive?(liveCorn()!=null?liveCorn():bushelCorn()):(bushelCorn()!=null?bushelCorn():liveCorn()),
+    'bushels.soy':preferLive?(liveSoy()!=null?liveSoy():bushelSoy()):(bushelSoy()!=null?bushelSoy():liveSoy()),
+  };
+  if(data['bushels.corn']!=null&&data['ritchie.corn_bid']!=null)data['corn.value']=data['bushels.corn']*data['ritchie.corn_bid'];
+  if(data['bushels.soy']!=null&&data['ritchie.soy_bid']!=null)data['soy.value']=data['bushels.soy']*data['ritchie.soy_bid'];
+  var fmt={
+    price:function(v){return v==null?null:'$'+Number(v).toFixed(2);},
+    bu:function(v){return v==null?null:Math.round(Number(v)).toLocaleString();},
+    money:function(v){return v==null?null:'$'+Math.round(Number(v)).toLocaleString();},
+    basis:function(v){return v==null?null:(v>=0?'+':'−')+Math.abs(Math.round(v))+'¢';},
+  };
+  document.querySelectorAll('.js-bid').forEach(function(el){
+    var key=el.getAttribute('data-key');
+    var f=el.getAttribute('data-fmt')||'price';
+    var v=data[key];
+    var out=(fmt[f]||fmt.price)(v);
+    if(out!=null)el.textContent=out;
+  });
+})();
+</script>
 <script id="js-market-wire">
 (function(){
   function relAge(iso){
@@ -2620,14 +2659,25 @@ loadDrafts();
     if(mins<1440) return Math.round(mins/60)+'h';
     return Math.round(mins/1440)+'d';
   }
+  function tagFrom(it){
+    if(it.tag) return {label:it.tag,cls:it.tag_class||'watch'};
+    var a=it.affects||'';
+    if(a==='corn') return {label:'CORN',cls:'corn'};
+    if(a==='soy'||a==='soybeans') return {label:'SOY',cls:'soy'};
+    return {label:'WATCH',cls:'watch'};
+  }
   fetch('./news.json',{cache:'no-store'})
     .then(function(r){return r.ok?r.json():Promise.reject(r.status);})
     .then(function(data){
       var items=(data.items||[]).slice(0,6);
       var html=items.map(function(it){
-        return '<li><span class="A-tag '+it.tag_class+'">'+it.tag+
-               '</span><span class="A-blot-text">'+it.text+
-               '</span><span class="A-blot-time">'+relAge(it.published_at)+'</span></li>';
+        var t=tagFrom(it);
+        var txt=it.text||it.title||'';
+        var ts=it.published_at||(it.date?it.date+'T12:00:00Z':'');
+        var age=ts?relAge(ts):'';
+        return '<li><span class="A-tag '+t.cls+'">'+t.label+
+               '</span><span class="A-blot-text">'+txt+
+               '</span>'+(age?'<span class="A-blot-time">'+age+'</span>':'')+'</li>';
       }).join('');
       if(!html) html='<li><span class="A-blot-text" style="color:var(--dust)">No items.</span></li>';
       document.querySelectorAll('[data-live="market-wire"]').forEach(function(ul){ul.innerHTML=html;});
