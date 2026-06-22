@@ -1,31 +1,19 @@
 {
   "items": [
     {
-      "id": "policy-2026-06-18-fomc_rate_decision_sep",
-      "date": "2026-06-18",
-      "title": "FOMC rate decision + SEP",
-      "impact": "L",
-      "affects": "both",
-      "source": "Fed",
-      "category": "policy"
+      "id": "price-corn-20260622-20",
+      "tag": "CORN \u2193",
+      "tag_class": "corn",
+      "text": "Dec corn $4.39 (-0.33\u00a2 today).",
+      "published_at": "2026-06-22T20:00:39.649016+00:00"
     },
     {
-      "id": "usda-2026-06-12-Monthly_WASDE",
-      "date": "2026-06-12",
-      "title": "USDA: Monthly WASDE",
-      "impact": "L",
-      "affects": "both",
-      "source": "USDA"
-    },
-    {
-      "id": "geopolitical-2026-06-01-southern_hemisphere_export_w",
-      "date": "2026-06-01",
-      "title": "Southern-hemisphere export window opens",
-      "impact": "S",
-      "affects": "both",
-      "source": "Global supply",
-      "category": "geopolitical"
+      "id": "price-soy-20260622-20",
+      "tag": "SOY \u2193",
+      "tag_class": "soy",
+      "text": "Nov soy $11.41 (-0.01\u00a2 today).",
+      "published_at": "2026-06-22T20:00:39.649016+00:00"
     }
   ],
-  "generated_at": "2026-06-22T19:41:40.234764+00:00"
+  "generated_at": "2026-06-22T20:00:39.649016+00:00"
 }
