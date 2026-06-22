@@ -1710,7 +1710,7 @@ function defaultTranche() {
   return {
     bushels:     Math.min(500, AVAIL[tradeCrop]),
     type:        'limit',
-    limit_price: round2(BIDS[tradeCrop] * 1.04),  // 4% above today's bid as a starter
+    limit_price: round2(BIDS[tradeCrop]),
     expiry:      exp.toISOString().slice(0, 10),
   };
 }
