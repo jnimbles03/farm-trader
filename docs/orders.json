@@ -1,4 +1,19 @@
 {
-  "orders": [],
-  "generated_at": "2026-06-23T14:07:19.184831+00:00"
+  "orders": [
+    {
+      "id": "c761cdc0-4604-4015-80c5-7e17aee473b8",
+      "submission_id": "debug-test-20260623-3",
+      "crop": "soy",
+      "type": "limit",
+      "bushels": 25,
+      "limit_price": 15.0,
+      "expiry": "2026-07-20",
+      "status": "draft",
+      "created_at": "2026-06-23T14:07:51.118124+00:00",
+      "accepted_at": "2026-06-23T16:20:00Z",
+      "phone": "+163****9950",
+      "nonce": "debug-test-20260623-3"
+    }
+  ],
+  "generated_at": "2026-06-23T14:07:51.118180+00:00"
 }
