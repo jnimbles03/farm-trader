@@ -16,23 +16,6 @@
       "promoted_at": "2026-06-23T14:10:00.513012+00:00",
       "submit_error": "All MakeOffer candidates failed. Last: HTTP 404: default backend - 404",
       "errored_at": "2026-06-23T14:10:04.639406+00:00"
-    },
-    {
-      "id": "6646c486-9846-4bd9-bdc6-fd1e9d48fe74",
-      "submission_id": "manual-promote-test-2026-06-23-0e66c679",
-      "crop": "soy",
-      "type": "limit",
-      "bushels": 5,
-      "limit_price": 12.5,
-      "expiry": "2026-08-20",
-      "status": "submit_error",
-      "created_at": "2026-06-23T18:25:23.123291+00:00",
-      "accepted_at": "2026-06-23T18:25:23.123291+00:00",
-      "phone": "+163****9950",
-      "nonce": "manual-promote-1",
-      "promoted_at": "2026-06-23T18:26:17.405355+00:00",
-      "submit_error": "All MakeOffer candidates failed. Last: HTTP 404: default backend - 404",
-      "errored_at": "2026-06-23T18:26:22.502556+00:00"
     }
   ],
   "generated_at": "2026-06-23T18:25:51.201734+00:00"
