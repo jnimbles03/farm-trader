@@ -669,8 +669,8 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
   <div class="A-call">
     <div>
       <p class="A-eyebrow">Grain marketing · <span class="js-today" data-fmt="long">Apr 30, 2026</span></p>
-      <h1 id="call-headline">Sell remaining <em>~967 bu soy</em> now. Hold corn.</h1>
-      <p id="call-detail">Soy hit its $11.44 seasonal target — still +5pp ahead of pace but starting to give back value. June bills are landing now; sell before prices drift lower. Corn is on pace and worth holding through summer.</p>
+      <h1 id="call-headline">Sell the rest of the soy now. Hold the corn.</h1>
+      <p id="call-detail">Soy just hit the $11.44 we were watching for. We're still a little ahead on what we wanted sold by now, but prices are starting to back off. June bills are coming due — better to move what we have left before it drops more. Corn is holding its own, so we're leaving it for now.</p>
     </div>
     <div class="A-kpis">
       <div class="A-kpi">
@@ -681,7 +681,7 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
       <div class="A-kpi">
         <div class="A-kpi-l">Stored soy</div>
         <div class="A-kpi-v"><span class="js-bid" data-key="bushels.soy" data-fmt="bu">967</span><span class="u">bu</span></div>
-        <div class="A-kpi-d">soy pace <span class="up">+5pp ahead</span></div>
+        <div class="A-kpi-d">sales <span class="up">a bit ahead</span></div>
       </div>
       <div class="A-kpi">
         <div class="A-kpi-l">Cash on hand</div>
@@ -691,17 +691,15 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
     </div>
   </div>
 
-  <!-- Hero chart: dual seasonal pace (corn solid + soy dashed),
-       today markers, May→June obligations band, +5pp ahead callout.
-       Recolored for the cream shell — same layout, sage-deep accents. -->
+  <!-- Seasonal price pattern chart: usual yearly path for corn and soy vs. harvest low, with current prices and bill window highlighted. -->
   <section class="A-main">
     <div class="A-main-head">
-      <span class="A-main-title">Seasonal pace · corn &amp; soy</span>
-      <span class="A-main-sub">% above Oct low · Oct–Sep crop year · today's price + obligations window</span>
+      <span class="A-main-title">How prices usually move through the year</span>
+      <span class="A-main-sub">Lines show the usual price path vs. the low right after harvest (October = 0%). Dots = where today's prices sit on that pattern.</span>
     </div>
     <figure class="hero">
       <svg viewBox="0 0 900 360" role="img"
-           aria-label="Seasonal pace overlay — corn and soybeans typical price index above the October low, with today's actual prices marked and the May–June obligations window highlighted.">
+           aria-label="Chart showing how corn and soy prices usually rise and fall through the year compared to harvest lows. The dots mark where current prices are relative to the normal pattern.">
 
         <!-- axes -->
         <line class="axis" x1="60" y1="320" x2="860" y2="320"/>
@@ -718,9 +716,12 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
           <line x1="60" y1="80"  x2="860" y2="80"  stroke="var(--rule)" stroke-width="0.4" stroke-dasharray="2,3"/>
         </g>
 
+        <text x="18" y="175" text-anchor="middle" font-size="9" fill="var(--slate)" transform="rotate(-90 18 175)">Higher than harvest low</text>
+
         <!-- x-ticks (12 months) -->
         <g>
           <text x="60"  y="338" text-anchor="middle">Oct</text>
+        <text x="60"  y="350" text-anchor="middle" font-size="9" fill="var(--slate)">harvest low</text>
           <text x="133" y="338" text-anchor="middle">Nov</text>
           <text x="206" y="338" text-anchor="middle">Dec</text>
           <text x="278" y="338" text-anchor="middle">Jan</text>
@@ -730,6 +731,7 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
           <text x="569" y="338" text-anchor="middle">May</text>
           <text x="642" y="338" text-anchor="middle">Jun</text>
           <text x="715" y="338" text-anchor="middle">Jul</text>
+        <text x="715" y="350" text-anchor="middle" font-size="9" fill="var(--slate)">usual high</text>
           <text x="788" y="338" text-anchor="middle">Aug</text>
           <text x="860" y="338" text-anchor="middle">Sep</text>
         </g>
@@ -796,25 +798,25 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
               fill="var(--ink-2)" font-variant-numeric="tabular-nums">$4.47</text>
 
         <!-- June obligations label inside the band -->
-        <text x="641" y="206" text-anchor="middle"
-              font-family="DM Sans, sans-serif" font-weight="600" font-size="18"
-              fill="var(--sage-deep)" font-variant-numeric="tabular-nums">~$30k</text>
-        <text x="641" y="224" text-anchor="middle"
+        <text x="641" y="202" text-anchor="middle"
+              font-family="DM Sans, sans-serif" font-weight="600" font-size="16"
+              fill="var(--sage-deep)" font-variant-numeric="tabular-nums">Bills</text>
+        <text x="641" y="218" text-anchor="middle"
               font-family="DM Sans, sans-serif" font-weight="500" font-size="10"
-              letter-spacing="0.14em" fill="var(--sage-deep)">DUE · JUN</text>
+              letter-spacing="0.14em" fill="var(--sage-deep)">due in June</text>
 
         <!-- Legend -->
         <g>
           <line x1="60" y1="20" x2="86" y2="20" stroke="var(--ink-2)" stroke-width="1.6"/>
-          <text x="92" y="24">Corn — typical pace</text>
+          <text x="92" y="24">Corn usual path</text>
           <line x1="240" y1="20" x2="266" y2="20" stroke="var(--slate)" stroke-width="1.6" stroke-dasharray="5,3"/>
-          <text x="272" y="24">Soy — typical pace</text>
+          <text x="272" y="24">Soy usual path</text>
           <circle cx="402" cy="20" r="4" fill="var(--sage-deep)"/>
-          <text x="412" y="24">Today</text>
+          <text x="412" y="24">Right now</text>
         </g>
       </svg>
     </figure>
-    <p class="A-caption">Soy hit its seasonal target in June — still slightly ahead of pace but losing ground. The shaded window marks the June bill window; sell into any strength before the curve rolls over.</p>
+    <p class="A-caption">The lines show the price pattern we usually see. Right now soy is higher than its normal June spot (good for selling). The shaded strip is the time we need cash for bills — we want to sell while prices are strong.</p>
   </section>
 
   <!-- Market wire blotter -->
@@ -1518,8 +1520,8 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
   <div class="A-call">
     <div>
       <p class="A-eyebrow">Grain marketing · <span id="hero-date">May 5, 2026</span></p>
-      <h1 id="call-headline">Sell remaining <em>~967 bu soy</em> now. Hold corn.</h1>
-      <p id="call-detail">Soy hit its $11.44 seasonal target — still +5pp ahead of pace but starting to give back value. June bills are landing now; sell before prices drift lower. Corn is on pace and worth holding through summer.</p>
+      <h1 id="call-headline">Sell the rest of the soy now. Hold the corn.</h1>
+      <p id="call-detail">Soy just hit the $11.44 we were watching for. We're still a little ahead on what we wanted sold by now, but prices are starting to back off. June bills are coming due — better to move what we have left before it drops more. Corn is holding its own, so we're leaving it for now.</p>
     </div>
     <div class="A-kpis">
       <div class="A-kpi">
@@ -1530,7 +1532,7 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
       <div class="A-kpi">
         <div class="A-kpi-l">Stored soy</div>
         <div class="A-kpi-v"><span id="kpi-soy-bu">967</span><span class="u">bu</span></div>
-        <div class="A-kpi-d">soy pace <span class="up">+5pp ahead</span></div>
+        <div class="A-kpi-d">sales <span class="up">a bit ahead</span></div>
       </div>
       <div class="A-kpi">
         <div class="A-kpi-l">Cash on hand</div>
@@ -1540,17 +1542,15 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
     </div>
   </div>
 
-  <!-- Hero chart: dual seasonal pace (corn solid + soy dashed),
-       today markers, May→June obligations band, +5pp ahead callout.
-       Recolored for the cream shell — same layout, sage-deep accents. -->
+  <!-- Seasonal price pattern chart: usual yearly path for corn and soy vs. harvest low, with current prices and bill window highlighted. -->
   <section class="A-main">
     <div class="A-main-head">
-      <span class="A-main-title">Seasonal pace · corn &amp; soy</span>
-      <span class="A-main-sub">% above Oct low · Oct–Sep crop year · today's price + obligations window</span>
+      <span class="A-main-title">How prices usually move through the year</span>
+      <span class="A-main-sub">Lines show the usual price path vs. the low right after harvest (October = 0%). Dots = where today's prices sit on that pattern.</span>
     </div>
     <figure class="hero">
       <svg viewBox="0 0 900 360" role="img"
-           aria-label="Seasonal pace overlay — corn and soybeans typical price index above the October low, with today's actual prices marked and the May–June obligations window highlighted.">
+           aria-label="Chart showing how corn and soy prices usually rise and fall through the year compared to harvest lows. The dots mark where current prices are relative to the normal pattern.">
 
         <!-- axes -->
         <line class="axis" x1="60" y1="320" x2="860" y2="320"/>
@@ -1567,9 +1567,12 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
           <line x1="60" y1="80"  x2="860" y2="80"  stroke="var(--rule)" stroke-width="0.4" stroke-dasharray="2,3"/>
         </g>
 
+        <text x="18" y="175" text-anchor="middle" font-size="9" fill="var(--slate)" transform="rotate(-90 18 175)">Higher than harvest low</text>
+
         <!-- x-ticks (12 months) -->
         <g>
           <text x="60"  y="338" text-anchor="middle">Oct</text>
+        <text x="60"  y="350" text-anchor="middle" font-size="9" fill="var(--slate)">harvest low</text>
           <text x="133" y="338" text-anchor="middle">Nov</text>
           <text x="206" y="338" text-anchor="middle">Dec</text>
           <text x="278" y="338" text-anchor="middle">Jan</text>
@@ -1579,6 +1582,7 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
           <text x="569" y="338" text-anchor="middle">May</text>
           <text x="642" y="338" text-anchor="middle">Jun</text>
           <text x="715" y="338" text-anchor="middle">Jul</text>
+        <text x="715" y="350" text-anchor="middle" font-size="9" fill="var(--slate)">usual high</text>
           <text x="788" y="338" text-anchor="middle">Aug</text>
           <text x="860" y="338" text-anchor="middle">Sep</text>
         </g>
@@ -1653,15 +1657,15 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
         <!-- Legend -->
         <g>
           <line x1="60" y1="20" x2="86" y2="20" stroke="var(--ink-2)" stroke-width="1.6"/>
-          <text x="92" y="24">Corn — typical pace</text>
+          <text x="92" y="24">Corn usual path</text>
           <line x1="240" y1="20" x2="266" y2="20" stroke="var(--slate)" stroke-width="1.6" stroke-dasharray="5,3"/>
-          <text x="272" y="24">Soy — typical pace</text>
+          <text x="272" y="24">Soy usual path</text>
           <circle cx="402" cy="20" r="4" fill="var(--sage-deep)"/>
-          <text x="412" y="24">Today</text>
+          <text x="412" y="24">Right now</text>
         </g>
       </svg>
     </figure>
-    <p class="A-caption">Soy hit its seasonal target in June — still slightly ahead of pace but losing ground. The shaded window marks the June bill window; sell into any strength before the curve rolls over.</p>
+    <p class="A-caption">The lines show the price pattern we usually see. Right now soy is higher than its normal June spot (good for selling). The shaded strip is the time we need cash for bills — we want to sell while prices are strong.</p>
   </section>
 
   <!-- Market wire blotter -->
