@@ -94,16 +94,26 @@ def make_offer(session, token: str, order: dict, bid: dict) -> dict:
 
     # Build CreateOfferRequest body based on server errors + observed offer shape
     # Required per error: price, accountId, expiration, comments
-    # Using user id from auth session as tentative accountId
+    # Dynamically fetch the account id so we don't rely on stale hardcoded value.
     account_id = None
     try:
-        # The login session often contains user id
-        if "user" in str(session):  # rough
-            pass
-        # Fallback to known from previous runs; will be improved
-        account_id = "0ad00800-37b3-4294-a512-a26c767a441f"  # FREIS FARMS LLC from contracts
-    except:
-        account_id = "0ad00800-37b3-4294-a512-a26c767a441f"  # FREIS FARMS LLC from contracts
+        acc_r = session.post(
+            "https://api.bushelpowered.com/api/aggregator/accounts/v1/GetAllAccounts",
+            json={},
+            headers=base_headers,
+            timeout=30,
+        )
+        if acc_r.ok:
+            accs = (acc_r.json().get("data") or [])
+            if accs:
+                account_id = accs[0].get("id") or accs[0].get("accountId")
+                print(f"  using dynamic account_id from GetAllAccounts: {account_id}")
+    except Exception as e:
+        print(f"  WARN fetching accounts: {e}")
+
+    if not account_id:
+        account_id = "0ad00800-37b3-4294-a512-a26c767a441f"  # last-resort fallback
+        print(f"  using fallback account_id: {account_id}")
 
     body = {
         "bidId":       bid["id"],
