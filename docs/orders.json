@@ -16,7 +16,21 @@
       "promoted_at": "2026-06-23T14:10:00.513012+00:00",
       "submit_error": "All MakeOffer candidates failed. Last: HTTP 404: default backend - 404",
       "errored_at": "2026-06-23T14:10:04.639406+00:00"
+    },
+    {
+      "id": "0decdcf4-73ef-47cb-a027-cfcbde831708",
+      "submission_id": "account-fix-test-2026-06-23-90f6592e",
+      "crop": "soy",
+      "type": "limit",
+      "bushels": 5,
+      "limit_price": 12.8,
+      "expiry": "2026-08-25",
+      "status": "draft",
+      "created_at": "2026-06-23T18:29:03.753422+00:00",
+      "accepted_at": "2026-06-23T18:29:03.753422+00:00",
+      "phone": "+163****9950",
+      "nonce": "account-fix-1"
     }
   ],
-  "generated_at": "2026-06-23T18:25:51.201734+00:00"
+  "generated_at": "2026-06-23T18:29:27.861485+00:00"
 }
