@@ -133,7 +133,7 @@ def make_offer(session, token: str, order: dict, bid: dict) -> dict:
         print(f"  WARN fetching accounts: {e}")
 
     if not account_id:
-        account_id = "0ad00800-37b3-4294-a512-a26c767a441f"  # last-resort fallback
+        account_id = "74d7cd99-0b6b-4625-99e4-b7e3648c527f"  # last-resort fallback
         print(f"  using fallback account_id: {account_id}")
 
     body = {
