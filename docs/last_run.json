@@ -1,10 +1,10 @@
 {
-  "ran_at": "2026-06-23T12:01:23.887005+00:00",
+  "ran_at": "2026-06-23T13:00:14.304570+00:00",
   "signal_count": 2,
   "sms_fired": 0,
-  "sms_ready": true,
+  "sms_ready": false,
   "orders": {
-    "draft": 1,
+    "draft": 0,
     "live": 0,
     "filled": 0,
     "cancelled": 0,
