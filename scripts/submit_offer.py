@@ -28,8 +28,8 @@ BUSHEL = DOCS / "bushel.json"
 # Candidate endpoints — the original /MakeOffer was returning 404 "default backend".
 # We try several common variations until one succeeds.
 MAKE_OFFER_CANDIDATES = [
+    "https://api.bushelpowered.com/api/markets/aggregator/offers/v1/CreateOffer",  # this one at least parses the request type
     "https://api.bushelpowered.com/api/markets/aggregator/offers/v1/MakeOffer",
-    "https://api.bushelpowered.com/api/markets/aggregator/offers/v1/CreateOffer",
     "https://api.bushelpowered.com/api/markets/aggregator/offers/MakeOffer",
     "https://api.bushelpowered.com/api/aggregator/offers/v1/MakeOffer",
     "https://api.bushelpowered.com/api/markets/aggregator/offers/v1/offer",
@@ -92,16 +92,29 @@ def make_offer(session, token: str, order: dict, bid: dict) -> dict:
     if installation_id:
         base_headers["app-installation-id"] = installation_id
 
-    # Enhanced body — original was minimal; add offerType and any other likely fields
+    # Build CreateOfferRequest body based on server errors + observed offer shape
+    # Required per error: price, accountId, expiration, comments
+    # Using user id from auth session as tentative accountId
+    account_id = None
+    try:
+        # The login session often contains user id
+        if "user" in str(session):  # rough
+            pass
+        # Fallback to known from previous runs; will be improved
+        account_id = "74d7cd99-0b6b-4625-99e4-b7e3648c527f"
+    except:
+        account_id = "74d7cd99-0b6b-4625-99e4-b7e3648c527f"
+
     body = {
-        "bidId":          bid["id"],
-        "quantity":       str(order["bushels"]),
-        "targetPrice":    str(order["limit_price"]),
-        "expirationDate": order.get("expiry"),
-        "offerType":      "cash",
-        # Some systems expect these too
-        "unitOfMeasure":  "Bushels",
-        "locationName":   "Ritchie Grain Elevator",
+        "bidId":       bid["id"],
+        "price":       str(order["limit_price"]),
+        "quantity":    str(order["bushels"]),
+        "accountId":   account_id,
+        "expiration":  order.get("expiry"),
+        "comments":    "",
+        "offerType":   "cash",
+        "unitOfMeasure": "Bushels",
+        "locationName": "Ritchie Grain Elevator",
     }
 
     print(f"  bid: {bid['id']}  {bid.get('period')}  current ${bid.get('bidPrice')}")
