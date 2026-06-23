@@ -1,22 +1,19 @@
 {
   "items": [
     {
-      "id": "usda-2026-06-12-Monthly_WASDE",
-      "date": "2026-06-12",
-      "title": "USDA: Monthly WASDE",
-      "impact": "L",
-      "affects": "both",
-      "source": "USDA"
+      "id": "price-corn-20260623-19",
+      "tag": "CORN \u2191",
+      "tag_class": "corn",
+      "text": "Dec corn $4.38 (+0.27\u00a2 today).",
+      "published_at": "2026-06-23T19:33:35.688541+00:00"
     },
     {
-      "id": "geopolitical-2026-06-01-southern_hemisphere_export_w",
-      "date": "2026-06-01",
-      "title": "Southern-hemisphere export window opens",
-      "impact": "S",
-      "affects": "both",
-      "source": "Global supply",
-      "category": "geopolitical"
+      "id": "price-soy-20260623-19",
+      "tag": "SOY \u2191",
+      "tag_class": "soy",
+      "text": "Nov soy $11.41 (+0.00\u00a2 today).",
+      "published_at": "2026-06-23T19:33:35.688541+00:00"
     }
   ],
-  "generated_at": "2026-06-23T18:57:18.726646+00:00"
+  "generated_at": "2026-06-23T19:33:35.688541+00:00"
 }
