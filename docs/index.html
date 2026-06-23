@@ -669,8 +669,8 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
   <div class="A-call">
     <div>
       <p class="A-eyebrow">For Mom · Grain marketing · <span class="js-today" data-fmt="long">Apr 30, 2026</span></p>
-      <h1>Sell <em>~1,000 bu soy</em> now. Hold corn.</h1>
-      <p>Soy hit its $11.44 seasonal target — still +5pp ahead of pace but starting to give back value. June bills are landing now; sell before prices drift lower. Corn is on pace and worth holding through summer.</p>
+      <h1 id="call-headline">Sell <em>~1,000 bu soy</em> now. Hold corn.</h1>
+      <p id="call-detail">Soy hit its $11.44 seasonal target — still +5pp ahead of pace but starting to give back value. June bills are landing now; sell before prices drift lower. Corn is on pace and worth holding through summer.</p>
     </div>
     <div class="A-kpis">
       <div class="A-kpi">
@@ -2722,6 +2722,31 @@ loadDrafts();
       document.querySelectorAll('[data-live="market-wire"]').forEach(function(ul){ul.innerHTML=html;});
     })
     .catch(function(){});
+})();
+</script>
+
+
+<script>
+/* Load generated call from analysis (signals.json) */
+(async function loadCall() {
+  try {
+    const r = await fetch('./signals.json', { cache: 'no-store' });
+    if (!r.ok) return;
+    const data = await r.json();
+    const call = data.call;
+    if (!call) return;
+
+    const h1 = document.getElementById('call-headline');
+    const p  = document.getElementById('call-detail');
+
+    if (h1 && call.headline) {
+      h1.innerHTML = call.headline.replace('~', '<em>~</em>').replace(/(\d[\d,]*)/, '<em>$1</em>');
+      // keep the em around the number
+    }
+    if (p && call.detail) {
+      p.textContent = call.detail;
+    }
+  } catch (_) {}
 })();
 </script>
 

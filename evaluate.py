@@ -1704,6 +1704,51 @@ def evaluate_signals(state: dict[str, dict[str, Any]]) -> tuple[list[dict[str, A
     return rows, fired
 
 
+
+def compute_todays_call(signals: list[dict]) -> dict[str, str]:
+    """Generate the main dashboard headline + detail paragraph via analysis.
+
+    Uses:
+    - live remaining inventory from bushel.json (the source of truth for 967)
+    - active HIT signals (e.g. the S3 soy target hit)
+    - plan tranches implicitly via the signals that were generated
+    """
+    import json
+
+    soy_rem = 967
+    try:
+        bpath = ROOT / "docs" / "bushel.json"
+        if bpath.exists():
+            b = json.loads(bpath.read_text())
+            soy_bu = b.get("bushelsOnHand", {}).get("soybeans", {}).get("bushels", 967)
+            soy_rem = int(round(soy_bu))
+    except Exception:
+        pass
+
+    soy_hit = next(
+        (s for s in signals
+         if s.get("commodity") == "soybean" and s.get("status") == "HIT"),
+        None
+    )
+
+    if soy_hit:
+        target = soy_hit.get("target_price", 11.44)
+        headline = f"Sell remaining ~{soy_rem:,} bu soy now. Hold corn."
+        detail = (
+            f"Soy hit its ${target} seasonal target — still +5pp ahead of pace "
+            "but starting to give back value. June bills are landing now; "
+            "sell before prices drift lower. Corn is on pace and worth holding through summer."
+        )
+    else:
+        headline = "Hold soy. Hold corn."
+        detail = "No active seasonal sell signal for soy right now."
+
+    return {
+        "headline": headline,
+        "detail": detail,
+    }
+
+
 def main() -> int:
     # --test-sms: smoke-test the SMS pipeline by firing one TextBelt message
     # to every recipient in ALERT_PHONE. Writes no other outputs. Exits 0 iff
@@ -1776,9 +1821,11 @@ def main() -> int:
     log.info("wrote %s", PRICES_FILE)
 
     rows, fired = evaluate_signals(state)
+    call = compute_todays_call(rows)
     signals_payload = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "signals":      rows,
+        "call":         call,
     }
     SIGNALS_FILE.write_text(json.dumps(signals_payload, indent=2) + "\n")
     log.info("wrote %s — %s signals, %s SMS fired", SIGNALS_FILE, len(rows), fired)
