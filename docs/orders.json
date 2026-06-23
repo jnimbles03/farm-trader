@@ -8,11 +8,14 @@
       "bushels": 25,
       "limit_price": 15.0,
       "expiry": "2026-07-20",
-      "status": "draft",
+      "status": "submit_error",
       "created_at": "2026-06-23T14:09:37.074477+00:00",
       "accepted_at": "2026-06-23T16:25:00Z",
       "phone": "+163****9950",
-      "nonce": "debug-test-20260623-4"
+      "nonce": "debug-test-20260623-4",
+      "promoted_at": "2026-06-23T14:10:00.513012+00:00",
+      "submit_error": "All MakeOffer candidates failed. Last: HTTP 404: default backend - 404",
+      "errored_at": "2026-06-23T14:10:04.639406+00:00"
     }
   ],
   "generated_at": "2026-06-23T14:09:37.074535+00:00"
