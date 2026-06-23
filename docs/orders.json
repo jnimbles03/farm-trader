@@ -33,7 +33,21 @@
       "promoted_at": "2026-06-23T18:29:54.806094+00:00",
       "submit_error": "All MakeOffer candidates failed. Last: HTTP 404: default backend - 404",
       "errored_at": "2026-06-23T18:30:00.385518+00:00"
+    },
+    {
+      "id": "348ce6a3-306e-49b7-9724-edc9940aad9c",
+      "submission_id": "acct-test2-2026-06-23-6a4852d7",
+      "crop": "soy",
+      "type": "limit",
+      "bushels": 3,
+      "limit_price": 12.5,
+      "expiry": "2026-08-25",
+      "status": "draft",
+      "created_at": "2026-06-23T18:31:11.892758+00:00",
+      "accepted_at": "2026-06-23T18:31:11.892758+00:00",
+      "phone": "+163****9950",
+      "nonce": "acct2"
     }
   ],
-  "generated_at": "2026-06-23T18:29:27.861485+00:00"
+  "generated_at": "2026-06-23T18:32:00.329416+00:00"
 }
