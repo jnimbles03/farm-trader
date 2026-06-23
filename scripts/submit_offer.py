@@ -94,20 +94,40 @@ def make_offer(session, token: str, order: dict, bid: dict) -> dict:
 
     # Build CreateOfferRequest body based on server errors + observed offer shape
     # Required per error: price, accountId, expiration, comments
-    # Dynamically fetch the account id so we don't rely on stale hardcoded value.
+    # Dynamically fetch the account id using the same endpoint the recon uses.
     account_id = None
     try:
+        # Use headers closer to what works for GetAllAccounts in the recon script
+        acc_headers = {
+            "Accept": "*/*",
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json",
+            "Origin": "https://portal.bushelpowered.com",
+            "Referer": "https://portal.bushelpowered.com/",
+            "app-company": bushel_auth.COMPANY,
+            "app-name": "bushel-web-portal-prod",
+            "app-version": "0.8.84",
+        }
+        if installation_id:
+            acc_headers["app-installation-id"] = installation_id
+
         acc_r = session.post(
             "https://api.bushelpowered.com/api/aggregator/accounts/v1/GetAllAccounts",
             json={},
-            headers=base_headers,
+            headers=acc_headers,
             timeout=30,
         )
+        print(f"  GetAllAccounts HTTP {acc_r.status_code}")
         if acc_r.ok:
-            accs = (acc_r.json().get("data") or [])
+            acc_data = acc_r.json()
+            accs = (acc_data.get("data") or [])
             if accs:
-                account_id = accs[0].get("id") or accs[0].get("accountId")
+                acc0 = accs[0]
+                account_id = acc0.get("id") or acc0.get("accountId") or acc0.get("account_id")
                 print(f"  using dynamic account_id from GetAllAccounts: {account_id}")
+                print(f"    account keys: {list(acc0.keys())[:6]}")
+        else:
+            print(f"    GetAllAccounts body: {acc_r.text[:300]}")
     except Exception as e:
         print(f"  WARN fetching accounts: {e}")
 
