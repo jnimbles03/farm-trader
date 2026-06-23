@@ -2568,7 +2568,7 @@ button.trade-cta { cursor: pointer; }
   </div>
 
   <h3 class="trade-h">Build a <em>draft</em> order.</h3>
-  <p class="trade-sub">Stack tranches. Confirm with a code we'll text to your phone.</p>
+  <p class="trade-sub">Stack tranches. A code is texted only to whitelisted phones (Patrick + the 7553 line). The phone owner must give you the code to submit the draft.</p>
 
   <!-- ====== STAGE 1: BUILD ====== -->
   <div class="trade-stage" id="trade-stage-build">
@@ -2578,10 +2578,6 @@ button.trade-cta { cursor: pointer; }
       <div class="crop-toggle" id="crop-toggle">
         <button data-crop="soy"  class="active" type="button">Soybeans</button>
         <button data-crop="corn" type="button">Corn</button>
-    <div class="trade-field">
-      <label class="trade-label">Phone for code</label>
-      <input type="tel" id="trade-phone" placeholder="+1 (555) 123-4567" autocomplete="tel" />
-    </div>
       </div>
     </div>
 
@@ -2611,7 +2607,7 @@ button.trade-cta { cursor: pointer; }
 
     <div class="trade-phone-line">
       <span>Code goes to</span>
-      <strong>you</strong>
+      <strong>+1 (630) 247-9950</strong>
     </div>
 
     <div class="trade-error" id="trade-build-error"></div>
@@ -2624,7 +2620,7 @@ button.trade-cta { cursor: pointer; }
 
   <!-- ====== STAGE 2: OTP ====== -->
   <div class="trade-stage" id="trade-stage-otp" hidden>
-    <p class="trade-sub">Enter the 6-digit code we just texted to you.</p>
+    <p class="trade-sub">Enter the 6-digit code texted to the whitelisted phone. Only the owner of that phone can see it — get the code from them to activate this draft.</p>
 
     <div class="trade-field">
       <label class="trade-label">Confirmation code</label>
@@ -2652,7 +2648,7 @@ button.trade-cta { cursor: pointer; }
     <div class="trade-done-mark">✓</div>
     <h4 class="trade-done-h">Drafted.</h4>
     <p class="trade-sub" style="text-align:center;">
-      Saved as a <em>draft</em>. It will not execute until you promote it to live.
+      Saved as a <em>draft</em>. To activate: promote to live. For signal trades, a whitelisted phone owner must reply Y to the alert (first Y wins; required responders: Maryann, Dan, Susan).
     </p>
     <button class="trade-cta is-secondary" id="trade-done-close" type="button">
       <span class="trade-cta-l">Close</span>
@@ -2690,6 +2686,8 @@ button.trade-cta { cursor: pointer; }
    end-to-end before the worker exists.
    ───────────────────────────────────────────────────────────── */
 const TRADE_API_BASE  = "https://freis-farm-sms-reply.freis.workers.dev";
+const TRADE_PHONE     = "+163****9950";          // whitelist target
+const TRADE_PHONE_FMT = "+1 (630) 247-9950";
 const ORDERS_JSON_URL = "orders.json";           // sibling of home.html under docs/
 
 let BIDS  = { soy: 11.68, corn: 4.47 };  // fallbacks; overwritten by loadTradePrices()
@@ -2841,13 +2839,7 @@ function showStage(name) {
 /* ----- Send code (stage 1 → 2) ----- */
 document.getElementById('trade-send-code').addEventListener('click', async () => {
   const btn = document.getElementById('trade-send-code');
-  const phone = document.getElementById('trade-phone')?.value.trim() || '';
-  if (!phone) {
-    document.getElementById('trade-build-error').textContent = 'Enter a phone number to receive the code.';
-    btn.disabled = false;
-    return;
-  }
-  btn.disabled = true;
+btn.disabled = true;
   document.getElementById('trade-build-error').textContent = '';
   try {
     PENDING_PAYLOAD = buildPayload();
@@ -2968,20 +2960,12 @@ function cryptoUuid() {
     const r = Math.random() * 16 | 0;
     return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
   });
-}
-
-
-function getTradePhone() {
-  const el = document.getElementById('trade-phone');
-  return (el && el.value.trim()) || '';
-}
-
-async function orderApiStart(payload) {
+}async function orderApiStart(payload) {
   if (!TRADE_API_BASE) return localStubStart(payload);
   const r = await fetch(TRADE_API_BASE + '/orders/start', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ phone: getTradePhone(), payload }),
+    body: JSON.stringify({ phone: TRADE_PHONE, payload }),
   });
   if (!r.ok) {
     const text = await r.text().catch(() => '');
@@ -2996,7 +2980,7 @@ async function orderApiSubmit(payload, code) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      phone: getTradePhone(),
+      phone: TRADE_PHONE,
       payload,
       code,
       nonce:        OTP.nonce,
