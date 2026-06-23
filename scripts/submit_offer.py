@@ -107,6 +107,7 @@ def make_offer(session, token: str, order: dict, bid: dict) -> dict:
             "app-company": bushel_auth.COMPANY,
             "app-name": "bushel-web-portal-prod",
             "app-version": "0.8.84",
+            "X-Bushel-Tenant": "akronservices",
         }
         if installation_id:
             acc_headers["app-installation-id"] = installation_id
