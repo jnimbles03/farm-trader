@@ -95,8 +95,8 @@ def make_offer(session, token: str, order: dict, bid: dict) -> dict:
     # Enhanced body — original was minimal; add offerType and any other likely fields
     body = {
         "bidId":          bid["id"],
-        "quantity":       order["bushels"],
-        "targetPrice":    order["limit_price"],
+        "quantity":       str(order["bushels"]),
+        "targetPrice":    str(order["limit_price"]),
         "expirationDate": order.get("expiry"),
         "offerType":      "cash",
         # Some systems expect these too
