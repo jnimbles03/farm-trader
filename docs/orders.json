@@ -1,22 +1,4 @@
 {
-  "orders": [
-    {
-      "id": "1d549609-2f6a-4660-ad8d-56a5b8cd7661",
-      "submission_id": "debug-test-20260623-1",
-      "crop": "soy",
-      "type": "limit",
-      "bushels": 25,
-      "limit_price": 15.0,
-      "expiry": "2026-07-20",
-      "status": "submit_error",
-      "created_at": "2026-06-23T14:02:46.086641+00:00",
-      "accepted_at": "2026-06-23T16:10:00Z",
-      "phone": "+16302479950",
-      "nonce": "debug-test-20260623-1",
-      "promoted_at": "2026-06-23T14:03:53.176662+00:00",
-      "submit_error": "All MakeOffer candidates failed. Last: HTTP 404: default backend - 404",
-      "errored_at": "2026-06-23T14:04:00.384351+00:00"
-    }
-  ],
-  "generated_at": "2026-06-23T14:02:46.086697+00:00"
+  "orders": [],
+  "generated_at": "2026-06-23T14:04:50.197130+00:00"
 }
