@@ -930,7 +930,7 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
     if (expiry < today) expiry.setFullYear(expiry.getFullYear() + 1);
     const daysLeft = Math.ceil((expiry - today) / 86400000);
 
-    let cornBu = 9115, soyBu = 1967;
+    let cornBu = 9115, soyBu = 967;
     try {
       const r = await fetch('./bushel.json', {cache:'no-store'});
       if (r.ok) {
