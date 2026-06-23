@@ -11,6 +11,7 @@ The promote-order.yml workflow calls this after promote_order.py.
 
 import json
 import os
+import re
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -24,10 +25,16 @@ DOCS   = HERE.parent / "docs"
 ORDERS = DOCS / "orders.json"
 BUSHEL = DOCS / "bushel.json"
 
-MAKE_OFFER_URL = (
-    "https://api.bushelpowered.com"
-    "/api/markets/aggregator/offers/v1/MakeOffer"
-)
+# Candidate endpoints — the original /MakeOffer was returning 404 "default backend".
+# We try several common variations until one succeeds.
+MAKE_OFFER_CANDIDATES = [
+    "https://api.bushelpowered.com/api/markets/aggregator/offers/v1/MakeOffer",
+    "https://api.bushelpowered.com/api/markets/aggregator/offers/v1/CreateOffer",
+    "https://api.bushelpowered.com/api/markets/aggregator/offers/MakeOffer",
+    "https://api.bushelpowered.com/api/aggregator/offers/v1/MakeOffer",
+    "https://api.bushelpowered.com/api/markets/aggregator/offers/v1/offer",
+    "https://api.bushelpowered.com/api/markets/aggregator/offers",
+]
 
 # Map order crop names → ritchieBidLadder keys in bushel.json
 CROP_KEY = {
@@ -59,7 +66,20 @@ def pick_bid(ladder: dict, crop: str) -> dict:
 
 
 def make_offer(session, token: str, order: dict, bid: dict) -> dict:
-    headers = {
+    # Try to pull installation_id for extra header (some endpoints need it)
+    installation_id = None
+    try:
+        check_url = f"{bushel_auth.PORTAL}/{bushel_auth.COMPANY}/auth/check?post_login=1"
+        rcheck = session.get(check_url, timeout=20, headers={"Accept": "text/html"})
+        if rcheck.ok:
+            m = re.search(r'__NEXT_DATA__[^>]*>(.+?)</script>', rcheck.text, re.S)
+            if m:
+                nd = json.loads(m.group(1))
+                installation_id = (nd.get("props") or {}).get("installationId")
+    except Exception:
+        pass
+
+    base_headers = {
         "Accept":           "application/json",
         "Authorization":    f"Bearer {token}",
         "Content-Type":     "application/json",
@@ -69,21 +89,39 @@ def make_offer(session, token: str, order: dict, bid: dict) -> dict:
         "app-name":         "bushel-web-portal-prod",
         "app-version":      "0.8.84",
     }
+    if installation_id:
+        base_headers["app-installation-id"] = installation_id
+
+    # Enhanced body — original was minimal; add offerType and any other likely fields
     body = {
         "bidId":          bid["id"],
         "quantity":       order["bushels"],
         "targetPrice":    order["limit_price"],
         "expirationDate": order.get("expiry"),
+        "offerType":      "cash",
+        # Some systems expect these too
+        "unitOfMeasure":  "Bushels",
+        "locationName":   "Ritchie Grain Elevator",
     }
-    print(
-        f"  POST MakeOffer  bidId={bid['id']}  "
-        f"qty={order['bushels']}  target=${order['limit_price']}  "
-        f"expiry={order.get('expiry')}"
-    )
-    r = session.post(MAKE_OFFER_URL, json=body, headers=headers, timeout=30)
-    print(f"  HTTP {r.status_code}: {r.text[:600]}")
-    r.raise_for_status()
-    return r.json()
+
+    print(f"  bid: {bid['id']}  {bid.get('period')}  current ${bid.get('bidPrice')}")
+    print(f"  trying {len(MAKE_OFFER_CANDIDATES)} candidate MakeOffer endpoints...")
+
+    last_err = None
+    for url in MAKE_OFFER_CANDIDATES:
+        print(f"  POST {url}  bidId={bid['id']} qty={order['bushels']} target=${order['limit_price']}")
+        try:
+            r = session.post(url, json=body, headers=base_headers, timeout=30)
+            print(f"    HTTP {r.status_code}: {r.text[:400]}")
+            if r.status_code < 400:
+                return r.json()
+            last_err = f"HTTP {r.status_code}: {r.text[:200]}"
+        except Exception as e:
+            print(f"    ERR {e}")
+            last_err = str(e)
+
+    # If none worked, raise with last error
+    raise Exception(f"All MakeOffer candidates failed. Last: {last_err}")
 
 
 def extract_offer_id(resp: dict) -> str | None:
