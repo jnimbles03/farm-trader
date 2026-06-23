@@ -853,6 +853,17 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
         <path d="M0,14 L10,15 L20,13 L30,14 L40,12 L50,13 L60,11 L70,10 L80,11 L90,9 L100,8" class="spark-line"/>
       </svg>
     </div>
+    <!-- Ritchie availability (pulled from bushel.json + ritchie_live.json; matches positions INV-RITCHIE "available to sell") -->
+    <div class="A-strip-cell">
+      <div class="A-strip-l">Avail to sell</div>
+      <div class="A-strip-v"><span class="js-bid" data-key="bushels.corn" data-fmt="bu">9,115</span></div>
+      <div class="A-strip-d">corn at Ritchie</div>
+    </div>
+    <div class="A-strip-cell">
+      <div class="A-strip-l"></div>
+      <div class="A-strip-v"><span class="js-bid" data-key="bushels.soy" data-fmt="bu">967</span></div>
+      <div class="A-strip-d">soy at Ritchie</div>
+    </div>
     <div class="A-strip-cell">
       <div class="A-strip-l">Diesel · /gal</div>
       <div class="A-strip-v">$3.42</div>
@@ -1703,7 +1714,7 @@ const TRADE_PHONE_FMT = "+1 (630) 247-9950";
 const ORDERS_JSON_URL = "orders.json";           // sibling of home.html under docs/
 
 let BIDS  = { soy: 11.68, corn: 4.47 };  // fallbacks; overwritten by loadTradePrices()
-let AVAIL = { soy: 1967,  corn: 9115 };
+let AVAIL = { soy: 967,  corn: 9115 };
 const CROP_LABEL = { soy: "Soy", corn: "Corn" };
 
 let tradeCrop = 'soy';
