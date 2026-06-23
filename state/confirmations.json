@@ -189,6 +189,18 @@
       "received_at": "2026-05-04T17:48:28.279Z",
       "text": "Y",
       "vote": "Y"
+    },
+    {
+      "pending_sids": [
+        "facad9",
+        "dfbbac",
+        "a99d83"
+      ],
+      "phone": "+16302479950",
+      "reason": "ambiguous_no_sid",
+      "received_at": "2026-06-23T17:46:59.406Z",
+      "text": "Y",
+      "vote": "Y"
     }
   ],
   "a99d83": {
