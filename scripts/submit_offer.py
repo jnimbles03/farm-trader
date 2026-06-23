@@ -101,9 +101,9 @@ def make_offer(session, token: str, order: dict, bid: dict) -> dict:
         if "user" in str(session):  # rough
             pass
         # Fallback to known from previous runs; will be improved
-        account_id = "74d7cd99-0b6b-4625-99e4-b7e3648c527f"
+        account_id = "0ad00800-37b3-4294-a512-a26c767a441f"  # FREIS FARMS LLC from contracts
     except:
-        account_id = "74d7cd99-0b6b-4625-99e4-b7e3648c527f"
+        account_id = "0ad00800-37b3-4294-a512-a26c767a441f"  # FREIS FARMS LLC from contracts
 
     body = {
         "bidId":       bid["id"],
