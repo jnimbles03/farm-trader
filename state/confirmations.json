@@ -259,13 +259,13 @@
     "prior_fired_price": 11.465,
     "recipients": {
       "+16232937553": {
-        "last_reminded_at": "2026-06-23T13:55:15.027451+00:00",
-        "reminders_sent": 1,
+        "last_reminded_at": "2026-06-23T15:08:33.148708+00:00",
+        "reminders_sent": 2,
         "vote": null
       },
       "+16302479950": {
-        "last_reminded_at": "2026-06-23T13:55:15.027451+00:00",
-        "reminders_sent": 1,
+        "last_reminded_at": "2026-06-23T15:08:33.148708+00:00",
+        "reminders_sent": 2,
         "vote": null
       }
     },
@@ -294,13 +294,13 @@
     "prior_fired_price": 11.44,
     "recipients": {
       "+16232937553": {
-        "last_reminded_at": "2026-06-23T13:55:15.027451+00:00",
-        "reminders_sent": 1,
+        "last_reminded_at": "2026-06-23T15:08:33.148708+00:00",
+        "reminders_sent": 2,
         "vote": null
       },
       "+16302479950": {
-        "last_reminded_at": "2026-06-23T13:55:15.027451+00:00",
-        "reminders_sent": 1,
+        "last_reminded_at": "2026-06-23T15:08:33.148708+00:00",
+        "reminders_sent": 2,
         "vote": null
       }
     },
