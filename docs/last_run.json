@@ -1,7 +1,7 @@
 {
-  "ran_at": "2026-06-23T00:13:18.135405+00:00",
+  "ran_at": "2026-06-23T01:17:06.995325+00:00",
   "signal_count": 2,
-  "sms_fired": 0,
+  "sms_fired": 1,
   "sms_ready": true,
   "orders": {
     "draft": 1,

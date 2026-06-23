@@ -253,6 +253,22 @@
     "signal_key": "soybean|S3|SELL|11.4400",
     "status": "pending"
   },
+  "dfbbac": {
+    "live_price": 11.44,
+    "message": "SELL LIMIT 1,174 bu Soybean Nov '26 @ $11.44 \u2014 live $11.44 [$-0.03 since last alert]. Reply Y to authorize or N to hold.",
+    "prior_fired_price": 11.465,
+    "recipients": {
+      "+16232937553": {
+        "vote": null
+      },
+      "+16302479950": {
+        "vote": null
+      }
+    },
+    "sent_at": "2026-06-23T01:16:55.209553+00:00",
+    "signal_key": "soybean|S3|SELL|11.4400",
+    "status": "pending"
+  },
   "e8e5c9": {
     "message": "CORN: Sell 8,250 @ $4.75 ($39,188). 1d risk -$1,620. Reply Y or N.",
     "recipients": {
