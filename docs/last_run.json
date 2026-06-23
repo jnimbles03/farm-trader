@@ -1,5 +1,5 @@
 {
-  "ran_at": "2026-06-23T18:11:07.340525+00:00",
+  "ran_at": "2026-06-23T18:57:18.727222+00:00",
   "signal_count": 2,
   "sms_fired": 0,
   "sms_ready": true,
@@ -9,7 +9,7 @@
     "filled": 0,
     "cancelled": 0,
     "expired": 0,
-    "other": 1
+    "other": 0
   },
   "order_alerts": 0
 }
