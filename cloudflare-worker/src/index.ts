@@ -110,9 +110,10 @@ interface TextBeltReply {
   text?: string;
 }
 
-// Phone whitelist for order submission. The dashboard sends to this exact
-// number; anything else is rejected so a stray browser can't spam SMS.
-const ORDER_PHONE_WHITELIST = ["+16302479950"];
+// Phone whitelist for order submission removed per request.
+// Any phone can now request a trade code (SMS goes to the phone provided in the request).
+// Previously required specific numbers (9950 / 7553); no longer enforced here.
+const ORDER_PHONE_WHITELIST: string[] = [];
 
 // OTP expiry — short enough that intercepted codes age out fast, long enough
 // that the user has time to read the SMS and type 6 digits.
@@ -861,9 +862,8 @@ async function ordersStart(req: Request, env: Env): Promise<Response> {
     return textResponse("Bad JSON", { status: 400 });
   }
   const phone = (body.phone || "").trim();
-  if (!ORDER_PHONE_WHITELIST.includes(phone)) {
-    return textResponse("Phone not allowed", { status: 403 });
-  }
+  // Whitelist check removed: trade no longer requires specific numbers (7553/9950).
+  // Any phone can receive the order confirmation code.
   if (!body.payload || typeof body.payload !== "object") {
     return textResponse("Missing payload", { status: 400 });
   }
@@ -922,9 +922,7 @@ async function ordersSubmit(req: Request, env: Env): Promise<Response> {
   if (!phone || !payload || !code || !nonce || !expires_at || !payload_hash || !hmac) {
     return textResponse("Missing fields", { status: 400 });
   }
-  if (!ORDER_PHONE_WHITELIST.includes(phone)) {
-    return textResponse("Phone not allowed", { status: 403 });
-  }
+  // Whitelist check removed for trade: no longer requires 7553 or 9950.
 
   // Expiry check first — cheaper than the HMAC re-derivation.
   if (new Date(expires_at).getTime() < Date.now()) {
