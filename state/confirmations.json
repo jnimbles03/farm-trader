@@ -1,4 +1,20 @@
 {
+  "28e8f8": {
+    "live_price": 11.45,
+    "message": "SELL LIMIT 1,174 bu Soybean Nov '26 @ $11.44 \u2014 live $11.45 [$-0.01 since last alert]. Reply Y to authorize or N to hold.",
+    "prior_fired_price": 11.4575,
+    "recipients": {
+      "+16232937553": {
+        "vote": null
+      },
+      "+16302479950": {
+        "vote": null
+      }
+    },
+    "sent_at": "2026-06-24T06:19:32.999387+00:00",
+    "signal_key": "soybean|S3|SELL|11.4400",
+    "status": "pending"
+  },
   "40b8d1": {
     "kind": "farm-test-broadcast",
     "message": "[FARM TEST] Group confirmation request \u2014 reply YES or Y to confirm. I'll let everyone know as confirmations come in.\n\nSample trade: SELL 1,000 bu Nov '26 soybeans @ $10.45 ($10,450). Daily @ Risk \u00b1$430.\n\nRequired: Maryann, Dan, Susan.\nOptional: Patrick, Kevin, Alison.\n\nOne-time test, thanks.",
