@@ -3,6 +3,7 @@
     "live_price": 11.45,
     "message": "SELL LIMIT 1,174 bu Soybean Nov '26 @ $11.44 \u2014 live $11.45 [$-0.01 since last alert]. Reply Y to authorize or N to hold.",
     "prior_fired_price": 11.4575,
+    "pulses": {},
     "recipients": {
       "+16232937553": {
         "vote": null
