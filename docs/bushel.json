@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-06-24T21:27:50.028195Z",
+  "fetchedAt": "2026-06-24T21:58:14.446800Z",
   "company": "akronservices",
   "account": "FREIS FARMS LLC",
   "bushelsOnHand": {
@@ -16,11 +16,11 @@
   },
   "bids": {
     "corn": {
-      "price": 3.79,
+      "price": 3.82,
       "period": "Jun",
       "futuresSymbol": "ZCN26",
       "futuresPrice": 4.07,
-      "basis": -0.28,
+      "basis": -0.25,
       "location": "Ritchie Grain Elevator"
     },
     "soybeans": {
@@ -107,11 +107,11 @@
     ],
     "soybeans": [
       {
-        "price": 11.19,
+        "price": 11.14,
         "period": "Jun",
         "futuresSymbol": "ZSN26",
         "futuresPrice": 11.0875,
-        "basis": 0.11,
+        "basis": 0.06,
         "location": "Cargill Bloomington"
       },
       {
@@ -168,8 +168,8 @@
         "id": "CNCRG000OCM7",
         "type": "cash",
         "period": "Jun",
-        "bidPrice": 3.79,
-        "basisPrice": -0.28,
+        "bidPrice": 3.82,
+        "basisPrice": -0.25,
         "futuresPrice": 4.07,
         "futuresSymbol": "ZCN26",
         "canMakeOffer": true
@@ -188,8 +188,8 @@
         "id": "CNCRG000OYFL",
         "type": "cash",
         "period": "Aug",
-        "bidPrice": 3.88,
-        "basisPrice": -0.27,
+        "bidPrice": 3.91,
+        "basisPrice": -0.24,
         "futuresPrice": 4.1575,
         "futuresSymbol": "ZCU26",
         "canMakeOffer": true
@@ -198,8 +198,8 @@
         "id": "CNCRG000OYFT",
         "type": "cash",
         "period": "Sep",
-        "bidPrice": 3.85,
-        "basisPrice": -0.49,
+        "bidPrice": 3.87,
+        "basisPrice": -0.47,
         "futuresPrice": 4.3475,
         "futuresSymbol": "ZCZ26",
         "canMakeOffer": true
@@ -260,8 +260,8 @@
         "id": "SBCRG000OYFM",
         "type": "cash",
         "period": "Aug",
-        "bidPrice": 11.13,
-        "basisPrice": -0.03,
+        "bidPrice": 11.12,
+        "basisPrice": -0.04,
         "futuresPrice": 11.1675,
         "futuresSymbol": "ZSQ26",
         "canMakeOffer": true
