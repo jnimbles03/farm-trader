@@ -3,14 +3,14 @@
     "last_fired": null,
     "last_fired_price": null,
     "last_price": 4.355,
-    "last_updated": "2026-06-24T16:32:10.994640+00:00",
+    "last_updated": "2026-06-24T17:25:20.142026+00:00",
     "status": "WAIT"
   },
   "soybean|S3|SELL|11.4400": {
     "last_fired": "2026-06-24T06:19:32.999129+00:00",
     "last_fired_price": 11.45,
-    "last_price": 11.3625,
-    "last_updated": "2026-06-24T16:32:10.994640+00:00",
+    "last_price": 11.3675,
+    "last_updated": "2026-06-24T17:25:20.142026+00:00",
     "status": "WAIT"
   }
 }
