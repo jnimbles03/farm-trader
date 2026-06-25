@@ -2,15 +2,15 @@
   "corn|C3|SELL|4.5920": {
     "last_fired": null,
     "last_fired_price": null,
-    "last_price": 4.3525,
-    "last_updated": "2026-06-25T10:02:38.561469+00:00",
+    "last_price": 4.355,
+    "last_updated": "2026-06-25T11:53:28.949385+00:00",
     "status": "WAIT"
   },
   "soybean|S3|SELL|11.4400": {
     "last_fired": "2026-06-24T06:19:32.999129+00:00",
     "last_fired_price": 11.45,
-    "last_price": 11.3775,
-    "last_updated": "2026-06-25T10:02:38.561469+00:00",
+    "last_price": 11.3925,
+    "last_updated": "2026-06-25T11:53:28.949385+00:00",
     "status": "WAIT"
   }
 }
