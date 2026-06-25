@@ -2154,37 +2154,41 @@ TRANCHES = [defaultTranche()];
 renderTranches();
 loadDrafts();
 
-(async function loadTradePrices() {
-  try {
-    const r = await fetch('./bushel.json', { cache: 'no-store' });
-    if (!r.ok) return;
-    const b = await r.json();
-    const cornBid = b?.bids?.corn?.price;
-    const soyBid  = b?.bids?.soybeans?.price;
-    const cornBu  = b?.bushelsOnHand?.corn?.bushels;
-    const soyBu   = b?.bushelsOnHand?.soybeans?.bushels;
-    if (cornBid > 0) BIDS.corn  = cornBid;
-    if (soyBid  > 0) BIDS.soy   = soyBid;
-    if (cornBu  > 0) AVAIL.corn = Math.floor(cornBu);
-    if (soyBu   > 0) AVAIL.soy  = Math.floor(soyBu);
-    document.getElementById('trade-bid').textContent   = '$' + BIDS[tradeCrop].toFixed(2);
-    document.getElementById('trade-avail').textContent = fmtBu(AVAIL[tradeCrop]);
-    TRANCHES = [defaultTranche()];
-    renderTranches();
+(function() {
+  async function refreshTradePrices() {
+    try {
+      const r = await fetch('./bushel.json', { cache: 'no-store' });
+      if (!r.ok) return;
+      const b = await r.json();
+      const cornBid = b?.bids?.corn?.price;
+      const soyBid  = b?.bids?.soybeans?.price;
+      const cornBu  = b?.bushelsOnHand?.corn?.bushels;
+      const soyBu   = b?.bushelsOnHand?.soybeans?.bushels;
+      if (cornBid > 0) BIDS.corn  = cornBid;
+      if (soyBid  > 0) BIDS.soy   = soyBid;
+      if (cornBu  > 0) AVAIL.corn = Math.floor(cornBu);
+      if (soyBu   > 0) AVAIL.soy  = Math.floor(soyBu);
+      document.getElementById('trade-bid').textContent   = '$' + BIDS[tradeCrop].toFixed(2);
+      document.getElementById('trade-avail').textContent = fmtBu(AVAIL[tradeCrop]);
+      TRANCHES = [defaultTranche()];
+      renderTranches();
 
-    const ladder    = b?.ritchieBidLadder || {};
-    const anyOpen   = Object.values(ladder).some(bids =>
-      Array.isArray(bids) && bids.some(bid => bid.canMakeOffer)
-    );
-    const fetchedAt = b?.fetchedAt ? new Date(b.fetchedAt) : null;
-    const ageMin    = fetchedAt ? (Date.now() - fetchedAt) / 60000 : 999;
-    const isOpen    = anyOpen && ageMin < 75;
-    const badge     = document.getElementById('trade-market-status');
-    if (badge) {
-      badge.textContent = isOpen ? 'Open' : 'Closed';
-      badge.className   = 'market-status-badge ' + (isOpen ? 'open' : 'closed');
-    }
-  } catch (_) {}
+      const ladder    = b?.ritchieBidLadder || {};
+      const anyOpen   = Object.values(ladder).some(bids =>
+        Array.isArray(bids) && bids.some(bid => bid.canMakeOffer)
+      );
+      const fetchedAt = b?.fetchedAt ? new Date(b.fetchedAt) : null;
+      const ageMin    = fetchedAt ? (Date.now() - fetchedAt) / 60000 : 999;
+      const isOpen    = anyOpen && ageMin < 75;
+      const badge     = document.getElementById('trade-market-status');
+      if (badge) {
+        badge.textContent = isOpen ? 'Open' : 'Closed';
+        badge.className   = 'market-status-badge ' + (isOpen ? 'open' : 'closed');
+      }
+    } catch (_) {}
+  }
+  refreshTradePrices();
+  setInterval(refreshTradePrices, 5 * 60 * 1000);
 })();
 </script>
 
