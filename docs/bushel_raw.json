@@ -3344,7 +3344,7 @@
       }
     ],
     "meta": {
-      "lastUpdated": "2026-06-25T20:36:14Z"
+      "lastUpdated": "2026-06-25T21:16:11Z"
     }
   },
   "contractsSummary": {
@@ -3977,6 +3977,32 @@
   "offers": {
     "type": "api.markets.aggregator.offers.v1#ListOffersSuccess",
     "data": [
+      {
+        "id": "73477cfa-f704-4ded-b756-e13623a861d7",
+        "displayId": "1727580226",
+        "offerType": "cash",
+        "commodityName": "Soybeans",
+        "expiration": "2026-06-30",
+        "quantity": "800",
+        "quantityRemaining": "800",
+        "unitOfMeasure": "Bushels",
+        "offerPrice": "11.26",
+        "fillPrice": null,
+        "status": "working",
+        "accountName": "FRELLC - FREIS FARMS LLC",
+        "locationName": "Ritchie Grain Elevator",
+        "deliveryStart": "2026-06-01",
+        "deliveryEnd": "2026-06-30",
+        "comments": "",
+        "operations": {
+          "edit": true,
+          "withdraw": true,
+          "canEditPrice": true,
+          "canEditQuantity": true
+        },
+        "createdAt": "2026-06-25T20:48:07.087Z",
+        "updatedAt": "2026-06-25T20:48:59.682Z"
+      },
       {
         "id": "90fbea5c-e51f-4d3e-9368-58e4ee86858a",
         "displayId": "1727590147",

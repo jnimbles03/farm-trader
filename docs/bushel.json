@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-06-25T20:36:17.996008Z",
+  "fetchedAt": "2026-06-25T21:16:14.074398Z",
   "company": "akronservices",
   "account": "FREIS FARMS LLC",
   "bushelsOnHand": {
@@ -515,6 +515,40 @@
     }
   ],
   "openOffers": [
+    {
+      "displayId": "1727580226",
+      "commodity": null,
+      "quantity": "800",
+      "targetPrice": null,
+      "status": "working",
+      "expirationDate": null,
+      "raw": {
+        "id": "73477cfa-f704-4ded-b756-e13623a861d7",
+        "displayId": "1727580226",
+        "offerType": "cash",
+        "commodityName": "Soybeans",
+        "expiration": "2026-06-30",
+        "quantity": "800",
+        "quantityRemaining": "800",
+        "unitOfMeasure": "Bushels",
+        "offerPrice": "11.26",
+        "fillPrice": null,
+        "status": "working",
+        "accountName": "FRELLC - FREIS FARMS LLC",
+        "locationName": "Ritchie Grain Elevator",
+        "deliveryStart": "2026-06-01",
+        "deliveryEnd": "2026-06-30",
+        "comments": "",
+        "operations": {
+          "edit": true,
+          "withdraw": true,
+          "canEditPrice": true,
+          "canEditQuantity": true
+        },
+        "createdAt": "2026-06-25T20:48:07.087Z",
+        "updatedAt": "2026-06-25T20:48:59.682Z"
+      }
+    },
     {
       "displayId": "1727590147",
       "commodity": null,
