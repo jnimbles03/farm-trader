@@ -11,7 +11,6 @@ The promote-order.yml workflow calls this after promote_order.py.
 
 import json
 import os
-import re
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -25,16 +24,10 @@ DOCS   = HERE.parent / "docs"
 ORDERS = DOCS / "orders.json"
 BUSHEL = DOCS / "bushel.json"
 
-# Candidate endpoints — the original /MakeOffer was returning 404 "default backend".
-# We try several common variations until one succeeds.
-MAKE_OFFER_CANDIDATES = [
-    "https://api.bushelpowered.com/api/markets/aggregator/offers/v1/CreateOffer",  # this one at least parses the request type
-    "https://api.bushelpowered.com/api/markets/aggregator/offers/v1/MakeOffer",
-    "https://api.bushelpowered.com/api/markets/aggregator/offers/MakeOffer",
-    "https://api.bushelpowered.com/api/aggregator/offers/v1/MakeOffer",
-    "https://api.bushelpowered.com/api/markets/aggregator/offers/v1/offer",
-    "https://api.bushelpowered.com/api/markets/aggregator/offers",
-]
+MAKE_OFFER_URL = (
+    "https://api.bushelpowered.com"
+    "/api/markets/aggregator/offers/v1/MakeOffer"
+)
 
 # Map order crop names → ritchieBidLadder keys in bushel.json
 CROP_KEY = {
@@ -66,20 +59,7 @@ def pick_bid(ladder: dict, crop: str) -> dict:
 
 
 def make_offer(session, token: str, order: dict, bid: dict) -> dict:
-    # Try to pull installation_id for extra header (some endpoints need it)
-    installation_id = None
-    try:
-        check_url = f"{bushel_auth.PORTAL}/{bushel_auth.COMPANY}/auth/check?post_login=1"
-        rcheck = session.get(check_url, timeout=20, headers={"Accept": "text/html"})
-        if rcheck.ok:
-            m = re.search(r'__NEXT_DATA__[^>]*>(.+?)</script>', rcheck.text, re.S)
-            if m:
-                nd = json.loads(m.group(1))
-                installation_id = (nd.get("props") or {}).get("installationId")
-    except Exception:
-        pass
-
-    base_headers = {
+    headers = {
         "Accept":           "application/json",
         "Authorization":    f"Bearer {token}",
         "Content-Type":     "application/json",
@@ -89,83 +69,21 @@ def make_offer(session, token: str, order: dict, bid: dict) -> dict:
         "app-name":         "bushel-web-portal-prod",
         "app-version":      "0.8.84",
     }
-    if installation_id:
-        base_headers["app-installation-id"] = installation_id
-
-    # Build CreateOfferRequest body based on server errors + observed offer shape
-    # Required per error: price, accountId, expiration, comments
-    # Dynamically fetch the account id using the same endpoint the recon uses.
-    account_id = None
-    try:
-        # Use headers closer to what works for GetAllAccounts in the recon script
-        acc_headers = {
-            "Accept": "*/*",
-            "Authorization": f"Bearer {token}",
-            "Content-Type": "application/json",
-            "Origin": "https://portal.bushelpowered.com",
-            "Referer": "https://portal.bushelpowered.com/",
-            "app-company": bushel_auth.COMPANY,
-            "app-name": "bushel-web-portal-prod",
-            "app-version": "0.8.84",
-            "X-Bushel-Tenant": "akronservices",
-        }
-        if installation_id:
-            acc_headers["app-installation-id"] = installation_id
-
-        acc_r = session.post(
-            "https://api.bushelpowered.com/api/aggregator/accounts/v1/GetAllAccounts",
-            json={},
-            headers=acc_headers,
-            timeout=30,
-        )
-        print(f"  GetAllAccounts HTTP {acc_r.status_code}")
-        if acc_r.ok:
-            acc_data = acc_r.json()
-            accs = (acc_data.get("data") or [])
-            if accs:
-                acc0 = accs[0]
-                account_id = acc0.get("id") or acc0.get("accountId") or acc0.get("account_id")
-                print(f"  using dynamic account_id from GetAllAccounts: {account_id}")
-                print(f"    account keys: {list(acc0.keys())[:6]}")
-        else:
-            print(f"    GetAllAccounts body: {acc_r.text[:300]}")
-    except Exception as e:
-        print(f"  WARN fetching accounts: {e}")
-
-    if not account_id:
-        account_id = "74d7cd99-0b6b-4625-99e4-b7e3648c527f"  # last-resort fallback
-        print(f"  using fallback account_id: {account_id}")
-
     body = {
         "bidId":       bid["id"],
-        "price":       str(order["limit_price"]),
         "quantity":    str(order["bushels"]),
-        "accountId":   account_id,
+        "offerPrice":  str(order["limit_price"]),
         "expiration":  order.get("expiry"),
-        "comments":    "",
-        "offerType":   "cash",
-        "unitOfMeasure": "Bushels",
-        "locationName": "Ritchie Grain Elevator",
     }
-
-    print(f"  bid: {bid['id']}  {bid.get('period')}  current ${bid.get('bidPrice')}")
-    print(f"  trying {len(MAKE_OFFER_CANDIDATES)} candidate MakeOffer endpoints...")
-
-    last_err = None
-    for url in MAKE_OFFER_CANDIDATES:
-        print(f"  POST {url}  bidId={bid['id']} qty={order['bushels']} target=${order['limit_price']}")
-        try:
-            r = session.post(url, json=body, headers=base_headers, timeout=30)
-            print(f"    HTTP {r.status_code}: {r.text[:400]}")
-            if r.status_code < 400:
-                return r.json()
-            last_err = f"HTTP {r.status_code}: {r.text[:200]}"
-        except Exception as e:
-            print(f"    ERR {e}")
-            last_err = str(e)
-
-    # If none worked, raise with last error
-    raise Exception(f"All MakeOffer candidates failed. Last: {last_err}")
+    print(
+        f"  POST MakeOffer  bidId={bid['id']}  "
+        f"qty={order['bushels']}  offerPrice=${order['limit_price']}  "
+        f"expiration={order.get('expiry')}"
+    )
+    r = session.post(MAKE_OFFER_URL, json=body, headers=headers, timeout=30)
+    print(f"  HTTP {r.status_code}: {r.text[:600]}")
+    r.raise_for_status()
+    return r.json()
 
 
 def extract_offer_id(resp: dict) -> str | None:
