@@ -2170,8 +2170,10 @@ loadDrafts();
       if (soyBu   > 0) AVAIL.soy  = Math.floor(soyBu);
       document.getElementById('trade-bid').textContent   = '$' + BIDS[tradeCrop].toFixed(2);
       document.getElementById('trade-avail').textContent = fmtBu(AVAIL[tradeCrop]);
-      TRANCHES = [defaultTranche()];
-      renderTranches();
+      if (!document.getElementById('trade-drawer').classList.contains('open')) {
+        TRANCHES = [defaultTranche()];
+        renderTranches();
+      }
 
       const ladder    = b?.ritchieBidLadder || {};
       const anyOpen   = Object.values(ladder).some(bids =>
