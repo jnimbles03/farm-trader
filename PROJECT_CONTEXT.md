@@ -78,10 +78,12 @@ https://centre.bushelops.com/api/v2/commodity-balances
 https://centre.bushelops.com/api/v3/tickets
 ```
 
-**MakeOffer request body** (best-guess — not yet confirmed in prod):
+**MakeOffer request body** (confirmed from real filled offer in openOffers data):
 ```json
-{ "bidId": "<bid.id>", "quantity": 500, "targetPrice": 11.50, "expirationDate": "2026-08-01" }
+{ "bidId": "<bid.id>", "quantity": "100", "offerPrice": "11.16", "expiration": "2026-06-30" }
 ```
+Note: `quantity` and `offerPrice` are **strings**, not numbers. Field is `offerPrice` (not `targetPrice`)
+and `expiration` (not `expirationDate`). Confirmed from offer `1727590147` filled Jun 24 2026.
 The `ritchieBidLadder` in `bushel.json` carries each bid's `id` and `canMakeOffer: true/false`.
 `canMakeOffer: true` means Akron is currently accepting offers on that delivery period.
 
