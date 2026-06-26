@@ -3344,7 +3344,7 @@
       }
     ],
     "meta": {
-      "lastUpdated": "2026-06-26T20:30:17Z"
+      "lastUpdated": "2026-06-26T21:09:47Z"
     }
   },
   "contractsSummary": {
@@ -3373,13 +3373,13 @@
         "commodity": "Soybeans",
         "summaries": [
           {
-            "contractCount": 10,
-            "displayQuantityRemaining": "600 bu",
+            "contractCount": 11,
+            "displayQuantityRemaining": "1,400 bu",
             "displayQuantityDelivered": "5,988.89 bu",
             "displayQuantityCancelled": "0 bu",
-            "displayQuantityContracted": "6,588.89 bu",
-            "displayAverageCashPrice": "$9.91 USD",
-            "displayQuantityPriced": "6,088.89 bu",
+            "displayQuantityContracted": "7,388.89 bu",
+            "displayAverageCashPrice": "$10.06 USD",
+            "displayQuantityPriced": "6,888.89 bu",
             "displayQuantityUnpriced": "500 bu",
             "displayQuantityBasisUnpriced": "0 bu",
             "displayQuantityFuturesUnpriced": "0 bu",
@@ -3426,6 +3426,40 @@
         "customFields": [],
         "createdAt": "2026-06-24T17:00:00Z",
         "updatedAt": "2026-06-24T18:30:00Z"
+      },
+      {
+        "id": "1a4fad83-ec31-49e2-808e-7291504a734d",
+        "accountId": "0ad00800-37b3-4294-a512-a26c767a441f",
+        "accountName": "FREIS FARMS LLC",
+        "commodityName": "Soybeans",
+        "contractType": "purchase",
+        "displayType": "Purchase - PRICED",
+        "cropYear": null,
+        "datasourceId": "3bb789af-64d3-4bbc-9622-237fa412587b",
+        "deliverySchedule": [
+          {
+            "locationName": "RIT",
+            "deliveryPeriods": [
+              "06/01/2026 - 06/30/2026"
+            ]
+          }
+        ],
+        "displayId": "P075658",
+        "isClosed": false,
+        "pricingStatus": "$11.26 USD",
+        "quantityCanceled": 0.0,
+        "quantityContracted": 800.0,
+        "quantityDelivered": 0.0,
+        "quantityRemaining": "800.000000",
+        "displayQuantityCanceled": "0 bu",
+        "displayQuantityContracted": "800 bu",
+        "displayQuantityDelivered": "0 bu",
+        "displayQuantityRemaining": "800 bu",
+        "quantityUom": "bu",
+        "sourceId": "091-P075658-P",
+        "customFields": [],
+        "createdAt": "2026-06-26T17:00:00Z",
+        "updatedAt": "2026-06-26T20:42:00Z"
       },
       {
         "id": "120b6df9-4a14-4117-9c5d-b174afeed610",

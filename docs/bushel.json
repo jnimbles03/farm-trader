@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-06-26T20:30:21.207330Z",
+  "fetchedAt": "2026-06-26T21:09:50.696936Z",
   "company": "akronservices",
   "account": "FREIS FARMS LLC",
   "bushelsOnHand": {
@@ -41,6 +41,15 @@
       "displayRemaining": "100 bu",
       "delivery": "RIT \u00b7 06/01/2026 - 06/30/2026",
       "pricingStatus": "$11.16 USD"
+    },
+    {
+      "displayId": "P075658",
+      "commodity": "Soybeans",
+      "type": "Purchase - PRICED",
+      "remainingBushels": 800.0,
+      "displayRemaining": "800 bu",
+      "delivery": "RIT \u00b7 06/01/2026 - 06/30/2026",
+      "pricingStatus": "$11.26 USD"
     },
     {
       "displayId": "NP01451",
@@ -320,6 +329,18 @@
       "displayRemaining": "100 bu",
       "delivery": "RIT \u00b7 06/01/2026 - 06/30/2026",
       "pricingStatus": "$11.16 USD"
+    },
+    {
+      "displayId": "P075658",
+      "commodity": "Soybeans",
+      "type": "Purchase - PRICED",
+      "isClosed": false,
+      "remainingBushels": 800.0,
+      "displayContracted": "800 bu",
+      "displayDelivered": "0 bu",
+      "displayRemaining": "800 bu",
+      "delivery": "RIT \u00b7 06/01/2026 - 06/30/2026",
+      "pricingStatus": "$11.26 USD"
     },
     {
       "displayId": "NP01451",
