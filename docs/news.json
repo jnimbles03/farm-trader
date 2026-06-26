@@ -1,4 +1,19 @@
 {
-  "items": [],
-  "generated_at": "2026-06-26T19:20:43.335939+00:00"
+  "items": [
+    {
+      "id": "price-corn-20260626-19",
+      "tag": "CORN \u2193",
+      "tag_class": "corn",
+      "text": "Dec corn $4.40 (-0.04\u00a2 today).",
+      "published_at": "2026-06-26T19:30:44.803036+00:00"
+    },
+    {
+      "id": "price-soy-20260626-19",
+      "tag": "SOY \u2193",
+      "tag_class": "soy",
+      "text": "Nov soy $11.55 (-0.03\u00a2 today).",
+      "published_at": "2026-06-26T19:30:44.803036+00:00"
+    }
+  ],
+  "generated_at": "2026-06-26T19:30:44.803036+00:00"
 }
