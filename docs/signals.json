@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-26T14:18:21.672015+00:00",
+  "generated_at": "2026-06-26T15:18:03.013333+00:00",
   "signals": [
     {
       "signal_key": "corn|C3|SELL|4.5920",
@@ -11,7 +11,7 @@
       "target_price": 4.592,
       "note": "T3 \u00b7 June \u2014 8,492 bu (40% of 21,230) | Weather peak",
       "alloc_bu": 8492,
-      "live": 4.44,
+      "live": 4.4475,
       "status": "WAIT",
       "prior_status": "WAIT",
       "last_fired": null
@@ -26,7 +26,7 @@
       "target_price": 11.44,
       "note": "T3 \u00b7 Jun\u2013Jul \u2014 1,174 bu (40% of 2,934) | Weather peak",
       "alloc_bu": 1174,
-      "live": 11.5325,
+      "live": 11.555,
       "status": "HIT",
       "prior_status": "HIT",
       "last_fired": "2026-06-25T14:41:02.698646+00:00"
