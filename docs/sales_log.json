@@ -1,6 +1,6 @@
 {
   "marketing_year": "2025-2026",
-  "generated_at": "2026-06-26T21:41:59Z",
+  "generated_at": "2026-06-26T22:09:19Z",
   "data_source": {
     "akron_ritchie": "docs/bushel_raw.json :: contracts.data (closed, priced, purchase-type)",
     "posen_coop": "scripts/sales_log_static.json (hand-maintained; Bushel doesn't see PC)",
@@ -114,15 +114,51 @@
       "contract_type": "Purchase - SPOT",
       "location": "RIT",
       "source": "bushel"
+    },
+    {
+      "date": "2026-06-01",
+      "crop": "soybeans",
+      "buyer": "Akron / Ritchie",
+      "bushels": 100.0,
+      "price_per_bu": 11.16,
+      "total_amount": 1116.0,
+      "ticket_id": "P075517",
+      "contract_type": "Purchase - PRICED",
+      "location": "RIT",
+      "source": "bushel"
+    },
+    {
+      "date": "2026-06-01",
+      "crop": "soybeans",
+      "buyer": "Akron / Ritchie",
+      "bushels": 800.0,
+      "price_per_bu": 11.26,
+      "total_amount": 9008.0,
+      "ticket_id": "P075658",
+      "contract_type": "Purchase - PRICED",
+      "location": "RIT",
+      "source": "bushel"
+    },
+    {
+      "date": "2026-06-26",
+      "crop": "soybeans",
+      "buyer": "Akron / Ritchie",
+      "bushels": 67.12,
+      "price_per_bu": 11.26,
+      "total_amount": 755.77,
+      "ticket_id": "S067183",
+      "contract_type": "Purchase - SPOT",
+      "location": "RIT",
+      "source": "bushel"
     }
   ],
   "pending": [],
   "season_totals": {
     "soybeans": {
-      "booked_bushels": 5147.96,
-      "booked_amount": 55692.9,
-      "sales_count": 8,
-      "weighted_avg_price": 10.8184
+      "booked_bushels": 6115.08,
+      "booked_amount": 66572.67,
+      "sales_count": 11,
+      "weighted_avg_price": 10.8866
     },
     "corn": {
       "booked_bushels": 3500.0,
@@ -131,8 +167,8 @@
       "weighted_avg_price": 4.03
     },
     "combined": {
-      "booked_bushels": 8647.96,
-      "booked_amount": 69797.9
+      "booked_bushels": 9615.08,
+      "booked_amount": 80677.67
     }
   },
   "remaining_at_ritchie": {
@@ -141,7 +177,7 @@
     "as_of": "2026-06-26"
   },
   "notes": [
-    "5 Akron/Ritchie sales pulled live from Bushel; 4 Posen Coop sales from static backfill.",
+    "8 Akron/Ritchie sales pulled live from Bushel; 4 Posen Coop sales from static backfill.",
     "Sales appear here as soon as Bushel records them \u2014 no books-xlsx step in the loop.",
     "To add a non-Bushel sale (Posen Coop, hand-sale, etc.), edit scripts/sales_log_static.json and commit."
   ]
