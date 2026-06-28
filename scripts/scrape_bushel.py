@@ -238,6 +238,65 @@ def _find_form_action(html: str, must_contain: str) -> str | None:
     return None
 
 
+def fetch_commodity_bids(s: requests.Session, access_token: str) -> dict:
+    """Fetch the raw GetBidsList response (needed for fresh ritchie ladder in submit)."""
+    headers = {
+        "Accept": "*/*",
+        "Authorization": f"Bearer {access_token}",
+        "Content-Type": "application/json",
+        "Origin": PORTAL,
+        "Referer": f"{PORTAL}/",
+        "app-company": COMPANY,
+    }
+    url = "https://api.bushelpowered.com/api/markets/aggregator/bids/v1/GetBidsList"
+    r = s.post(url, json={"locationSourceIds": None}, headers=headers, timeout=30)
+    r.raise_for_status()
+    return r.json()
+
+
+def build_ritchie_bid_ladder(commodity_bids: dict) -> dict:
+    """Build the exact ritchieBidLadder shape used by submit_offer from raw bids data."""
+    ladder = {}
+    for loc in (commodity_bids or {}).get("locations", []):
+        if loc.get("name") != "Ritchie Grain Elevator":
+            continue
+        for grp in loc.get("groups", []):
+            commodity = (grp.get("commodity") or {}).get("name", "").lower()
+            if not commodity:
+                continue
+            bids = []
+            for b in grp.get("bids", []):
+                bids.append({
+                    "id": b.get("id"),
+                    "type": b.get("bidType"),
+                    "period": b.get("description"),
+                    "bidPrice": float(b.get("bidPrice")) if b.get("bidPrice") else None,
+                    "basisPrice": float(b.get("basisPrice")) if b.get("basisPrice") else None,
+                    "futuresPrice": float(b.get("futuresPrice")) if b.get("futuresPrice") else None,
+                    "futuresSymbol": b.get("futuresSymbol"),
+                    "canMakeOffer": (b.get("operations") or {}).get("makeOffer", False),
+                })
+            ladder[commodity] = bids
+    return ladder
+
+
+def fetch_portal_version(s: requests.Session) -> str:
+    """Extract current app-version from the portal (avoids hardcoded old 0.8.84)."""
+    try:
+        r = s.get(f"{PORTAL}/auth/check", timeout=20)
+        r.raise_for_status()
+        m = re.search(r'<script id="__NEXT_DATA__"[^>]*>(.+?)</script>', r.text, re.S)
+        if m:
+            nd = json.loads(m.group(1))
+            props = nd.get("props") or {}
+            ver = props.get("version")
+            if ver:
+                return ver
+    except Exception:
+        pass
+    return "0.8.84"
+
+
 def fetch_data(s: requests.Session, access_token: str) -> dict:
     """Fetch every data endpoint that the cash flow pro forma cares
        about. Returns a dict keyed by friendly name."""
@@ -449,28 +508,9 @@ def summarize_for_cashflow(data: dict) -> dict:
         })
     out["balanceOwed"] = total
 
-    # Full Ritchie bid ladder (all months/types, not just nearest cash)
-    out["ritchieBidLadder"] = {}
-    for loc in (data.get("commodityBids") or {}).get("locations", []):
-        if loc.get("name") != "Ritchie Grain Elevator":
-            continue
-        for grp in loc.get("groups", []):
-            commodity = (grp.get("commodity") or {}).get("name", "").lower()
-            if not commodity:
-                continue
-            ladder = []
-            for b in grp.get("bids", []):
-                ladder.append({
-                    "id": b.get("id"),
-                    "type": b.get("bidType"),
-                    "period": b.get("description"),
-                    "bidPrice": float(b.get("bidPrice")) if b.get("bidPrice") else None,
-                    "basisPrice": float(b.get("basisPrice")) if b.get("basisPrice") else None,
-                    "futuresPrice": float(b.get("futuresPrice")) if b.get("futuresPrice") else None,
-                    "futuresSymbol": b.get("futuresSymbol"),
-                    "canMakeOffer": (b.get("operations") or {}).get("makeOffer", False),
-                })
-            out["ritchieBidLadder"][commodity] = ladder
+    # Full Ritchie bid ladder (reuse builder)
+    commodity_bids = data.get("commodityBids") or {}
+    out["ritchieBidLadder"] = build_ritchie_bid_ladder(commodity_bids)
 
     # All contracts (open AND closed) — useful for historical context
     out["allContracts"] = []

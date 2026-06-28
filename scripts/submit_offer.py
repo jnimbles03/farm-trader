@@ -2,8 +2,8 @@
 Submit live orders to Akron/Bushel as standing limit offers.
 
 Reads docs/orders.json for orders with status == "live".
-Reads docs/bushel.json for ritchieBidLadder bid IDs.
-Authenticates via scrape_bushel auth flow, calls MakeOffer.
+Authenticates via scrape_bushel auth flow, fetches *fresh* ritchieBidLadder,
+calls MakeOffer (using current app-version + preferring bid period matching order expiry).
 Updates order status → "submitted" (or "submit_error") and writes back.
 
 The promote-order.yml workflow calls this after promote_order.py.
@@ -22,14 +22,13 @@ import scrape_bushel as bushel_auth
 HERE   = Path(__file__).parent
 DOCS   = HERE.parent / "docs"
 ORDERS = DOCS / "orders.json"
-BUSHEL = DOCS / "bushel.json"
 
 MAKE_OFFER_URL = (
     "https://api.bushelpowered.com"
     "/api/markets/aggregator/offers/v1/MakeOffer"
 )
 
-# Map order crop names → ritchieBidLadder keys in bushel.json
+# Map order crop names → ritchieBidLadder keys
 CROP_KEY = {
     "corn":     "corn",
     "soy":      "soybeans",
@@ -38,10 +37,11 @@ CROP_KEY = {
 }
 
 
-def pick_bid(ladder: dict, crop: str) -> dict:
+def pick_bid(ladder: dict, crop: str, target_expiry: str | None = None) -> dict:
     """
-    Return the nearest cash bid at Ritchie where canMakeOffer is true.
-    The ladder is already sorted by delivery period (nearest first).
+    Return a cash bid at Ritchie where canMakeOffer is true.
+    Prefers a bid whose period roughly matches the order's expiry month if provided,
+    otherwise falls back to the nearest (first) eligible.
     """
     key = CROP_KEY.get(crop.lower())
     if not key:
@@ -52,13 +52,24 @@ def pick_bid(ladder: dict, crop: str) -> dict:
     ]
     if not eligible:
         raise ValueError(
-            f"No eligible cash bids for {key} — market may be closed or "
-            "bushel.json is stale."
+            f"No eligible cash bids for {key} — market may be closed or ladder is stale."
         )
-    return eligible[0]
+
+    if target_expiry:
+        try:
+            # expiry like "2026-08-01" -> look for "Aug" in period
+            dt = datetime.strptime(target_expiry, "%Y-%m-%d")
+            month = dt.strftime("%b")  # 'Aug'
+            for b in eligible:
+                if month.lower() in (b.get("period") or "").lower():
+                    return b
+        except Exception:
+            pass  # fall through to nearest
+
+    return eligible[0]  # nearest / first eligible
 
 
-def make_offer(session, token: str, order: dict, bid: dict) -> dict:
+def make_offer(session, token: str, order: dict, bid: dict, app_version: str = "0.8.84") -> dict:
     headers = {
         "Accept":           "application/json",
         "Authorization":    f"Bearer {token}",
@@ -67,7 +78,7 @@ def make_offer(session, token: str, order: dict, bid: dict) -> dict:
         "Referer":          "https://portal.bushelpowered.com/",
         "app-company":      bushel_auth.COMPANY,
         "app-name":         "bushel-web-portal-prod",
-        "app-version":      "0.8.84",
+        "app-version":      app_version,
     }
     body = {
         "bidId":       bid["id"],
@@ -108,8 +119,6 @@ def main() -> None:
 
     print(f"Found {len(live)} live order(s).")
 
-    ladder = json.loads(BUSHEL.read_text(encoding="utf-8")).get("ritchieBidLadder", {})
-
     phone    = (os.environ.get("BUSHEL_USER") or os.environ.get("AKRON_USER", "")).strip()
     password = (os.environ.get("BUSHEL_PASS") or os.environ.get("AKRON_PASS", "")).strip()
     if not phone or not password:
@@ -117,17 +126,32 @@ def main() -> None:
         sys.exit(2)
 
     s       = bushel_auth.make_session()
-    session = bushel_auth.login(s, phone, password)
-    token   = session["accessToken"]
+    sess    = bushel_auth.login(s, phone, password)
+    token   = sess["accessToken"]
+
+    # Fresh ladder + version (no more stale docs/bushel.json dependency)
+    print("Fetching fresh bids ladder from Bushel API...")
+    commodity_bids = bushel_auth.fetch_commodity_bids(s, token)
+    ladder = bushel_auth.build_ritchie_bid_ladder(commodity_bids)
+    app_version = bushel_auth.fetch_portal_version(s)
+    print(f"Using app-version={app_version}")
+
+    # Staleness / market guard
+    has_eligible = any(
+        any(b.get("canMakeOffer") for b in ladder.get(k, []))
+        for k in ladder
+    )
+    if not has_eligible:
+        print("!! WARNING: No bids with canMakeOffer=true in fresh ladder. Offers will likely fail.")
 
     changed = False
     for order in live:
         oid = order["id"]
         print(f"\n→ {oid}  {order['bushels']} bu {order['crop']} @ ${order['limit_price']}")
         try:
-            bid = pick_bid(ladder, order["crop"])
+            bid = pick_bid(ladder, order["crop"], order.get("expiry"))
             print(f"  bid: {bid['id']}  {bid.get('period')}  current ${bid.get('bidPrice')}")
-            resp     = make_offer(s, token, order, bid)
+            resp     = make_offer(s, token, order, bid, app_version=app_version)
             offer_id = extract_offer_id(resp)
             order["status"]          = "submitted"
             order["bushel_offer_id"] = offer_id
