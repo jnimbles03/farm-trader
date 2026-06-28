@@ -20,7 +20,7 @@
 
 **Recommendation**: Sell **30%** (~2,734 bu) in the $3.92–$4.42 range over the next week.
 
-**Context**: We are in a standard period. Oil is low, which reduces ethanol demand. Dollar is firm, pressuring exports.
+**Context**: We are in a standard period. Oil is low, which reduces ethanol demand. Dollar is firm, pressuring exports. This supports selling a bit more than the normal seasonal baseline pace over the next week.
 
 **Next review**: 2026-07-05
 
@@ -84,7 +84,7 @@ The plan.json tweaks (better news keywords) we made will help the existing news 
 
 **Recommendation**: Sell **30%** (~2,734 bu) in the $3.92–$4.42 range over the next week.
 
-**Context**: We are in a standard period. Oil is low, which reduces ethanol demand. Dollar is firm, pressuring exports.
+**Context**: We are in a standard period. Oil is low, which reduces ethanol demand. Dollar is firm, pressuring exports. This supports selling a bit more than the normal seasonal baseline pace over the next week.
 
 **Next review**: 2026-07-05
 
@@ -103,7 +103,7 @@ The plan.json tweaks (better news keywords) we made will help the existing news 
 
 **Recommendation**: Sell **30%** (~2,734 bu) in the $3.92–$4.42 range over the next week.
 
-**Context**: We are in a standard period. Oil is low, which reduces ethanol demand. Dollar is firm, pressuring exports.
+**Context**: We are in a standard period. Oil is low, which reduces ethanol demand. Dollar is firm, pressuring exports. This supports selling a bit more than the normal seasonal baseline pace over the next week.
 
 **Next review**: 2026-07-05
 
@@ -122,7 +122,7 @@ The plan.json tweaks (better news keywords) we made will help the existing news 
 
 **Recommendation**: Sell **30%** (~2,734 bu) in the $3.92–$4.4150 range over the next week.
 
-**Context**: We are in a standard period. Oil is low, which reduces ethanol demand. Dollar is firm, pressuring exports.
+**Context**: We are in a standard period. Oil is low, which reduces ethanol demand. Dollar is firm, pressuring exports. This supports selling a bit more than the normal seasonal baseline pace over the next week.
 
 **Next review**: 2026-07-05
 
@@ -141,7 +141,7 @@ The plan.json tweaks (better news keywords) we made will help the existing news 
 
 **Recommendation**: Sell **30%** (~2,734 bu) in the $3.92–$4.4150 range over the next week.
 
-**Context**: We are in a standard period. Oil is low, which reduces ethanol demand. Dollar is firm, pressuring exports.
+**Context**: We are in a standard period. Oil is low, which reduces ethanol demand. Dollar is firm, pressuring exports. This supports selling a bit more than the normal seasonal baseline pace over the next week.
 
 **Next review**: 2026-07-05
 
@@ -160,6 +160,82 @@ The plan.json tweaks (better news keywords) we made will help the existing news 
 
 **Recommendation**: Sell **30%** (~2,734 bu) in the $3.92–$4.4150 range over the next week.
 
-**Context**: We are in a standard period. Oil is low, which reduces ethanol demand. Dollar is firm, pressuring exports.
+**Context**: We are in a standard period. Oil is low, which reduces ethanol demand. Dollar is firm, pressuring exports. This supports selling a bit more than the normal seasonal baseline pace over the next week.
+
+**Next review**: 2026-07-05
+
+
+## [FARM] Weekly Crop Brief (auto-generated 2026-06-28)
+
+**Ritchie corn left**: 9,115 bu
+
+**Time of year**: Summer weather premium window (best historical time for old-crop sales). Hard deadline early July.
+
+**Market snapshot**:
+- Futures price: $4.4150
+- Ritchie cash bid: ~$3.92
+- Oil (CL): $70.09
+- Dollar proxy: 28.46
+
+**Recommendation**: Sell **30%** (~2,734 bu) in the $3.92–$4.4150 range over the next week.
+
+**Context**: We are in a standard period. Oil is low, which reduces ethanol demand. Dollar is firm, pressuring exports. This supports selling a bit more than the normal seasonal baseline pace over the next week.
+
+**Next review**: 2026-07-05
+
+
+## [FARM] Weekly Crop Brief (auto-generated 2026-06-28)
+
+**Ritchie corn left**: 9,115 bu
+
+**Time of year**: Summer weather premium window (best historical time for old-crop sales). Hard deadline early July.
+
+**Market snapshot**:
+- Futures price: $4.4150
+- Ritchie cash bid: ~$3.92
+- Oil (CL): $69.83
+- Dollar proxy: 28.46
+
+**Recommendation**: Sell **30%** (~2,734 bu) in the $3.92–$4.4150 range over the next week.
+
+**Context**: We are in a standard period. Oil is low, which reduces ethanol demand. Dollar is firm, pressuring exports. This supports selling a bit more than the normal seasonal baseline pace over the next week.
+
+**Next review**: 2026-07-05
+
+
+## [FARM] Weekly Crop Brief (auto-generated 2026-06-28)
+
+**Ritchie corn left**: 9,115 bu
+
+**Time of year**: Summer weather premium window (best historical time for old-crop sales). Hard deadline early July.
+
+**Market snapshot**:
+- Futures price: $4.4150
+- Ritchie cash bid: ~$3.92
+- Oil (CL): $69.83
+- Dollar proxy: 28.46
+
+**Recommendation**: Sell **30%** (~2,734 bu) in the $3.92–$4.4150 range over the next week.
+
+**Context**: We are in a standard period. Oil is low, which reduces ethanol demand. Dollar is firm, pressuring exports. This supports selling a bit more than the normal seasonal baseline pace over the next week. This supports selling a bit more than the normal seasonal baseline pace over the next week.
+
+**Next review**: 2026-07-05
+
+
+## [FARM] Weekly Crop Brief (auto-generated 2026-06-28)
+
+**Ritchie corn left**: 9,115 bu
+
+**Time of year**: Summer weather premium window (best historical time for old-crop sales). Hard deadline early July.
+
+**Market snapshot**:
+- Futures price: $4.4150
+- Ritchie cash bid: ~$3.92
+- Oil (CL): $69.82
+- Dollar proxy: 28.46
+
+**Recommendation**: Sell **30%** (~2,734 bu) in the $3.92–$4.4150 range over the next week.
+
+**Context**: We are in a standard period. Oil is low, which reduces ethanol demand. Dollar is firm, pressuring exports. This supports selling a bit more than the normal seasonal baseline pace over the next week. This supports selling a bit more than the normal seasonal baseline pace over the next week.
 
 **Next review**: 2026-07-05

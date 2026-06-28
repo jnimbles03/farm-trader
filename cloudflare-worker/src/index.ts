@@ -2,12 +2,10 @@
 //
 // Routes:
 //   GET  /                   health check
-//   POST /                   TextBelt inbound webhook. If from a whitelisted
-//                            phone (AUTH_PHONES) and message starts with "?",
-//                            routes the question to the Advisor and SMS's
-//                            the reply back. Otherwise fires the legacy
-//                            sms_reply repository_dispatch (Y/N reminder
-//                            replies, etc.).
+//   POST /                   TextBelt inbound webhook. Whitelisted phones
+//                            get conversational answers from Seaweed Sam
+//                            (the advisor). Structured replies (Y/N votes,
+//                            OTPs) still fire the legacy sms_reply dispatch.
 //   POST /orders/start       mints 6-digit code, SMS to whitelisted phone,
 //                            returns HMAC-signed nonce/expiry. Stateless.
 //   POST /orders/submit      verifies HMAC + code, fires order_draft dispatch
@@ -42,7 +40,7 @@ export interface Env {
   GITHUB_REPO:       string;
   GARAGE_CODE:       string;
   AUTH_PHONES:       string;
-  ANTHROPIC_API_KEY: string;
+  OPENROUTER_API_KEY: string;
   // URL of the public advisor_context.json on GitHub Pages, e.g.
   //   https://jnimbles03.github.io/farm-trader/advisor/advisor_context.json
   // Falls back to a hardcoded path if unset.
@@ -76,6 +74,8 @@ const KV_PHONE_RUN_IX  = "admin:phone-run:";      // admin:phone-run:<phone> →
 const KV_GROUPS        = "admin:groups:v1";       // [Group, ...]
 const KV_TEMPLATES     = "admin:templates:v1";    // [Template, ...]
 const KV_ALERTS_CFG    = "admin:alerts:config:v1";// AlertConfig
+const KV_ADVISOR_MODEL = "admin:advisor:model:v1"; // e.g. "anthropic/claude-3.5-sonnet"
+const KV_WEEKLY_TARGET = "admin:weekly:target_pct:v1"; // number or null for auto
 
 // Default alert config — used if KV is empty. Matches the medium-threshold
 // values from the project memory (5¢ corn, 8¢ soy, 3% input, 6am-9pm CT).
@@ -211,6 +211,19 @@ export default {
     if (url.pathname === "/admin/alerts/config") {
       return adminAlertsConfig(req, env);
     }
+    if (url.pathname === "/admin/advisor/model") {
+      return adminAdvisorModel(req, env);
+    }
+    if (url.pathname === "/admin/weekly/target") {
+      return adminWeeklyTarget(req, env);
+    }
+
+    // Public read-only for GitHub Actions weekly job (non-sensitive).
+    if (url.pathname === "/config/weekly") {
+      const target = await loadWeeklyTarget(env);
+      return jsonResponse({ ok: true, target_pct: target });
+    }
+
     if (url.pathname === "/admin/broadcast/start") {
       return adminBroadcastStart(req, env);
     }
@@ -364,7 +377,7 @@ async function authSmsVerify(req: Request, env: Env): Promise<Response> {
 }
 
 // ---------------------------------------------------------------------------
-// /advisor — POST a question, get a Claude-generated reply
+// /advisor — POST a question, get a reply from Seaweed Sam (via OpenRouter)
 // ---------------------------------------------------------------------------
 //
 // Request body:
@@ -508,20 +521,34 @@ interface AdvisorBody {
   history?:     Array<{ role: "user" | "assistant"; content: string }>;
 }
 
-interface AnthropicMessageResponse {
-  content: Array<{ type: string; text?: string }>;
-  usage:   { input_tokens: number; output_tokens: number };
+interface OpenRouterResponse {
+  choices: Array<{ message: { content: string } }>;
+  usage:   { prompt_tokens: number; completion_tokens: number };
   model:   string;
 }
 
-const ADVISOR_DEFAULT_MODEL = "claude-sonnet-4-6";
-const ADVISOR_DEEP_MODEL    = "claude-opus-4-6";
-const ADVISOR_QUICK_MODEL   = "claude-haiku-4-5-20251001";
-// Rough per-million-token pricing for cost reporting.
+
+
+const ADVISOR_DEFAULT_MODEL = "anthropic/claude-3.5-sonnet";
+const ADVISOR_DEEP_MODEL    = "anthropic/claude-3-opus";
+const ADVISOR_QUICK_MODEL   = "anthropic/claude-3-haiku";
+
+// Available models for the admin dropdown (OpenRouter IDs).
+const ADVISOR_MODEL_OPTIONS: string[] = [
+  "anthropic/claude-3.5-sonnet",
+  "anthropic/claude-3-opus",
+  "anthropic/claude-3-haiku",
+  "openai/gpt-4o-mini",
+  "google/gemini-1.5-flash",
+];
+
+// Rough per-million-token pricing for cost reporting (via OpenRouter).
 const ADVISOR_PRICING: Record<string, { in: number; out: number }> = {
-  "claude-sonnet-4-6":         { in: 3.0,  out: 15.0 },
-  "claude-opus-4-6":           { in: 15.0, out: 75.0 },
-  "claude-haiku-4-5-20251001": { in: 1.0,  out: 5.0  },
+  "anthropic/claude-3.5-sonnet": { in: 3.0,  out: 15.0 },
+  "anthropic/claude-3-opus":     { in: 15.0, out: 75.0 },
+  "anthropic/claude-3-haiku":    { in: 0.25, out: 1.25 },
+  "openai/gpt-4o-mini":          { in: 0.15, out: 0.60 },
+  "google/gemini-1.5-flash":     { in: 0.35, out: 1.05 },
 };
 
 async function advisorAsk(req: Request, env: Env): Promise<Response> {
@@ -578,10 +605,8 @@ async function advisorAsk(req: Request, env: Env): Promise<Response> {
   });
 }
 
-// Internal Advisor runner — used by both /advisor (HTTP) and the SMS inbound
-// route. Auth/whitelist is the caller's responsibility; this function only
-// deals with cleaning input, pulling context, calling Claude, and returning
-// the reply (with SMS truncation if channel === "sms").
+// Internal Seaweed Sam advisor runner — used by both /advisor (HTTP) and SMS.
+// Deals with context, calling OpenRouter, and returning reply (truncates for SMS).
 interface RunAdvisorInput {
   question: string;
   channel:  "sms" | "web";
@@ -599,7 +624,8 @@ async function runAdvisor(env: Env, input: RunAdvisorInput): Promise<RunAdvisorR
     .trim();
 
   // 2. Detect /deep or /quick prefix → choose model.
-  let model = ADVISOR_DEFAULT_MODEL;
+  // Base model comes from admin picker (or default). Prefixes override.
+  let model = await loadAdvisorModel(env);
   let userText = cleanQ;
   if (/^\s*\/deep\b/i.test(cleanQ)) {
     model = ADVISOR_DEEP_MODEL;
@@ -639,12 +665,12 @@ async function runAdvisor(env: Env, input: RunAdvisorInput): Promise<RunAdvisorR
     { role: "user" as const, content: userText },
   ];
 
-  // 6. Call Anthropic. One retry on transient failure, then fall back to Haiku.
-  let resp: AnthropicMessageResponse | null = null;
+  // 6. Call via OpenRouter. One retry on transient failure, then fall back to quick model.
+  let resp: OpenRouterResponse | null = null;
   let usedModel = model;
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
-      resp = await callAnthropic(env, usedModel, systemPrompt, messages);
+      resp = await callOpenRouter(env, usedModel, systemPrompt, messages);
       break;
     } catch (e) {
       console.error(`advisor: ${usedModel} attempt ${attempt} failed: ${(e as Error).message}`);
@@ -657,10 +683,7 @@ async function runAdvisor(env: Env, input: RunAdvisorInput): Promise<RunAdvisorR
     return { ok: false, status: 502, error: "Advisor unreachable. Try again in a minute." };
   }
 
-  const reply = resp.content
-    .filter(b => b.type === "text" && typeof b.text === "string")
-    .map(b => b.text as string)
-    .join("");
+  const reply = resp.choices?.[0]?.message?.content || "";
 
   // 7. SMS hard-truncate guardrail. Persona aims for 320, but if a
   // model overflows we cap at 480 (≈3 SMS segments).
@@ -669,8 +692,8 @@ async function runAdvisor(env: Env, input: RunAdvisorInput): Promise<RunAdvisorR
     outText = outText.slice(0, 477) + "...";
   }
 
-  const inTok  = resp.usage.input_tokens;
-  const outTok = resp.usage.output_tokens;
+  const inTok  = resp.usage.prompt_tokens || 0;
+  const outTok = resp.usage.completion_tokens || 0;
   const price  = ADVISOR_PRICING[usedModel] ?? { in: 0, out: 0 };
   const costUsd =
     (inTok  * price.in  / 1_000_000) +
@@ -718,44 +741,10 @@ async function fetchAdvisorContext(env: Env): Promise<string> {
 }
 
 /**
- * Single Anthropic API call. Throws on non-2xx. 30s timeout — Workers
- * can wait that long, and Sonnet at 11k input tokens usually returns
- * in 3-8s.
+ * Single call via OpenRouter (OpenAI chat format). Supports Claude models etc.
+ * 30s timeout.  Workers can wait that long.
  */
-async function callAnthropic(
-  env: Env, model: string, system: string,
-  messages: Array<{ role: string; content: string }>,
-): Promise<AnthropicMessageResponse> {
-  if (!env.ANTHROPIC_API_KEY) {
-    throw new Error("ANTHROPIC_API_KEY not configured");
-  }
-  const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), 30_000);
-  try {
-    const r = await fetch("https://api.anthropic.com/v1/messages", {
-      method:  "POST",
-      headers: {
-        "x-api-key":         env.ANTHROPIC_API_KEY,
-        "anthropic-version": "2023-06-01",
-        "content-type":      "application/json",
-      },
-      body: JSON.stringify({
-        model,
-        max_tokens: 1500,
-        system,
-        messages,
-      }),
-      signal: ctrl.signal,
-    });
-    if (!r.ok) {
-      const errBody = await r.text();
-      throw new Error(`Anthropic ${r.status}: ${errBody.slice(0, 200)}`);
-    }
-    return await r.json() as AnthropicMessageResponse;
-  } finally {
-    clearTimeout(timer);
-  }
-}
+// callOpenRouter defined above (OpenRouter instead of direct Anthropic)
 
 // ---------------------------------------------------------------------------
 // Phone helpers
@@ -1453,13 +1442,14 @@ async function adminState(req: Request, env: Env): Promise<Response> {
   const auth = await requireAdmin(req, env);
   if (!auth.ok) return auth.resp;
 
-  const [recipients, runs, inventory, groups, templates, alertsConfig] = await Promise.all([
+  const [recipients, runs, inventory, groups, templates, alertsConfig, advisorModel, weeklyTarget] = await Promise.all([
     loadRecipients(env),
     loadRecentRuns(env, 25),
     loadInventory(env),
     loadGroups(env),
     loadTemplates(env),
     loadAlertConfig(env),
+    loadAdvisorModel(env),
   ]);
 
   return jsonResponse({
@@ -1471,6 +1461,9 @@ async function adminState(req: Request, env: Env): Promise<Response> {
     groups,
     templates,
     alerts_config: alertsConfig,
+    advisor_model: advisorModel,
+    advisor_options: ADVISOR_MODEL_OPTIONS,
+    weekly_target_pct: weeklyTarget,
   });
 }
 
@@ -1554,6 +1547,43 @@ async function loadTemplates(env: Env): Promise<Template[]> {
   try { const a = JSON.parse(raw); return Array.isArray(a) ? a : []; } catch { return []; }
 }
 
+// ---------- Advisor model (for Seaweed Sam /admin picker) ----------
+
+async function loadAdvisorModel(env: Env): Promise<string> {
+  try {
+    const saved = await env.FARM_KV.get(KV_ADVISOR_MODEL);
+    if (saved && ADVISOR_MODEL_OPTIONS.includes(saved)) return saved;
+  } catch {}
+  return ADVISOR_DEFAULT_MODEL;
+}
+
+async function saveAdvisorModel(env: Env, model: string): Promise<void> {
+  if (!ADVISOR_MODEL_OPTIONS.includes(model)) {
+    throw new Error("invalid model");
+  }
+  await env.FARM_KV.put(KV_ADVISOR_MODEL, model);
+}
+
+async function loadWeeklyTarget(env: Env): Promise<number | null> {
+  try {
+    const v = await env.FARM_KV.get(KV_WEEKLY_TARGET);
+    if (v) {
+      const n = parseInt(v, 10);
+      if (!isNaN(n) && n >= 5 && n <= 100) return n;
+    }
+  } catch {}
+  return null;
+}
+
+async function saveWeeklyTarget(env: Env, pct: number | null): Promise<void> {
+  if (pct === null) {
+    await env.FARM_KV.delete(KV_WEEKLY_TARGET);
+    return;
+  }
+  if (isNaN(pct) || pct < 5 || pct > 100) throw new Error("invalid pct");
+  await env.FARM_KV.put(KV_WEEKLY_TARGET, String(pct));
+}
+
 // ---------- /admin/alerts/config ----------
 
 async function adminAlertsConfig(req: Request, env: Env): Promise<Response> {
@@ -1606,6 +1636,64 @@ async function loadAlertConfig(env: Env): Promise<AlertConfig> {
   const raw = await env.FARM_KV.get(KV_ALERTS_CFG);
   if (!raw) return DEFAULT_ALERT_CONFIG;
   try { return JSON.parse(raw) as AlertConfig; } catch { return DEFAULT_ALERT_CONFIG; }
+}
+
+// ---------- /admin/advisor/model (GET current + options, POST to set) ----------
+
+async function adminAdvisorModel(req: Request, env: Env): Promise<Response> {
+  const auth = await requireAdmin(req, env);
+  if (!auth.ok) return auth.resp;
+
+  if (req.method === "GET") {
+    const current = await loadAdvisorModel(env);
+    return jsonResponse({
+      ok: true,
+      current,
+      options: ADVISOR_MODEL_OPTIONS,
+    });
+  }
+
+  if (req.method === "POST") {
+    let body: { model?: string };
+    try { body = await req.json(); } catch {
+      return jsonResponse({ ok: false, error: "Bad JSON" }, { status: 400 });
+    }
+    const model = (body.model || "").trim();
+    if (!ADVISOR_MODEL_OPTIONS.includes(model)) {
+      return jsonResponse({ ok: false, error: "Invalid model" }, { status: 400 });
+    }
+    await saveAdvisorModel(env, model);
+    return jsonResponse({ ok: true, current: model });
+  }
+
+  return jsonResponse({ ok: false, error: "GET or POST only" }, { status: 405 });
+}
+
+// ---------- /admin/weekly/target (GET current, POST to set or null for auto) ----------
+
+async function adminWeeklyTarget(req: Request, env: Env): Promise<Response> {
+  const auth = await requireAdmin(req, env);
+  if (!auth.ok) return auth.resp;
+
+  if (req.method === "GET") {
+    const target = await loadWeeklyTarget(env);
+    return jsonResponse({ ok: true, target_pct: target });
+  }
+
+  if (req.method === "POST") {
+    let body: { target_pct?: number | null };
+    try { body = await req.json(); } catch {
+      return jsonResponse({ ok: false, error: "Bad JSON" }, { status: 400 });
+    }
+    const pct = body.target_pct;
+    if (pct !== null && pct !== undefined && (typeof pct !== "number" || pct < 5 || pct > 100)) {
+      return jsonResponse({ ok: false, error: "target_pct must be number 5-100 or null" }, { status: 400 });
+    }
+    await saveWeeklyTarget(env, pct ?? null);
+    return jsonResponse({ ok: true, target_pct: pct ?? null });
+  }
+
+  return jsonResponse({ ok: false, error: "GET or POST only" }, { status: 405 });
 }
 
 async function fireAlertConfigAudit(env: Env, config: AlertConfig): Promise<void> {

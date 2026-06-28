@@ -1241,6 +1241,29 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
     <ul class="active-runs-list" id="active-runs"></ul>
   </section>
 
+  <!-- Advisor Model -->
+  <section class="adm-card">
+    <h3>Seaweed Sam Model</h3>
+    <p class="adm-card-tip">Choose which model powers the advisor (website chat + SMS replies). Changes take effect immediately.</p>
+    <div style="display:flex; gap:8px; align-items:center; margin:8px 0;">
+      <select id="advisor-model-pick" style="flex:1; padding:6px 10px; font-size:14px;"></select>
+      <button type="button" class="btn" id="advisor-model-save" style="white-space:nowrap;">Save</button>
+    </div>
+    <span class="adm-toast" id="advisor-model-toast"></span>
+  </section>
+
+  <!-- Weekly Brief Target -->
+  <section class="adm-card">
+    <h3>Weekly Crop Brief Target %</h3>
+    <p class="adm-card-tip">Override the % for this week's recommendation (blank or 0 = calculate from data, oil, dollar, season). Affects the next scheduled run.</p>
+    <div style="display:flex; gap:8px; align-items:center; margin:8px 0;">
+      <input type="number" id="weekly-target-pct" min="5" max="100" step="5" placeholder="Auto" style="width:100px; padding:6px 10px; font-size:14px;" />
+      <button type="button" class="btn" id="weekly-target-save" style="white-space:nowrap;">Save</button>
+      <button type="button" class="btn ghost" id="weekly-target-clear" style="white-space:nowrap;">Clear (auto)</button>
+    </div>
+    <span class="adm-toast" id="weekly-target-toast"></span>
+  </section>
+
   <!-- Composer -->
   <section class="adm-card">
     <h3>Compose broadcast</h3>
@@ -1582,6 +1605,8 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
     renderTemplatesTab();
     renderAlertsTab();
     renderActiveCtas();
+    renderAdvisorModel(j.advisor_model || '', j.advisor_options || []);
+    if (typeof renderWeeklyTarget === 'function') renderWeeklyTarget(j.weekly_target_pct || null);
     const a = adminAuth();
     if (a) {
       const exp = new Date(a.admin_expires_at);
@@ -1782,6 +1807,81 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
   $('#pick-none').addEventListener('click', () => {
     SELECTED_PHONES.clear(); renderRecipPicker(); updateSendUI();
   });
+
+  // ── Advisor model picker ─────────────────────────────────────
+  function renderAdvisorModel(current, options) {
+    const pick = document.getElementById('advisor-model-pick');
+    const save = document.getElementById('advisor-model-save');
+    const toastEl = document.getElementById('advisor-model-toast');
+    if (!pick || !save) return;
+
+    pick.innerHTML = '';
+    (options && options.length ? options : [current || '']).forEach(m => {
+      const o = document.createElement('option');
+      o.value = m;
+      o.textContent = m;
+      if (m === current) o.selected = true;
+      pick.appendChild(o);
+    });
+
+    save.onclick = async () => {
+      save.disabled = true;
+      try {
+        const j = await api('/admin/advisor/model', { model: pick.value });
+        if (j && j.ok) {
+          toast(toastEl, 'Model saved. New conversations will use ' + pick.value);
+        } else {
+          toast(toastEl, (j && j.error) || 'Save failed', true);
+        }
+      } catch (e) {
+        toast(toastEl, 'Error saving model', true);
+      } finally {
+        save.disabled = false;
+      }
+    };
+  }
+
+  function renderWeeklyTarget(current) {
+    const input = document.getElementById('weekly-target-pct');
+    const save = document.getElementById('weekly-target-save');
+    const clear = document.getElementById('weekly-target-clear');
+    const toastEl = document.getElementById('weekly-target-toast');
+    if (!input || !save) return;
+
+    input.value = current ? String(current) : '';
+
+    save.onclick = async () => {
+      const val = input.value.trim();
+      const pct = val ? parseInt(val, 10) : null;
+      if (pct !== null && (isNaN(pct) || pct < 5 || pct > 100)) {
+        toast(toastEl, 'Enter 5-100 or leave blank', true);
+        return;
+      }
+      save.disabled = true;
+      try {
+        const j = await api('/admin/weekly/target', { target_pct: pct });
+        if (j && j.ok) {
+          toast(toastEl, pct ? `Saved. Next brief will use ${pct}%` : 'Saved. Next brief will auto-calculate.');
+        } else {
+          toast(toastEl, (j && j.error) || 'Save failed', true);
+        }
+      } catch (e) {
+        toast(toastEl, 'Error saving', true);
+      } finally {
+        save.disabled = false;
+      }
+    };
+
+    if (clear) {
+      clear.onclick = async () => {
+        input.value = '';
+        const j = await api('/admin/weekly/target', { target_pct: null });
+        if (j && j.ok) {
+          toast(toastEl, 'Cleared. Will auto-calculate next time.');
+        }
+      };
+    }
+  }
 
   // ── Mode + type toggles ──────────────────────────────────────
   $$('#mode-toggle button').forEach(b => b.addEventListener('click', () => {

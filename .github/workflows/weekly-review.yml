@@ -29,6 +29,12 @@ jobs:
       - name: Install deps
         run: pip install -r requirements.txt
 
+      - name: Fetch current weekly target from admin
+        run: |
+          curl -s -f "https://freis-farm-sms-reply.freis.workers.dev/config/weekly" > /tmp/weekly-config.json || echo '{"target_pct": null}' > /tmp/weekly-config.json
+          cp /tmp/weekly-config.json docs/weekly-config.json || true
+          echo "Weekly config: $(cat /tmp/weekly-config.json)"
+
       - name: Prepare weekly review + SMS
         env:
           TEXTBELT_KEY: ${{ secrets.TEXTBELT_KEY }}

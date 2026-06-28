@@ -10,8 +10,9 @@ compatibility_date = "2026-04-01"
 #                       worker can fire a repository_dispatch event
 #   GARAGE_CODE         legacy 4-digit dashboard PIN
 #   AUTH_PHONES         comma-separated E.164 phones allowed to log in via SMS
-#   ANTHROPIC_API_KEY   Claude API key for the /advisor route. Get one at
-#                       console.anthropic.com → Settings → API Keys.
+#   OPENROUTER_API_KEY  OpenRouter API key for Seaweed Sam (the /advisor route).
+#                       Get one at https://openrouter.ai/keys
+#                       Use models like "anthropic/claude-3.5-sonnet" to keep using Claude.
 #
 # Required KV namespace — admin recipients + run state for /admin/* routes:
 #   FARM_KV             create with `npx wrangler kv:namespace create FARM_KV`
