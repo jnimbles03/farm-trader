@@ -13,14 +13,31 @@ GitHub Pages (docs/)
   ├── index.html     — landing / overview / trade widget
   ├── home.html      — full grain ops dashboard / trade widget
   ├── hedge.html     — hedge analysis / trade widget
+  ├── admin.html     — admin orchestration console (broadcast, groups, CTA)
   └── *.json         — data files updated by GitHub Actions crons
 
-Cloudflare Worker  (cloudflare-worker/)
+Cloudflare Worker  (cloudflare-worker/src/index.ts)
   freis-farm-sms-reply.freis.workers.dev
-  ├── POST /orders/start   — mints OTP + HMAC-signed payload bundle
-  ├── POST /orders/submit  — verifies OTP+HMAC → fires order_draft dispatch
-  ├── POST /auth/sms-start|sms-verify|login  — auth gate (garage code)
-  └── POST /advisor        — advisor chat pass-through
+  ├── POST /orders/start         — mints OTP + HMAC-signed payload bundle
+  ├── POST /orders/submit        — verifies OTP+HMAC → fires order_draft dispatch
+  ├── POST /auth/login           — garage code → 30-day session token
+  ├── POST /auth/sms-start       — mint + SMS OTP for dashboard login
+  ├── POST /auth/sms-verify      — verify OTP → 30-day session token
+  ├── POST /auth/verify          — re-check existing token (HMAC+expiry)
+  ├── POST /advisor              — Claude advisor chat pass-through
+  ├── POST /admin/sms-start      — admin OTP (24h token, ADMIN_PHONE only)
+  ├── POST /admin/sms-verify     — verify admin OTP → admin token
+  ├── POST /admin/state          — bootstrap: recipients + runs + groups + templates
+  ├── POST /admin/recipients     — save recipients list to KV
+  ├── POST /admin/groups         — save groups list to KV
+  ├── POST /admin/templates      — save templates list to KV
+  ├── POST /admin/alerts/config  — save alert thresholds to KV
+  ├── POST /admin/broadcast/start|submit|test — CTA orchestration (OTP-gated live)
+  ├── GET  /admin/runs           — recent broadcast run list
+  └── GET  /admin/runs/<id>      — single run detail
+  Cron trigger: every minute → scheduled() → processReminders()
+  KV namespace: FARM_KV (id in wrangler.toml) — stores recipients, groups,
+                templates, alert config, run snapshots
 
 GitHub Actions  (.github/workflows/)
   accept-order.yml         — on order_draft dispatch → writes docs/orders.json
@@ -78,14 +95,14 @@ https://centre.bushelops.com/api/v2/commodity-balances
 https://centre.bushelops.com/api/v3/tickets
 ```
 
-**MakeOffer request body** (confirmed from real filled offer in openOffers data):
+**MakeOffer request body** (confirmed from real filled offer `1727590147`, Jun 24 2026):
 ```json
 { "bidId": "<bid.id>", "quantity": "100", "offerPrice": "11.16", "expiration": "2026-06-30" }
 ```
-Note: `quantity` and `offerPrice` are **strings**, not numbers. Field is `offerPrice` (not `targetPrice`)
-and `expiration` (not `expirationDate`). Confirmed from offer `1727590147` filled Jun 24 2026.
-The `ritchieBidLadder` in `bushel.json` carries each bid's `id` and `canMakeOffer: true/false`.
-`canMakeOffer: true` means Akron is currently accepting offers on that delivery period.
+- `quantity` and `offerPrice` are **strings**, not numbers
+- Field names are `offerPrice` (not `targetPrice`) and `expiration` (not `expirationDate`)
+- `ritchieBidLadder` in `bushel.json` carries each bid's `id` and `canMakeOffer: true/false`
+- `canMakeOffer: true` means Akron is currently accepting offers on that delivery period
 
 **Market open/closed signal**: any bid in `ritchieBidLadder` with `canMakeOffer: true`
 AND `bushel.json.fetchedAt` < 75 minutes ago → market is open. Used by the trade widget badge.
@@ -100,6 +117,7 @@ AND `bushel.json.fetchedAt` < 75 minutes ago → market is open. Used by the tra
    PENDING_PAYLOAD captured at send-code time — MUST reuse at submit (same UUID/HMAC)
 3. POST /orders/start  → Worker mints OTP (TextBelt SMS) + HMAC bundle
    HMAC = hmacHex(TEXTBELT_KEY, `${code}|${phone}|${payloadHash}|${nonce}|${expiresAt}`)
+   Phone whitelist: derived at runtime from AUTH_PHONES secret (NOT hardcoded)
 4. User enters 6-digit code → POST /orders/submit
    Worker: re-derives HMAC with user code, verifies sha256(canonicalJson(payload)) == payload_hash
    → fires order_draft repository_dispatch
@@ -111,10 +129,57 @@ AND `bushel.json.fetchedAt` < 75 minutes ago → market is open. Used by the tra
    → submit_offer.py: login Bushel → MakeOffer → status: "submitted" + bushel_offer_id
 ```
 
-**OTP TTL**: 5 minutes. Phone whitelist: `["+16302479950"]`.
+**OTP TTL**: 5 minutes. Trade phone whitelist: `parsePhoneList(env.AUTH_PHONES)` at runtime.
 
 **Critical bug already fixed**: `buildPayload()` must NOT be called twice (generates new UUID+timestamp).
 `PENDING_PAYLOAD` variable captures payload at send-code time and reuses at submit.
+
+---
+
+## Cloudflare Worker — deployment notes
+
+**CRITICAL**: The source in `cloudflare-worker/` must be deployed manually. GitHub pushes do NOT
+auto-deploy the worker. All admin routes, the cron trigger, and auth fixes only take effect after:
+
+```bash
+cd cloudflare-worker
+npx wrangler deploy
+```
+
+**Required secrets** (set via `wrangler secret put <NAME>`):
+- `TEXTBELT_KEY` — paid TextBelt key; also used as HMAC secret for all tokens
+- `GITHUB_TOKEN` — fine-grained PAT with Contents+Actions r/w on farm-trader
+- `GARAGE_CODE` — legacy 4-digit dashboard PIN
+- `AUTH_PHONES` — comma-separated E.164 phones allowed to log in AND submit trade orders
+- `ANTHROPIC_API_KEY` — Claude API key for /advisor route
+
+**KV namespace**: `FARM_KV` (binding in wrangler.toml, id `89ac203079404b90b032798eea908a05`)
+Stores: recipients, groups, templates, alert config, run snapshots.
+
+**Admin token**: distinct HMAC namespace from dashboard auth (`admin|ADMIN_PHONE|expiresAt` vs
+`auth|expiresAt`). 24-hour TTL. ADMIN_PHONE is hardcoded to `+16302479950` in source.
+
+**Cron trigger** (`* * * * *`): fires `scheduled()` → `processReminders()` every minute.
+Walks pending CTA runs and sends reminder SMS to non-respondents. ONLY active when worker is deployed.
+
+---
+
+## Admin broadcast system (docs/admin.html)
+
+Separate console at `/admin.html`. Login via admin OTP (SMS to ADMIN_PHONE).
+
+**Concepts**:
+- **Recipients**: named list stored in KV (admin:recipients:v1). Each has name, phone, required flag.
+  Default required quorum names: Dan Cooke, Susan Lindeen, Maryann Meyer.
+- **Groups**: subsets of recipients for targeted broadcasts (admin:groups:v1).
+- **Templates**: reusable message bodies with `{bushels}`, `{price}`, `{crop}` tokens (admin:templates:v1).
+- **Bulletin**: one-way broadcast SMS. No Y/N quorum needed.
+- **CTA** (Call to Action): requires Y/N reply quorum from `required` recipients before marking complete.
+  Live CTAs need a fresh OTP code (prevents accidental sends).
+- **Test**: sends only to ADMIN_PHONE; never touches recipients list.
+
+**Run lifecycle**: `pending` → `quorum_met` / `rejected` / `complete` / `failed`
+Reminder cron fires every minute, sends reminders at 5-min intervals, max 8 cycles.
 
 ---
 
@@ -122,7 +187,7 @@ AND `bushel.json.fetchedAt` < 75 minutes ago → market is open. Used by the tra
 
 | Secret | Used by |
 |--------|---------|
-| `TEXTBELT_KEY` | evaluate.py, Worker (SMS OTP + alerts) |
+| `TEXTBELT_KEY` | evaluate.py, Worker (SMS OTP + alerts + HMAC) |
 | `ALERT_PHONE` | evaluate.py (price alert target) |
 | `TRADE_PHONES` | evaluate.py |
 | `NEWS_PHONES` | evaluate.py |
@@ -181,10 +246,15 @@ AND `bushel.json.fetchedAt` < 75 minutes ago → market is open. Used by the tra
 - Green "Open" / grey "Closed" pill in the trade widget avail strip
 - Logic: `canMakeOffer` in `ritchieBidLadder` AND `bushel.json` age < 75 min
 
+**Trade price auto-refresh**: `refreshTradePrices()` runs on load then every 5 min via `setInterval`.
+Re-fetches `bushel.json` with `cache: 'no-store'`, updates `BIDS`, `AVAIL`, bid display, and market badge.
+**TRANCHES guard**: if the trade drawer is open (`#trade-drawer.classList.contains('open')`),
+the refresh skips the `TRANCHES = [defaultTranche()]` reset — preserves in-progress order edits.
+
 **TRADE_API_BASE**: set to `"https://freis-farm-sms-reply.freis.workers.dev"` in all three HTML files.
 Empty string = stub mode (codes shown on-screen only, no real SMS).
 
-**Default tranche**: `limit_price: round2(BIDS[tradeCrop])` — current Ritchie bid, not 4% above it.
+**Default tranche**: `limit_price: round2(BIDS[tradeCrop])` — current Ritchie bid.
 
 ---
 
@@ -198,24 +268,27 @@ Bushel scripts install separately: `pip install requests beautifulsoup4 lxml pyt
 
 ## Known gotchas
 
+- **Worker must be manually deployed**: `cd cloudflare-worker && npx wrangler deploy`. GitHub pushes
+  do NOT redeploy the worker. Admin routes, cron reminders, and auth fixes only land after a deploy.
 - **Keycloak split-flow**: POST 1 sends username, POST 2 sends password. Each returns new session_code
   in the form action URL. `_find_form_action()` in scrape_bushel.py handles both HTML form tags
   and JS-rendered pages.
-- **MakeOffer body not confirmed in prod**: the body `{bidId, quantity, targetPrice, expirationDate}`
-  is our best-guess from API naming conventions. If Akron returns 400, full response is logged —
-  iterate from that error message.
 - **Crop name mapping**: order uses `"soy"`, Bushel API / ritchieBidLadder uses `"soybeans"`.
   `CROP_KEY` dict in submit_offer.py handles this.
 - **bushel.json fetchedAt**: set by `scrape_bushel.py`. Outside Mon–Fri 8am–4pm CDT, data goes
   stale and market badge flips to Closed automatically (75-min threshold).
-- **orders.json is currently empty**: test draft from Jun 22 was on main during session; file was
-  reset. New submissions write fresh rows.
+- **Git push races**: evaluate.yml, refresh-bushel.yml, and other crons push to main concurrently.
+  Occasional non-fast-forward failures are expected; the workflows retry.
 
 ---
 
 ## What is NOT yet built
 
+- **Weekly Monday report**: Monday 7am CDT cron → Python script reads bids + ag calendar → composes
+  concise SMS → TextBelt to group (Maryann, Susan, Dan, Kevin, Allison, Jimmy). Corn selling ladder
+  config file not yet created (pending levels from Jimmy).
+- **Corn selling ladder**: target levels + timing windows not yet stored in repo. Needed to drive
+  the weekly report and give context to each trade.
 - evaluate.py does not yet monitor `live` or `submitted` orders (no fill detection)
 - No webhook or polling to detect when Akron fills an offer
 - No "cancel offer" flow (would need a DeleteOffer/CancelOffer endpoint, not yet explored)
-- MakeOffer endpoint body not confirmed via a real prod call yet
