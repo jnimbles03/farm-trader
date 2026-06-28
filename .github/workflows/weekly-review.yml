@@ -1,0 +1,47 @@
+name: Weekly Corn Selling Review Prep
+
+# Runs every Monday ~9am Eastern.
+# Pulls latest prices, inventory, oil, dollar proxy.
+# Generates a full review + recommendation.
+# Updates the MD file and sends SMS summary.
+
+on:
+  schedule:
+    - cron: '0 13 * * 1'   # 13:00 UTC ≈ 9am EST / 8am EDT
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  prep:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install deps
+        run: pip install -r requirements.txt
+
+      - name: Prepare weekly review + SMS
+        env:
+          TEXTBELT_KEY: ${{ secrets.TEXTBELT_KEY }}
+        run: python scripts/prepare_weekly_review.py
+
+      - name: Commit updates
+        run: |
+          git config user.name "freis-farm-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add docs/weekly_macro_review.md
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "weekly-review: auto review for $(date -u +'%Y-%m-%d')"
+          git push
