@@ -1330,7 +1330,8 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
   <!-- Tab: Recipients -->
   <section class="adm-card tab-pane here" data-tabpane="recipients">
     <h3>Recipients roster</h3>
-    <p class="adm-card-tip">★ marks required-quorum members (Dan, Susan, Maryann). They can't be removed; phone is editable. Add/remove anyone else as optional.</p>
+    <p class="adm-card-tip">★ marks required-quorum members (Dan, Susan, Maryann). They can't be removed; phone is editable. Add/remove anyone else as optional. These phones receive CTAs, bulletins, and can be selected for news alert subscribers.</p>
+    <div id="recip-status" style="font-family:var(--font-mono);font-size:11px;color:var(--dust);margin-bottom:6px;"></div>
     <table class="recipients">
       <thead>
         <tr>
@@ -1345,6 +1346,8 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
     <div class="adm-row-actions">
       <button type="button" class="btn" id="recip-add">+ Add person</button>
       <button type="button" class="btn primary" id="recip-save">Save roster</button>
+      <button type="button" class="btn ghost" id="recip-copy-phones" title="Copy all valid phones as comma-separated list">Copy phones</button>
+      <button type="button" class="btn ghost" id="recip-copy-json" title="Copy full roster as JSON">Copy JSON</button>
       <span class="adm-toast" id="recip-toast"></span>
     </div>
   </section>
@@ -1420,6 +1423,12 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
       <div class="alerts-card" style="grid-column:1/-1;">
         <h4>Subscribers</h4>
         <p style="font-family:var(--font-display);font-style:italic;font-size:12px;color:var(--slate);margin:0 0 8px;">Tick recipients who should get news alert SMS.</p>
+        <div style="margin-bottom:6px;">
+          <button type="button" class="btn ghost" id="subs-all" style="padding:2px 8px;font-size:11px;">All</button>
+          <button type="button" class="btn ghost" id="subs-required" style="padding:2px 8px;font-size:11px;">Required only</button>
+          <button type="button" class="btn ghost" id="subs-none" style="padding:2px 8px;font-size:11px;">None</button>
+          <span style="font-family:var(--font-mono);font-size:10px;color:var(--dust);margin-left:8px;" id="subs-count"></span>
+        </div>
         <div class="editor-checkbox-list" id="alerts-subscribers"></div>
       </div>
     </div>
@@ -1432,7 +1441,16 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
   <!-- Tab: History -->
   <section class="adm-card tab-pane" data-tabpane="history">
     <h3>Broadcast history</h3>
-    <p class="adm-card-tip">Last 50 sends, newest first. Click any row to see full reply state.</p>
+    <p class="adm-card-tip">Last 50 sends, newest first. Click any row to see full reply state. Stats update on refresh.</p>
+    <div id="runs-stats" style="font-family:var(--font-mono);font-size:11px;color:var(--dust);margin:4px 0 8px;"></div>
+    <div style="margin:4px 0 8px; display:flex; gap:6px; flex-wrap:wrap;" id="runs-filters">
+      <button type="button" class="btn ghost here" data-filter="all" style="padding:2px 10px;font-size:11px;">All</button>
+      <button type="button" class="btn ghost" data-filter="cta" style="padding:2px 10px;font-size:11px;">CTA</button>
+      <button type="button" class="btn ghost" data-filter="bulletin" style="padding:2px 10px;font-size:11px;">Bulletin</button>
+      <button type="button" class="btn ghost" data-filter="test" style="padding:2px 10px;font-size:11px;">Test</button>
+      <button type="button" class="btn ghost" data-filter="live" style="padding:2px 10px;font-size:11px;">Live</button>
+      <button type="button" class="btn ghost" data-filter="pending" style="padding:2px 10px;font-size:11px;">Pending</button>
+    </div>
     <ul class="runs-list" id="runs-list">
       <li class="runs-empty">Loading…</li>
     </ul>
@@ -1507,6 +1525,7 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
   let OPEN_RUN_ID = null;      // currently-open run modal
   let SELECTED_GROUP_ID = '';   // currently-selected group in composer
   let SELECTED_TEMPLATE_ID = ''; // currently-selected template in composer
+  let RUNS_FILTER = 'all';     // filter for history: all | cta | bulletin | test | live | pending
 
   function adminAuth() { return window.__adminAuth(); }
   function adminHeaders(extra) {
@@ -1566,8 +1585,9 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
     const a = adminAuth();
     if (a) {
       const exp = new Date(a.admin_expires_at);
-      $('#admin-meta').textContent =
-        'ADMIN · UNTIL ' + exp.toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}).toUpperCase();
+      const base = 'ADMIN · UNTIL ' + exp.toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}).toUpperCase();
+      const admPhone = j.admin_phone ? ' · gate: ' + formatPhone(j.admin_phone) : '';
+      $('#admin-meta').textContent = base + admPhone;
     }
   }
 
@@ -1577,6 +1597,24 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
   function renderRecipients() {
     const tbody = $('#recip-tbody');
     tbody.innerHTML = '';
+    const statusEl = $('#recip-status');
+
+    function updateRecipStatus() {
+      if (!statusEl) return;
+      const total = RECIPIENTS.length;
+      const withPhone = RECIPIENTS.filter(r => normalizePhone(r.phone)).length;
+      const reqHavePhone = Array.from(REQUIRED_LOCK_NAMES).filter(nm => {
+        const rec = RECIPIENTS.find(r => r.name === nm);
+        return rec && normalizePhone(rec.phone);
+      }).length;
+      const reqTotal = REQUIRED_LOCK_NAMES.size;
+      let txt = `${withPhone}/${total} have phones`;
+      if (reqHavePhone < reqTotal) txt += ` · ${reqHavePhone}/${reqTotal} required ready`;
+      statusEl.textContent = txt;
+      if (reqHavePhone < reqTotal) statusEl.style.color = 'var(--warn)';
+      else statusEl.style.color = 'var(--dust)';
+    }
+
     // Sort: required-locked names first (alphabetical), then everyone else
     // alphabetical by name.
     const list = RECIPIENTS.slice().sort((a, b) => {
@@ -1585,11 +1623,15 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
       if (aLock !== bLock) return aLock - bLock;
       return (a.name || '').localeCompare(b.name || '');
     });
-    list.forEach((r, idxInSort) => {
+
+    list.forEach((r) => {
       const tr = document.createElement('tr');
       const locked = REQUIRED_LOCK_NAMES.has(r.name);
       if (locked) tr.classList.add('locked');
       const realIdx = RECIPIENTS.indexOf(r);
+      const hasPhone = !!normalizePhone(r.phone);
+      const missingPhone = locked && !hasPhone;
+      if (missingPhone) tr.style.background = '#FFF8F0';
       tr.innerHTML = `
         <td>
           <input type="text" class="name-input" value="${escapeAttr(r.name)}"
@@ -1598,7 +1640,7 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
         </td>
         <td>
           <input type="tel" class="phone-input" value="${escapeAttr(r.phone)}"
-                 placeholder="+13125551212" />
+                 placeholder="+13125551212" style="${missingPhone ? 'border-color:#C77; background:#FFF8F0' : ''}" />
         </td>
         <td class="req-cell">
           <input type="checkbox" class="req-cb" ${r.required ? 'checked' : ''}
@@ -1608,8 +1650,8 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
           ${locked ? '' : '<button type="button" class="row-del" title="Remove">×</button>'}
         </td>
       `;
-      tr.querySelector('.name-input').addEventListener('input', e => RECIPIENTS[realIdx].name = e.target.value);
-      tr.querySelector('.phone-input').addEventListener('input', e => RECIPIENTS[realIdx].phone = e.target.value);
+      tr.querySelector('.name-input').addEventListener('input', e => { RECIPIENTS[realIdx].name = e.target.value; updateRecipStatus(); });
+      tr.querySelector('.phone-input').addEventListener('input', e => { RECIPIENTS[realIdx].phone = e.target.value; updateRecipStatus(); });
       tr.querySelector('.req-cb').addEventListener('change', e => RECIPIENTS[realIdx].required = e.target.checked);
       const del = tr.querySelector('.row-del');
       if (del) del.addEventListener('click', () => {
@@ -1619,6 +1661,8 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
       });
       tbody.appendChild(tr);
     });
+
+    updateRecipStatus();
   }
   function escapeAttr(s) { return String(s ?? '').replace(/"/g, '&quot;'); }
 
@@ -1640,6 +1684,15 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
       toast($('#recip-toast'), 'Add at least one row with name + phone.', true);
       return;
     }
+    // Require the three quorum members to have phones before allowing save
+    const missingRequired = Array.from(REQUIRED_LOCK_NAMES).filter(nm => {
+      const rec = cleaned.find(r => r.name === nm);
+      return !rec || !rec.phone;
+    });
+    if (missingRequired.length > 0) {
+      toast($('#recip-toast'), 'Required members need phones: ' + missingRequired.join(', '), true);
+      return;
+    }
     $('#recip-save').disabled = true;
     try {
       const j = await api('/admin/recipients', { recipients: cleaned });
@@ -1648,10 +1701,45 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
         renderRecipients();
         renderRecipPicker();
         toast($('#recip-toast'), 'Roster saved + mirrored to git.');
+        // reload full state to pick up any server-side timestamps etc.
+        try { await bootstrap(); } catch(_) {}
       } else {
         toast($('#recip-toast'), (j && j.error) || 'Save failed.', true);
       }
     } finally { $('#recip-save').disabled = false; }
+  });
+
+  // Copy helpers for roster management
+  $('#recip-copy-phones').addEventListener('click', () => {
+    const phones = RECIPIENTS
+      .map(r => normalizePhone(r.phone))
+      .filter(p => p);
+    if (phones.length === 0) {
+      toast($('#recip-toast'), 'No phones to copy.', true);
+      return;
+    }
+    navigator.clipboard.writeText(phones.join(', ')).then(() => {
+      toast($('#recip-toast'), `Copied ${phones.length} phones`);
+    }).catch(() => {
+      // fallback
+      prompt('Copy these phones:', phones.join(', '));
+    });
+  });
+
+  $('#recip-copy-json').addEventListener('click', () => {
+    const data = RECIPIENTS
+      .filter(r => r.name && normalizePhone(r.phone))
+      .map(r => ({ name: r.name.trim(), phone: normalizePhone(r.phone), required: !!r.required }));
+    if (data.length === 0) {
+      toast($('#recip-toast'), 'No valid roster to copy.', true);
+      return;
+    }
+    const json = JSON.stringify(data, null, 2);
+    navigator.clipboard.writeText(json).then(() => {
+      toast($('#recip-toast'), 'Copied roster JSON');
+    }).catch(() => {
+      prompt('Copy JSON:', json);
+    });
   });
 
   // ── Recipient picker (composer) ──────────────────────────────
@@ -1932,12 +2020,40 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
 
   function renderRuns() {
     const ul = $('#runs-list');
+    const statsEl = $('#runs-stats');
     ul.innerHTML = '';
     if (!RUNS || RUNS.length === 0) {
       ul.innerHTML = '<li class="runs-empty">No broadcasts yet.</li>';
+      if (statsEl) statsEl.textContent = '';
       return;
     }
+
+    // Aggregate SMS log stats (always full set)
+    let totalSent = 0, totalReplies = 0, totalBroadcasts = RUNS.length;
     RUNS.forEach(r => {
+      const recips = r.recipients || [];
+      totalSent += recips.filter(x => x.sent_ok).length;
+      totalReplies += recips.filter(x => x.replied_at).length;
+    });
+    if (statsEl) {
+      statsEl.textContent = `${totalBroadcasts} broadcasts · ${totalSent} SMS delivered · ${totalReplies} replies logged`;
+    }
+
+    // Apply filter
+    const filtered = RUNS.filter(r => {
+      if (RUNS_FILTER === 'all') return true;
+      if (RUNS_FILTER === 'cta' || RUNS_FILTER === 'bulletin') return r.type === RUNS_FILTER;
+      if (RUNS_FILTER === 'test' || RUNS_FILTER === 'live') return r.mode === RUNS_FILTER;
+      if (RUNS_FILTER === 'pending') return r.status === 'pending';
+      return true;
+    });
+
+    if (filtered.length === 0) {
+      ul.innerHTML = '<li class="runs-empty">No matching runs for this filter.</li>';
+      return;
+    }
+
+    filtered.forEach(r => {
       const li = document.createElement('li');
       li.style.cursor = 'pointer';
       const who = r.recipients ? r.recipients.length : 0;
@@ -1965,6 +2081,17 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
       ul.appendChild(li);
     });
   }
+
+  // History filter buttons (SMS logs polish)
+  $$('#runs-filters button[data-filter]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      RUNS_FILTER = btn.dataset.filter || 'all';
+      // update active style
+      $$('#runs-filters button').forEach(b => b.classList.remove('here'));
+      btn.classList.add('here');
+      renderRuns();
+    });
+  });
 
   async function openRunModal(id) {
     OPEN_RUN_ID = id;
@@ -2418,6 +2545,7 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
       lbl.innerHTML = `<input type="checkbox" data-sub-phone="${phone}" ${subs.has(phone) ? 'checked' : ''} /> ${escapeAttr(r.name)} <small style="color:var(--slate);font-family:var(--font-mono);">${escapeAttr(formatPhone(phone))}</small>`;
       subsContainer.appendChild(lbl);
     });
+    updateSubsCount();
   }
   ['#th-corn','#th-soy','#th-input','#th-quiet-start','#th-quiet-end'].forEach(sel => {
     $(sel).addEventListener('input', e => {
@@ -2454,6 +2582,48 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
       }
     } finally { $('#alerts-save').disabled = false; }
   });
+
+  // Subscribers quick actions + live count (polish for alerts phone management)
+  function updateSubsCount() {
+    const checked = $$('#alerts-subscribers input[data-sub-phone]:checked').length;
+    const total = $$('#alerts-subscribers input[data-sub-phone]').length;
+    const el = $('#subs-count');
+    if (el) el.textContent = `${checked}/${total} subscribed`;
+  }
+
+  function setSubscribers(mode) {
+    const boxes = $$('#alerts-subscribers input[data-sub-phone]');
+    const roster = RECIPIENTS.filter(r => normalizePhone(r.phone));
+    boxes.forEach(cb => {
+      const phone = cb.dataset.subPhone;
+      if (mode === 'all') {
+        cb.checked = true;
+      } else if (mode === 'none') {
+        cb.checked = false;
+      } else if (mode === 'required') {
+        const rec = roster.find(r => normalizePhone(r.phone) === phone);
+        cb.checked = !!(rec && rec.required);
+      }
+    });
+    updateSubsCount();
+  }
+
+  const subsAll = $('#subs-all');
+  const subsReq = $('#subs-required');
+  const subsNone = $('#subs-none');
+  if (subsAll) subsAll.addEventListener('click', () => setSubscribers('all'));
+  if (subsReq) subsReq.addEventListener('click', () => setSubscribers('required'));
+  if (subsNone) subsNone.addEventListener('click', () => setSubscribers('none'));
+
+  // Update count when any subscriber checkbox changes (delegated on container)
+  const subsContainer = $('#alerts-subscribers');
+  if (subsContainer) {
+    subsContainer.addEventListener('change', (e) => {
+      if (e.target && e.target.matches('input[data-sub-phone]')) {
+        updateSubsCount();
+      }
+    });
+  }
 
   // ── Boot once admin gate is cleared ──────────────────────────
   window.__adminReady = function () {

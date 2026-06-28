@@ -31,8 +31,8 @@ def load_json(name: str):
 
 def get_inventory_and_bids():
     data = load_json("ritchie_live.json") or load_json("bushel.json")
-    inv = 9115
-    cash = 3.92
+    inv = None
+    cash = None
     try:
         if "storage" in data:
             inv = round(data["storage"]["corn_bu"])
@@ -48,7 +48,7 @@ def get_inventory_and_bids():
 
 def get_prices():
     p = load_json("prices.json")
-    dec = p.get("corn_dec", 4.415)
+    dec = p.get("corn_dec")
     chg = p.get("detail", {}).get("corn", {}).get("day_chg", 0)
     asof = p.get("detail", {}).get("corn", {}).get("as_of", "")
     return dec, chg, asof
@@ -77,71 +77,84 @@ def analyze(inv: int, dec: float, cash: float, oil: float | None, dxy: float | N
     # Seasonal baseline (your textbook)
     if 6 <= month <= 7 and day <= 10:
         base = 35
-        season = "deep in the summer weather premium — historically the best window for old crop"
+        baseline_note = "in the summer weather premium window"
     elif month == 7:
         base = 15
-        season = "past peak premium, sliding into harvest pressure"
+        baseline_note = "past the peak premium period and moving into harvest pressure"
     else:
         base = 20
-        season = "standard period"
+        baseline_note = "in a standard period"
 
-    reasons = [season]
+    reasons = []
 
     # Macro rules (your triggers, in plain language)
-    if oil and oil < 80:
+    oil_note = ""
+    if oil is not None and oil < 80:
         base += 5
-        reasons.append("oil is low (less ethanol demand boost — favors selling now)")
-    elif oil and oil > 95:
+        oil_note = "Oil is low, which reduces ethanol demand"
+    elif oil is not None and oil > 95:
         base -= 5
-        reasons.append("oil is strong (ethanol margins better — can wait a bit)")
+        oil_note = "Oil is strong, supporting ethanol demand"
 
-    if dxy and dxy > 28.3:
+    if dxy is not None and dxy > 28.3:
         base += 5
-        reasons.append("dollar proxy firm (makes U.S. corn pricier for buyers abroad — sell before more pressure)")
+        reasons.append("Dollar is firm, pressuring exports")
 
-    if chg >= 0.10:
+    if chg is not None and chg >= 0.10:
         base += 5
-        reasons.append("prices popped recently — good moment to capture")
+        reasons.append("Prices have moved up recently")
 
     pct = max(15, min(45, int(base)))
-    bu = int(inv * pct / 100)
+    bu = int((inv or 0) * pct / 100)
 
-    # Concise, high-signal summary in layman's terms
-    why = " • ".join(reasons[:3])
+    # Build a clear, followable "Why" that ties news to the baseline schedule
+    why_parts = [f"We are {baseline_note}."]
+    if oil_note:
+        why_parts.append(oil_note + ".")
+    if reasons:
+        why_parts.append(" • ".join(reasons) + ".")
+
+    why = " ".join(why_parts).strip()
+
     return pct, bu, why, oil, dxy
 
 def build_sms(pct: int, bu: int, dec: float, cash: float, why: str, oil: float | None, inv: int):
-    oil_str = f"Oil ${oil:.0f}" if oil else ""
+    dec_str = f"${dec:.2f}" if dec is not None else "N/A"
+    cash_str = f"${cash:.2f}" if cash is not None else "N/A"
     return (
-        f"[FARM] Ritchie Review: Sell {pct}% (~{bu:,} bu) of {inv:,} bu corn.\n"
-        f"Dec ${dec:.2f} | Cash ~${cash:.2f} {oil_str}\n"
-        f"Why: {why}\n"
-        f"Post offers in the trade widget. Full details in the file."
+        "[FARM] Weekly Crop Brief\n\n"
+        f"Recommended we sell {pct}% of the crop in the {cash_str}–{dec_str} range over the next week.\n\n"
+        f"Market snapshot: Futures {dec_str} | Ritchie cash ~{cash_str}\n\n"
+        f"Context: {why}\n\n"
+        "Reply to chat with Seaweed Sam.\n\n"
+        "-Seaweed Sam (Your personal pro farmer)"
     )
 
 def update_md(pct: int, bu: int, dec: float, cash: float, why: str, oil: float | None, dxy: float | None):
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     next_mon = (datetime.now(timezone.utc) + timedelta(days=7)).strftime("%Y-%m-%d")
-    inv_local = get_inventory_and_bids()[0]  # for display
+    inv_local = get_inventory_and_bids()[0] or 0
 
     oil_str = f"${oil:.2f}" if oil else "N/A"
     dxy_str = f"{dxy:.2f}" if dxy else "N/A"
+    dec_str = f"${dec:.4f}" if dec is not None else "N/A"
+    cash_str = f"${cash:.2f}" if cash is not None else "N/A"
 
-    status = f"""## Current Status (auto-generated {today})
+    status = f"""## [FARM] Weekly Crop Brief (auto-generated {today})
 
 **Ritchie corn left**: {inv_local:,} bu
 
 **Time of year**: Summer weather premium window (best historical time for old-crop sales). Hard deadline early July.
 
-**Key numbers**:
-- Dec futures: ${dec:.4f}
-- Ritchie cash: ~${cash:.2f}
+**Market snapshot**:
+- Futures price: {dec_str}
+- Ritchie cash bid: ~{cash_str}
 - Oil (CL): {oil_str}
 - Dollar proxy: {dxy_str}
 
-**Recommendation**: Sell **{pct}%** (~{bu:,} bu). Use stepped limit offers.
+**Recommendation**: Sell **{pct}%** (~{bu:,} bu) in the {cash_str}–{dec_str} range over the next week.
 
-**Why (plain English)**: {why}
+**Context**: {why}
 
 **Next review**: {next_mon}
 """
@@ -203,4 +216,5 @@ if __name__ == "__main__":
 
     sms = build_sms(pct, bu, dec, cash, why, oil, inv)
     send_sms(sms)
+    # Optional: also send a short invitation if wanted, but keep one message for now.
     print("Done.")

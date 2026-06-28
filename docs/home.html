@@ -1510,7 +1510,7 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
     <a href="hedge.html" class="shell-tab">Trading</a>
     <a href="farm-ops.html" class="shell-tab">Farm Ops</a>
   </div>
-  <button type="button" class="advisor-trigger" id="advisor-trigger" aria-label="Open advisor chat">Ask <em>advisor</em></button>
+  <button type="button" class="advisor-trigger" id="advisor-trigger" aria-label="Chat with Seaweed Sam">Ask Seaweed Sam</button>
   <div class="shell-meta" id="shell-meta">MAY 5, 2026 · CT</div>
 </nav>
 
@@ -1981,12 +1981,12 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
 <aside class="advisor-drawer" id="advisor-drawer" aria-hidden="true" aria-label="Freis Farm advisor">
   <div class="advisor-head">
     <div>
-      <span class="advisor-eyebrow">Freis <em>·</em> Farm advisor</span>
-      <h2 class="advisor-h">Ask <em>about the farm</em>.</h2>
+      <span class="advisor-eyebrow">Seaweed Sam</span>
+      <h2 class="advisor-h">Ask Seaweed Sam.</h2>
     </div>
     <button type="button" class="advisor-close" id="advisor-close" aria-label="Close advisor">×</button>
   </div>
-  <p class="advisor-context">Knows: Ritchie balances, plant / hay / cattle, recent grain marketing, books, today's bids.</p>
+  <p class="advisor-context">Seaweed Sam — your grain marketing co-pilot. Knows the farm data, bids, and schedule.</p>
   <textarea class="advisor-input" id="advisor-input" rows="3"
     placeholder="e.g., should I sell another 500 bu corn before Friday's WASDE?"></textarea>
   <div class="advisor-row">
@@ -3273,6 +3273,8 @@ loadDrafts();
   var body    = document.getElementById('advisor-reply-body');
   if (!trigger || !drawer) return;
 
+  var history = [];  // client-side conversation memory for Seaweed Sam
+
   function openDrawer() {
     drawer.classList.add('open');
     scrim.classList.add('open');
@@ -3292,33 +3294,61 @@ loadDrafts();
       return obj && obj.token ? obj.token : null;
     } catch (e) { return null; }
   }
+
+  function renderConversation() {
+    if (history.length === 0) {
+      body.textContent = 'Ask Seaweed Sam anything about the farm, bids, or marketing.';
+      return;
+    }
+    body.innerHTML = history.map(function (m) {
+      var who = m.role === 'user' ? 'You' : 'Seaweed Sam';
+      return '<div style="margin: 6px 0;"><strong>' + who + ':</strong> ' + m.content + '</div>';
+    }).join('');
+  }
+
   async function ask() {
     var q = (input.value || '').trim();
     if (!q) { input.focus(); return; }
+
+    // add user turn
+    history.push({ role: 'user', content: q });
+    renderConversation();
+
     send.disabled = true;
     send.textContent = 'Thinking…';
-    reply.hidden = false;
-    body.textContent = 'The advisor is reading the context…';
+
     try {
       var r = await fetch(WORKER + '/advisor', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: q, token: authToken() })
+        body: JSON.stringify({ 
+          question: q, 
+          token: authToken(),
+          history: history.slice(0, -1),  // send history without the just-added one? or all before
+          channel: 'web'
+        })
       });
       var data;
       try { data = await r.json(); } catch (_) { data = null; }
-      if (!r.ok || (data && data.ok === false)) {
-        body.textContent = (data && (data.error || data.message)) ||
-          ('Advisor offline (HTTP ' + r.status + '). Try advisor/chat.py from terminal.');
+
+      var replyText = 'Advisor offline.';
+      if (r.ok && data && data.ok !== false) {
+        replyText = data.reply || data.text || 'No reply.';
+        history.push({ role: 'assistant', content: replyText });
       } else {
-        body.textContent = (data && (data.reply || data.text || data.answer)) ||
-          'Advisor returned an empty reply.';
+        replyText = (data && (data.error || data.message)) ||
+          ('Advisor offline (HTTP ' + r.status + ').');
+        // remove the failed user turn? or keep for retry
       }
+      renderConversation();
     } catch (err) {
-      body.textContent = 'Could not reach advisor: ' + (err && err.message ? err.message : err);
+      history.pop(); // remove user turn on error
+      renderConversation();
+      body.textContent = 'Could not reach Seaweed Sam: ' + (err && err.message ? err.message : err);
     }
     send.disabled = false;
     send.textContent = 'Ask';
+    input.value = '';
   }
 
   trigger.addEventListener('click', openDrawer);

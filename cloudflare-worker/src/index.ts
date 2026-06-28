@@ -399,7 +399,7 @@ async function authSmsVerify(req: Request, env: Env): Promise<Response> {
 // (intentional: prompt changes are policy changes).
 //
 
-const ADVISOR_PERSONA = `You are the Freis Farm trade advisor — a grain marketing co-pilot for Jimmy Meyer (Freis Farm, central Illinois, sells to Ritchie Grain via the Akron Services portal).
+const ADVISOR_PERSONA = `You are Seaweed Sam, the Freis Farm grain marketing advisor (friendly, direct, no-nonsense). You are a grain marketing co-pilot for Jimmy Meyer (Freis Farm, central Illinois, sells to Ritchie Grain via the Akron Services portal). When replying on SMS, end with "-Seaweed Sam" unless the user asked a pure data question.
 
 You are NOT a licensed financial or commodity advisor. You do not place trades. Your job is to help Jimmy think through marketing decisions using his own farm data.
 
@@ -1017,7 +1017,10 @@ async function textbeltReply(req: Request, env: Env): Promise<Response> {
   const whitelist = parsePhoneList(env.AUTH_PHONES || "");
   const isWhitelisted = !!fromNorm && whitelist.includes(fromNorm);
   const trimmed = text.trim();
-  const isAdvisorAsk = isWhitelisted && trimmed.startsWith("?");
+  // Route casual questions from whitelisted phones to Seaweed Sam.
+  // Structured votes (Y/N ...) and 6-digit codes still go to the legacy dispatch.
+  const isStructured = /^[YN]\s+[a-z0-9]{4,8}\b/i.test(trimmed) || /^\d{6}$/.test(trimmed);
+  const isAdvisorAsk = isWhitelisted && !isStructured;
 
   // -- Admin CTA reply attribution -----------------------------------------
   // Before the Advisor / legacy dispatch branches, check if this inbound is
@@ -1033,24 +1036,43 @@ async function textbeltReply(req: Request, env: Env): Promise<Response> {
   }
 
   if (isAdvisorAsk) {
-    const question = trimmed.slice(1).trim();
+    const question = trimmed.trim();
     if (!question) {
-      await sendTextBelt(env, fromNumber,
-        "Advisor: send a question after the '?' (e.g. ?should I price 500 bu beans this week?)");
+      await sendTextBelt(env, fromNumber, "Seaweed Sam: what would you like to know about the farm?");
       return new Response("OK\n", { status: 200 });
     }
     if (question.length > 1000) {
-      await sendTextBelt(env, fromNumber, "Advisor: question too long (>1000 chars).");
+      await sendTextBelt(env, fromNumber, "Seaweed Sam: question too long. Keep it under 1000 chars.");
       return new Response("OK\n", { status: 200 });
     }
+
+    // Load recent history for this phone (simple per-phone memory).
+    let history = [];
+    try {
+      const key = `advisor:history:${fromNorm}`;
+      const stored = await env.FARM_KV.get(key, { type: "json" });
+      if (Array.isArray(stored)) history = stored.slice(-8); // keep last ~4 turns
+    } catch (e) {
+      console.error("history load failed", e);
+    }
+
     const result = await runAdvisor(env, {
       question,
       channel: "sms",
-      history: [],
+      history,
     });
-    const replyText = result.ok
-      ? result.reply
-      : `Advisor: ${result.error}`;
+
+    const replyText = result.ok ? result.reply : `Seaweed Sam: ${result.error}`;
+
+    // Save the turn.
+    try {
+      const key = `advisor:history:${fromNorm}`;
+      const updated = [...history, { role: "user", content: question }, { role: "assistant", content: replyText }];
+      await env.FARM_KV.put(key, JSON.stringify(updated.slice(-10)), { expirationTtl: 60 * 60 * 24 * 7 }); // 7 days
+    } catch (e) {
+      console.error("history save failed", e);
+    }
+
     const send = await sendTextBelt(env, fromNumber, replyText);
     if (!send.ok) {
       console.error(`advisor sms reply failed: ${send.error}`);

@@ -1,4 +1,4 @@
-# Weekly Corn Selling Schedule Review
+# [FARM] Weekly Crop Brief
 
 **The simple system**: One file + the existing dashboard. Update once a week. Decide how much to sell. Post offers. Done.
 
@@ -6,21 +6,21 @@
 
 ---
 
-## Current Status (auto-generated 2026-06-28)
+## [FARM] Weekly Crop Brief (auto-generated 2026-06-28)
 
 **Ritchie corn left**: 9,115 bu
 
 **Time of year**: Summer weather premium window (best historical time for old-crop sales). Hard deadline early July.
 
-**Key numbers**:
-- Dec futures: $4.4150
-- Ritchie cash: ~$3.92
-- Oil (CL): $69.23
+**Market snapshot**:
+- Futures price: $4.4150
+- Ritchie cash bid: ~$3.92
+- Oil (CL): $70.31
 - Dollar proxy: 28.46
 
-**Recommendation**: Sell **30%** (~2,734 bu). Use stepped limit offers.
+**Recommendation**: Sell **30%** (~2,734 bu) in the $3.92–$4.42 range over the next week.
 
-**Why (plain English)**: standard period • oil is low (less ethanol demand boost — favors selling now) • dollar proxy firm (makes U.S. corn pricier for buyers abroad — sell before more pressure)
+**Context**: We are in a standard period. Oil is low, which reduces ethanol demand. Dollar is firm, pressuring exports.
 
 **Next review**: 2026-07-05
 
@@ -69,3 +69,97 @@ Check these and note anything important in the status above:
 **That's it.** This file + the dashboard is the entire tracking system. No extra tools, scripts, or dashboards needed unless you decide later you want them. 
 
 The plan.json tweaks (better news keywords) we made will help the existing news feed surface more relevant items automatically.
+
+## [FARM] Weekly Crop Brief (auto-generated 2026-06-28)
+
+**Ritchie corn left**: 9,115 bu
+
+**Time of year**: Summer weather premium window (best historical time for old-crop sales). Hard deadline early July.
+
+**Market snapshot**:
+- Futures price: $4.4150
+- Ritchie cash bid: ~$3.92
+- Oil (CL): $70.18
+- Dollar proxy: 28.46
+
+**Recommendation**: Sell **30%** (~2,734 bu) in the $3.92–$4.42 range over the next week.
+
+**Context**: We are in a standard period. Oil is low, which reduces ethanol demand. Dollar is firm, pressuring exports.
+
+**Next review**: 2026-07-05
+
+
+## [FARM] Weekly Crop Brief (auto-generated 2026-06-28)
+
+**Ritchie corn left**: 9,115 bu
+
+**Time of year**: Summer weather premium window (best historical time for old-crop sales). Hard deadline early July.
+
+**Market snapshot**:
+- Futures price: $4.4150
+- Ritchie cash bid: ~$3.92
+- Oil (CL): $70.22
+- Dollar proxy: 28.46
+
+**Recommendation**: Sell **30%** (~2,734 bu) in the $3.92–$4.42 range over the next week.
+
+**Context**: We are in a standard period. Oil is low, which reduces ethanol demand. Dollar is firm, pressuring exports.
+
+**Next review**: 2026-07-05
+
+
+## [FARM] Weekly Crop Brief (auto-generated 2026-06-28)
+
+**Ritchie corn left**: 9,115 bu
+
+**Time of year**: Summer weather premium window (best historical time for old-crop sales). Hard deadline early July.
+
+**Market snapshot**:
+- Futures price: $4.4150
+- Ritchie cash bid: ~$3.92
+- Oil (CL): $70.28
+- Dollar proxy: 28.46
+
+**Recommendation**: Sell **30%** (~2,734 bu) in the $3.92–$4.4150 range over the next week.
+
+**Context**: We are in a standard period. Oil is low, which reduces ethanol demand. Dollar is firm, pressuring exports.
+
+**Next review**: 2026-07-05
+
+
+## [FARM] Weekly Crop Brief (auto-generated 2026-06-28)
+
+**Ritchie corn left**: 9,115 bu
+
+**Time of year**: Summer weather premium window (best historical time for old-crop sales). Hard deadline early July.
+
+**Market snapshot**:
+- Futures price: $4.4150
+- Ritchie cash bid: ~$3.92
+- Oil (CL): $70.31
+- Dollar proxy: 28.46
+
+**Recommendation**: Sell **30%** (~2,734 bu) in the $3.92–$4.4150 range over the next week.
+
+**Context**: We are in a standard period. Oil is low, which reduces ethanol demand. Dollar is firm, pressuring exports.
+
+**Next review**: 2026-07-05
+
+
+## [FARM] Weekly Crop Brief (auto-generated 2026-06-28)
+
+**Ritchie corn left**: 9,115 bu
+
+**Time of year**: Summer weather premium window (best historical time for old-crop sales). Hard deadline early July.
+
+**Market snapshot**:
+- Futures price: $4.4150
+- Ritchie cash bid: ~$3.92
+- Oil (CL): $70.34
+- Dollar proxy: 28.46
+
+**Recommendation**: Sell **30%** (~2,734 bu) in the $3.92–$4.4150 range over the next week.
+
+**Context**: We are in a standard period. Oil is low, which reduces ethanol demand. Dollar is firm, pressuring exports.
+
+**Next review**: 2026-07-05
