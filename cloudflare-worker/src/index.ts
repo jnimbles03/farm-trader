@@ -113,7 +113,7 @@ interface TextBeltReply {
 // Phone whitelist for the trade widget (draft orders).
 // Only these phones receive the SMS code.
 // The recipient of the code must respond (provide the digits) to activate/submit the draft.
-const ORDER_PHONE_WHITELIST = ["+163****9950", "+162****7553"];
+const ORDER_PHONE_WHITELIST = ["+16302479950"];
 
 // OTP expiry — short enough that intercepted codes age out fast, long enough
 // that the user has time to read the SMS and type 6 digits.

@@ -90,15 +90,17 @@
   "_news_feeds_doc": "RSS feeds pulled on every evaluate run (15 min). Items must be younger than max_age_hours AND match at least one topic keyword before scoring. Empty list or a network failure silently skips that feed — one bad feed can't break the pipeline.",
   "news_feeds": [
     { "url": "https://www.usda.gov/sites/default/files/rss/latest-releases.xml", "source": "USDA", "max_age_hours": 48 },
-    { "url": "https://www.fas.usda.gov/feeds/commodity-intelligence-reports-releases.rss", "source": "USDA FAS", "max_age_hours": 72 }
+    { "url": "https://www.fas.usda.gov/feeds/commodity-intelligence-reports-releases.rss", "source": "USDA FAS", "max_age_hours": 72 },
+    { "url": "https://www.eia.gov/rss/", "source": "EIA", "max_age_hours": 72 },
+    { "url": "https://www.reuters.com/rssFeed/worldNews", "source": "Reuters", "max_age_hours": 48 }
   ],
 
   "_news_keywords_doc": "Keyword tiers drive impact scoring for RSS items. `topic` is the filter: items without a topic word are ignored entirely. `xl|l|m` set the impact score (first tier to match wins). Lowercase-compare; edit freely.",
   "news_keywords": {
     "topic": ["corn", "soy", "soybean", "grain", "wheat", "biofuel", "ethanol", "crop", "farm"],
-    "xl":    ["embargo", "export ban", "invasion", "sanction", "war declared", "tariff imposed"],
-    "l":     ["tariff", "duty", "rfs", "biofuel mandate", "trade deal", "drought declared", "fomc", "rate decision", "wasde", "plantings", "stocks report", "flood", "freeze", "frost damage", "opec"],
-    "m":     ["export", "import", "crop progress", "harvest", "yield", "weather", "forecast", "brazil", "argentina", "china buy", "russia", "ukraine", "drought", "rain"]
+    "xl":    ["embargo", "export ban", "invasion", "sanction", "war declared", "tariff imposed", "hormuz", "strait closed", "strait of hormuz"],
+    "l":     ["tariff", "duty", "rfs", "biofuel mandate", "trade deal", "drought declared", "fomc", "rate decision", "wasde", "plantings", "stocks report", "flood", "freeze", "frost damage", "opec", "el nino", "enso", "ceasefire", "black sea", "ukraine port", "usmca", "mexico corn"],
+    "m":     ["export", "import", "crop progress", "harvest", "yield", "weather", "forecast", "brazil", "argentina", "china buy", "russia", "ukraine", "drought", "rain", "dxy", "dollar", "crude", "brent", "ethanol margin", "trade friction"]
   },
 
   "_usda_reports_doc": "USDA report-day alert pair (preview D-1, release T+5 min). Driven by usda_alerts.py. Each entry holds release time, the fields the report prints, the consensus trade estimates (manually populated 1-3 days before release from Reuters/Pro Farmer poll), and actuals (populated within minutes of release). Magnitude band is computed by usda_alerts.predict_move; CFTC z-scores widen the band when funds are crowded. Report-id should be unique and stable.",

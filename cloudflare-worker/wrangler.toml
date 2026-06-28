@@ -41,4 +41,4 @@ id      = "89ac203079404b90b032798eea908a05"
 # Drives reminder cycles for active CTA broadcasts. Free tier allows
 # up to 5 cron triggers per worker.
 [triggers]
-crons = ["* * * * *"]
+# crons = ["* * * * *"]

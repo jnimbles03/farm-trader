@@ -113,4 +113,5 @@ jobs:
           print(f\"corn \${c.get('price','?')} ({c.get('period','?')}), soy \${s.get('price','?')} ({s.get('period','?')})\")
           ")
           git commit -m "bushel-refresh: $summary @ $(date -u +'%Y-%m-%dT%H:%MZ')"
+          git pull --rebase origin main
           git push
