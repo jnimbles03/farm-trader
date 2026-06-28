@@ -28,3 +28,4 @@ docs/news.local-backup.json
 # from the published copy on GH Pages. Keeping them out of git would mean
 # the dashboard never gets fresh data.
 scripts/.test_perm
+.hermes-active-order-otp.json
