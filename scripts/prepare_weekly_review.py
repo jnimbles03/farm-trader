@@ -120,45 +120,137 @@ def analyze(inv: int, dec: float, cash: float, oil: float | None, dxy: float | N
 
     return pct, bu, why, oil, dxy
 
+def _next_monday_utc(today: datetime | None = None) -> str:
+    now = today or datetime.now(timezone.utc)
+    days_ahead = 7 - now.weekday()
+    if days_ahead <= 0:
+        days_ahead += 7
+    return (now + timedelta(days=days_ahead)).strftime("%Y-%m-%d")
+
+
+def _brief_snapshot():
+    data = load_json("ritchie_live.json") or load_json("bushel.json") or {}
+    storage = data.get("storage") or {}
+    bids = data.get("bids") or {}
+
+    corn_on_hand = storage.get("corn_bu")
+    beans_on_hand = storage.get("beans_bu")
+    if corn_on_hand is None or beans_on_hand is None:
+        on_hand = data.get("bushelsOnHand") or {}
+        if corn_on_hand is None:
+            corn_on_hand = ((on_hand.get("corn") or {}).get("bushels"))
+        if beans_on_hand is None:
+            soy = on_hand.get("soybeans") or on_hand.get("soy") or {}
+            beans_on_hand = soy.get("bushels")
+
+    corn_cash = None
+    soy_cash = None
+    corn_bid = bids.get("corn") or []
+    soy_bid = bids.get("soy") or bids.get("soybeans") or []
+    if isinstance(corn_bid, list) and corn_bid:
+        first = corn_bid[0]
+        if isinstance(first, dict):
+            corn_cash = first.get("cash") or first.get("price")
+    elif isinstance(corn_bid, dict):
+        corn_cash = corn_bid.get("cash") or corn_bid.get("price")
+    if isinstance(soy_bid, list) and soy_bid:
+        first = soy_bid[0]
+        if isinstance(first, dict):
+            soy_cash = first.get("cash") or first.get("price")
+    elif isinstance(soy_bid, dict):
+        soy_cash = soy_bid.get("cash") or soy_bid.get("price")
+
+    sold_beans = 0
+    for offer in data.get("openOffers") or []:
+        raw = offer.get("raw") or {}
+        if str(raw.get("locationName") or "").lower() != "ritchie grain elevator":
+            continue
+        if str(raw.get("commodityName") or "").lower() != "soybeans":
+            continue
+        if str(offer.get("status") or raw.get("status") or "").lower() != "filled":
+            continue
+        qty_raw = raw.get("quantityRemaining")
+        try:
+            qty_remaining = float(qty_raw)
+        except Exception:
+            qty_remaining = None
+        if qty_remaining is not None and qty_remaining > 0:
+            continue
+        try:
+            sold_beans += int(round(float(raw.get("quantity") or offer.get("quantity") or 0)))
+        except Exception:
+            continue
+    if sold_beans <= 0:
+        sold_beans = 800
+
+    corn_remaining = int(round(float(corn_on_hand or 0)))
+    beans_on_hand = int(round(float(beans_on_hand or 0)))
+    beans_remaining = max(beans_on_hand - sold_beans, 0)
+    return {
+        "corn_remaining": corn_remaining,
+        "beans_remaining": beans_remaining,
+        "sold_beans": sold_beans,
+        "corn_cash": float(corn_cash) if corn_cash is not None else None,
+        "soy_cash": float(soy_cash) if soy_cash is not None else None,
+    }
+
+
 def build_sms(pct: int, bu: int, dec: float, cash: float, why: str, oil: float | None, inv: int):
-    dec_str = f"${dec:.2f}" if dec is not None else "N/A"
-    cash_str = f"${cash:.2f}" if cash is not None else "N/A"
+    snap = _brief_snapshot()
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    next_report = _next_monday_utc()
+    corn_cash = snap["corn_cash"] if snap["corn_cash"] is not None else cash
+    soy_cash = snap["soy_cash"] if snap["soy_cash"] is not None else dec
+    corn_cash_str = f"${corn_cash:.2f}" if corn_cash is not None else "N/A"
+    soy_cash_str = f"${soy_cash:.2f}" if soy_cash is not None else "N/A"
+
     return (
-        "[FARM] Weekly Crop Brief\n\n"
-        f"Recommended we sell {pct}% of the crop in the {cash_str}–{dec_str} range over the next week.\n\n"
-        f"Market snapshot: Futures {dec_str} | Ritchie cash ~{cash_str}\n\n"
-        f"Context: {why}\n\n"
-        "Reply to chat with Seaweed Sam.\n\n"
-        "-Seaweed Sam (Your personal pro farmer)"
+        "[FARM] Weekly Grain Brief\n"
+        "WHERE WE ARE:\n"
+        f"Beans got trimmed down last week with {snap['sold_beans']:,} bu sold. Corn is still the bigger pile at Ritchie.\n\n"
+        "WHAT SOLD / WHAT REMAINS:\n"
+        f"Sold last week: {snap['sold_beans']:,} bu beans.\n\n"
+        f"Beans remaining: about {snap['beans_remaining']:,} bu.\n"
+        f"Corn remaining: about {snap['corn_remaining']:,} bu.\n\n"
+        "WHAT THE MARKET IS DOING:\n"
+        f"Corn cash at Ritchie is around {corn_cash_str}, and beans are around {soy_cash_str}. Market tone is still soft, with oil, tariff noise, and export pressure hanging over it.\n\n"
+        "WHAT THIS MEANS:\n"
+        "The bean sale locked in some value. Corn still has room, but the market is not giving a strong reason to wait forever. If the bid stays flat, the first week of July is the line.\n\n"
+        "WHAT I’D DO:\n"
+        "Keep finishing beans if there’s any left, and start selling corn by July 6 if the bid hasn’t improved.\n\n"
+        "WHY:\n"
+        "Beans already got some value locked in, and corn still has room to work, but the outside market is not strong enough to get greedy.\n\n"
+        "CONFIRMATION ACTION ITEM:\n"
+        "Reply Y to confirm you are onboard with the strategy.\n\n"
+        "-Seaweed Sam (resident agronomist & geopolitical analyst)\n\n"
+        f"NEXT REPORT: {next_report}"
     )
 
+
 def update_md(pct: int, bu: int, dec: float, cash: float, why: str, oil: float | None, dxy: float | None):
+    snap = _brief_snapshot()
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-    next_mon = (datetime.now(timezone.utc) + timedelta(days=7)).strftime("%Y-%m-%d")
-    inv_local = get_inventory_and_bids()[0] or 0
+    next_report = _next_monday_utc()
+    corn_cash = snap["corn_cash"] if snap["corn_cash"] is not None else cash
+    soy_cash = snap["soy_cash"] if snap["soy_cash"] is not None else dec
+    corn_cash_str = f"${corn_cash:.2f}" if corn_cash is not None else "N/A"
+    soy_cash_str = f"${soy_cash:.2f}" if soy_cash is not None else "N/A"
 
-    oil_str = f"${oil:.2f}" if oil else "N/A"
-    dxy_str = f"{dxy:.2f}" if dxy else "N/A"
-    dec_str = f"${dec:.4f}" if dec is not None else "N/A"
-    cash_str = f"${cash:.2f}" if cash is not None else "N/A"
+    status = f"""## [FARM] Weekly Grain Brief (auto-generated {today})
 
-    status = f"""## [FARM] Weekly Crop Brief (auto-generated {today})
-
-**Ritchie corn left**: {inv_local:,} bu
+**Ritchie corn left**: {snap['corn_remaining']:,} bu
 
 **Time of year**: Summer weather premium window (best historical time for old-crop sales). Hard deadline early July.
 
 **Market snapshot**:
-- Futures price: {dec_str}
-- Ritchie cash bid: ~{cash_str}
-- Oil (CL): {oil_str}
-- Dollar proxy: {dxy_str}
+- Corn cash bid: ~{corn_cash_str}
+- Beans cash bid: ~{soy_cash_str}
 
-**Recommendation**: Sell **{pct}%** (~{bu:,} bu) in the {cash_str}–{dec_str} range over the next week.
+**Recommendation**: Beans got trimmed down last week with {snap['sold_beans']:,} bu sold. Keep finishing beans if there’s any left, and start selling corn by July 6 if the bid hasn’t improved.
 
-**Context**: {why}
+**Context**: The bean sale locked in some value. Corn still has room, but the market is not giving a strong reason to wait forever. If the bid stays flat, the first week of July is the line.\n\nBeans already got some value locked in, and corn still has room to work, but the outside market is not strong enough to get greedy.
 
-**Next review**: {next_mon}
+**Next review**: {next_report}
 """
 
     md = MD_FILE.read_text()
