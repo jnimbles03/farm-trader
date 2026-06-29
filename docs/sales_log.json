@@ -1,6 +1,6 @@
 {
   "marketing_year": "2025-2026",
-  "generated_at": "2026-06-26T22:09:19Z",
+  "generated_at": "2026-06-29T14:20:58Z",
   "data_source": {
     "akron_ritchie": "docs/bushel_raw.json :: contracts.data (closed, priced, purchase-type)",
     "posen_coop": "scripts/sales_log_static.json (hand-maintained; Bushel doesn't see PC)",
@@ -173,8 +173,8 @@
   },
   "remaining_at_ritchie": {
     "corn_bu": 9115.28,
-    "beans_bu": 967.12,
-    "as_of": "2026-06-26"
+    "beans_bu": null,
+    "as_of": "2026-06-29"
   },
   "notes": [
     "8 Akron/Ritchie sales pulled live from Bushel; 4 Posen Coop sales from static backfill.",
