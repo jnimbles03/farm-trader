@@ -21,10 +21,10 @@ Corn remaining: 9,115 bu unsold in Ritchie storage + 1,500 bu APP contract (unpr
 Soy contract: 500 bu APP contract (unpriced, Edelstein Nov 2026 delivery).
 
 WHAT THE MARKET IS DOING:
-Corn cash at Ritchie opened at $3.84 today (down 8¢ from Friday). Beans at $11.21 (down 8¢ from Friday). Futures are weaker — corn Jul at $4.03, soy Jul at $11.18. Oil is sitting around $70, which caps ethanol demand. Dollar is firm, pressuring exports.
+Corn cash at Ritchie opened at $3.84 today (down 8¢ from Friday). Bean cash bid at Ritchie is at $11.21 (down 8¢ from Friday), but our bin is empty there so that's just market color now. Futures are weaker — corn Jul at $4.03, soy Jul at $11.18. Oil is sitting around $70, which caps ethanol demand. Dollar is firm, pressuring exports.
 
 WHAT THIS MEANS:
-The bean sale at $11.26 last week was well-timed — beans are cleared out of Ritchie storage. The only remaining soy exposure is the 500 bu APP contract waiting on a Nov price. Corn dropped 8¢ today, but we've got time with the summer weather window still open.
+The bean sale at $11.26 last week was well-timed — that's 5¢ above today's cash bid of $11.21, and all beans are cleared out of Ritchie storage. The only remaining soy exposure is the 500 bu APP contract waiting on a Nov price. Corn dropped 8¢ today, but we've got time with the summer weather window still open.
 
 WHAT I'D DO:
 Hold corn through the summer weather premium window. The 35% seasonal target (~3,700 bu over the next week) is still the right pace. For beans, the $11.44 Nov futures target was hit — the 500 bu APP contract can wait on a better Nov price.
