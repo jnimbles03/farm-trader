@@ -59,3 +59,15 @@ Reply Y to confirm you are onboard with the strategy.
 ---
 
 **That's it.** This file + the dashboard is the entire tracking system. No extra tools, scripts, or dashboards needed unless you decide later you want them.
+
+## [FARM] Weekly Grain Brief (auto-generated 2026-06-29)
+
+**Ritchie corn left**: 9,115 bu unsold in Ritchie storage + 1,500 bu APP contract (unpriced)
+
+**Time of year**: N/A
+
+**Recommendation**: Hold corn through late June — weather premium fading, prepare for harvest pressure. The 25% seasonal target (~2,278 bu over the next week) is still the right pace. For soy, the 500 bu APP contract is waiting on a Nov price — no action needed now.
+
+**Why**: Beans locked in value at $11.26 — that's 12¢ above today's cash bid. The bean bin is empty at Ritchie. The 500 bu APP contract will price on Nov futures, not today's cash. Corn gained 9¢ today — summer weather window is working.
+
+**Next review**: 2026-07-06
