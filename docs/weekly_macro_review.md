@@ -15,21 +15,22 @@ Beans are done — all 800 bu sold and delivered last week at $11.26. Corn is st
 
 WHAT SOLD / WHAT REMAINS:
 Sold last week: 800 bu beans @ $11.26.
+All beans cleared from Ritchie storage — nothing left on the floor.
 
-Beans remaining: 967 bu unsold in Ritchie storage + 500 bu APP contract (unpriced).
 Corn remaining: 9,115 bu unsold in Ritchie storage + 1,500 bu APP contract (unpriced).
+Soy contract: 500 bu APP contract (unpriced, Edelstein Nov 2026 delivery).
 
 WHAT THE MARKET IS DOING:
 Corn cash at Ritchie opened at $3.84 today (down 8¢ from Friday). Beans at $11.21 (down 8¢ from Friday). Futures are weaker — corn Jul at $4.03, soy Jul at $11.18. Oil is sitting around $70, which caps ethanol demand. Dollar is firm, pressuring exports.
 
 WHAT THIS MEANS:
-The bean sale at $11.26 last week was well-timed — today's bid is 5¢ lower. The remaining 967 bu unsold beans are underwater vs Friday levels. Corn dropped 8¢ too, but we've got time with the summer weather window still open.
+The bean sale at $11.26 last week was well-timed — beans are cleared out of Ritchie storage. The only remaining soy exposure is the 500 bu APP contract waiting on a Nov price. Corn dropped 8¢ today, but we've got time with the summer weather window still open.
 
 WHAT I'D DO:
-Hold corn through the summer weather premium window. The 35% seasonal target (~3,700 bu over the next week) is still the right pace. For beans, the $11.44 Nov futures target was hit — the remaining unsold beans are now sitting on a lower cash bid.
+Hold corn through the summer weather premium window. The 35% seasonal target (~3,700 bu over the next week) is still the right pace. For beans, the $11.44 Nov futures target was hit — the 500 bu APP contract can wait on a better Nov price.
 
 WHY:
-Corn has the summer weather window to work with. Today's 8¢ drop is a setback, but not a game-changer. Beans already locked in value at $11.26. The remaining cash bid is $11.21, which is still above your $10.61 floor from last fall.
+Corn has the summer weather window to work with. Today's 8¢ drop is a setback, but not a game-changer. Beans already locked in value at $11.26 and the bin is empty at Ritchie.
 
 CONFIRMATION ACTION ITEM:
 Reply Y to confirm you are onboard with the strategy.
