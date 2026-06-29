@@ -1816,7 +1816,14 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
     if (!pick || !save) return;
 
     pick.innerHTML = '';
-    (options && options.length ? options : [current || '']).forEach(m => {
+    const modelList = (options && options.length ? options : [
+      "anthropic/claude-3.5-sonnet",
+      "anthropic/claude-3-opus",
+      "anthropic/claude-3-haiku",
+      "openai/gpt-4o-mini",
+      "google/gemini-1.5-flash"
+    ]);
+    modelList.forEach(m => {
       const o = document.createElement('option');
       o.value = m;
       o.textContent = m;

@@ -1450,6 +1450,7 @@ async function adminState(req: Request, env: Env): Promise<Response> {
     loadTemplates(env),
     loadAlertConfig(env),
     loadAdvisorModel(env),
+    loadWeeklyTarget(env),
   ]);
 
   return jsonResponse({
