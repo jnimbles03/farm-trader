@@ -1,61 +1,42 @@
 # [FARM] Weekly Grain Brief
 
-**Goal**: one short note each week — what’s happening, what it means for the farm, and what to do next.
+**Goal**: one short note each week — what's happening, what it means for the farm, and what to do next.
 
 **Tone**: plain English, a little warm, farmer-to-farmer. Use numbers, but keep the wording simple.
 
-**Cadence**: Sunday or Monday morning (or after big news). 10–15 minutes.
+**Cadence**: Monday morning. 10–15 minutes.
 
 ---
 
 ## [FARM] Weekly Grain Brief
+
 WHERE WE ARE:
-Beans got trimmed down last week with 800 bu sold. Corn is still the bigger pile at Ritchie.
+Beans are done — all 800 bu sold and delivered last week at $11.26. Corn is still the big pile at Ritchie (9,115 bu stored + 1,500 bu in the Avg Pricing Program). Market opened soft today.
 
 WHAT SOLD / WHAT REMAINS:
-Sold last week: 800 bu beans.
+Sold last week: 800 bu beans @ $11.26.
 
-Beans remaining: about 167 bu.
-Corn remaining: about 9,115 bu.
+Beans remaining: 967 bu unsold in Ritchie storage + 500 bu APP contract (unpriced).
+Corn remaining: 9,115 bu unsold in Ritchie storage + 1,500 bu APP contract (unpriced).
 
 WHAT THE MARKET IS DOING:
-Corn cash at Ritchie is around $3.92, and beans are around $11.29. Market tone is still soft, with oil, tariff noise, and export pressure hanging over it.
+Corn cash at Ritchie opened at $3.84 today (down 8¢ from Friday). Beans at $11.21 (down 8¢ from Friday). Futures are weaker — corn Jul at $4.03, soy Jul at $11.18. Oil is sitting around $70, which caps ethanol demand. Dollar is firm, pressuring exports.
 
 WHAT THIS MEANS:
-The bean sale locked in some value. Corn still has room, but the market is not giving a strong reason to wait forever. If the bid stays flat, the first week of July is the line.
+The bean sale at $11.26 last week was well-timed — today's bid is 5¢ lower. The remaining 967 bu unsold beans are underwater vs Friday levels. Corn dropped 8¢ too, but we've got time with the summer weather window still open.
 
-WHAT I’D DO:
-Keep finishing beans if there’s any left, and start selling corn by July 6 if the bid hasn’t improved.
+WHAT I'D DO:
+Hold corn through the summer weather premium window. The 35% seasonal target (~3,700 bu over the next week) is still the right pace. For beans, the $11.44 Nov futures target was hit — the remaining unsold beans are now sitting on a lower cash bid.
 
 WHY:
-Beans already got some value locked in, and corn still has room to work, but the outside market is not strong enough to get greedy.
+Corn has the summer weather window to work with. Today's 8¢ drop is a setback, but not a game-changer. Beans already locked in value at $11.26. The remaining cash bid is $11.21, which is still above your $10.61 floor from last fall.
 
 CONFIRMATION ACTION ITEM:
 Reply Y to confirm you are onboard with the strategy.
 
 -Seaweed Sam (resident agronomist & geopolitical analyst)
 
-**Next review**: 2026-06-29
-
----
-
-## 5-Minute Trigger Checklist
-
-Check these and note anything important in the status above:
-
-1. **Dollar (DXY)** — Rising a lot? → Accelerate sales.
-2. **Oil (Brent/WTI)** — Spiking? → Can hold a little longer. Falling hard? → Sell.
-3. **Middle East (Hormuz/Iran)** — Ceasefire moving forward? → More global supply coming → sell sooner.
-4. **Black Sea (Ukraine)** — Attacks increasing? → Less competitor grain → some support for prices.
-5. **US Weather / El Niño** — Looks perfect and rainy in Corn Belt? → The good selling prices probably won't last → sell now.
-6. **South America** — Brazil/Argentina problems? → Global prices may stay better.
-7. **Trade / Tariffs** — New China or Mexico drama? → Volatility → sell in smaller pieces.
-
-**Fast sources**:
-- Dashboard (for bids, futures, news)
-- DXY/oil: tradingeconomics.com (bookmark)
-- Weather: quick search "NOAA Corn Belt July" or AccuWeather
-- News: the dashboard news feed (we improved the keywords)
+**Next review**: 2026-07-06
 
 ---
 
@@ -70,185 +51,10 @@ Check these and note anything important in the status above:
 
 ## Log
 
-**2026-06-28**
-- 35-40% now (3.2k-3.65k bu)
-- Main reasons: the good selling period is ending soon + macros mostly say sell
-- Action: stepped offers in dashboard
+**2026-06-29** — First trading day after weekend. Corn opened 8¢ lower, beans 8¢ lower. Hold corn through summer window. Beans already sold 800 bu @ $11.26 last week.
 
 (Add new dated entries here after each review)
 
 ---
 
 **That's it.** This file + the dashboard is the entire tracking system. No extra tools, scripts, or dashboards needed unless you decide later you want them.
-
-The plan.json tweaks (better news keywords) we made will help the existing news feed surface more relevant items automatically.
-
-## [FARM] Weekly Crop Brief (auto-generated 2026-06-28)
-
-**Ritchie corn left**: 9,115 bu
-
-**Time of year**: Summer weather premium window (best historical time for old-crop sales). Hard deadline early July.
-
-**Market snapshot**:
-- Futures price: $4.4150
-- Ritchie cash bid: ~$3.92
-- Oil (CL): $70.18
-- Dollar proxy: 28.46
-
-**Recommendation**: Sell **30%** (~2,734 bu) in the $3.92–$4.42 range over the next week.
-
-**Context**: We are in a standard period. Oil is low, which reduces ethanol demand. Dollar is firm, pressuring exports. This supports selling a bit more than the normal seasonal baseline pace over the next week.
-
-**Next review**: 2026-07-05
-
-
-## [FARM] Weekly Crop Brief (auto-generated 2026-06-28)
-
-**Ritchie corn left**: 9,115 bu
-
-**Time of year**: Summer weather premium window (best historical time for old-crop sales). Hard deadline early July.
-
-**Market snapshot**:
-- Futures price: $4.4150
-- Ritchie cash bid: ~$3.92
-- Oil (CL): $70.22
-- Dollar proxy: 28.46
-
-**Recommendation**: Sell **30%** (~2,734 bu) in the $3.92–$4.42 range over the next week.
-
-**Context**: We are in a standard period. Oil is low, which reduces ethanol demand. Dollar is firm, pressuring exports. This supports selling a bit more than the normal seasonal baseline pace over the next week.
-
-**Next review**: 2026-07-05
-
-
-## [FARM] Weekly Crop Brief (auto-generated 2026-06-28)
-
-**Ritchie corn left**: 9,115 bu
-
-**Time of year**: Summer weather premium window (best historical time for old-crop sales). Hard deadline early July.
-
-**Market snapshot**:
-- Futures price: $4.4150
-- Ritchie cash bid: ~$3.92
-- Oil (CL): $70.28
-- Dollar proxy: 28.46
-
-**Recommendation**: Sell **30%** (~2,734 bu) in the $3.92–$4.4150 range over the next week.
-
-**Context**: We are in a standard period. Oil is low, which reduces ethanol demand. Dollar is firm, pressuring exports. This supports selling a bit more than the normal seasonal baseline pace over the next week.
-
-**Next review**: 2026-07-05
-
-
-## [FARM] Weekly Crop Brief (auto-generated 2026-06-28)
-
-**Ritchie corn left**: 9,115 bu
-
-**Time of year**: Summer weather premium window (best historical time for old-crop sales). Hard deadline early July.
-
-**Market snapshot**:
-- Futures price: $4.4150
-- Ritchie cash bid: ~$3.92
-- Oil (CL): $70.31
-- Dollar proxy: 28.46
-
-**Recommendation**: Sell **30%** (~2,734 bu) in the $3.92–$4.4150 range over the next week.
-
-**Context**: We are in a standard period. Oil is low, which reduces ethanol demand. Dollar is firm, pressuring exports. This supports selling a bit more than the normal seasonal baseline pace over the next week.
-
-**Next review**: 2026-07-05
-
-
-## [FARM] Weekly Crop Brief (auto-generated 2026-06-28)
-
-**Ritchie corn left**: 9,115 bu
-
-**Time of year**: Summer weather premium window (best historical time for old-crop sales). Hard deadline early July.
-
-**Market snapshot**:
-- Futures price: $4.4150
-- Ritchie cash bid: ~$3.92
-- Oil (CL): $70.34
-- Dollar proxy: 28.46
-
-**Recommendation**: Sell **30%** (~2,734 bu) in the $3.92–$4.4150 range over the next week.
-
-**Context**: We are in a standard period. Oil is low, which reduces ethanol demand. Dollar is firm, pressuring exports. This supports selling a bit more than the normal seasonal baseline pace over the next week.
-
-**Next review**: 2026-07-05
-
-
-## [FARM] Weekly Crop Brief (auto-generated 2026-06-28)
-
-**Ritchie corn left**: 9,115 bu
-
-**Time of year**: Summer weather premium window (best historical time for old-crop sales). Hard deadline early July.
-
-**Market snapshot**:
-- Futures price: $4.4150
-- Ritchie cash bid: ~$3.92
-- Oil (CL): $70.09
-- Dollar proxy: 28.46
-
-**Recommendation**: Sell **30%** (~2,734 bu) in the $3.92–$4.4150 range over the next week.
-
-**Context**: We are in a standard period. Oil is low, which reduces ethanol demand. Dollar is firm, pressuring exports. This supports selling a bit more than the normal seasonal baseline pace over the next week.
-
-**Next review**: 2026-07-05
-
-
-## [FARM] Weekly Crop Brief (auto-generated 2026-06-28)
-
-**Ritchie corn left**: 9,115 bu
-
-**Time of year**: Summer weather premium window (best historical time for old-crop sales). Hard deadline early July.
-
-**Market snapshot**:
-- Futures price: $4.4150
-- Ritchie cash bid: ~$3.92
-- Oil (CL): $69.83
-- Dollar proxy: 28.46
-
-**Recommendation**: Sell **30%** (~2,734 bu) in the $3.92–$4.4150 range over the next week.
-
-**Context**: We are in a standard period. Oil is low, which reduces ethanol demand. Dollar is firm, pressuring exports. This supports selling a bit more than the normal seasonal baseline pace over the next week.
-
-**Next review**: 2026-07-05
-
-
-## [FARM] Weekly Crop Brief (auto-generated 2026-06-28)
-
-**Ritchie corn left**: 9,115 bu
-
-**Time of year**: Summer weather premium window (best historical time for old-crop sales). Hard deadline early July.
-
-**Market snapshot**:
-- Futures price: $4.4150
-- Ritchie cash bid: ~$3.92
-- Oil (CL): $69.83
-- Dollar proxy: 28.46
-
-**Recommendation**: Sell **30%** (~2,734 bu) in the $3.92–$4.4150 range over the next week.
-
-**Context**: We are in a standard period. Oil is low, which reduces ethanol demand. Dollar is firm, pressuring exports. This supports selling a bit more than the normal seasonal baseline pace over the next week. This supports selling a bit more than the normal seasonal baseline pace over the next week.
-
-**Next review**: 2026-07-05
-
-
-## [FARM] Weekly Crop Brief (auto-generated 2026-06-28)
-
-**Ritchie corn left**: 9,115 bu
-
-**Time of year**: Summer weather premium window (best historical time for old-crop sales). Hard deadline early July.
-
-**Market snapshot**:
-- Futures price: $4.4150
-- Ritchie cash bid: ~$3.92
-- Oil (CL): $69.82
-- Dollar proxy: 28.46
-
-**Recommendation**: Sell **30%** (~2,734 bu) in the $3.92–$4.4150 range over the next week.
-
-**Context**: We are in a standard period. Oil is low, which reduces ethanol demand. Dollar is firm, pressuring exports. This supports selling a bit more than the normal seasonal baseline pace over the next week. This supports selling a bit more than the normal seasonal baseline pace over the next week.
-
-**Next review**: 2026-07-05
