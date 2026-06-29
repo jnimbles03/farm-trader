@@ -308,7 +308,7 @@ async function authSmsStart(req: Request, env: Env): Promise<Response> {
   const sent = await sendTextBelt(env, phone, message);
   if (!sent.ok) {
     console.error(`auth-sms textbelt send failed: ${sent.error}`);
-    return jsonResponse({ ok: false, error: "SMS send failed" }, { status: 502 });
+    return jsonResponse({ ok: false, error: `SMS send failed: ${sent.error}` }, { status: 502 });
   }
 
   return jsonResponse({ ok: true, nonce, expires_at: expiresAt, hmac });
@@ -668,19 +668,21 @@ async function runAdvisor(env: Env, input: RunAdvisorInput): Promise<RunAdvisorR
   // 6. Call via OpenRouter. One retry on transient failure, then fall back to quick model.
   let resp: OpenRouterResponse | null = null;
   let usedModel = model;
+  let lastError = "";
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
       resp = await callOpenRouter(env, usedModel, systemPrompt, messages);
       break;
     } catch (e) {
-      console.error(`advisor: ${usedModel} attempt ${attempt} failed: ${(e as Error).message}`);
+      lastError = (e as Error).message;
+      console.error(`advisor: ${usedModel} attempt ${attempt} failed: ${lastError}`);
       if (attempt === 0 && usedModel !== ADVISOR_QUICK_MODEL) {
         usedModel = ADVISOR_QUICK_MODEL;  // graceful degrade
       }
     }
   }
   if (!resp) {
-    return { ok: false, status: 502, error: "Advisor unreachable. Try again in a minute." };
+    return { ok: false, status: 502, error: `Advisor unreachable: ${lastError || "unknown error"}` };
   }
 
   const reply = resp.choices?.[0]?.message?.content || "";
@@ -750,6 +752,11 @@ async function callOpenRouter(
   systemPrompt: string,
   messages: Array<{ role: "user" | "assistant"; content: string }>
 ): Promise<OpenRouterResponse> {
+  const apiKey = (env.OPENROUTER_API_KEY || "").trim();
+  if (!apiKey) {
+    throw new Error("OPENROUTER_API_KEY missing in runtime env");
+  }
+
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 30000);
 
@@ -758,7 +765,9 @@ async function callOpenRouter(
       method: "POST",
       signal: controller.signal,
       headers: {
-        "Authorization": `Bearer ${env.OPENROUTER_API_KEY}`,
+        "Authorization": `Bearer ${apiKey}`,
+        "x-api-key": apiKey,
+        "api-key": apiKey,
         "Content-Type": "application/json",
         // OpenRouter recommends these for rankings / analytics
         "HTTP-Referer": "https://jnimbles03.github.io/farm-trader/",
@@ -1376,7 +1385,7 @@ interface AdminRun {
 
 // Reminder cron policy
 const REMINDER_FIRST_DELAY_MS = 5 * 60 * 1000;   // 5 min before first reminder
-const REMINDER_INTERVAL_MS    = 60 * 1000;       // 1 min between reminders
+const REMINDER_INTERVAL_MS    = 30 * 60 * 1000;  // 30 min between reminders
 const REMINDER_MAX_CYCLES     = 8;               // cap blast radius
 
 // ---------- token plumbing ----------
@@ -1437,7 +1446,7 @@ async function adminSmsStart(req: Request, env: Env): Promise<Response> {
   const sent = await sendTextBelt(env, ADMIN_PHONE, message);
   if (!sent.ok) {
     console.error(`admin-sms send failed: ${sent.error}`);
-    return jsonResponse({ ok: false, error: "SMS send failed" }, { status: 502 });
+    return jsonResponse({ ok: false, error: `SMS send failed: ${sent.error}` }, { status: 502 });
   }
   return jsonResponse({ ok: true, nonce, expires_at: expiresAt, hmac });
 }
@@ -1851,7 +1860,7 @@ function validateDraft(b: any): { ok: true; draft: BroadcastDraft } | { ok: fals
   if (type !== "bulletin" && type !== "cta") return { ok: false, error: "type must be bulletin|cta" };
   const message = String(b.message || "").trim();
   if (!message) return { ok: false, error: "message empty" };
-  if (message.length > 480) return { ok: false, error: "message too long (>480)" };
+  if (message.length > 1200) return { ok: false, error: "message too long (>1200)" };
   const phones: string[] = Array.isArray(b.recipient_phones)
     ? b.recipient_phones.map((p: any) => normalizePhone(String(p))).filter((p: string) => p.length > 0)
     : [];
