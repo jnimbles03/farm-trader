@@ -522,8 +522,8 @@ interface AdvisorBody {
 }
 
 interface OpenRouterResponse {
-  choices: Array<{ message: { content: string } }>;
-  usage:   { prompt_tokens: number; completion_tokens: number };
+  choices: Array<{ message: { role?: string; content: string } }>;
+  usage:   { prompt_tokens?: number; completion_tokens?: number };
   model:   string;
 }
 
@@ -742,9 +742,49 @@ async function fetchAdvisorContext(env: Env): Promise<string> {
 
 /**
  * Single call via OpenRouter (OpenAI chat format). Supports Claude models etc.
- * 30s timeout.  Workers can wait that long.
+ * 30s timeout. Workers can wait that long.
  */
-// callOpenRouter defined above (OpenRouter instead of direct Anthropic)
+async function callOpenRouter(
+  env: Env,
+  model: string,
+  systemPrompt: string,
+  messages: Array<{ role: "user" | "assistant"; content: string }>
+): Promise<OpenRouterResponse> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 30000);
+
+  try {
+    const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      signal: controller.signal,
+      headers: {
+        "Authorization": `Bearer ${env.OPENROUTER_API_KEY}`,
+        "Content-Type": "application/json",
+        // OpenRouter recommends these for rankings / analytics
+        "HTTP-Referer": "https://jnimbles03.github.io/farm-trader/",
+        "X-Title": "Freis Farm Seaweed Sam",
+      },
+      body: JSON.stringify({
+        model,
+        messages: [
+          { role: "system", content: systemPrompt },
+          ...messages,
+        ],
+        temperature: 0.6,
+        max_tokens: 700,
+      }),
+    });
+
+    if (!res.ok) {
+      const errText = await res.text().catch(() => "");
+      throw new Error(`OpenRouter ${res.status}: ${errText.slice(0, 280)}`);
+    }
+
+    return (await res.json()) as OpenRouterResponse;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
 
 // ---------------------------------------------------------------------------
 // Phone helpers
