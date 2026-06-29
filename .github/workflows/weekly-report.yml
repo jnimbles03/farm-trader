@@ -1,0 +1,32 @@
+name: Send Weekly Report
+
+on:
+  schedule:
+    - cron: "0 13 * * 1"  # Runs at 13:00 UTC (8am CT / 7am CST) every Monday
+  workflow_dispatch:    # Allows manual runs from the Actions tab
+
+concurrency:
+  group: weekly-report
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Generate and send report
+        env:
+          TEXTBELT_KEY: ${{ secrets.TEXTBELT_KEY }}
+          WEEKLY_REPORT_PHONES: ${{ secrets.WEEKLY_REPORT_PHONES }}
+        run: python3 weekly_report.py
