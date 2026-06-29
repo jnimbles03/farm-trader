@@ -912,7 +912,7 @@
       "beans_at_pcfs": 0.0,
       "avg_pricing_corn": 1500.0,
       "avg_pricing_soy": 500.0,
-      "notes": "Live from bushel.commodity-balances + bids at 2026-06-29T18:16:44Z \u00b7 Account FREIS FARMS LLC \u00b7 PC/FS values carried from prior xlsx row (not scraped). \u00b7 Fetch warnings: avg_pricing: 'str' object has no attribute 'get'"
+      "notes": "Live from bushel.commodity-balances + bids at 2026-06-29T19:13:54Z \u00b7 Account FREIS FARMS LLC \u00b7 PC/FS values carried from prior xlsx row (not scraped). \u00b7 Fetch warnings: avg_pricing: 'str' object has no attribute 'get'"
     }
   ],
   "inputs_by_year": {
@@ -1595,7 +1595,7 @@
   },
   "recent_alerts_7d": [],
   "ritchie_live": {
-    "as_of": "2026-06-29T18:16:44Z",
+    "as_of": "2026-06-29T19:13:54Z",
     "source": "bushel.commodity-balances + bids",
     "account": "FREIS FARMS LLC",
     "location": "Ritchie Grain Elevator",
@@ -1613,100 +1613,100 @@
           "month": "Jun",
           "cash": 3.82,
           "basis": -0.2,
-          "futures": 4.0275,
+          "futures": 4.02,
           "futures_symbol": "ZCN26"
         },
         {
           "month": "Jul",
           "cash": 3.82,
           "basis": -0.2,
-          "futures": 4.0275,
+          "futures": 4.02,
           "futures_symbol": "ZCN26"
         },
         {
           "month": "Aug",
           "cash": 3.86,
           "basis": -0.24,
-          "futures": 4.105,
+          "futures": 4.1025,
           "futures_symbol": "ZCU26"
         },
         {
           "month": "Sep",
-          "cash": 3.81,
+          "cash": 3.8,
           "basis": -0.49,
-          "futures": 4.3075,
+          "futures": 4.3,
           "futures_symbol": "ZCZ26"
         },
         {
           "month": "Oct",
-          "cash": 3.89,
+          "cash": 3.88,
           "basis": -0.41,
-          "futures": 4.3075,
+          "futures": 4.3,
           "futures_symbol": "ZCZ26"
         },
         {
           "month": "Dec",
           "cash": 4.0,
           "basis": -0.3,
-          "futures": 4.3075,
+          "futures": 4.3,
           "futures_symbol": "ZCZ26"
         },
         {
           "month": "Jan",
-          "cash": 4.06,
+          "cash": 4.05,
           "basis": -0.4,
-          "futures": 4.46,
+          "futures": 4.4525,
           "futures_symbol": "ZCH27"
         }
       ],
       "soy": [
         {
           "month": "Jun",
-          "cash": 11.13,
+          "cash": 11.12,
           "basis": 0.03,
-          "futures": 11.1025,
+          "futures": 11.0875,
           "futures_symbol": "ZSN26"
         },
         {
           "month": "Jul",
-          "cash": 11.23,
+          "cash": 11.22,
           "basis": 0.13,
-          "futures": 11.1025,
+          "futures": 11.0875,
           "futures_symbol": "ZSN26"
         },
         {
           "month": "Aug",
-          "cash": 11.24,
+          "cash": 11.22,
           "basis": 0.03,
-          "futures": 11.2075,
+          "futures": 11.1925,
           "futures_symbol": "ZSQ26"
         },
         {
           "month": "Sep",
-          "cash": 11.04,
+          "cash": 11.02,
           "basis": -0.36,
-          "futures": 11.405,
+          "futures": 11.39,
           "futures_symbol": "ZSX26"
         },
         {
           "month": "Oct",
-          "cash": 11.04,
+          "cash": 11.02,
           "basis": -0.36,
-          "futures": 11.405,
+          "futures": 11.39,
           "futures_symbol": "ZSX26"
         },
         {
           "month": "Dec",
-          "cash": 10.99,
+          "cash": 10.97,
           "basis": -0.56,
-          "futures": 11.55,
+          "futures": 11.535,
           "futures_symbol": "ZSF27"
         },
         {
           "month": "Jan",
-          "cash": 11.14,
+          "cash": 11.12,
           "basis": -0.41,
-          "futures": 11.55,
+          "futures": 11.535,
           "futures_symbol": "ZSF27"
         }
       ]
@@ -1715,5 +1715,5 @@
       "avg_pricing: 'str' object has no attribute 'get'"
     ]
   },
-  "last_refreshed_at": "2026-06-29T18:16:44Z"
+  "last_refreshed_at": "2026-06-29T19:13:54Z"
 }
