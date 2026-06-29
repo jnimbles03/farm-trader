@@ -1,30 +1,43 @@
-# [FARM] Weekly Crop Brief
+# [FARM] Weekly Grain Brief
 
-**The simple system**: One file + the existing dashboard. Update once a week. Decide how much to sell. Post offers. Done.
+**Goal**: one short note each week — what’s happening, what it means for the farm, and what to do next.
 
-**Cadence**: Sunday or Monday morning (or after big news). 10-15 minutes.
+**Tone**: plain English, a little warm, farmer-to-farmer. Use numbers, but keep the wording simple.
+
+**Cadence**: Sunday or Monday morning (or after big news). 10–15 minutes.
 
 ---
 
-## [FARM] Weekly Crop Brief (auto-generated 2026-06-28)
+## [FARM] Weekly Grain Brief
+WHERE WE ARE:
+Beans got trimmed down last week with 800 bu sold. Corn is still the bigger pile at Ritchie.
 
-**Ritchie corn left**: 9,115 bu
+WHAT SOLD / WHAT REMAINS:
+Sold last week: 800 bu beans.
 
-**Time of year**: Summer weather premium window (best historical time for old-crop sales). Hard deadline early July.
+Beans remaining: about 167 bu.
+Corn remaining: about 9,115 bu.
 
-**Market snapshot**:
-- Futures price: $4.4150
-- Ritchie cash bid: ~$3.92
-- Oil (CL): $70.31
-- Dollar proxy: 28.46
+WHAT THE MARKET IS DOING:
+Corn cash at Ritchie is around $3.92, and beans are around $11.29. Market tone is still soft, with oil, tariff noise, and export pressure hanging over it.
 
-**Recommendation**: Sell **30%** (~2,734 bu) in the $3.92–$4.42 range over the next week.
+WHAT THIS MEANS:
+The bean sale locked in some value. Corn still has room, but the market is not giving a strong reason to wait forever. If the bid stays flat, the first week of July is the line.
 
-**Context**: We are in a standard period. Oil is low, which reduces ethanol demand. Dollar is firm, pressuring exports. This supports selling a bit more than the normal seasonal baseline pace over the next week.
+WHAT I’D DO:
+Keep finishing beans if there’s any left, and start selling corn by July 6 if the bid hasn’t improved.
 
-**Next review**: 2026-07-05
+WHY:
+Beans already got some value locked in, and corn still has room to work, but the outside market is not strong enough to get greedy.
 
+CONFIRMATION ACTION ITEM:
+Reply Y to confirm you are onboard with the strategy.
 
+-Seaweed Sam (resident agronomist & geopolitical analyst)
+
+**Next review**: 2026-06-29
+
+---
 
 ## 5-Minute Trigger Checklist
 
@@ -66,7 +79,7 @@ Check these and note anything important in the status above:
 
 ---
 
-**That's it.** This file + the dashboard is the entire tracking system. No extra tools, scripts, or dashboards needed unless you decide later you want them. 
+**That's it.** This file + the dashboard is the entire tracking system. No extra tools, scripts, or dashboards needed unless you decide later you want them.
 
 The plan.json tweaks (better news keywords) we made will help the existing news feed surface more relevant items automatically.
 

@@ -102,7 +102,7 @@ Default cadence (all configurable via workflow env vars):
 |------------------------|---------|------------------------------------------------|
 | `REQUIRED_YES`         | 1       | Y votes needed to authorize (set secret to 2 or 3 for stricter quorum) |
 | `FIRST_REMINDER_DELAY` | 300     | Seconds after `sent_at` before the 1st nudge   |
-| `REMINDER_INTERVAL`    | 60      | Seconds between subsequent nudges              |
+| `REMINDER_INTERVAL`    | 1800    | Seconds between subsequent nudges              |
 | `MAX_REMINDERS`        | 5       | Hard cap per recipient — after this, give up   |
 
 So a recipient who never replies gets nudged at roughly t+5min, t+6min,

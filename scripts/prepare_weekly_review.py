@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
-Weekly Corn Selling Review automation (Monday 9am ET).
+Weekly Grain Brief automation.
+Runs once tomorrow, then every Monday at 9am ET.
 Pulls latest data, generates a concise high-signal review using your macro rules,
 updates the MD file, and texts you the summary.
 """

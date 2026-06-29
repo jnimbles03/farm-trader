@@ -1,13 +1,13 @@
-name: Weekly Corn Selling Review Prep
+name: Weekly Grain Brief Prep
 
-# Runs every Monday ~9am Eastern.
+# Runs once tomorrow, then every Monday at 9am Eastern.
 # Pulls latest prices, inventory, oil, dollar proxy.
-# Generates a full review + recommendation.
-# Updates the MD file and sends SMS summary.
+# Generates the weekly grain brief and sends SMS summary.
 
 on:
   schedule:
-    - cron: '0 13 * * 1'   # 13:00 UTC ≈ 9am EST / 8am EDT
+    - cron: '0 13 30 6 *'   # one-time tomorrow run at 9am Eastern (2026-06-30)
+    - cron: '0 13 * * 1'     # every Monday at 9am Eastern
   workflow_dispatch:
 
 permissions:
