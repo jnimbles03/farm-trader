@@ -350,13 +350,13 @@
     "pulses": {},
     "recipients": {
       "+16232937553": {
-        "last_reminded_at": "2026-06-30T16:31:31.498657+00:00",
-        "reminders_sent": 1,
+        "last_reminded_at": "2026-06-30T17:18:07.865191+00:00",
+        "reminders_sent": 2,
         "vote": null
       },
       "+16302479950": {
-        "last_reminded_at": "2026-06-30T16:31:31.498657+00:00",
-        "reminders_sent": 1,
+        "last_reminded_at": "2026-06-30T17:18:07.865191+00:00",
+        "reminders_sent": 2,
         "vote": null
       }
     },
