@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-06-29T21:58:32.114343Z",
+  "fetchedAt": "2026-06-30T13:31:37.827321Z",
   "company": "akronservices",
   "account": "FREIS FARMS LLC",
   "bushelsOnHand": {
@@ -19,10 +19,10 @@
       "location": "Ritchie Grain Elevator"
     },
     "soybeans": {
-      "price": 11.22,
+      "price": 11.19,
       "period": "Jun",
       "futuresSymbol": "ZSQ26",
-      "futuresPrice": 11.1925,
+      "futuresPrice": 11.1625,
       "basis": 0.03,
       "location": "Ritchie Grain Elevator"
     }
@@ -93,42 +93,42 @@
     ],
     "soybeans": [
       {
-        "price": 11.25,
+        "price": 11.22,
         "period": "Jun",
         "futuresSymbol": "ZSQ26",
-        "futuresPrice": 11.1925,
+        "futuresPrice": 11.1625,
         "basis": 0.06,
         "location": "Cargill Bloomington"
       },
       {
-        "price": 11.22,
+        "price": 11.19,
         "period": "Jun",
         "futuresSymbol": "ZSQ26",
-        "futuresPrice": 11.1925,
+        "futuresPrice": 11.1625,
         "basis": 0.03,
         "location": "Ritchie Grain Elevator"
       },
       {
-        "price": 11.21,
+        "price": 11.18,
         "period": "Jun",
         "futuresSymbol": "ZSQ26",
-        "futuresPrice": 11.1925,
+        "futuresPrice": 11.1625,
         "basis": 0.02,
         "location": "Strawn"
       },
       {
-        "price": 11.04,
+        "price": 11.01,
         "period": "Jun",
         "futuresSymbol": "ZSQ26",
-        "futuresPrice": 11.1925,
+        "futuresPrice": 11.1625,
         "basis": -0.14,
         "location": "Havana"
       },
       {
-        "price": 11.02,
+        "price": 10.99,
         "period": "Jun",
         "futuresSymbol": "ZSQ26",
-        "futuresPrice": 11.1925,
+        "futuresPrice": 11.1625,
         "basis": -0.16,
         "location": "Lacon"
       }
@@ -226,9 +226,9 @@
         "id": "SBCRG000OCNA",
         "type": "cash",
         "period": "Jun",
-        "bidPrice": 11.22,
+        "bidPrice": 11.19,
         "basisPrice": 0.03,
-        "futuresPrice": 11.1925,
+        "futuresPrice": 11.1625,
         "futuresSymbol": "ZSQ26",
         "canMakeOffer": true
       },
@@ -236,9 +236,9 @@
         "id": "SBCRG000N27N",
         "type": "cash",
         "period": "Jul",
-        "bidPrice": 11.22,
+        "bidPrice": 11.19,
         "basisPrice": 0.03,
-        "futuresPrice": 11.1925,
+        "futuresPrice": 11.1625,
         "futuresSymbol": "ZSQ26",
         "canMakeOffer": true
       },
@@ -246,9 +246,9 @@
         "id": "SBCRG000OYFM",
         "type": "cash",
         "period": "Aug",
-        "bidPrice": 11.26,
+        "bidPrice": 11.23,
         "basisPrice": 0.07,
-        "futuresPrice": 11.1925,
+        "futuresPrice": 11.1625,
         "futuresSymbol": "ZSQ26",
         "canMakeOffer": true
       },
@@ -256,9 +256,9 @@
         "id": "SBCRG000OYFV",
         "type": "cash",
         "period": "Sep",
-        "bidPrice": 11.03,
+        "bidPrice": 10.99,
         "basisPrice": -0.36,
-        "futuresPrice": 11.39,
+        "futuresPrice": 11.355,
         "futuresSymbol": "ZSX26",
         "canMakeOffer": true
       },
@@ -266,9 +266,9 @@
         "id": "SBCRG000OAV3",
         "type": "cash",
         "period": "Oct",
-        "bidPrice": 11.03,
+        "bidPrice": 10.99,
         "basisPrice": -0.36,
-        "futuresPrice": 11.39,
+        "futuresPrice": 11.355,
         "futuresSymbol": "ZSX26",
         "canMakeOffer": true
       },
@@ -276,9 +276,9 @@
         "id": "SBCRG000ODGK",
         "type": "cash",
         "period": "Dec",
-        "bidPrice": 10.97,
+        "bidPrice": 10.94,
         "basisPrice": -0.56,
-        "futuresPrice": 11.535,
+        "futuresPrice": 11.5025,
         "futuresSymbol": "ZSF27",
         "canMakeOffer": true
       },
@@ -286,9 +286,9 @@
         "id": "SBCRG000OJYI",
         "type": "cash",
         "period": "Jan",
-        "bidPrice": 11.12,
+        "bidPrice": 11.09,
         "basisPrice": -0.41,
-        "futuresPrice": 11.535,
+        "futuresPrice": 11.5025,
         "futuresSymbol": "ZSF27",
         "canMakeOffer": true
       }
