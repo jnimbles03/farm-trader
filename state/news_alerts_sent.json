@@ -1,5 +1,5 @@
 {
-  "last_sent_at": "2026-06-18T00:44:01.962112+00:00",
+  "last_sent_at": "2026-06-30T00:37:35.918632+00:00",
   "sent_ids": [
     "policy-2026-06-18-fomc_rate_decision_sep",
     "trigger-corn-C1-2026",
@@ -9,6 +9,7 @@
     "trigger-soybean-S2-2026",
     "trigger-soybean-S4-2026",
     "usda-2026-05-10-Monthly_WASDE",
-    "usda-2026-06-12-Monthly_WASDE"
+    "usda-2026-06-12-Monthly_WASDE",
+    "usda-2026-06-30-Acreage_+_Grain_Stoc"
   ]
 }

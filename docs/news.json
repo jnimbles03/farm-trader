@@ -1,4 +1,13 @@
 {
-  "items": [],
-  "generated_at": "2026-06-29T23:48:01.094233+00:00"
+  "items": [
+    {
+      "id": "usda-2026-06-30-Acreage_+_Grain_Stoc",
+      "date": "2026-06-30",
+      "title": "USDA: Acreage + Grain Stocks",
+      "impact": "XL",
+      "affects": "both",
+      "source": "USDA"
+    }
+  ],
+  "generated_at": "2026-06-30T00:37:35.188424+00:00"
 }
