@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-30T18:35:19.705575+00:00",
+  "generated_at": "2026-06-30T19:21:41.606066+00:00",
   "signals": [
     {
       "signal_key": "corn|C3|SELL|4.5920",
@@ -28,7 +28,7 @@
       "alloc_bu": 1174,
       "live": 11.435,
       "status": "WAIT",
-      "prior_status": "HIT",
+      "prior_status": "WAIT",
       "last_fired": "2026-06-30T16:17:27.302918+00:00"
     }
   ],
