@@ -1,19 +1,13 @@
 {
   "items": [
     {
-      "id": "price-corn-20260630-12",
-      "tag": "CORN \u2193",
-      "tag_class": "corn",
-      "text": "Dec corn $4.28 (-0.01\u00a2 today).",
-      "published_at": "2026-06-30T12:43:19.147027+00:00"
-    },
-    {
-      "id": "price-soy-20260630-12",
-      "tag": "SOY \u2193",
-      "tag_class": "soy",
-      "text": "Nov soy $11.34 (-0.04\u00a2 today).",
-      "published_at": "2026-06-30T12:43:19.147027+00:00"
+      "id": "usda-2026-06-30-Acreage_+_Grain_Stoc",
+      "date": "2026-06-30",
+      "title": "USDA: Acreage + Grain Stocks",
+      "impact": "XL",
+      "affects": "both",
+      "source": "USDA"
     }
   ],
-  "generated_at": "2026-06-30T12:43:19.147027+00:00"
+  "generated_at": "2026-06-30T13:22:41.643406+00:00"
 }
