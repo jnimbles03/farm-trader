@@ -349,9 +349,13 @@
     "prior_fired_price": 11.47,
     "recipients": {
       "+16232937553": {
+        "last_reminded_at": "2026-06-30T16:31:31.498657+00:00",
+        "reminders_sent": 1,
         "vote": null
       },
       "+16302479950": {
+        "last_reminded_at": "2026-06-30T16:31:31.498657+00:00",
+        "reminders_sent": 1,
         "vote": null
       }
     },
