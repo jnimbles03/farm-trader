@@ -515,9 +515,15 @@ def model(contracts: list[Contract]) -> list[Signal]:
     out: list[Signal] = []
 
     for comm_key, comm_cfg in comm_plan.items():
-        # Normalise commodity key for matching contracts
+        # Normalise commodity key for matching contracts. by_commodity is
+        # already keyed by the normalised (rstrip "s") name, so look up
+        # each distinct key at most once — concatenating norm AND comm_key
+        # double-counted every position whenever they were equal (always
+        # true for "corn"/"soybean"), inflating total_bu 2×.
         norm = comm_key.lower().rstrip("s")
-        these = by_commodity.get(norm, []) + by_commodity.get(comm_key, [])
+        these = []
+        for k in {norm, comm_key}:
+            these.extend(by_commodity.get(k, []))
 
         # Total sellable bushels = sum of INVENTORY + APP quantities
         total_bu = sum(
