@@ -76,8 +76,10 @@ def get_snapshot() -> dict:
     pos = positions.get("positions") or []
     inv_corn = sum(p["quantity"] for p in pos if p["contract_type"] == "INVENTORY" and p["commodity"] == "corn")
     inv_soy = sum(p["quantity"] for p in pos if p["contract_type"] == "INVENTORY" and p["commodity"] == "soybean")
-    app_corn = sum(p["quantity"] for p in pos if p["contract_type"] == "APP" and p["commodity"] == "corn")
-    app_soy = sum(p["quantity"] for p in pos if p["contract_type"] == "APP" and p["commodity"] == "soybean")
+    # NPE = "No Price Established" forward contracts (were mislabeled "APP").
+    # Committed to deliver but fully unpriced — full price risk until priced.
+    npe_corn = sum(p["quantity"] for p in pos if p["contract_type"] == "NPE" and p["commodity"] == "corn")
+    npe_soy = sum(p["quantity"] for p in pos if p["contract_type"] == "NPE" and p["commodity"] == "soybean")
 
     # Last sale — find most recent 2026 filled soy contract with a price.
     # Prefer larger quantities (the bulk sale at the best price).
@@ -116,8 +118,8 @@ def get_snapshot() -> dict:
         "soy_on_hand": soy_on_hand,
         "inv_corn": inv_corn,
         "inv_soy": inv_soy,
-        "app_corn": app_corn,
-        "app_soy": app_soy,
+        "npe_corn": npe_corn,
+        "npe_soy": npe_soy,
         "corn_bid": corn_bid,
         "soy_bid": soy_bid,
         "corn_futures": corn_futures,
@@ -171,8 +173,8 @@ def build_sections(snap: dict, oil: float | None, dxy: float | None) -> dict:
     sold_price = snap["sold_beans_price"]
     inv_corn = snap["inv_corn"]
     inv_soy = snap["inv_soy"]
-    app_corn = snap["app_corn"]
-    app_soy = snap["app_soy"]
+    npe_corn = snap["npe_corn"]
+    npe_soy = snap["npe_soy"]
     soy_on_hand = snap["soy_on_hand"]
     corn_on_hand = snap["corn_on_hand"]
 
@@ -191,8 +193,8 @@ def build_sections(snap: dict, oil: float | None, dxy: float | None) -> dict:
         bean_status = "Beans are cleared out of Ritchie storage"
     sold_text = f"{sold_qty:,} bu sold last week" if sold_qty else ""
     where_we_are = f"Corn is the big pile at Ritchie ({inv_corn:,} bu stored"
-    if app_corn:
-        where_we_are += f" + {app_corn:,} bu APP contract"
+    if npe_corn:
+        where_we_are += f" + {npe_corn:,} bu NPE contract"
     where_we_are += ")."
     if sold_text:
         where_we_are = f"{sold_text} at ${sold_price:.2f}. " + where_we_are
@@ -207,11 +209,11 @@ def build_sections(snap: dict, oil: float | None, dxy: float | None) -> dict:
     elif soy_on_hand > 0:
         sold_remains += f"Beans remaining: {soy_on_hand:,} bu in Ritchie storage.\n"
     sold_remains += f"Corn remaining: {inv_corn:,} bu unsold in Ritchie storage"
-    if app_corn:
-        sold_remains += f" + {app_corn:,} bu APP contract (unpriced)"
+    if npe_corn:
+        sold_remains += f" + {npe_corn:,} bu NPE contract (unpriced)"
     sold_remains += ".\n"
-    if app_soy:
-        sold_remains += f"Soy contract: {app_soy:,} bu APP contract (unpriced, Edelstein Nov 2026 delivery)."
+    if npe_soy:
+        sold_remains += f"Soy contract: {npe_soy:,} bu NPE contract (unpriced, Edelstein Nov 2026 delivery)."
 
     # ---- WHAT THE MARKET IS DOING ----
     market = f"Corn cash at Ritchie: {cb_str}"
@@ -254,8 +256,8 @@ def build_sections(snap: dict, oil: float | None, dxy: float | None) -> dict:
             means_parts.append(f"The bean sale at ${sold_price:.2f} last week was right around today's cash bid of {sb_str}.")
     if soy_on_hand == 0 or soy_on_hand is None:
         means_parts.append("All beans are cleared out of Ritchie storage.")
-    if app_soy:
-        means_parts.append(f"The only remaining soy exposure is the {app_soy:,} bu APP contract waiting on a Nov price.")
+    if npe_soy:
+        means_parts.append(f"The only remaining soy exposure is the {npe_soy:,} bu NPE contract waiting on a Nov price.")
     if corn_chg is not None:
         if corn_chg >= 0.005:
             means_parts.append(f"Corn gained {round(corn_chg*100)}¢ today — summer weather window still open.")
@@ -283,12 +285,12 @@ def build_sections(snap: dict, oil: float | None, dxy: float | None) -> dict:
     window_lower = window[0].lower() + window[1:] if window else ""
     todo_parts = [f"Hold corn through {window_lower}. The {seasonal_pct}% seasonal target (~{rec_bu:,} bu over the next week) is still the right pace."]
     if soy_on_hand and soy_on_hand > 0:
-        if app_soy:
-            todo_parts.append(f"Start selling remaining {soy_on_hand:,} bu beans at Ritchie in clips. The {app_soy:,} bu APP contract can wait on a Nov price.")
+        if npe_soy:
+            todo_parts.append(f"Start selling remaining {soy_on_hand:,} bu beans at Ritchie in clips. The {npe_soy:,} bu NPE contract can wait on a Nov price.")
         else:
             todo_parts.append(f"Start selling remaining {soy_on_hand:,} bu beans at Ritchie in clips.")
-    elif app_soy:
-        todo_parts.append(f"For soy, the {app_soy:,} bu APP contract is waiting on a Nov price — no action needed now.")
+    elif npe_soy:
+        todo_parts.append(f"For soy, the {npe_soy:,} bu NPE contract is waiting on a Nov price — no action needed now.")
     todo = " ".join(todo_parts)
 
     # ---- WHY ----
@@ -299,8 +301,8 @@ def build_sections(snap: dict, oil: float | None, dxy: float | None) -> dict:
             why_parts.append(f"Beans locked in value at ${sold_price:.2f} — that's {diff_cents}¢ above today's cash bid.")
     if soy_on_hand == 0 or soy_on_hand is None:
         why_parts.append("The bean bin is empty at Ritchie.")
-    if app_soy:
-        why_parts.append(f"The {app_soy:,} bu APP contract will price on Nov futures, not today's cash.")
+    if npe_soy:
+        why_parts.append(f"The {npe_soy:,} bu NPE contract will price on Nov futures, not today's cash.")
     if corn_chg is not None and corn_chg < -0.005:
         why_parts.append(f"Today's {round(abs(corn_chg*100))}¢ drop on corn is a setback, not a game-changer — summer window still open.")
     elif corn_chg is not None and corn_chg > 0.005:
