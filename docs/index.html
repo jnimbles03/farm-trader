@@ -2767,6 +2767,37 @@ loadDrafts();
       '<div style="position:absolute;left:calc('+pct+'% - 1px);top:-2px;width:2px;height:9px;background:var(--ink-2);border-radius:1px"></div></div>'+
       '<div style="display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:9px;color:var(--dust);margin-top:2px"><span>'+fmt2(lo)+'</span><span>'+fmt2(hi)+'</span></div></div>';
   }
+  // Season-average price outlook table + analyst leans, from forecasts.json.
+  function forecastBlock(fc){
+    if(!fc||!fc.sources) return '';
+    var mys=fc.marketing_years||['2025/26','2026/27'];
+    function consensus(crop,my){
+      var vals=fc.sources.map(function(s){return s[crop]&&s[crop][my]!=null?s[crop][my]:null;}).filter(function(v){return v!=null;});
+      if(!vals.length) return null;
+      return {avg:vals.reduce(function(a,b){return a+b;},0)/vals.length, n:vals.length, lo:Math.min.apply(null,vals), hi:Math.max.apply(null,vals)};
+    }
+    function cells(crop){
+      return mys.map(function(my){
+        var c=consensus(crop,my);
+        var range=(c&&c.hi>c.lo)?' <span style="font-family:var(--font-mono);font-size:8px;color:var(--dust)">'+fmt2(c.lo)+'–'+fmt2(c.hi)+'</span>':'';
+        return '<span style="min-width:64px;text-align:right"><span style="font-family:var(--font-display);font-size:13px;color:var(--ink-2)">'+(c?fmt2(c.avg):'—')+'</span>'+range+'</span>';
+      }).join('');
+    }
+    var hdr='<div class="IA-row" style="border-bottom:0;padding-bottom:0"><span style="font-family:var(--font-mono);font-size:9px;color:var(--dust);margin-left:auto;display:flex;gap:12px">'+
+      mys.map(function(m){return '<span style="min-width:64px;text-align:right">'+m+'</span>';}).join('')+'</span></div>';
+    function row(pill,crop){
+      return '<div class="IA-row"><span class="IA-pill wait">'+pill+'</span><span style="margin-left:auto;display:flex;gap:12px;align-items:baseline">'+cells(crop)+'</span></div>';
+    }
+    var c0=consensus('corn',mys[0]);
+    var usda=fc.sources.filter(function(s){return s.lean==='official';})[0];
+    var leans=fc.sources.filter(function(s){return s.lean!=='official';}).map(function(s){
+      var mk=s.lean==='supportive'?'<span style="color:var(--sage-deep)">▲</span>':s.lean==='bearish'?'<span style="color:var(--danger)">▼</span>':'<span style="color:var(--dust)">•</span>';
+      return '<p class="IA-card-body" style="margin:3px 0"><strong style="color:var(--ink-2)">'+(s.short||s.name)+'</strong> '+mk+' '+(s.note||'')+'</p>';
+    }).join('');
+    return subLabel('Season-average price outlook ($/bu)')+hdr+row('CORN','corn')+row('SOY','soybeans')+
+      '<p class="IA-card-body" style="margin-top:4px">Consensus of '+(c0?c0.n:0)+' source'+((c0&&c0.n===1)?'':'s')+' with a published figure'+(usda&&usda.asof?'. USDA WASDE as of '+usda.asof:'')+'.</p>'+
+      (leans?subLabel('Analyst lean (free public commentary)')+leans:'');
+  }
 
   Promise.all([
     fetch('./signals.json',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}),
@@ -2778,8 +2809,9 @@ loadDrafts();
     fetch('./sales_log.json',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}),
     fetch('./plan.json',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}),
     fetch('./bushel.json',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}),
+    fetch('./forecasts.json',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}),
   ]).then(function(results){
-    var sig=results[0], px=results[1], nw=results[2], pos=results[3], slog=results[4], plan=results[5], bush=results[6];
+    var sig=results[0], px=results[1], nw=results[2], pos=results[3], slog=results[4], plan=results[5], bush=results[6], fcst=results[7];
     var cards=[];
     var st=slog&&slog.season_totals;
 
@@ -2838,7 +2870,8 @@ loadDrafts();
     var priceBody=priceBlock('CORN DEC',cornP>=50?'hit':'near',px&&px.corn_dec,cornD,cornP,bids.corn)+
       '<div style="height:9px"></div>'+
       priceBlock('SOY NOV',soyP>=50?'hit':'near',px&&px.soy_nov,soyD,soyP,bids.soybeans)+
-      '<p class="IA-card-body" style="margin-top:8px">%ile = where today sits in the '+days+'-day range (bar marks it between low and high). Above 65th = strong pricing window. Cash = elevator bid; basis = cash minus futures.</p>';
+      '<p class="IA-card-body" style="margin-top:8px">%ile = where today sits in the '+days+'-day range (bar marks it between low and high). Above 65th = strong pricing window. Cash = elevator bid; basis = cash minus futures.</p>'+
+      forecastBlock(fcst);
     cards.push({color:clr((cornP+soyP)/2),label:'Price snapshot',body:priceBody});
 
     /* ---- Tab 3: Selling signals — open tranche windows + season pacing ---- */
@@ -2871,29 +2904,57 @@ loadDrafts();
     var sigBody=sigRows+(paceRows?subLabel('Season pacing')+paceRows:'');
     cards.push({color:signals.some(function(s){return s.status==='HIT';})?'green':'yellow',label:'Selling signals',body:sigBody});
 
-    /* ---- Tab 4: Market wire — next USDA report + headlines ---- */
-    var usdaLine='';
-    var cal=plan&&plan.usda_calendar?plan.usda_calendar:[];
-    if(cal.length){
-      var now=new Date(), y=now.getFullYear();
-      var next=cal.map(function(e){
-        var d=new Date(y,e.month-1,e.day);
-        if(d<now) d=new Date(y+1,e.month-1,e.day);
-        return {d:d,label:e.label};
-      }).sort(function(a,b){return a.d-b.d;})[0];
-      if(next){
-        var dd=Math.max(0,Math.ceil((next.d-now)/86400000)), iso=next.d.toISOString().slice(0,10);
-        usdaLine='<div class="IA-row"><span class="IA-pill near">USDA</span>'+
-          '<span style="font-size:11px;color:var(--ink-2)">'+next.label+'</span>'+
-          '<strong style="font-family:var(--font-mono);font-size:10px;color:var(--slate);margin-left:auto">'+dd+'d · '+iso+'</strong></div>';
-      }
+    /* ---- Tab 4: Market wire — catalysts as headline + why-it-moves-price ---- */
+    function impactOf(lbl){
+      var t=(lbl||'').toLowerCase();
+      if(t.indexOf('prospective planting')>=0||t.indexOf('acreage')>=0)
+        return 'USDA’s planted-acreage estimate — more or fewer acres than the trade expects reprices the whole crop; historically one of the biggest single-day moves of the year.';
+      if(t.indexOf('grain stocks')>=0||(t.indexOf('stocks')>=0&&t.indexOf('wasde')<0))
+        return 'Quarterly count of grain still in the bin — a stocks surprise has repeatedly gapped corn and soy limit-up or limit-down.';
+      if(t.indexOf('wasde')>=0)
+        return 'USDA’s monthly supply/demand update — changes to yield, exports, or ending stocks can swing corn and soy sharply, especially the first new-crop and yield prints.';
+      if(t.indexOf('fomc')>=0||t.indexOf('rate decision')>=0)
+        return 'Fed rate decision moves the US dollar — a stronger dollar makes US grain pricier abroad and pressures export demand.';
+      if(t.indexOf('rfs')>=0||t.indexOf('epa')>=0||t.indexOf('biofuel')>=0)
+        return 'EPA biofuel blending targets set ethanol (corn) and renewable-diesel (soybean-oil) demand — higher mandates are bullish for both.';
+      if(t.indexOf('brazil')>=0||t.indexOf('argentina')>=0||t.indexOf('southern-hemisphere')>=0||t.indexOf('south america')>=0)
+        return 'South American harvest hits the export market — a big crop there competes with US beans/corn and tends to cap rallies.';
+      if(t.indexOf('export')>=0)
+        return 'Export-demand signal — strong US sales (especially to China) support prices; weak sales weigh on them.';
+      if(t.indexOf('small grains')>=0)
+        return 'Wheat-focused, but the feed-grain read-through can nudge corn.';
+      return 'Scheduled market event with a history of moving the grain complex.';
     }
+    var cats=[];
+    (plan&&plan.usda_calendar?plan.usda_calendar:[]).forEach(function(e){cats.push({m:e.month,d:e.day,label:e.label,size:e.size,affects:e.affects});});
+    (plan&&plan.policy_calendar?plan.policy_calendar:[]).forEach(function(e){cats.push({m:e.month,d:e.day,yy:e.year,label:e.label,size:e.size,affects:e.affects});});
+    var nowW=new Date();
+    var upcoming=cats.map(function(e){
+      var y=e.yy||nowW.getFullYear();
+      var dt=new Date(y,e.m-1,e.d);
+      if(dt<nowW){ if(e.yy) return null; dt=new Date(nowW.getFullYear()+1,e.m-1,e.d); }
+      return {dt:dt,label:e.label,size:e.size,affects:e.affects};
+    }).filter(Boolean).sort(function(a,b){return a.dt-b.dt;}).slice(0,6);
+    function affTag(a){ if(a==='corn')return{l:'CORN',c:'corn'}; if(a==='soy'||a==='soybeans')return{l:'SOY',c:'soy'}; return{l:'BOTH',c:'macro'}; }
+    var catRows=upcoming.map(function(e){
+      var dd=Math.max(0,Math.ceil((e.dt-nowW)/86400000)), iso=e.dt.toISOString().slice(0,10), at=affTag(e.affects);
+      var big=e.size==='XL'||e.size==='L';
+      return '<div style="padding:7px 0;border-bottom:1px dotted var(--rule)">'+
+        '<div style="display:flex;align-items:baseline;gap:7px">'+
+          '<span class="A-tag '+at.c+'">'+at.l+'</span>'+
+          '<strong style="font-size:12px;color:var(--ink-2)">'+e.label+(big?' <span style="color:var(--warn)">★</span>':'')+'</strong>'+
+          '<span style="margin-left:auto;font-family:var(--font-mono);font-size:10px;color:var(--dust);white-space:nowrap">'+dd+'d · '+iso+'</span>'+
+        '</div>'+
+        '<p class="IA-card-body" style="margin:3px 0 0">'+impactOf(e.label)+'</p></div>';
+    }).join('');
     var items=nw&&nw.items?nw.items.slice(0,6):[];
-    var newsBody=items.length?'<ul class="A-blotter" style="margin:6px 0 0">'+items.map(function(it){
+    var newsRows=items.length?'<ul class="A-blotter" style="margin:4px 0 0">'+items.map(function(it){
       var t=tagFrom(it), ts=it.published_at||(it.date?it.date+'T12:00:00Z':''), txt=it.text||it.title||'';
       return '<li><span class="A-tag '+t.cls+'">'+t.label+'</span><span class="A-blot-text">'+txt+'</span>'+(ts?'<span class="A-blot-time">'+relAge(ts)+'</span>':'')+'</li>';
-    }).join('')+'</ul>':'<p class="IA-card-body" style="color:var(--dust);margin-top:6px">No fresh headlines. Wire updates Mon–Fri 7am &amp; 2pm CDT.</p>';
-    cards.push({color:'yellow',label:'Market wire',body:usdaLine+(usdaLine?subLabel('Headlines'):'')+newsBody});
+    }).join('')+'</ul>':'<p class="IA-card-body" style="color:var(--dust);margin-top:4px">No breaking headlines right now.</p>';
+    var wireBody='<p class="IA-card-body">Scheduled reports &amp; events that move corn/soy prices — with why each matters (★ = high-impact).</p>'+
+      catRows+subLabel('Headlines')+newsRows;
+    cards.push({color:'yellow',label:'Market wire',body:wireBody});
 
     function buildTabbed(cards){
       var tabs=cards.map(function(c,i){
