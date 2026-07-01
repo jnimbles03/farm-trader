@@ -39,6 +39,14 @@
     "total": 1,
     "yes": 1
   },
+  "7aabe3": {
+    "no": 0,
+    "sent_at": "2026-07-01T00:09:40.835558+00:00",
+    "signal_key": "corn|C4|SELL|CAL",
+    "status": "pending",
+    "total": 2,
+    "yes": 0
+  },
   "a99d83": {
     "no": 0,
     "sent_at": "2026-06-22T00:42:23.967300+00:00",

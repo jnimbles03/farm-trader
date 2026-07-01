@@ -1,20 +1,20 @@
 {
-  "generated_at": "2026-06-30T23:42:00.728254+00:00",
+  "generated_at": "2026-07-01T00:09:41.856689+00:00",
   "signals": [
     {
-      "signal_key": "corn|C3|SELL|4.5920",
-      "contract_id": "CORN-C3",
+      "signal_key": "corn|C4|SELL|CAL",
+      "contract_id": "CORN-C4",
       "commodity": "corn",
       "futures_year": 2026,
       "futures_month": 12,
       "action": "SELL",
-      "target_price": 4.592,
-      "note": "T3 \u00b7 June \u2014 8,492 bu (40% of 21,230) | Weather peak",
-      "alloc_bu": 8492,
+      "target_price": null,
+      "note": "T4 \u00b7 by Jul 3 \u2014 2,123 bu (10% of 21,230) | Calendar cleanup \u2014 sell regardless of price",
+      "alloc_bu": 2123,
       "live": 4.365,
-      "status": "WAIT",
+      "status": "HIT",
       "prior_status": "WAIT",
-      "last_fired": null
+      "last_fired": "2026-07-01T00:09:40.835301+00:00"
     },
     {
       "signal_key": "soybean|S3|SELL|11.4400",

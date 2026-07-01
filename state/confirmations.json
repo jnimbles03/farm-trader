@@ -144,6 +144,22 @@
     "signal_key": "solo|farm-test|group-confirmation|2026-05-01T14:20:42",
     "status": "confirmed"
   },
+  "7aabe3": {
+    "live_price": 4.365,
+    "message": "SELL 2,123 bu Corn Dec '26 \u2014 seasonal window open, live $4.37. Reply Y to authorize or N to hold.",
+    "prior_fired_price": null,
+    "recipients": {
+      "+16232937553": {
+        "vote": null
+      },
+      "+16302479950": {
+        "vote": null
+      }
+    },
+    "sent_at": "2026-07-01T00:09:40.835558+00:00",
+    "signal_key": "corn|C4|SELL|CAL",
+    "status": "pending"
+  },
   "_orphans": [
     {
       "phone": "+16302479950",
