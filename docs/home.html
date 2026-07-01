@@ -3713,29 +3713,33 @@ loadDrafts();
     var sigBody=sigRows+(paceRows?subLabel('Season pacing')+paceRows:'');
     cards.push({color:signals.some(function(s){return s.status==='HIT';})?'green':'yellow',label:'Selling signals',body:sigBody});
 
-    /* ---- Tab 4: Market wire — next USDA report + headlines ---- */
-    var usdaLine='';
-    var cal=plan&&plan.usda_calendar?plan.usda_calendar:[];
-    if(cal.length){
-      var now=new Date(), y=now.getFullYear();
-      var next=cal.map(function(e){
-        var d=new Date(y,e.month-1,e.day);
-        if(d<now) d=new Date(y+1,e.month-1,e.day);
-        return {d:d,label:e.label};
-      }).sort(function(a,b){return a.d-b.d;})[0];
-      if(next){
-        var dd=Math.max(0,Math.ceil((next.d-now)/86400000)), iso=next.d.toISOString().slice(0,10);
-        usdaLine='<div class="IA-row"><span class="IA-pill near">USDA</span>'+
-          '<span style="font-size:11px;color:var(--ink-2)">'+next.label+'</span>'+
-          '<strong style="font-family:var(--font-mono);font-size:10px;color:var(--slate);margin-left:auto">'+dd+'d · '+iso+'</strong></div>';
-      }
-    }
+    /* ---- Tab 4: Market wire — price-moving catalysts + headlines ---- */
+    var cats=[];
+    (plan&&plan.usda_calendar?plan.usda_calendar:[]).forEach(function(e){cats.push({m:e.month,d:e.day,label:e.label,size:e.size,affects:e.affects});});
+    (plan&&plan.policy_calendar?plan.policy_calendar:[]).forEach(function(e){cats.push({m:e.month,d:e.day,yy:e.year,label:e.label,size:e.size,affects:e.affects});});
+    var nowW=new Date();
+    var upcoming=cats.map(function(e){
+      var y=e.yy||nowW.getFullYear();
+      var dt=new Date(y,e.m-1,e.d);
+      if(dt<nowW){ if(e.yy) return null; dt=new Date(nowW.getFullYear()+1,e.m-1,e.d); }
+      return {dt:dt,label:e.label,size:e.size,affects:e.affects};
+    }).filter(Boolean).sort(function(a,b){return a.dt-b.dt;}).slice(0,6);
+    function affTag(a){ if(a==='corn')return{l:'CORN',c:'corn'}; if(a==='soy'||a==='soybeans')return{l:'SOY',c:'soy'}; return{l:'BOTH',c:'macro'}; }
+    var catRows=upcoming.map(function(e){
+      var dd=Math.max(0,Math.ceil((e.dt-nowW)/86400000)), iso=e.dt.toISOString().slice(0,10), at=affTag(e.affects);
+      var big=e.size==='XL'||e.size==='L';
+      return '<div class="IA-row"><span class="A-tag '+at.c+'">'+at.l+'</span>'+
+        '<span style="font-size:11px;color:var(--ink-2)">'+e.label+(big?' <span style="color:var(--warn)">★</span>':'')+'</span>'+
+        '<strong style="font-family:var(--font-mono);font-size:10px;color:var(--slate);margin-left:auto">'+dd+'d · '+iso+'</strong></div>';
+    }).join('');
     var items=nw&&nw.items?nw.items.slice(0,6):[];
-    var newsBody=items.length?'<ul class="A-blotter" style="margin:6px 0 0">'+items.map(function(it){
+    var newsRows=items.length?'<ul class="A-blotter" style="margin:4px 0 0">'+items.map(function(it){
       var t=tagFrom(it), ts=it.published_at||(it.date?it.date+'T12:00:00Z':''), txt=it.text||it.title||'';
       return '<li><span class="A-tag '+t.cls+'">'+t.label+'</span><span class="A-blot-text">'+txt+'</span>'+(ts?'<span class="A-blot-time">'+relAge(ts)+'</span>':'')+'</li>';
-    }).join('')+'</ul>':'<p class="IA-card-body" style="color:var(--dust);margin-top:6px">No fresh headlines. Wire updates Mon–Fri 7am &amp; 2pm CDT.</p>';
-    cards.push({color:'yellow',label:'Market wire',body:usdaLine+(usdaLine?subLabel('Headlines'):'')+newsBody});
+    }).join('')+'</ul>':'<p class="IA-card-body" style="color:var(--dust);margin-top:4px">No breaking headlines right now.</p>';
+    var wireBody='<p class="IA-card-body">Scheduled reports &amp; events with a history of moving corn/soy prices (★ = high-impact).</p>'+
+      catRows+subLabel('Headlines')+newsRows;
+    cards.push({color:'yellow',label:'Market wire',body:wireBody});
 
     /* Render tabs + panels into every .ia-grid on the page */
     function buildTabbed(cards){
