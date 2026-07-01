@@ -2759,6 +2759,14 @@ loadDrafts();
   var pricesUrl = (typeof TRADE_API_BASE !== 'undefined' && TRADE_API_BASE)
     ? TRADE_API_BASE + '/prices'
     : './prices.json';
+  function money(n){ return n==null?'—':'$'+Math.round(n).toLocaleString(); }
+  function buN(n){ return n==null?'—':Math.round(n).toLocaleString(); }
+  function subLabel(t){ return '<div class="IA-card-label" style="margin-top:11px">'+t+'</div>'; }
+  function rangeBar(pct,lo,hi){
+    return '<div style="margin:5px 0 2px"><div style="position:relative;height:5px;background:var(--paper-2);border-radius:3px">'+
+      '<div style="position:absolute;left:calc('+pct+'% - 1px);top:-2px;width:2px;height:9px;background:var(--ink-2);border-radius:1px"></div></div>'+
+      '<div style="display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:9px;color:var(--dust);margin-top:2px"><span>'+fmt2(lo)+'</span><span>'+fmt2(hi)+'</span></div></div>';
+  }
 
   Promise.all([
     fetch('./signals.json',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}),
@@ -2767,11 +2775,15 @@ loadDrafts();
     }),
     fetch('./news.json',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}),
     fetch('./positions.json',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}),
+    fetch('./sales_log.json',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}),
+    fetch('./plan.json',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}),
+    fetch('./bushel.json',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}),
   ]).then(function(results){
-    var sig=results[0], px=results[1], nw=results[2], pos=results[3];
+    var sig=results[0], px=results[1], nw=results[2], pos=results[3], slog=results[4], plan=results[5], bush=results[6];
     var cards=[];
+    var st=slog&&slog.season_totals;
 
-    /* Inventory value — unsold bushels marked at live futures (positions.json) */
+    /* ---- Tab 1: Inventory value — on hand + recent sales + season booked ---- */
     var byComm={};
     (pos&&pos.positions?pos.positions:[]).forEach(function(p){
       if(p.contract_type!=='INVENTORY') return;
@@ -2782,35 +2794,56 @@ loadDrafts();
     });
     var commKeys=Object.keys(byComm);
     var totalVal=commKeys.reduce(function(s,k){return s+byComm[k].val;},0);
-    var invBody=commKeys.length?commKeys.map(function(c){
+    var invRows=commKeys.length?commKeys.map(function(c){
       var d=byComm[c];
       return '<div class="IA-row"><span class="IA-pill wait">'+c.toUpperCase()+'</span>'+
-        '<span style="font-size:11px;color:var(--ink-2)">'+Math.round(d.bu).toLocaleString()+' bu</span>'+
-        '<strong style="font-family:var(--font-display);font-size:13px;color:var(--ink-2);margin-left:auto">$'+Math.round(d.val).toLocaleString()+'</strong></div>';
-    }).join('')+'<p class="IA-card-body" style="margin-top:7px">Unsold inventory marked at live futures. Total: <em>$'+Math.round(totalVal).toLocaleString()+'</em></p>'
-      :'<p class="IA-card-body" style="color:var(--dust)">No open inventory positions.</p>';
+        '<span style="font-size:11px;color:var(--slate)">'+buN(d.bu)+' bu on hand</span>'+
+        '<strong style="font-family:var(--font-display);font-size:13px;color:var(--ink-2);margin-left:auto">'+money(d.val)+'</strong></div>';
+    }).join('')+'<p class="IA-card-body" style="margin-top:5px">Marked at live futures. Total on hand: <em>'+money(totalVal)+'</em></p>'
+      :'<p class="IA-card-body" style="color:var(--dust)">No unsold inventory — all delivered.</p>';
+    var sales=(slog&&slog.sales?slog.sales.slice():[]).sort(function(a,b){return (b.date||'').localeCompare(a.date||'');});
+    var salesRows=sales.slice(0,8).map(function(s){
+      var cr=s.crop==='soybeans'?'SOY':(s.crop==='corn'?'CORN':(s.crop||'').toUpperCase());
+      return '<div class="IA-row"><span style="font-family:var(--font-mono);font-size:9px;color:var(--dust);min-width:56px">'+(s.date||'')+'</span>'+
+        '<span class="IA-pill wait">'+cr+'</span>'+
+        '<span style="font-size:11px;color:var(--slate)">'+buN(s.bushels)+' @ '+fmt2(s.price_per_bu)+'</span>'+
+        '<strong style="font-size:11px;color:var(--ink-2);margin-left:auto">'+money(s.total_amount)+'</strong></div>';
+    }).join('');
+    var seasonFoot='';
+    if(st&&st.combined){
+      var parts=[];
+      if(st.corn) parts.push('corn '+buN(st.corn.booked_bushels)+' bu @ '+fmt2(st.corn.weighted_avg_price));
+      if(st.soybeans) parts.push('soy '+buN(st.soybeans.booked_bushels)+' bu @ '+fmt2(st.soybeans.weighted_avg_price));
+      seasonFoot='<p class="IA-card-body" style="margin-top:5px">Season booked: <em>'+money(st.combined.booked_amount)+'</em> ('+buN(st.combined.booked_bushels)+' bu). '+parts.join(' · ')+'.</p>';
+    }
+    var invBody=invRows+(salesRows?subLabel('Recent sales')+salesRows:'')+seasonFoot;
     cards.push({color:'yellow',label:'Inventory value',body:invBody});
 
+    /* ---- Tab 2: Price snapshot — futures, day change, range bar, cash+basis ---- */
     var cornD=px&&px.detail&&px.detail.corn, soyD=px&&px.detail&&px.detail.soy;
     var cornP=rangePct(px&&px.corn_dec,cornD&&cornD.low_range,cornD&&cornD.high_range);
     var soyP=rangePct(px&&px.soy_nov,soyD&&soyD.low_range,soyD&&soyD.high_range);
     var days=cornD&&cornD.range_days?cornD.range_days:260;
-    var cornUp=!cornD||cornD.day_chg==null||cornD.day_chg>=0;
-    var soyUp=!soyD||soyD.day_chg==null||soyD.day_chg>=0;
-    cards.push({color:clr((cornP+soyP)/2),label:'Price snapshot',body:[
-      '<div class="IA-row"><span class="IA-pill '+(cornP>=50?'hit':'near')+'">CORN DEC</span>',
-      '<strong style="font-family:var(--font-display);font-size:14px;color:var(--ink-2)">'+fmt2(px&&px.corn_dec)+'</strong>',
-      '<span style="font-size:11px;color:'+(cornUp?'var(--sage-deep)':'var(--danger)')+'">'+fmtPct(cornD&&cornD.day_chg_pct)+'</span>',
-      '<span style="font-family:var(--font-mono);font-size:10px;color:var(--dust)">'+cornP+'th %ile</span></div>',
-      '<div class="IA-row"><span class="IA-pill '+(soyP>=50?'hit':'near')+'">SOY NOV</span>',
-      '<strong style="font-family:var(--font-display);font-size:14px;color:var(--ink-2)">'+fmt2(px&&px.soy_nov)+'</strong>',
-      '<span style="font-size:11px;color:'+(soyUp?'var(--sage-deep)':'var(--danger)')+'">'+fmtPct(soyD&&soyD.day_chg_pct)+'</span>',
-      '<span style="font-family:var(--font-mono);font-size:10px;color:var(--dust)">'+soyP+'th %ile</span></div>',
-      '<p class="IA-card-body" style="margin-top:7px">%ile = position in '+days+'-day range. Above 65 = strong pricing window.</p>',
-    ].join('')});
+    var bids=bush&&bush.bids?bush.bids:{};
+    function priceBlock(pill,pillCls,fut,det,pct,bid){
+      var up=!det||det.day_chg==null||det.day_chg>=0;
+      var chg=det&&det.day_chg!=null?(det.day_chg>=0?'+':'−')+'$'+Math.abs(det.day_chg).toFixed(2):'';
+      return '<div class="IA-row"><span class="IA-pill '+pillCls+'">'+pill+'</span>'+
+        '<strong style="font-family:var(--font-display);font-size:14px;color:var(--ink-2)">'+fmt2(fut)+'</strong>'+
+        '<span style="font-size:11px;color:'+(up?'var(--sage-deep)':'var(--danger)')+'">'+chg+' '+fmtPct(det&&det.day_chg_pct)+'</span>'+
+        '<span style="font-family:var(--font-mono);font-size:10px;color:var(--dust);margin-left:auto">'+pct+'th %ile</span></div>'+
+        rangeBar(pct,det&&det.low_range,det&&det.high_range)+
+        (bid?'<p class="IA-card-body" style="margin:2px 0 0">Ritchie cash '+fmt2(bid.price)+' ('+bid.period+') · basis '+(bid.basis>=0?'+':'−')+'$'+Math.abs(bid.basis).toFixed(2)+'</p>':'');
+    }
+    var priceBody=priceBlock('CORN DEC',cornP>=50?'hit':'near',px&&px.corn_dec,cornD,cornP,bids.corn)+
+      '<div style="height:9px"></div>'+
+      priceBlock('SOY NOV',soyP>=50?'hit':'near',px&&px.soy_nov,soyD,soyP,bids.soybeans)+
+      '<p class="IA-card-body" style="margin-top:8px">%ile = where today sits in the '+days+'-day range (bar marks it between low and high). Above 65th = strong pricing window. Cash = elevator bid; basis = cash minus futures.</p>';
+    cards.push({color:clr((cornP+soyP)/2),label:'Price snapshot',body:priceBody});
 
+    /* ---- Tab 3: Selling signals — open tranche windows + season pacing ---- */
     var signals=sig&&sig.signals?sig.signals:[];
-    var sigBody=signals.length?signals.map(function(s){
+    var sigRows=signals.length?signals.map(function(s){
       var cls=s.status==='HIT'?'hit':s.status==='APPROACHING'?'near':'wait';
       var crop=s.commodity==='soybean'?'SOY NOV':'CORN DEC';
       var isCal=s.target_price==null;
@@ -2822,15 +2855,45 @@ loadDrafts();
         '<strong style="font-size:11px;color:var(--ink-2)">'+targetStr+'</strong>'+
         (gapStr?'<span style="font-family:var(--font-mono);font-size:10px;color:var(--dust)">'+gapStr+'</span>':'')+
         '</div>'+(s.note?'<p class="IA-card-body" style="margin:1px 0 5px">'+s.note+'</p>':'');
-    }).join(''):'<p class="IA-card-body" style="color:var(--dust)">No signals configured.</p>';
+    }).join(''):'<p class="IA-card-body" style="color:var(--dust)">No open tranche windows today.</p>';
+    var rem=slog&&slog.remaining_at_ritchie?slog.remaining_at_ritchie:{};
+    var paceRows=['corn','soybean'].map(function(pk){
+      var slk=pk==='soybean'?'soybeans':'corn';
+      var sold=st&&st[slk]?st[slk].booked_bushels:0;
+      var remBu=pk==='corn'?(rem.corn_bu||0):(rem.beans_bu||0);
+      var tot=sold+remBu;
+      if(tot<=0) return '';
+      var pct=Math.round(sold/tot*100);
+      return '<div class="IA-row"><span class="IA-pill wait">'+(pk==='soybean'?'SOY':'CORN')+'</span>'+
+        '<span style="font-size:11px;color:var(--slate)">'+buN(sold)+' of '+buN(tot)+' bu sold this season</span>'+
+        '<strong style="font-size:11px;color:var(--ink-2);margin-left:auto">'+pct+'%</strong></div>';
+    }).join('');
+    var sigBody=sigRows+(paceRows?subLabel('Season pacing')+paceRows:'');
     cards.push({color:signals.some(function(s){return s.status==='HIT';})?'green':'yellow',label:'Selling signals',body:sigBody});
 
-    var items=nw&&nw.items?nw.items.slice(0,4):[];
-    var newsBody=items.length?'<ul class="A-blotter" style="margin:0">'+items.map(function(it){
+    /* ---- Tab 4: Market wire — next USDA report + headlines ---- */
+    var usdaLine='';
+    var cal=plan&&plan.usda_calendar?plan.usda_calendar:[];
+    if(cal.length){
+      var now=new Date(), y=now.getFullYear();
+      var next=cal.map(function(e){
+        var d=new Date(y,e.month-1,e.day);
+        if(d<now) d=new Date(y+1,e.month-1,e.day);
+        return {d:d,label:e.label};
+      }).sort(function(a,b){return a.d-b.d;})[0];
+      if(next){
+        var dd=Math.max(0,Math.ceil((next.d-now)/86400000)), iso=next.d.toISOString().slice(0,10);
+        usdaLine='<div class="IA-row"><span class="IA-pill near">USDA</span>'+
+          '<span style="font-size:11px;color:var(--ink-2)">'+next.label+'</span>'+
+          '<strong style="font-family:var(--font-mono);font-size:10px;color:var(--slate);margin-left:auto">'+dd+'d · '+iso+'</strong></div>';
+      }
+    }
+    var items=nw&&nw.items?nw.items.slice(0,6):[];
+    var newsBody=items.length?'<ul class="A-blotter" style="margin:6px 0 0">'+items.map(function(it){
       var t=tagFrom(it), ts=it.published_at||(it.date?it.date+'T12:00:00Z':''), txt=it.text||it.title||'';
       return '<li><span class="A-tag '+t.cls+'">'+t.label+'</span><span class="A-blot-text">'+txt+'</span>'+(ts?'<span class="A-blot-time">'+relAge(ts)+'</span>':'')+'</li>';
-    }).join('')+'</ul>':'<p class="IA-card-body" style="color:var(--dust)">Updated Mon–Fri at 7am &amp; 2pm CDT.</p>';
-    cards.push({color:'yellow',label:'Market wire',body:newsBody});
+    }).join('')+'</ul>':'<p class="IA-card-body" style="color:var(--dust);margin-top:6px">No fresh headlines. Wire updates Mon–Fri 7am &amp; 2pm CDT.</p>';
+    cards.push({color:'yellow',label:'Market wire',body:usdaLine+(usdaLine?subLabel('Headlines'):'')+newsBody});
 
     function buildTabbed(cards){
       var tabs=cards.map(function(c,i){
