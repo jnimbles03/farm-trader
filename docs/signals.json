@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-01T21:13:07.330393+00:00",
+  "generated_at": "2026-07-01T21:45:48.421612+00:00",
   "signals": [
     {
       "signal_key": "corn|C4|SELL|CAL",
@@ -18,7 +18,7 @@
     }
   ],
   "call": {
-    "headline": "Hold soy. Sell ~912 bu corn now.",
+    "headline": "Sell ~912 bu corn now.",
     "detail": "Corn's calendar window is open \u2014 Calendar cleanup \u2014 sell regardless of price."
   }
 }
