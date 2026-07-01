@@ -304,11 +304,23 @@ body.auth-locked { overflow: hidden; }
 .A-blot-text b { color: var(--ink-2); font-weight: 500; }
 .A-blot-time { font-family: var(--font-mono); font-size: 10px; color: var(--dust); }
 
-/* Insights & Actions */
+/* Insights & Actions — tabbed */
 .IA-header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 14px; }
 .ia-updated { font-family: var(--font-mono); font-size: 10px; color: var(--dust); text-transform: uppercase; letter-spacing: 0.4px; }
-.ia-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-@media (max-width: 640px) { .ia-grid { grid-template-columns: 1fr; } }
+.ia-grid { display: block; }   /* now holds the tab bar + panels */
+.ia-tabs { display: flex; gap: 2px; flex-wrap: wrap; border-bottom: 1px solid var(--border); margin-bottom: 12px; }
+.ia-tab { appearance: none; background: none; border: 0; cursor: pointer; font-family: var(--font-mono); font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--dust); padding: 7px 9px; border-bottom: 2px solid transparent; margin-bottom: -1px; display: inline-flex; align-items: center; gap: 5px; }
+.ia-tab:hover { color: var(--slate); }
+.ia-tab.active { color: var(--ink-2); border-bottom-color: var(--ink-2); }
+.ia-tab-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--rule); display: inline-block; flex: none; }
+.ia-tab-dot.green  { background: var(--sage-deep); }
+.ia-tab-dot.yellow { background: var(--soy); }
+.ia-tab-dot.red    { background: var(--danger); }
+.ia-panels { position: relative; }
+.ia-panel { display: none; max-height: 300px; overflow-y: auto; padding-right: 6px; }
+.ia-panel.active { display: block; }
+.ia-panel::-webkit-scrollbar { width: 6px; }
+.ia-panel::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 3px; }
 .IA-card {
   background: var(--cream);
   border: 1px solid var(--border);
@@ -3688,14 +3700,29 @@ loadDrafts();
       '<p class="IA-card-body" style="color:var(--dust)">Updated Mon–Fri at 7am &amp; 2pm CDT.</p>';
     cards.push({ color:'yellow', label:'Market wire', body:newsBody });
 
-    /* Render into every .ia-grid on the page */
-    var html=cards.map(function(c){
-      return '<div class="IA-card '+c.color+'">'+
-        '<div class="IA-card-label">'+c.label+'</div>'+
-        (c.head?'<div class="IA-card-head">'+c.head+'</div>':'')+
-        c.body+'</div>';
-    }).join('');
-    document.querySelectorAll('.ia-grid').forEach(function(el){el.innerHTML=html;});
+    /* Render tabs + panels into every .ia-grid on the page */
+    function buildTabbed(cards){
+      var tabs=cards.map(function(c,i){
+        return '<button class="ia-tab'+(i===0?' active':'')+'" data-idx="'+i+'" type="button" role="tab">'+
+          '<span class="ia-tab-dot '+c.color+'"></span>'+c.label+'</button>';
+      }).join('');
+      var panels=cards.map(function(c,i){
+        return '<div class="ia-panel'+(i===0?' active':'')+'" data-idx="'+i+'" role="tabpanel">'+
+          (c.head?'<div class="IA-card-head">'+c.head+'</div>':'')+c.body+'</div>';
+      }).join('');
+      return '<div class="ia-tabs" role="tablist">'+tabs+'</div><div class="ia-panels">'+panels+'</div>';
+    }
+    document.querySelectorAll('.ia-grid').forEach(function(el){
+      el.innerHTML=buildTabbed(cards);
+      var tabs=el.querySelectorAll('.ia-tab'), panels=el.querySelectorAll('.ia-panel');
+      tabs.forEach(function(tab){
+        tab.addEventListener('click',function(){
+          var idx=tab.getAttribute('data-idx');
+          tabs.forEach(function(t){t.classList.toggle('active',t.getAttribute('data-idx')===idx);});
+          panels.forEach(function(p){p.classList.toggle('active',p.getAttribute('data-idx')===idx);});
+        });
+      });
+    });
 
     /* Timestamp */
     var ds=px&&px.date?'data as of '+px.date:'';
