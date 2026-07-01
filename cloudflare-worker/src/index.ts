@@ -110,10 +110,8 @@ interface TextBeltReply {
   text?: string;
 }
 
-// Phone whitelist for the trade widget (draft orders).
-// Only these phones receive the SMS code.
-// The recipient of the code must respond (provide the digits) to activate/submit the draft.
-const ORDER_PHONE_WHITELIST = ["+16302479950"];
+// Trade OTP whitelist is derived at runtime from AUTH_PHONES secret —
+// real phone numbers are never stored in source.
 
 // OTP expiry — short enough that intercepted codes age out fast, long enough
 // that the user has time to read the SMS and type 6 digits.
@@ -899,8 +897,8 @@ async function ordersStart(req: Request, env: Env): Promise<Response> {
   } catch {
     return textResponse("Bad JSON", { status: 400 });
   }
-  const phone = (body.phone || "").trim();
-  if (!ORDER_PHONE_WHITELIST.includes(phone)) {
+  const phone = normalizePhone(body.phone || "");
+  if (!parsePhoneList(env.AUTH_PHONES || "").includes(phone)) {
     return textResponse("Phone not allowed", { status: 403 });
   }
   if (!body.payload || typeof body.payload !== "object") {
@@ -961,7 +959,7 @@ async function ordersSubmit(req: Request, env: Env): Promise<Response> {
   if (!phone || !payload || !code || !nonce || !expires_at || !payload_hash || !hmac) {
     return textResponse("Missing fields", { status: 400 });
   }
-  if (!ORDER_PHONE_WHITELIST.includes(phone)) {
+  if (!parsePhoneList(env.AUTH_PHONES || "").includes(phone)) {
     return textResponse("Phone not allowed", { status: 403 });
   }
 

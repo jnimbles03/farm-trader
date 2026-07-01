@@ -304,6 +304,46 @@ body.auth-locked { overflow: hidden; }
 .A-blot-text b { color: var(--ink-2); font-weight: 500; }
 .A-blot-time { font-family: var(--font-mono); font-size: 10px; color: var(--dust); }
 
+/* Insights & Actions */
+.IA-header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 14px; }
+.ia-updated { font-family: var(--font-mono); font-size: 10px; color: var(--dust); text-transform: uppercase; letter-spacing: 0.4px; }
+.ia-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+@media (max-width: 640px) { .ia-grid { grid-template-columns: 1fr; } }
+.IA-card {
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--rule);
+  border-radius: 5px;
+  padding: 12px 14px;
+}
+.IA-card.green  { border-left-color: var(--sage-deep); }
+.IA-card.yellow { border-left-color: var(--soy); }
+.IA-card.red    { border-left-color: var(--danger); }
+.IA-card-label {
+  font-family: var(--font-mono); font-size: 9px;
+  text-transform: uppercase; letter-spacing: 0.6px;
+  color: var(--dust); margin-bottom: 5px;
+}
+.IA-card-head {
+  font-family: var(--font-display); font-size: 13px; font-weight: 500;
+  color: var(--ink-2); line-height: 1.35; margin-bottom: 6px;
+}
+.IA-card-body { font-size: 11px; color: var(--slate); line-height: 1.5; margin: 0; }
+.IA-card-body em { color: var(--ink); font-style: normal; font-weight: 500; }
+.IA-pill {
+  display: inline-block; font-family: var(--font-mono); font-size: 9px;
+  text-transform: uppercase; letter-spacing: 0.5px;
+  padding: 2px 5px; border-radius: 3px; white-space: nowrap;
+}
+.IA-pill.hit  { background: var(--sage-pale); color: var(--sage-deep); }
+.IA-pill.wait { background: var(--paper-2); color: var(--slate); }
+.IA-pill.near { background: #F1E8CE; color: #876B2B; }
+.IA-row {
+  display: flex; align-items: baseline; gap: 7px; flex-wrap: wrap;
+  padding: 5px 0; border-bottom: 1px dotted var(--rule);
+}
+.IA-row:last-child { border-bottom: 0; }
+
 .A-strip {
   grid-column: 1 / -1;
   display: grid;
@@ -819,13 +859,16 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
     <p class="A-caption">The lines show the price pattern we usually see. Right now soy is higher than its normal June spot (good for selling). The shaded strip is the time we need cash for bills — we want to sell while prices are strong.</p>
   </section>
 
-  <!-- Market wire blotter -->
-  <aside class="A-side" aria-label="Market wire — headlines and what they mean for our bushels">
-    <h3>Market wire</h3>
-    <ul class="A-blotter" data-live="market-wire">
-      <li><span class="A-blot-text" style="color:var(--dust)">Loading…</span></li>
-    </ul>
-  </aside>
+  <!-- Insights & Actions -->
+  <section class="A-side" aria-label="Insights and actions for grain marketing">
+    <div class="IA-header">
+      <h3 style="margin-bottom:0">Insights &amp; Actions</h3>
+      <span class="ia-updated"></span>
+    </div>
+    <div class="ia-grid">
+      <div class="IA-card yellow"><div class="IA-card-label">Analyzing markets…</div></div>
+    </div>
+  </section>
 
   <!-- Sparkline strip across the bottom -->
   <section class="A-strip" aria-label="Live levels with sparklines">
@@ -1668,13 +1711,16 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
     <p class="A-caption">The lines show the price pattern we usually see. Right now soy is higher than its normal June spot (good for selling). The shaded strip is the time we need cash for bills — we want to sell while prices are strong.</p>
   </section>
 
-  <!-- Market wire blotter -->
-  <aside class="A-side" aria-label="Market wire — headlines and what they mean for our bushels">
-    <h3>Market wire</h3>
-    <ul class="A-blotter" data-live="market-wire">
-      <li><span class="A-blot-text" style="color:var(--dust)">Loading…</span></li>
-    </ul>
-  </aside>
+  <!-- Insights & Actions -->
+  <section class="A-side" aria-label="Insights and actions for grain marketing">
+    <div class="IA-header">
+      <h3 style="margin-bottom:0">Insights &amp; Actions</h3>
+      <span class="ia-updated"></span>
+    </div>
+    <div class="ia-grid">
+      <div class="IA-card yellow"><div class="IA-card-label">Analyzing markets…</div></div>
+    </div>
+  </section>
 
   <!-- Sparkline strip across the bottom -->
   <section class="A-strip" aria-label="Live levels with sparklines">
@@ -3515,14 +3561,22 @@ loadDrafts();
 })();
 </script>
 
-<script id="js-market-wire">
+<script id="js-insights">
 (function(){
+  function fmt2(n){ return n!=null?'$'+Number(n).toFixed(2):'—'; }
+  function fmtPct(n){ return n!=null?(n>=0?'+':'')+Number(n).toFixed(2)+'%':''; }
   function relAge(iso){
-    var mins=(Date.now()-new Date(iso).getTime())/60000;
-    if(mins<60) return Math.max(1,Math.round(mins))+'m';
-    if(mins<1440) return Math.round(mins/60)+'h';
-    return Math.round(mins/1440)+'d';
+    if(!iso) return '';
+    var m=(Date.now()-new Date(iso).getTime())/60000;
+    if(m<60) return Math.max(1,Math.round(m))+'m ago';
+    if(m<1440) return Math.round(m/60)+'h ago';
+    return Math.round(m/1440)+'d ago';
   }
+  function rangePct(v,lo,hi){
+    if(v==null||lo==null||hi==null||hi===lo) return 50;
+    return Math.round(Math.min(1,Math.max(0,(v-lo)/(hi-lo)))*100);
+  }
+  function clr(p){ return p>=65?'green':p>=35?'yellow':'red'; }
   function tagFrom(it){
     if(it.tag) return {label:it.tag,cls:it.tag_class||'watch'};
     var a=it.affects||'';
@@ -3530,23 +3584,104 @@ loadDrafts();
     if(a==='soy'||a==='soybeans') return {label:'SOY',cls:'soy'};
     return {label:'WATCH',cls:'watch'};
   }
-  fetch('./news.json',{cache:'no-store'})
-    .then(function(r){return r.ok?r.json():Promise.reject(r.status);})
-    .then(function(data){
-      var items=(data.items||[]).slice(0,6);
-      var html=items.map(function(it){
+
+  Promise.all([
+    fetch('./signals.json',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}),
+    fetch('./prices.json',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}),
+    fetch('./news.json',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}),
+  ]).then(function(results){
+    var sig=results[0], px=results[1], nw=results[2];
+    var cards=[];
+
+    /* Card 1 — Today's Call */
+    var call=sig&&sig.call;
+    var nHit=sig&&sig.signals?sig.signals.filter(function(s){return s.status==='HIT';}).length:0;
+    cards.push({
+      color: nHit>0?'green':'yellow',
+      label: "Today’s call",
+      head:  call?call.headline:'',
+      body:  call&&call.detail?'<p class="IA-card-body">'+call.detail+'</p>':
+             '<p class="IA-card-body" style="color:var(--dust)">Analysis loading…</p>',
+    });
+
+    /* Card 2 — Price Snapshot */
+    var cornD=px&&px.detail&&px.detail.corn;
+    var soyD =px&&px.detail&&px.detail.soy;
+    var cornP=rangePct(px&&px.corn_dec, cornD&&cornD.low_range, cornD&&cornD.high_range);
+    var soyP =rangePct(px&&px.soy_nov,  soyD&&soyD.low_range,  soyD&&soyD.high_range);
+    var days =cornD&&cornD.range_days?cornD.range_days:260;
+    var cornUp=!cornD||cornD.day_chg==null||cornD.day_chg>=0;
+    var soyUp =!soyD ||soyD.day_chg==null ||soyD.day_chg>=0;
+    cards.push({
+      color: clr((cornP+soyP)/2),
+      label: 'Price snapshot',
+      body: [
+        '<div class="IA-row">',
+          '<span class="IA-pill '+(cornP>=50?'hit':'near')+'">CORN DEC</span>',
+          '<strong style="font-family:var(--font-display);font-size:14px;color:var(--ink-2)">'+fmt2(px&&px.corn_dec)+'</strong>',
+          '<span style="font-size:11px;color:'+(cornUp?'var(--sage-deep)':'var(--danger)')+'">'+fmtPct(cornD&&cornD.day_chg_pct)+'</span>',
+          '<span style="font-family:var(--font-mono);font-size:10px;color:var(--dust)">'+cornP+'th %ile</span>',
+        '</div>',
+        '<div class="IA-row">',
+          '<span class="IA-pill '+(soyP>=50?'hit':'near')+'">SOY NOV</span>',
+          '<strong style="font-family:var(--font-display);font-size:14px;color:var(--ink-2)">'+fmt2(px&&px.soy_nov)+'</strong>',
+          '<span style="font-size:11px;color:'+(soyUp?'var(--sage-deep)':'var(--danger)')+'">'+fmtPct(soyD&&soyD.day_chg_pct)+'</span>',
+          '<span style="font-family:var(--font-mono);font-size:10px;color:var(--dust)">'+soyP+'th %ile</span>',
+        '</div>',
+        '<p class="IA-card-body" style="margin-top:7px">%ile = position in '+days+'-day range. Above 65 = strong pricing window.</p>',
+      ].join(''),
+    });
+
+    /* Card 3 — Selling Signals */
+    var signals=sig&&sig.signals?sig.signals:[];
+    var sigBody=signals.length?signals.map(function(s){
+      var cls=s.status==='HIT'?'hit':s.status==='APPROACHING'?'near':'wait';
+      var crop=s.commodity==='soybean'?'SOY NOV':'CORN DEC';
+      var gap=s.live!=null&&s.target_price!=null?s.live-s.target_price:null;
+      var gapStr=gap!==null?(gap>=0?'+':'−')+'$'+Math.abs(gap).toFixed(2)+' vs target':'';
+      return '<div class="IA-row">'+
+        '<span class="IA-pill '+cls+'">'+s.status+'</span>'+
+        '<span style="font-family:var(--font-mono);font-size:10px;color:var(--slate)">'+crop+'</span>'+
+        '<strong style="font-size:11px;color:var(--ink-2)">target '+fmt2(s.target_price)+'</strong>'+
+        (gapStr?'<span style="font-family:var(--font-mono);font-size:10px;color:var(--dust)">'+gapStr+'</span>':'')+
+        '</div>'+
+        (s.note?'<p class="IA-card-body" style="margin:1px 0 5px">'+s.note+'</p>':'');
+    }).join(''):
+      '<p class="IA-card-body" style="color:var(--dust)">No signals configured.</p>';
+    cards.push({
+      color: signals.some(function(s){return s.status==='HIT';})?'green':'yellow',
+      label: 'Selling signals',
+      body:  sigBody,
+    });
+
+    /* Card 4 — Market Wire */
+    var items=nw&&nw.items?nw.items.slice(0,4):[];
+    var newsBody=items.length?
+      '<ul class="A-blotter" style="margin:0">'+items.map(function(it){
         var t=tagFrom(it);
-        var txt=it.text||it.title||'';
         var ts=it.published_at||(it.date?it.date+'T12:00:00Z':'');
-        var age=ts?relAge(ts):'';
-        return '<li><span class="A-tag '+t.cls+'">'+t.label+
-               '</span><span class="A-blot-text">'+txt+
-               '</span>'+(age?'<span class="A-blot-time">'+age+'</span>':'')+'</li>';
-      }).join('');
-      if(!html) html='<li><span class="A-blot-text" style="color:var(--dust)">No items.</span></li>';
-      document.querySelectorAll('[data-live="market-wire"]').forEach(function(ul){ul.innerHTML=html;});
-    })
-    .catch(function(){});
+        var txt=it.text||it.title||'';
+        return '<li><span class="A-tag '+t.cls+'">'+t.label+'</span>'+
+               '<span class="A-blot-text">'+txt+'</span>'+
+               (ts?'<span class="A-blot-time">'+relAge(ts)+'</span>':'')+
+               '</li>';
+      }).join('')+'</ul>':
+      '<p class="IA-card-body" style="color:var(--dust)">Updated Mon–Fri at 7am &amp; 2pm CDT.</p>';
+    cards.push({ color:'yellow', label:'Market wire', body:newsBody });
+
+    /* Render into every .ia-grid on the page */
+    var html=cards.map(function(c){
+      return '<div class="IA-card '+c.color+'">'+
+        '<div class="IA-card-label">'+c.label+'</div>'+
+        (c.head?'<div class="IA-card-head">'+c.head+'</div>':'')+
+        c.body+'</div>';
+    }).join('');
+    document.querySelectorAll('.ia-grid').forEach(function(el){el.innerHTML=html;});
+
+    /* Timestamp */
+    var ds=px&&px.date?'data as of '+px.date:'';
+    document.querySelectorAll('.ia-updated').forEach(function(el){el.textContent=ds;});
+  });
 })();
 </script>
 
