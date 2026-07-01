@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-01T03:45:36.943889+00:00",
+  "generated_at": "2026-07-01T04:29:19.411044+00:00",
   "signals": [
     {
       "signal_key": "corn|C4|SELL|CAL",
@@ -11,7 +11,7 @@
       "target_price": null,
       "note": "T4 \u00b7 by Jul 3 \u2014 2,123 bu (10% of 21,230) | Calendar cleanup \u2014 sell regardless of price",
       "alloc_bu": 2123,
-      "live": 4.3925,
+      "live": 4.395,
       "status": "HIT",
       "prior_status": "HIT",
       "last_fired": "2026-07-01T00:09:40.835301+00:00"
@@ -26,9 +26,9 @@
       "target_price": 11.44,
       "note": "T3 \u00b7 Jun\u2013Jul \u2014 1,174 bu (40% of 2,934) | Weather peak",
       "alloc_bu": 1174,
-      "live": 11.48,
+      "live": 11.4925,
       "status": "HIT",
-      "prior_status": "WAIT",
+      "prior_status": "HIT",
       "last_fired": "2026-06-30T16:17:27.302918+00:00"
     }
   ],
