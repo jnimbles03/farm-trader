@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-01T18:43:48.024690+00:00",
+  "generated_at": "2026-07-01T19:09:49.757911+00:00",
   "signals": [
     {
       "signal_key": "corn|C4|SELL|CAL",
@@ -9,31 +9,16 @@
       "futures_month": 12,
       "action": "SELL",
       "target_price": null,
-      "note": "T4 \u00b7 by Jul 3 \u2014 2,123 bu (10% of 21,230) | Calendar cleanup \u2014 sell regardless of price",
-      "alloc_bu": 2123,
+      "note": "T4 \u00b7 by Jul 3 \u2014 912 bu (10% of 9,115) | Calendar cleanup \u2014 sell regardless of price",
+      "alloc_bu": 912,
       "live": 4.43,
       "status": "HIT",
       "prior_status": "HIT",
       "last_fired": "2026-07-01T00:09:40.835301+00:00"
-    },
-    {
-      "signal_key": "soybean|S3|SELL|11.4400",
-      "contract_id": "SOYBEAN-S3",
-      "commodity": "soybean",
-      "futures_year": 2026,
-      "futures_month": 11,
-      "action": "SELL",
-      "target_price": 11.44,
-      "note": "T3 \u00b7 Jun\u2013Jul \u2014 1,174 bu (40% of 2,934) | Weather peak",
-      "alloc_bu": 1174,
-      "live": 11.495,
-      "status": "HIT",
-      "prior_status": "HIT",
-      "last_fired": "2026-06-30T16:17:27.302918+00:00"
     }
   ],
   "call": {
-    "headline": "Sell remaining ~967 bu soy now. Sell ~2,123 bu corn now.",
-    "detail": "Soy hit its $11.44 seasonal target (+$0.05 above target) \u2014 Weather peak. Corn's calendar window is open \u2014 Calendar cleanup \u2014 sell regardless of price."
+    "headline": "Hold soy. Sell ~912 bu corn now.",
+    "detail": "Corn's calendar window is open \u2014 Calendar cleanup \u2014 sell regardless of price."
   }
 }
