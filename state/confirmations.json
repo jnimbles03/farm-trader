@@ -150,13 +150,13 @@
     "prior_fired_price": null,
     "recipients": {
       "+16232937553": {
-        "last_reminded_at": "2026-07-01T13:50:32.699079+00:00",
-        "reminders_sent": 1,
+        "last_reminded_at": "2026-07-01T14:53:53.059925+00:00",
+        "reminders_sent": 2,
         "vote": null
       },
       "+16302479950": {
-        "last_reminded_at": "2026-07-01T13:50:32.699079+00:00",
-        "reminders_sent": 1,
+        "last_reminded_at": "2026-07-01T14:53:53.059925+00:00",
+        "reminders_sent": 2,
         "vote": null
       }
     },
