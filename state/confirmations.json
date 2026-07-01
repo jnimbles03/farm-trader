@@ -148,6 +148,7 @@
     "live_price": 4.365,
     "message": "SELL 2,123 bu Corn Dec '26 \u2014 seasonal window open, live $4.37. Reply Y to authorize or N to hold.",
     "prior_fired_price": null,
+    "pulses": {},
     "recipients": {
       "+16232937553": {
         "last_reminded_at": "2026-07-01T15:53:25.535825+00:00",
