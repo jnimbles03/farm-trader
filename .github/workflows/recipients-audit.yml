@@ -58,6 +58,8 @@ jobs:
           PY
 
       - name: Commit + push if changed
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
         run: |
           git config user.name  "freis-farm-bot"
           git config user.email "bot@users.noreply.github.com"
@@ -80,4 +82,5 @@ jobs:
 
           $summary
           "
+          git remote set-url origin https://x:${GH_PAT}@github.com/${GITHUB_REPOSITORY}.git
           git push

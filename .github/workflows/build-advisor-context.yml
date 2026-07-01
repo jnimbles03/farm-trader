@@ -82,6 +82,8 @@ jobs:
 
       - name: Commit + push if changed
         if: steps.refresh.outputs.refreshed == 'true'
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
         run: |
           git config user.name  "freis-farm-bot"
           git config user.email "bot@users.noreply.github.com"
@@ -91,4 +93,5 @@ jobs:
             exit 0
           fi
           git commit -m "ritchie-live: $(date -u +'%Y-%m-%dT%H:%MZ')"
+          git remote set-url origin https://x:${GH_PAT}@github.com/${GITHUB_REPOSITORY}.git
           git push

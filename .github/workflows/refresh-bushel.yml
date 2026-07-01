@@ -96,6 +96,8 @@ jobs:
           fi
 
       - name: Commit + push if changed
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
         run: |
           git config user.name  "freis-farm-bot"
           git config user.email "bot@users.noreply.github.com"
@@ -113,5 +115,6 @@ jobs:
           print(f\"corn \${c.get('price','?')} ({c.get('period','?')}), soy \${s.get('price','?')} ({s.get('period','?')})\")
           ")
           git commit -m "bushel-refresh: $summary @ $(date -u +'%Y-%m-%dT%H:%MZ')"
+          git remote set-url origin https://x:${GH_PAT}@github.com/${GITHUB_REPOSITORY}.git
           git pull --rebase origin main
           git push
