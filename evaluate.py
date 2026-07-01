@@ -1750,6 +1750,11 @@ def _crop_call(comm: str, signals: list[dict], remaining_bu: dict[str, int]) -> 
         None,
     )
     if not hit:
+        # No active signal. If the crop is fully sold (nothing on hand), omit
+        # it from the call entirely — saying "Hold soy" when there's no soy is
+        # misleading. Only say "Hold" when we actually still hold bushels.
+        if rem <= 0:
+            return "", None
         return f"Hold {label}.", None
 
     alloc = hit.get("alloc_bu") or 0
@@ -1810,11 +1815,12 @@ def compute_todays_call(signals: list[dict]) -> dict[str, str]:
     details: list[str] = []
     for comm in ("soybean", "corn"):
         clause, detail = _crop_call(comm, signals, remaining_bu)
-        clauses.append(clause)
+        if clause:
+            clauses.append(clause)
         if detail:
             details.append(detail)
 
-    headline = " ".join(clauses)
+    headline = " ".join(clauses) if clauses else "Nothing to sell today."
     detail = " ".join(details) if details else "No active seasonal sell signal for corn or soy right now."
 
     return {

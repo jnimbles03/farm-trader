@@ -732,7 +732,7 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
       </div>
       <div class="A-kpi">
         <div class="A-kpi-l">Stored soy</div>
-        <div class="A-kpi-v"><span class="js-bid" data-key="bushels.soy" data-fmt="bu">967</span><span class="u">bu</span></div>
+        <div class="A-kpi-v"><span class="js-bid" data-key="bushels.soy" data-fmt="bu">0</span><span class="u">bu</span></div>
         <div class="A-kpi-d">sales <span class="up">a bit ahead</span></div>
       </div>
       <div class="A-kpi">
@@ -967,7 +967,7 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
       </div>
       <div class="A-sales-tot A-sales-tot-rem">
         <div class="A-sales-tot-l">Still at Ritchie</div>
-        <div class="A-sales-tot-v"><span class="sales-rem-soy">967</span><span class="u">bu soy</span></div>
+        <div class="A-sales-tot-v"><span class="sales-rem-soy">0</span><span class="u">bu soy</span></div>
         <div class="A-sales-tot-d"><span class="sales-rem-corn">9,115</span> bu corn</div>
       </div>
     </div>
@@ -1586,8 +1586,8 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
       </div>
       <div class="A-kpi">
         <div class="A-kpi-l">Stored soy</div>
-        <div class="A-kpi-v"><span id="kpi-soy-bu">967</span><span class="u">bu</span></div>
-        <div class="A-kpi-d">sales <span class="up">a bit ahead</span></div>
+        <div class="A-kpi-v"><span id="kpi-soy-bu">0</span><span class="u">bu</span></div>
+        <div class="A-kpi-d" id="kpi-soy-d">fully sold</div>
       </div>
       <div class="A-kpi">
         <div class="A-kpi-l">Cash on hand</div>
@@ -1819,7 +1819,7 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
       </div>
       <div class="A-sales-tot A-sales-tot-rem">
         <div class="A-sales-tot-l">Still at Ritchie</div>
-        <div class="A-sales-tot-v"><span class="sales-rem-soy">967</span><span class="u">bu soy</span></div>
+        <div class="A-sales-tot-v"><span class="sales-rem-soy">0</span><span class="u">bu soy</span></div>
         <div class="A-sales-tot-d"><span class="sales-rem-corn">9,115</span> bu corn</div>
       </div>
     </div>
@@ -2106,10 +2106,13 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
   const liveDate   = live?.as_of      ? new Date(live.as_of)      : null;
   const bushelDate = bushel?.fetchedAt? new Date(bushel.fetchedAt): null;
   const preferLive = liveDate && (!bushelDate || liveDate >= bushelDate);
-  const liveCorn   = live?.storage?.corn_bu  ?? null;
-  const liveSoy    = live?.storage?.beans_bu ?? null;
-  const scrapeCorn = bushel?.bushelsOnHand?.corn?.bushels     ?? null;
-  const scrapeSoy  = bushel?.bushelsOnHand?.soybeans?.bushels ?? null;
+  // A crop absent from a source that DID load means 0 on hand (delivered/
+  // sold), not "unknown" — otherwise a sold-out crop keeps showing its stale
+  // hand-baked fallback. Only a source that failed to load stays null.
+  const liveCorn   = live?.storage   ? (live.storage.corn_bu   ?? 0) : null;
+  const liveSoy    = live?.storage   ? (live.storage.beans_bu  ?? 0) : null;
+  const scrapeCorn = bushel?.bushelsOnHand ? (bushel.bushelsOnHand.corn?.bushels     ?? 0) : null;
+  const scrapeSoy  = bushel?.bushelsOnHand ? (bushel.bushelsOnHand.soybeans?.bushels ?? 0) : null;
   const cornBu = preferLive ? (liveCorn ?? scrapeCorn) : (scrapeCorn ?? liveCorn);
   const soyBu  = preferLive ? (liveSoy  ?? scrapeSoy)  : (scrapeSoy  ?? liveSoy);
 
@@ -2127,6 +2130,10 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
   apply('kpi-soy-bu',     fmtBu(soyBu));
   apply('kpi-corn-price', fmtPrice(cornBid));
   if (cornBu != null && cornBid != null) apply('kpi-corn-value', fmtMoney(cornBu * cornBid));
+  // Soy caption reflects sold-out vs on-hand
+  if (soyBu != null) setText('kpi-soy-d', soyBu > 0
+    ? ('at Ritchie · ≈ ' + (fmtMoney(soyBu * (soyBid || 0)) || '—'))
+    : 'fully sold');
 
   apply('hero-corn-price', fmtPrice(cornBid));
   apply('hero-soy-price',  fmtPrice(soyBid));
