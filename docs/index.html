@@ -2785,11 +2785,13 @@ loadDrafts();
     var sigBody=signals.length?signals.map(function(s){
       var cls=s.status==='HIT'?'hit':s.status==='APPROACHING'?'near':'wait';
       var crop=s.commodity==='soybean'?'SOY NOV':'CORN DEC';
-      var gap=s.live!=null&&s.target_price!=null?s.live-s.target_price:null;
+      var isCal=s.target_price==null;
+      var targetStr=isCal?'calendar sale':('target '+fmt2(s.target_price));
+      var gap=!isCal&&s.live!=null?s.live-s.target_price:null;
       var gapStr=gap!==null?(gap>=0?'+':'−')+'$'+Math.abs(gap).toFixed(2)+' vs target':'';
       return '<div class="IA-row"><span class="IA-pill '+cls+'">'+s.status+'</span>'+
         '<span style="font-family:var(--font-mono);font-size:10px;color:var(--slate)">'+crop+'</span>'+
-        '<strong style="font-size:11px;color:var(--ink-2)">target '+fmt2(s.target_price)+'</strong>'+
+        '<strong style="font-size:11px;color:var(--ink-2)">'+targetStr+'</strong>'+
         (gapStr?'<span style="font-family:var(--font-mono);font-size:10px;color:var(--dust)">'+gapStr+'</span>':'')+
         '</div>'+(s.note?'<p class="IA-card-body" style="margin:1px 0 5px">'+s.note+'</p>':'');
     }).join(''):'<p class="IA-card-body" style="color:var(--dust)">No signals configured.</p>';
