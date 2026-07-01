@@ -2158,7 +2158,7 @@ const TRADE_PHONE_FMT = "+1 (630) 247-9950";
 const ORDERS_JSON_URL = "orders.json";           // sibling of home.html under docs/
 
 let BIDS  = { soy: 11.68, corn: 4.47 };  // fallbacks; overwritten by loadTradePrices()
-let AVAIL = { soy: 967,  corn: 9115 };
+let AVAIL = { soy: 0,  corn: 9115 };
 const CROP_LABEL = { soy: "Soy", corn: "Corn" };
 
 let tradeCrop = 'soy';
@@ -2609,7 +2609,7 @@ loadDrafts();
       if (cornBid > 0) BIDS.corn  = cornBid;
       if (soyBid  > 0) BIDS.soy   = soyBid;
       if (cornBu  > 0) AVAIL.corn = Math.floor(cornBu);
-      if (soyBu   > 0) AVAIL.soy  = Math.floor(soyBu);
+      AVAIL.soy = soyBu != null ? Math.floor(soyBu) : 0;
       document.getElementById('trade-bid').textContent   = '$' + BIDS[tradeCrop].toFixed(2);
       document.getElementById('trade-avail').textContent = fmtBu(AVAIL[tradeCrop]);
       if (!document.getElementById('trade-drawer').classList.contains('open')) {

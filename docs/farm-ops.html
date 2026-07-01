@@ -768,24 +768,24 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
 
   <div class="A-call">
     <div>
-      <p class="A-eyebrow">Operations · Apr 30, 2026</p>
+      <p class="A-eyebrow">Operations · Jul 1, 2026</p>
       <h1>The books, <em>at a glance.</em></h1>
       <p>What came in, what's going out, what's left for July. Two bean sales (Jun 1 + Jul 1) are what bridge cash through the bills.</p>
     </div>
     <div class="A-kpis">
       <div class="A-kpi">
         <div class="A-kpi-l">YTD net grain</div>
-        <div class="A-kpi-v">$13,477</div>
-        <div class="A-kpi-d"><span class="up">+$2.1k</span> vs last yr</div>
+        <div class="A-kpi-v">—</div>
+        <div class="A-kpi-d">see books</div>
       </div>
       <div class="A-kpi">
         <div class="A-kpi-l">Cash on hand</div>
-        <div class="A-kpi-v">$25,000</div>
-        <div class="A-kpi-d">~31 days runway</div>
+        <div class="A-kpi-v">—</div>
+        <div class="A-kpi-d">not tracked here</div>
       </div>
       <div class="A-kpi">
         <div class="A-kpi-l">June bills</div>
-        <div class="A-kpi-v">~$30k</div>
+        <div class="A-kpi-v">—</div>
         <div class="A-kpi-d"><span class="down">tax · Ritchie · Lattering</span></div>
       </div>
     </div>
@@ -855,7 +855,7 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
         <text x="730" y="258" text-anchor="middle">Jul 30</text>
       </g>
     </svg>
-    <p class="A-caption">Two bean sales (Jun 1 + Jul 1) are what keep the line above zero through summer. The Jun 15 trough at $7k is the closest brush with the danger zone.</p>
+    <p class="A-caption">Cash flow model from Apr 2026 — bean sales completed. Chart is historical reference only.</p>
   </section>
 
   <aside class="A-side" aria-label="Storage clock at Ritchie">
@@ -930,13 +930,13 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
     if (expiry < today) expiry.setFullYear(expiry.getFullYear() + 1);
     const daysLeft = Math.ceil((expiry - today) / 86400000);
 
-    let cornBu = 9115, soyBu = 967;
+    let cornBu = 0, soyBu = 0;
     try {
       const r = await fetch('./bushel.json', {cache:'no-store'});
       if (r.ok) {
         const b = await r.json();
-        if (b?.bushelsOnHand?.corn?.bushels)     cornBu = b.bushelsOnHand.corn.bushels;
-        if (b?.bushelsOnHand?.soybeans?.bushels) soyBu  = b.bushelsOnHand.soybeans.bushels;
+        cornBu = b?.bushelsOnHand?.corn?.bushels     ?? 0;
+        soyBu  = b?.bushelsOnHand?.soybeans?.bushels ?? 0;
       }
     } catch (_) {}
 
@@ -1185,6 +1185,52 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
   </script>
 
 </main>
+
+<script id="js-bid-updater">
+(async function(){
+  var bushel = null, elev = null, live = null;
+  try { var r = await fetch('./bushel.json',               {cache:'no-store'}); if (r.ok) bushel = await r.json(); } catch(_){}
+  try { var r = await fetch('./elevator_bids.json',        {cache:'no-store'}); if (r.ok) elev   = await r.json(); } catch(_){}
+  try { var r = await fetch('./advisor/ritchie_live.json', {cache:'no-store'}); if (r.ok) live   = await r.json(); } catch(_){}
+
+  var liveDate   = live   && live.as_of       ? new Date(live.as_of)       : null;
+  var bushelDate = bushel && bushel.fetchedAt ? new Date(bushel.fetchedAt) : null;
+  var preferLive = liveDate && (!bushelDate || liveDate >= bushelDate);
+
+  function bushelCorn(){ return (bushel && bushel.bushelsOnHand && bushel.bushelsOnHand.corn)     ? bushel.bushelsOnHand.corn.bushels     : null; }
+  function bushelSoy() { return (bushel && bushel.bushelsOnHand && bushel.bushelsOnHand.soybeans) ? bushel.bushelsOnHand.soybeans.bushels : null; }
+  function liveCorn()  { return (live && live.storage && live.storage.corn_bu  != null) ? live.storage.corn_bu  : null; }
+  function liveSoy()   { return (live && live.storage && live.storage.beans_bu != null) ? live.storage.beans_bu : null; }
+
+  var ritchie = (elev && elev.elevators) ? elev.elevators.find(function(e){return e.is_baseline;}) : null;
+  var data = {
+    'ritchie.corn_bid':         (ritchie && ritchie.corn_bid != null) ? ritchie.corn_bid : (bushel && bushel.bids && bushel.bids.corn ? bushel.bids.corn.price : null),
+    'ritchie.soy_bid':          (ritchie && ritchie.soy_bid  != null) ? ritchie.soy_bid  : (bushel && bushel.bids && bushel.bids.soybeans ? bushel.bids.soybeans.price : null),
+    'ritchie.corn_basis_cents': (ritchie && ritchie.corn_basis_cents != null) ? ritchie.corn_basis_cents : (bushel && bushel.bids && bushel.bids.corn && bushel.bids.corn.basis != null ? bushel.bids.corn.basis * 100 : null),
+    'ritchie.soy_basis_cents':  (ritchie && ritchie.soy_basis_cents  != null) ? ritchie.soy_basis_cents  : (bushel && bushel.bids && bushel.bids.soybeans && bushel.bids.soybeans.basis != null ? bushel.bids.soybeans.basis * 100 : null),
+    'bushels.corn':             preferLive ? (liveCorn() != null ? liveCorn() : bushelCorn()) : (bushelCorn() != null ? bushelCorn() : liveCorn()),
+    'bushels.soy':              preferLive ? (liveSoy()  != null ? liveSoy()  : bushelSoy())  : (bushelSoy()  != null ? bushelSoy()  : liveSoy()),
+  };
+  // For soy: if both sources return null (bin empty), explicitly set to 0
+  if (data['bushels.soy'] == null) data['bushels.soy'] = 0;
+  if (data['bushels.corn'] == null && bushelCorn() == null && liveCorn() == null) data['bushels.corn'] = 0;
+
+  var fmt = {
+    price: function(v){ return v == null ? null : '$' + Number(v).toFixed(2); },
+    bu:    function(v){ return v == null ? null : Math.round(Number(v)).toLocaleString(); },
+    money: function(v){ return v == null ? null : '$' + Math.round(Number(v)).toLocaleString(); },
+    basis: function(v){ return v == null ? null : (v >= 0 ? '+' : '−') + Math.abs(Math.round(v)) + '¢'; },
+  };
+
+  document.querySelectorAll('.js-bid').forEach(function(el){
+    var key = el.getAttribute('data-key');
+    var f   = el.getAttribute('data-fmt') || 'price';
+    var v   = data[key];
+    var out = (fmt[f] || fmt.price)(v);
+    if (out != null) el.textContent = out;
+  });
+})();
+</script>
 
 <!-- ============================================================
      YIELD × MARGIN × BENCHMARK

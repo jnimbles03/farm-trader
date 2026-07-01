@@ -2691,7 +2691,7 @@ const TRADE_PHONE_FMT = "+1 (630) 247-9950";
 const ORDERS_JSON_URL = "orders.json";           // sibling of home.html under docs/
 
 let BIDS  = { soy: 11.68, corn: 4.47 };  // fallbacks; overwritten by loadTradePrices()
-let AVAIL = { soy: 967,  corn: 9115 };
+let AVAIL = { soy: 0,  corn: 9115 };
 const CROP_LABEL = { soy: "Soy", corn: "Corn" };
 
 let tradeCrop = 'soy';
@@ -3142,7 +3142,7 @@ loadDrafts();
       if (cornBid > 0) BIDS.corn  = cornBid;
       if (soyBid  > 0) BIDS.soy   = soyBid;
       if (cornBu  > 0) AVAIL.corn = Math.floor(cornBu);
-      if (soyBu   > 0) AVAIL.soy  = Math.floor(soyBu);
+      AVAIL.soy = soyBu != null ? Math.floor(soyBu) : 0;
       document.getElementById('trade-bid').textContent   = '$' + BIDS[tradeCrop].toFixed(2);
       document.getElementById('trade-avail').textContent = fmtBu(AVAIL[tradeCrop]);
       if (!document.getElementById('trade-drawer').classList.contains('open')) {
@@ -3235,6 +3235,7 @@ loadDrafts();
     'bushels.corn':             preferLive ? (liveCorn() != null ? liveCorn() : bushelCorn()) : (bushelCorn() != null ? bushelCorn() : liveCorn()),
     'bushels.soy':              preferLive ? (liveSoy()  != null ? liveSoy()  : bushelSoy())  : (bushelSoy()  != null ? bushelSoy()  : liveSoy()),
   };
+  if (data['bushels.soy'] == null) data['bushels.soy'] = 0;  // empty bin → show 0 not stale fallback
   if (data['bushels.corn'] != null && data['ritchie.corn_bid'] != null) data['corn.value'] = data['bushels.corn'] * data['ritchie.corn_bid'];
   if (data['bushels.soy']  != null && data['ritchie.soy_bid']  != null) data['soy.value']  = data['bushels.soy']  * data['ritchie.soy_bid'];
 
