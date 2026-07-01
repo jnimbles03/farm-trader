@@ -144,7 +144,7 @@ _DEFAULT_PLAN = {
                 {"id": "C1", "label": "T1 · Feb–Mar",  "win_start": [2, 1], "win_end": [3, 31], "mult": 1.09, "pct": 25, "note": "Acreage rally"},
                 {"id": "C2", "label": "T2 · Apr–May",  "win_start": [4, 1], "win_end": [5, 31], "mult": 1.11, "pct": 25, "note": "Planting premium"},
                 {"id": "C3", "label": "T3 · June",     "win_start": [6, 1], "win_end": [6, 30], "mult": 1.12, "pct": 40, "note": "Weather peak"},
-                {"id": "C4", "label": "T4 · by Jul 3", "win_start": [7, 1], "win_end": [7,  3], "mult": None, "pct": 10, "note": "Calendar cleanup"},
+                {"id": "C4", "label": "T4 · by Jul 3", "win_start": [7, 1], "win_end": [7,  3], "mult": None, "pct": 10, "note": "Final scheduled tranche — completes the season marketing plan"},
             ],
         },
         "soybean": {
@@ -474,7 +474,7 @@ class Signal:
     futures_year: int
     futures_month: int
     action: str              # SELL | BUY_BACK
-    target_price: float | None   # None = calendar-only (sell regardless of price)
+    target_price: float | None   # None = calendar-only (scheduled, time-based sale)
     note: str
     alloc_bu: int = 0            # allocated bushels for this tranche
 
@@ -1785,8 +1785,10 @@ def _crop_call(comm: str, signals: list[dict], remaining_bu: dict[str, int]) -> 
         detail = f"{label.capitalize()} hit its ${target:.2f} seasonal target{gap_str}"
         detail += f" — {reason}." if reason else "."
     else:
-        detail = f"{label.capitalize()}'s calendar window is open"
-        detail += f" — {reason}." if reason else " — sell regardless of price."
+        detail = (f"{label.capitalize()} is in a scheduled sale window — a planned, "
+                  f"time-based tranche priced on the marketing plan's calendar rather "
+                  f"than on today's market")
+        detail += f". {reason}." if reason else "."
 
     return headline_clause, detail
 

@@ -11,7 +11,7 @@
         { "id": "C1", "label": "T1 · Feb–Mar",  "win_start": [2, 1], "win_end": [3, 31], "mult": 1.09, "pct": 25, "note": "Acreage rally" },
         { "id": "C2", "label": "T2 · Apr–May",  "win_start": [4, 1], "win_end": [5, 31], "mult": 1.11, "pct": 25, "note": "Planting premium" },
         { "id": "C3", "label": "T3 · June",     "win_start": [6, 1], "win_end": [6, 30], "mult": 1.12, "pct": 40, "note": "Weather peak" },
-        { "id": "C4", "label": "T4 · by Jul 3", "win_start": [7, 1], "win_end": [7,  3], "mult": null, "pct": 10, "note": "Calendar cleanup — sell regardless of price" }
+        { "id": "C4", "label": "T4 · by Jul 3", "win_start": [7, 1], "win_end": [7,  3], "mult": null, "pct": 10, "note": "Final scheduled tranche — completes the season marketing plan" }
       ],
       "new_crop": {
         "_comment":        "2026 harvest projection + collar overlay. Separate from old-crop inventory above.",

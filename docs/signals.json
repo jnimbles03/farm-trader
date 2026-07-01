@@ -9,7 +9,7 @@
       "futures_month": 12,
       "action": "SELL",
       "target_price": null,
-      "note": "T4 \u00b7 by Jul 3 \u2014 912 bu (10% of 9,115) | Calendar cleanup \u2014 sell regardless of price",
+      "note": "T4 · by Jul 3 — 912 bu (10% of 9,115) | Final scheduled tranche — completes the season marketing plan",
       "alloc_bu": 912,
       "live": 4.43,
       "status": "HIT",
@@ -19,6 +19,6 @@
   ],
   "call": {
     "headline": "Sell ~912 bu corn now.",
-    "detail": "Corn's calendar window is open \u2014 Calendar cleanup \u2014 sell regardless of price."
+    "detail": "Corn is in a scheduled sale window — a planned, time-based tranche priced on the marketing plan's calendar rather than on today's market. Final scheduled tranche — completes the season marketing plan."
   }
 }
