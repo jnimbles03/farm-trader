@@ -30,17 +30,6 @@
     "futures_price": null,
     "basis_cost":    null,
     "quantity":      9115,
-    "note":          "Unsold 2025 crop stored at Ritchie — available to sell"
-  },
-  {
-  "contract_id": "INV-SOY-RITCHIE",
-  "commodity": "soybean",
-  "contract_type": "INVENTORY",
-  "futures_year": 2026,
-  "futures_month": 7,
-  "futures_price": null,
-  "basis_cost": null,
-  "quantity": 967,
-    "note":          "Unsold 2025 crop stored at Ritchie — available to sell"
+    "note":          "Unsold 2025 crop stored at Ritchie — available to sell. Quantity is auto-synced from bushel.json on-hand at signal time."
   }
 ]
