@@ -6,6 +6,20 @@ on:
   push:
     branches: ["main"]
 
+  # Redeploy after the data-refresh crons commit fresh JSON to docs/.
+  # Those workflows push with the automatic GITHUB_TOKEN, and GitHub's
+  # anti-recursion rule means such pushes do NOT trigger the `push`
+  # event above — so without this, evaluate/bushel/market-wire commits
+  # land in the repo but never redeploy Pages, leaving the live site
+  # stale until the next human push. workflow_run fires regardless of
+  # who pushed, so every data refresh now redeploys the site.
+  workflow_run:
+    workflows:
+      - "Evaluate grain signals"
+      - "Refresh bushel.json (Akron live bids)"
+      - "Refresh market wire"
+    types: [completed]
+
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -24,6 +38,12 @@ concurrency:
 jobs:
   # Single deploy job since we're just deploying
   deploy:
+    # For workflow_run triggers, only deploy when the upstream data
+    # refresh actually succeeded — no point publishing a half-written
+    # docs/ from a failed run. push and workflow_dispatch always deploy.
+    if: >
+      github.event_name != 'workflow_run' ||
+      github.event.workflow_run.conclusion == 'success'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
