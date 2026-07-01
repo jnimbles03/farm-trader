@@ -1,47 +1,49 @@
 {
-  "_comment": "Season-average CASH price outlook ($/bu) by marketing year. All figures are from FREE public sources — no subscription needed. USDA WASDE is the official season-average forecast; the analysts we follow (Pro Farmer, StoneX/Suderman, ISU/Chad Hart) mostly comment on it in their free public content rather than publishing their own clean season-average number. Populate a source's corn/soybeans values when it publicly states a distinct figure; leave null to show a directional lean only. The dashboard averages all non-null values into the consensus. Edit as new forecasts print.",
+  "_comment": "Season-average CASH price outlook ($/bu) by marketing year, from public sources. USDA WASDE is the official season-average forecast and the numeric anchor; the analysts we follow (StoneX/Suderman, ISU/Chad Hart, Pro Farmer) mostly comment on it rather than publishing their own clean number, so their cells stay null and they contribute a directional lean + commentary. Populate a source's corn/soybeans values if it publicly states a distinct figure; the dashboard averages all non-null values into the consensus. Edit as new forecasts print.",
   "generated_at": "2026-07-01",
   "marketing_years": ["2025/26", "2026/27"],
+  "usda_summary": "First 2026/27 print (May WASDE): new-crop soybeans jump to $11.40 — up $1.00 on the year and the highest since 2023/24 — on strong crush and renewable-diesel demand. Corn edges to $4.40 as usage outruns production and pulls ending stocks down. Both still sit near or below most Iowa break-evens (~$5 corn, ~$12 soy), so it's a firmer-but-still-tight picture, not a profit year.",
+  "bottom_line": "The four line up in a similar place: prices are firmer than a year ago but still near break-even, with corn the steadier of the two and soybeans a China/weather wildcard. The shared message is discipline — price planned tranches into rallies rather than waiting for a runaway move.",
   "sources": [
     {
       "name": "USDA WASDE",
       "short": "USDA",
       "asof": "2026-05-12",
-      "cite": "May 2026 WASDE (via Southern Ag Today / StoneX)",
+      "cite": "May 2026 WASDE (via Southern Ag Today / Farm Bureau)",
       "lean": "official",
       "corn":     { "2025/26": 4.15, "2026/27": 4.40 },
       "soybeans": { "2025/26": 10.40, "2026/27": 11.40 },
-      "note": "Official season-average farm price. First 2026/27 print was the May WASDE."
+      "note": "Official season-average farm price. 2026/27 is the first new-crop estimate: soybeans $11.40 (+$1.00) on renewable-diesel-led crush demand; corn $4.40 as demand outpaces the crop and draws stocks lower."
     },
     {
       "name": "StoneX — Arlan Suderman",
       "short": "StoneX",
-      "asof": "2026-04",
-      "cite": "StoneX / Horizon Farm Credit, Apr 2026",
-      "lean": "supportive",
+      "asof": "2026-06",
+      "cite": "StoneX daily commentary, Jun 2026",
+      "lean": "neutral",
       "corn":     { "2025/26": null, "2026/27": null },
       "soybeans": { "2025/26": null, "2026/27": null },
-      "note": "Grain stocks came in below expectations; if it persists USDA may revise production lower — tilts supportive. Add StoneX price targets here."
+      "note": "A big 2026 crop and supportive weather have funds liquidating and the trade focused on supply, not scarcity — near-term pressure. But old-crop Grain Stocks keep printing below expectations; if that holds, USDA may cut production, which is supportive. Soybeans hinge on China: crushers favor cheaper South American beans, so any large U.S. purchase would be a trade-politics decision, not economics."
     },
     {
       "name": "ISU Extension — Chad Hart",
       "short": "ISU/Hart",
-      "asof": "2026-01",
+      "asof": "2026-04",
       "cite": "Ag Decision Maker, extension.iastate.edu",
       "lean": "bearish",
       "corn":     { "2025/26": null, "2026/27": null },
       "soybeans": { "2025/26": null, "2026/27": null },
-      "note": "Season-average prices below break-even (~$5 corn, ~$12.27 soy) — margins challenged. Add Hart's outlook figures here."
+      "note": "Margins are the story: 2026 season-average prices still run below Iowa production costs, so the one-year profit outlook is 'troublesome.' Corn is the relative bright spot — usage is outrunning production (2026 looks much like 2024), pulling stocks down and lifting corn modestly, while acres rotate from corn toward soybeans on weak corn economics."
     },
     {
       "name": "Pro Farmer",
       "short": "ProFarmer",
-      "asof": null,
-      "cite": "Pro Farmer (free public articles)",
-      "lean": null,
+      "asof": "2026-06-20",
+      "cite": "Pro Farmer newsletter, Jun 2026",
+      "lean": "neutral",
       "corn":     { "2025/26": null, "2026/27": null },
       "soybeans": { "2025/26": null, "2026/27": null },
-      "note": "Crop-tour yields + free marketing articles. Add a price figure here if they state one publicly."
+      "note": "Marketing stance is 'reward rallies' — forward-contract in disciplined clips against set targets and be ready for volatility, especially in soybeans. A bit more optimistic on corn, where old-crop record production is being met by record demand; pegs new-crop soybean season-average near $11.40."
     }
   ]
 }

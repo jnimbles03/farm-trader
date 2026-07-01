@@ -3643,9 +3643,13 @@ loadDrafts();
       var mk=s.lean==='supportive'?'<span style="color:var(--sage-deep)">▲</span>':s.lean==='bearish'?'<span style="color:var(--danger)">▼</span>':'<span style="color:var(--dust)">•</span>';
       return '<p class="IA-card-body" style="margin:3px 0"><strong style="color:var(--ink-2)">'+(s.short||s.name)+'</strong> '+mk+' '+(s.note||'')+'</p>';
     }).join('');
+    var usdaSum=fc.usda_summary?'<p class="IA-card-body" style="margin-top:5px">'+fc.usda_summary+'</p>':'';
+    var bottom=fc.bottom_line?subLabel('Bottom line')+'<p class="IA-card-body" style="margin:2px 0 0">'+fc.bottom_line+'</p>':'';
     return subLabel('Season-average price outlook ($/bu)')+hdr+row('CORN','corn')+row('SOY','soybeans')+
       '<p class="IA-card-body" style="margin-top:4px">Consensus of '+(c0?c0.n:0)+' source'+((c0&&c0.n===1)?'':'s')+' with a published figure'+(usda&&usda.asof?'. USDA WASDE as of '+usda.asof:'')+'.</p>'+
-      (leans?subLabel('Analyst lean (free public commentary)')+leans:'');
+      usdaSum+
+      (leans?subLabel('Analyst lean (public commentary)')+leans:'')+
+      bottom;
   }
 
   Promise.all([
