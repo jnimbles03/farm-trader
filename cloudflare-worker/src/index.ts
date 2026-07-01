@@ -66,7 +66,22 @@ const ADMIN_OTP_TTL_MS = 5 * 60 * 1000;
 // Quorum for a CTA broadcast = these three replied YES (or anything non-N).
 // Stored on the run snapshot at send-time so that editing recipients later
 // does not retroactively change quorum status of past runs.
-const DEFAULT_REQUIRED_NAMES = ["Dan Cooke", "Susan Lindeen", "Maryann Meyer"];
+// Fixed timestamp for seeded (default) groups/templates so they don't churn
+// their created_at on every load when KV is empty.
+const SEED_DATE = "2026-07-01T00:00:00.000Z";
+// Durable seed roster. Returned by loadRecipients() ONLY when KV has never
+// been written (first run or after a KV wipe), so the admin console always
+// opens with a usable roster instead of blank rows and empty dropdowns. Once
+// the admin saves recipients, KV is source of truth and this is ignored.
+// Names must match the client's required-lock set (Dan/Susan/Maryann).
+const DEFAULT_RECIPIENTS: { name: string; phone: string; required: boolean }[] = [
+  { name: "Maryann Meyer",  phone: "+16302122546", required: true  },
+  { name: "Dan Cooke",      phone: "+13126361666", required: true  },
+  { name: "Susan Lindeen",  phone: "+17087109387", required: true  },
+  { name: "Patrick Meyer",  phone: "+16302479950", required: false },
+  { name: "Kevin Cooke",    phone: "+17084203265", required: false },
+  { name: "Alison Lindeen", phone: "+17087109385", required: false },
+];
 // KV keys
 const KV_RECIPIENTS    = "admin:recipients:v1";   // [{name, phone, required}]
 const KV_RUNS_INDEX    = "admin:runs:index:v1";   // [run_id, ...] newest first, capped 200
@@ -1553,9 +1568,22 @@ async function adminGroups(req: Request, env: Env): Promise<Response> {
   return jsonResponse({ ok: true, groups: cleaned });
 }
 
+// Seeded when KV has no groups yet, so the group picker isn't empty on a
+// fresh console. Everyone = whole roster; Required = the CTA quorum three.
+function defaultGroups(): Group[] {
+  return [
+    { id: "g_everyone", name: "Everyone",
+      members: DEFAULT_RECIPIENTS.map(r => ({ phone: r.phone, required: r.required })),
+      created_at: SEED_DATE, updated_at: SEED_DATE },
+    { id: "g_required", name: "Required (quorum)",
+      members: DEFAULT_RECIPIENTS.filter(r => r.required).map(r => ({ phone: r.phone, required: true })),
+      created_at: SEED_DATE, updated_at: SEED_DATE },
+  ];
+}
+
 async function loadGroups(env: Env): Promise<Group[]> {
   const raw = await env.FARM_KV.get(KV_GROUPS);
-  if (!raw) return [];
+  if (!raw) return defaultGroups();
   try { const a = JSON.parse(raw); return Array.isArray(a) ? a : []; } catch { return []; }
 }
 
@@ -1594,9 +1622,22 @@ async function adminTemplates(req: Request, env: Env): Promise<Response> {
   return jsonResponse({ ok: true, templates: cleaned });
 }
 
+// Seeded when KV has no templates yet, so the template picker isn't empty and
+// the admin has a working starting point for both message types.
+function defaultTemplates(): Template[] {
+  return [
+    { id: "t_bulletin", name: "Quick bulletin", type: "bulletin",
+      body: "Freis Farm: ", created_at: SEED_DATE, updated_at: SEED_DATE },
+    { id: "t_sell_cta", name: "Sell CTA", type: "cta",
+      body: "Sell {bushels} bu {crop} at {price}? Reply Y or N.",
+      default_group_id: "g_required", trade_defaults: { crop: "corn" },
+      created_at: SEED_DATE, updated_at: SEED_DATE },
+  ];
+}
+
 async function loadTemplates(env: Env): Promise<Template[]> {
   const raw = await env.FARM_KV.get(KV_TEMPLATES);
-  if (!raw) return [];
+  if (!raw) return defaultTemplates();
   try { const a = JSON.parse(raw); return Array.isArray(a) ? a : []; } catch { return []; }
 }
 
@@ -1815,16 +1856,19 @@ async function adminRecipients(req: Request, env: Env): Promise<Response> {
 
 async function loadRecipients(env: Env): Promise<Recipient[]> {
   const raw = await env.FARM_KV.get(KV_RECIPIENTS);
-  if (!raw) {
-    // First-run seed: the three required names with empty phones, so the
-    // admin UI prompts to fill them in instead of starting from a blank slate.
-    return DEFAULT_REQUIRED_NAMES.map(name => ({ name, phone: "", required: true }));
-  }
+  // First-run / post-wipe seed: the full family roster with real phones so the
+  // console opens ready to send instead of blank rows. A real saved roster in
+  // KV always wins; we only fall back to the seed when KV is missing, empty, or
+  // a degenerate all-blank-phones list (which would render as empty dropdowns).
+  const seed = () => DEFAULT_RECIPIENTS.map(r => ({ ...r }));
+  if (!raw) return seed();
   try {
     const arr = JSON.parse(raw) as Recipient[];
-    return Array.isArray(arr) ? arr : [];
+    if (!Array.isArray(arr) || arr.length === 0) return seed();
+    if (arr.every(r => !r || !r.phone)) return seed();
+    return arr;
   } catch {
-    return [];
+    return seed();
   }
 }
 
