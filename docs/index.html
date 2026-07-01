@@ -707,13 +707,13 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
     <div class="A-kpis">
       <div class="A-kpi">
         <div class="A-kpi-l">Stored corn</div>
-        <div class="A-kpi-v">9,115<span class="u">bu</span></div>
-        <div class="A-kpi-d">at Ritchie · ≈ $40,724 @ $4.47</div>
+        <div class="A-kpi-v"><span id="kpi-corn-bu">9,115</span><span class="u">bu</span></div>
+        <div class="A-kpi-d" id="kpi-corn-d">at Ritchie</div>
       </div>
       <div class="A-kpi">
         <div class="A-kpi-l">Stored soy</div>
-        <div class="A-kpi-v">967<span class="u">bu</span></div>
-        <div class="A-kpi-d">sales <span class="up">a bit ahead</span></div>
+        <div class="A-kpi-v"><span id="kpi-soy-bu">0</span><span class="u">bu</span></div>
+        <div class="A-kpi-d" id="kpi-soy-d">at Ritchie</div>
       </div>
       <div class="A-kpi">
         <div class="A-kpi-l">Cash on hand</div>
@@ -898,7 +898,7 @@ window.WORKER_BASE = window.WORKER_BASE || "https://freis-farm-sms-reply.freis.w
     </div>
     <div class="A-strip-cell">
       <div class="A-strip-l"></div>
-      <div class="A-strip-v"><span class="js-bid" data-key="bushels.soy" data-fmt="bu">967</span></div>
+      <div class="A-strip-v"><span class="js-bid" data-key="bushels.soy" data-fmt="bu">0</span></div>
       <div class="A-strip-d">soy at Ritchie</div>
     </div>
     <div class="A-strip-cell">
@@ -3005,6 +3005,29 @@ loadDrafts();
     if (p && call.detail) {
       p.textContent = call.detail;
     }
+  } catch (_) {}
+})();
+</script>
+
+<script>
+/* Populate hero Stored corn/soy KPIs from live bushel.json so they never go stale.
+   Soy is absent from bushelsOnHand once delivered → shows 0, "fully sold". */
+(async function loadStoredKpis(){
+  try {
+    const b = await fetch('./bushel.json',{cache:'no-store'}).then(r=>r.ok?r.json():null).catch(()=>null);
+    if(!b) return;
+    const onHand = b.bushelsOnHand || {}, bids = b.bids || {};
+    const cornBu = (onHand.corn && onHand.corn.bushels) || 0;
+    const soyBu  = (onHand.soybeans && onHand.soybeans.bushels) || 0;
+    const fmtBu = n => Math.round(n).toLocaleString();
+    const money = n => '$'+Math.round(n).toLocaleString();
+    const set = (id,txt)=>{ const el=document.getElementById(id); if(el) el.textContent=txt; };
+    set('kpi-corn-bu', fmtBu(cornBu));
+    set('kpi-soy-bu',  fmtBu(soyBu));
+    const cornBid = bids.corn && bids.corn.price, soyBid = bids.soybeans && bids.soybeans.price;
+    const cd=document.getElementById('kpi-corn-d'), sd=document.getElementById('kpi-soy-d');
+    if(cd) cd.textContent = cornBu>0 && cornBid ? ('at Ritchie · ≈ '+money(cornBu*cornBid)+' @ $'+cornBid.toFixed(2)) : 'at Ritchie';
+    if(sd) sd.textContent = soyBu>0 ? ('at Ritchie · ≈ '+money(soyBu*(soyBid||0))) : 'fully sold';
   } catch (_) {}
 })();
 </script>
