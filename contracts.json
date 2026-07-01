@@ -1,25 +1,33 @@
 [
   {
-    "contract_id":   "APP-CORN-2026",
+    "contract_id":   "NPE-CORN-2026",
     "commodity":     "corn",
-    "contract_type": "APP",
+    "contract_type": "NPE",
     "futures_year":  2026,
-    "futures_month": 7,
+    "futures_month": 12,
     "futures_price": null,
     "basis_cost":    null,
     "quantity":      1500,
-    "note":          "Ritchie Avg Pricing Program — 2026 crop delivery, priced as avg cash Apr–Jul 2026"
+    "note":          "Akron NPE contract NP01431 (No Price Established). 1,500 bu 2026 corn committed to deliver to Edelstein by Nov 1 2026 — FULLY UNPRICED (0 priced). Futures + basis must be set before delivery; full price risk until then.",
+    "akron_number":  "NP01431",
+    "pricing_status":"unpriced",
+    "delivery_by":   "2026-11-01",
+    "location":      "Edelstein"
   },
   {
-    "contract_id":   "APP-SOY-2026",
+    "contract_id":   "NPE-SOY-2026",
     "commodity":     "soybean",
-    "contract_type": "APP",
+    "contract_type": "NPE",
     "futures_year":  2026,
-    "futures_month": 7,
+    "futures_month": 11,
     "futures_price": null,
     "basis_cost":    null,
     "quantity":      500,
-    "note":          "Ritchie Avg Pricing Program — 2026 crop delivery, priced as avg cash Apr–Jul 2026"
+    "note":          "Akron NPE contract NP01451 (No Price Established). 500 bu 2026 soybeans committed to deliver to Edelstein by Nov 1 2026 — FULLY UNPRICED (0 priced). Futures + basis must be set before delivery; full price risk until then.",
+    "akron_number":  "NP01451",
+    "pricing_status":"unpriced",
+    "delivery_by":   "2026-11-01",
+    "location":      "Edelstein"
   },
   {
     "contract_id":   "INV-CORN-RITCHIE",
@@ -30,6 +38,10 @@
     "futures_price": null,
     "basis_cost":    null,
     "quantity":      9115,
-    "note":          "Unsold 2025 crop stored at Ritchie — available to sell. Quantity is auto-synced from bushel.json on-hand at signal time."
+    "note":          "Unsold 2025 crop stored at Ritchie — available to sell. Quantity is auto-synced from bushel.json on-hand at signal time.",
+    "akron_number":  "",
+    "pricing_status":"",
+    "delivery_by":   "",
+    "location":      "Ritchie"
   }
 ]

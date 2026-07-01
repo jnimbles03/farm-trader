@@ -3697,7 +3697,19 @@ loadDrafts();
       if(st.soybeans) parts.push('soy '+buN(st.soybeans.booked_bushels)+' bu @ '+fmt2(st.soybeans.weighted_avg_price));
       seasonFoot='<p class="IA-card-body" style="margin-top:5px">Season booked: <em>'+money(st.combined.booked_amount)+'</em> ('+buN(st.combined.booked_bushels)+' bu). '+parts.join(' · ')+'.</p>';
     }
-    var invBody=invRows+(salesRows?subLabel('Recent sales')+salesRows:'')+seasonFoot;
+    // Unpriced forward contracts (NPE = No Price Established) — committed to
+    // deliver but price not set. Not stored inventory; carries open price risk.
+    var npe=(pos&&pos.positions?pos.positions:[]).filter(function(p){return p.contract_type==='NPE'||p.contract_type==='APP';});
+    var npeRows=npe.map(function(p){
+      var cr=p.commodity==='soybean'?'SOY':(p.commodity==='corn'?'CORN':(p.commodity||'').toUpperCase());
+      var by=p.delivery_by?(' · deliver by '+p.delivery_by):'';
+      var id=p.akron_number?p.akron_number+' — ':'';
+      return '<div class="IA-row"><span class="IA-pill near">'+cr+'</span>'+
+        '<span style="font-size:11px;color:var(--slate)">'+buN(p.quantity)+' bu '+id+'UNPRICED'+by+'</span></div>';
+    }).join('');
+    var npeBlock=npeRows?subLabel('Forward contracts — unpriced (NPE)')+npeRows+
+      '<p class="IA-card-body" style="margin-top:3px;color:var(--dust)">Committed to deliver, price not yet set — full price risk until you lock futures + basis.</p>':'';
+    var invBody=invRows+npeBlock+(salesRows?subLabel('Recent sales')+salesRows:'')+seasonFoot;
     cards.push({color:'yellow',label:'Inventory value',body:invBody});
 
     /* ---- Tab 2: Price snapshot — futures, day change, range bar, cash+basis ---- */

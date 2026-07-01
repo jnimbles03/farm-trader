@@ -460,6 +460,10 @@ class Contract:
     basis_cost: float | None
     quantity: float
     note: str = ""                   # free-text context shown on dashboards
+    akron_number: str = ""           # real Akron/Bushel contract # (e.g. NP01431)
+    pricing_status: str = ""         # "unpriced" | "priced" | "partial"
+    delivery_by: str = ""            # ISO date grain must be delivered (e.g. 2026-11-01)
+    location: str = ""               # delivery location (e.g. Edelstein)
 
 
 @dataclass
@@ -1459,6 +1463,10 @@ def build_positions_snapshot() -> dict[str, Any]:
             "basis_cost":    c.basis_cost,
             "quantity":      c.quantity,
             "note":          c.note,
+            "akron_number":  c.akron_number,
+            "pricing_status":c.pricing_status,
+            "delivery_by":   c.delivery_by,
+            "location":      c.location,
             "live":          round(live, 4) if live is not None else None,
             "mtm_per_bu":    mtm_per_bu,
             "total_mtm":     total_mtm,
