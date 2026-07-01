@@ -512,26 +512,46 @@ def model(contracts: list[Contract]) -> list[Signal]:
         key = c.commodity.lower().rstrip("s")  # normalise "soybeans" -> "soybean"
         by_commodity.setdefault(key, []).append(c)
 
+    # Live unsold inventory from the Bushel/Akron scrape — the source of
+    # truth for what's physically on hand and sellable right now. Keyed by
+    # normalised commodity name. A commodity ABSENT here means zero on hand
+    # (e.g. soy already delivered), NOT "unknown" — so no sell signal fires
+    # for it. Only when bushel.json can't be read at all do we fall back to
+    # the hand-maintained contracts.json INVENTORY rows.
+    bushel_on_hand: dict[str, float] = {}
+    bushel_loaded = False
+    try:
+        bpath = ROOT / "docs" / "bushel.json"
+        if bpath.exists():
+            b = json.loads(bpath.read_text())
+            for k, v in (b.get("bushelsOnHand") or {}).items():
+                nk = k.lower().rstrip("s")  # "corn"->"corn", "soybeans"->"soybean"
+                if isinstance(v, dict) and v.get("bushels") is not None:
+                    bushel_on_hand[nk] = float(v["bushels"])
+            bushel_loaded = True
+    except Exception as e:
+        log.warning("tranche_model: bushel.json unreadable (%s); "
+                    "falling back to contracts.json INVENTORY", e)
+
     out: list[Signal] = []
 
     for comm_key, comm_cfg in comm_plan.items():
-        # Normalise commodity key for matching contracts. by_commodity is
-        # already keyed by the normalised (rstrip "s") name, so look up
-        # each distinct key at most once — concatenating norm AND comm_key
-        # double-counted every position whenever they were equal (always
-        # true for "corn"/"soybean"), inflating total_bu 2×.
         norm = comm_key.lower().rstrip("s")
-        these = []
-        for k in {norm, comm_key}:
-            these.extend(by_commodity.get(k, []))
 
-        # Total sellable bushels = sum of INVENTORY + APP quantities
-        total_bu = sum(
-            c.quantity for c in these
-            if c.contract_type in ("INVENTORY", "APP")
-        )
+        # Sellable bushels = live Bushel on-hand when available (absent
+        # commodity → 0 → skipped). Fall back to static INVENTORY rows only
+        # when the scrape couldn't be read. APP (average-pricing-program)
+        # bushels are already committed/priced by the elevator and are NOT
+        # discretionary sell-now inventory, so they don't count here.
+        if bushel_loaded:
+            total_bu = round(bushel_on_hand.get(norm, 0))
+        else:
+            total_bu = sum(
+                c.quantity for c in by_commodity.get(norm, [])
+                if c.contract_type == "INVENTORY"
+            )
         if total_bu <= 0:
-            log.debug("tranche_model: no inventory for %s, skipping", comm_key)
+            log.debug("tranche_model: no on-hand inventory for %s, skipping", comm_key)
             continue
 
         oct_low = comm_cfg.get("oct_low")
@@ -1769,7 +1789,9 @@ def compute_todays_call(signals: list[dict]) -> dict[str, str]:
     """
     import json
 
-    remaining_bu = {"soybean": 967, "corn": 12615}
+    # Default 0 = nothing on hand unless bushel.json proves otherwise. Never
+    # invent inventory: an absent commodity in the scrape means it's sold.
+    remaining_bu = {"soybean": 0, "corn": 0}
     try:
         bpath = ROOT / "docs" / "bushel.json"
         if bpath.exists():
