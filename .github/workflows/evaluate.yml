@@ -21,6 +21,16 @@ on:
   schedule:
     - cron: "*/15 11-23,0-2 * * *"   # active: 6am-9pm CT (both DST seasons)
     - cron: "0 3-10 * * *"           # quiet:  10pm-5am CT, hourly
+
+  # Recompute signals immediately after a fresh Akron position scrape, so
+  # a bushel.json update (manual or scheduled) cascades straight into new
+  # signals — and, via static.yml's own workflow_run trigger, a redeploy.
+  # This keeps its own schedule above: bushel only scrapes Mon-Fri market
+  # hours, but evaluate must also run overnight/weekends for price + news.
+  workflow_run:
+    workflows: ["Refresh bushel.json (Akron live bids)"]
+    types: [completed]
+
   workflow_dispatch:    # also runnable on demand from the Actions tab
 
 concurrency:
@@ -32,6 +42,12 @@ permissions:
 
 jobs:
   run:
+    # When triggered by the bushel refresh, only recompute if that scrape
+    # actually succeeded — no point signalling off a half-written bushel.json.
+    # schedule and workflow_dispatch always run.
+    if: >
+      github.event_name != 'workflow_run' ||
+      github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
