@@ -1705,43 +1705,89 @@ def evaluate_signals(state: dict[str, dict[str, Any]]) -> tuple[list[dict[str, A
 
 
 
-def compute_todays_call(signals: list[dict]) -> dict[str, str]:
-    """Generate the main dashboard headline + detail paragraph via analysis.
+_CROP_LABEL = {"soybean": "soy", "corn": "corn"}
 
-    Uses:
-    - live remaining inventory from bushel.json (the source of truth for 967)
-    - active HIT signals (e.g. the S3 soy target hit)
-    - plan tranches implicitly via the signals that were generated
+
+def _crop_call(comm: str, signals: list[dict], remaining_bu: dict[str, int]) -> tuple[str, str | None]:
+    """Build the headline clause + optional detail sentence for one crop.
+
+    Looks at every signal for this commodity and picks the first HIT one
+    (tranche windows don't overlap in plan.json, so there's normally at
+    most one). Sell quantity is the tranche's alloc_bu capped by what's
+    physically left on hand — never recommends selling more than exists.
+    """
+    label = _CROP_LABEL.get(comm, comm)
+    rem = remaining_bu.get(comm, 0)
+    hit = next(
+        (s for s in signals
+         if s.get("commodity") == comm and s.get("status") == "HIT"),
+        None,
+    )
+    if not hit:
+        return f"Hold {label}.", None
+
+    alloc = hit.get("alloc_bu") or 0
+    sell_qty = min(alloc, rem) if alloc > 0 else rem
+
+    if rem <= 0:
+        headline_clause = f"Hold {label} — no bushels on hand."
+    elif sell_qty >= rem:
+        headline_clause = f"Sell remaining ~{rem:,} bu {label} now."
+    else:
+        headline_clause = f"Sell ~{sell_qty:,} bu {label} now."
+
+    target = hit.get("target_price")
+    live = hit.get("live")
+    reason = (hit.get("note") or "").rsplit("|", 1)[-1].strip()
+
+    if target is not None:
+        gap = (live - target) if live is not None else None
+        gap_str = f" (+${gap:.2f} above target)" if gap is not None and gap >= 0 else ""
+        detail = f"{label.capitalize()} hit its ${target:.2f} seasonal target{gap_str}"
+        detail += f" — {reason}." if reason else "."
+    else:
+        detail = f"{label.capitalize()}'s calendar window is open"
+        detail += f" — {reason}." if reason else " — sell regardless of price."
+
+    return headline_clause, detail
+
+
+def compute_todays_call(signals: list[dict]) -> dict[str, str]:
+    """Generate the main dashboard headline + detail paragraph.
+
+    Synthesizes across BOTH commodities — not just soy. For each of
+    soybean/corn, finds any signal currently HIT and builds a per-crop
+    sell/hold clause + reasoning from its real tranche note, target
+    price, live price, and remaining physical inventory (bushel.json).
+    Falls back to "Hold <crop>." when nothing is HIT for that crop.
     """
     import json
 
-    soy_rem = 967
+    remaining_bu = {"soybean": 967, "corn": 12615}
     try:
         bpath = ROOT / "docs" / "bushel.json"
         if bpath.exists():
             b = json.loads(bpath.read_text())
-            soy_bu = b.get("bushelsOnHand", {}).get("soybeans", {}).get("bushels", 967)
-            soy_rem = int(round(soy_bu))
+            on_hand = b.get("bushelsOnHand", {})
+            soy_bu = on_hand.get("soybeans", {}).get("bushels")
+            corn_bu = on_hand.get("corn", {}).get("bushels")
+            if soy_bu is not None:
+                remaining_bu["soybean"] = int(round(soy_bu))
+            if corn_bu is not None:
+                remaining_bu["corn"] = int(round(corn_bu))
     except Exception:
         pass
 
-    soy_hit = next(
-        (s for s in signals
-         if s.get("commodity") == "soybean" and s.get("status") == "HIT"),
-        None
-    )
+    clauses: list[str] = []
+    details: list[str] = []
+    for comm in ("soybean", "corn"):
+        clause, detail = _crop_call(comm, signals, remaining_bu)
+        clauses.append(clause)
+        if detail:
+            details.append(detail)
 
-    if soy_hit:
-        target = soy_hit.get("target_price", 11.44)
-        headline = f"Sell remaining ~{soy_rem:,} bu soy now. Hold corn."
-        detail = (
-            f"Soy hit its ${target} seasonal target — still +5pp ahead of pace "
-            "but starting to give back value. June bills are landing now; "
-            "sell before prices drift lower. Corn is on pace and worth holding through summer."
-        )
-    else:
-        headline = "Hold soy. Hold corn."
-        detail = "No active seasonal sell signal for soy right now."
+    headline = " ".join(clauses)
+    detail = " ".join(details) if details else "No active seasonal sell signal for corn or soy right now."
 
     return {
         "headline": headline,

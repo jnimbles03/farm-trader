@@ -3596,20 +3596,30 @@ loadDrafts();
       return fetch('./prices.json',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;});
     }),
     fetch('./news.json',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}),
+    fetch('./positions.json',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}),
   ]).then(function(results){
-    var sig=results[0], px=results[1], nw=results[2];
+    var sig=results[0], px=results[1], nw=results[2], pos=results[3];
     var cards=[];
 
-    /* Card 1 — Today's Call */
-    var call=sig&&sig.call;
-    var nHit=sig&&sig.signals?sig.signals.filter(function(s){return s.status==='HIT';}).length:0;
-    cards.push({
-      color: nHit>0?'green':'yellow',
-      label: "Today’s call",
-      head:  call?call.headline:'',
-      body:  call&&call.detail?'<p class="IA-card-body">'+call.detail+'</p>':
-             '<p class="IA-card-body" style="color:var(--dust)">Analysis loading…</p>',
+    /* Card 1 — Inventory Value (unsold bushels marked at live futures) */
+    var byComm={};
+    (pos&&pos.positions?pos.positions:[]).forEach(function(p){
+      if(p.contract_type!=='INVENTORY') return;
+      var c=p.commodity==='soybean'?'soy':p.commodity;
+      if(!byComm[c]) byComm[c]={bu:0,val:0};
+      byComm[c].bu+=p.quantity||0;
+      byComm[c].val+=(p.quantity||0)*(p.live||0);
     });
+    var commKeys=Object.keys(byComm);
+    var totalVal=commKeys.reduce(function(s,k){return s+byComm[k].val;},0);
+    var invBody=commKeys.length?commKeys.map(function(c){
+      var d=byComm[c];
+      return '<div class="IA-row"><span class="IA-pill wait">'+c.toUpperCase()+'</span>'+
+        '<span style="font-size:11px;color:var(--ink-2)">'+Math.round(d.bu).toLocaleString()+' bu</span>'+
+        '<strong style="font-family:var(--font-display);font-size:13px;color:var(--ink-2);margin-left:auto">$'+Math.round(d.val).toLocaleString()+'</strong></div>';
+    }).join('')+'<p class="IA-card-body" style="margin-top:7px">Unsold inventory marked at live futures. Total: <em>$'+Math.round(totalVal).toLocaleString()+'</em></p>'
+      :'<p class="IA-card-body" style="color:var(--dust)">No open inventory positions.</p>';
+    cards.push({color:'yellow',label:'Inventory value',body:invBody});
 
     /* Card 2 — Price Snapshot */
     var cornD=px&&px.detail&&px.detail.corn;
@@ -3644,12 +3654,14 @@ loadDrafts();
     var sigBody=signals.length?signals.map(function(s){
       var cls=s.status==='HIT'?'hit':s.status==='APPROACHING'?'near':'wait';
       var crop=s.commodity==='soybean'?'SOY NOV':'CORN DEC';
-      var gap=s.live!=null&&s.target_price!=null?s.live-s.target_price:null;
+      var isCal=s.target_price==null;
+      var targetStr=isCal?'calendar sale':('target '+fmt2(s.target_price));
+      var gap=!isCal&&s.live!=null?s.live-s.target_price:null;
       var gapStr=gap!==null?(gap>=0?'+':'−')+'$'+Math.abs(gap).toFixed(2)+' vs target':'';
       return '<div class="IA-row">'+
         '<span class="IA-pill '+cls+'">'+s.status+'</span>'+
         '<span style="font-family:var(--font-mono);font-size:10px;color:var(--slate)">'+crop+'</span>'+
-        '<strong style="font-size:11px;color:var(--ink-2)">target '+fmt2(s.target_price)+'</strong>'+
+        '<strong style="font-size:11px;color:var(--ink-2)">'+targetStr+'</strong>'+
         (gapStr?'<span style="font-family:var(--font-mono);font-size:10px;color:var(--dust)">'+gapStr+'</span>':'')+
         '</div>'+
         (s.note?'<p class="IA-card-body" style="margin:1px 0 5px">'+s.note+'</p>':'');
