@@ -3585,9 +3585,16 @@ loadDrafts();
     return {label:'WATCH',cls:'watch'};
   }
 
+  // Prefer live Worker prices (< 60 s old); fall back to committed prices.json
+  var pricesUrl = (typeof TRADE_API_BASE !== 'undefined' && TRADE_API_BASE)
+    ? TRADE_API_BASE + '/prices'
+    : './prices.json';
+
   Promise.all([
     fetch('./signals.json',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}),
-    fetch('./prices.json',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}),
+    fetch(pricesUrl).then(function(r){return r.ok?r.json():null;}).catch(function(){
+      return fetch('./prices.json',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;});
+    }),
     fetch('./news.json',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}),
   ]).then(function(results){
     var sig=results[0], px=results[1], nw=results[2];

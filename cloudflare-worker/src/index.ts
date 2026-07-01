@@ -1,6 +1,7 @@
 // Freis Farm Worker — TextBelt reply webhook + draft-order OTP submit + auth gate.
 //
 // Routes:
+//   GET  /prices              live futures quotes (Yahoo Finance, KV-cached 60 s)
 //   GET  /                   health check
 //   POST /                   TextBelt inbound webhook. Whitelisted phones
 //                            get conversational answers from Seaweed Sam
@@ -152,6 +153,10 @@ export default {
     // CORS preflight
     if (req.method === "OPTIONS") {
       return new Response(null, { status: 204, headers: CORS_HEADERS });
+    }
+
+    if (req.method === "GET" && url.pathname === "/prices") {
+      return handlePrices(req, env);
     }
 
     // Health check
@@ -2379,4 +2384,127 @@ async function loadInventory(env: Env): Promise<InventoryRow[]> {
       source:      "Akron via bushel.json",
     },
   ];
+}
+
+// =============================================================================
+// /prices  — live futures quotes from Yahoo Finance, KV-cached 60 s
+// =============================================================================
+//
+// Returns the same schema as docs/prices.json so the dashboard can swap the
+// fetch URL without changing any parsing logic.  Grains on Yahoo Finance are
+// quoted in cents/bu — we divide by 100 before returning $/bu.
+//
+// Cache strategy: KV key "prices:live" with a 60-second expirationTtl.
+// All page loads within that window share one upstream fetch, so Yahoo
+// never sees more than ~1 req/min regardless of dashboard traffic.
+
+type YFMeta = {
+  regularMarketPrice?: number;
+  chartPreviousClose?: number;
+  fiftyTwoWeekHigh?:  number;
+  fiftyTwoWeekLow?:   number;
+};
+
+async function fetchYFQuote(symbol: string): Promise<YFMeta | null> {
+  try {
+    const url =
+      `https://query1.finance.yahoo.com/v8/finance/chart/` +
+      `${encodeURIComponent(symbol)}?interval=1m&range=1d&includePrePost=false`;
+    const r = await fetch(url, {
+      headers: {
+        "User-Agent": "Mozilla/5.0 (compatible; freis-farm/1.0)",
+        "Accept":     "application/json",
+      },
+    });
+    if (!r.ok) return null;
+    const data = await r.json() as {
+      chart?: { result?: Array<{ meta?: YFMeta }> }
+    };
+    return data.chart?.result?.[0]?.meta ?? null;
+  } catch {
+    return null;
+  }
+}
+
+async function handlePrices(_req: Request, env: Env): Promise<Response> {
+  const CACHE_KEY = "prices:live";
+  const TTL_S     = 60; // seconds — KV minimum is 60
+
+  // Serve from KV cache when fresh
+  const hit = await env.FARM_KV.get(CACHE_KEY, { type: "json", cacheTtl: TTL_S });
+  if (hit) {
+    return new Response(JSON.stringify(hit), {
+      headers: {
+        "Content-Type":                "application/json",
+        "Access-Control-Allow-Origin": "*",
+        "Cache-Control":               `public, max-age=${TTL_S}`,
+        "X-Prices-Source":             "kv-cache",
+      },
+    });
+  }
+
+  // Determine contract suffixes for the current year (e.g. "26" in 2026)
+  const yr2 = String(new Date().getFullYear()).slice(-2);
+
+  // key → [Yahoo symbol, cents-to-dollars scale]
+  const SYMBOLS: Record<string, [string, number]> = {
+    corn:          ["ZC=F",              100],
+    corn_dec:      [`ZCZ${yr2}.CBT`,     100],
+    soy:           ["ZS=F",              100],
+    soy_nov:       [`ZSX${yr2}.CBT`,     100],
+    wheat:         ["ZW=F",              100],
+    feeder_cattle: ["GF=F",              100],
+  };
+
+  const fetches = await Promise.allSettled(
+    Object.entries(SYMBOLS).map(async ([key, [sym, scale]]) => {
+      const meta = await fetchYFQuote(sym);
+      return { key, scale, meta };
+    })
+  );
+
+  const prices: Record<string, number | null>  = {};
+  const detail: Record<string, unknown>        = {};
+  const today = new Date().toISOString().slice(0, 10);
+
+  for (const r of fetches) {
+    if (r.status !== "fulfilled" || !r.value.meta) continue;
+    const { key, scale, meta } = r.value;
+    const raw = meta.regularMarketPrice;
+    if (raw == null) continue;
+
+    const price    = Math.round((raw / scale) * 10000) / 10000;
+    const prev     = meta.chartPreviousClose != null ? meta.chartPreviousClose / scale : null;
+    const hi52     = meta.fiftyTwoWeekHigh  != null ? Math.round(meta.fiftyTwoWeekHigh  / scale * 10000) / 10000 : null;
+    const lo52     = meta.fiftyTwoWeekLow   != null ? Math.round(meta.fiftyTwoWeekLow   / scale * 10000) / 10000 : null;
+    const dayChg   = prev != null ? Math.round((price - prev) * 10000) / 10000 : null;
+    const dayChgPct= prev != null && prev !== 0
+      ? Math.round(((price - prev) / prev) * 10000) / 100
+      : null;
+
+    prices[key] = price;
+    detail[key] = {
+      prev_close:   prev    != null ? Math.round(prev * 10000) / 10000 : null,
+      day_chg:      dayChg,
+      day_chg_pct:  dayChgPct,
+      high_range:   hi52,
+      low_range:    lo52,
+      range_days:   365,
+      as_of:        today,
+    };
+  }
+
+  const payload = { ...prices, detail, date: today, source: "yahoo finance (live)", generated_at: new Date().toISOString() };
+
+  // Cache for 60 s — fire-and-forget, never block the response
+  env.FARM_KV.put(CACHE_KEY, JSON.stringify(payload), { expirationTtl: TTL_S }).catch(() => {});
+
+  return new Response(JSON.stringify(payload), {
+    headers: {
+      "Content-Type":                "application/json",
+      "Access-Control-Allow-Origin": "*",
+      "Cache-Control":               `public, max-age=${TTL_S}`,
+      "X-Prices-Source":             "live",
+    },
+  });
 }
