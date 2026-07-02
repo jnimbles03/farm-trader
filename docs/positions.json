@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-02T01:07:11.289020+00:00",
+  "generated_at": "2026-07-02T01:55:38.242287+00:00",
   "positions": [
     {
       "contract_id": "NPE-CORN-2026",
@@ -15,7 +15,7 @@
       "pricing_status": "unpriced",
       "delivery_by": "2026-11-01",
       "location": "Edelstein",
-      "live": 4.425,
+      "live": 4.4325,
       "mtm_per_bu": null,
       "total_mtm": null
     },
@@ -33,7 +33,7 @@
       "pricing_status": "unpriced",
       "delivery_by": "2026-11-01",
       "location": "Edelstein",
-      "live": 11.5075,
+      "live": 11.54,
       "mtm_per_bu": null,
       "total_mtm": null
     },
