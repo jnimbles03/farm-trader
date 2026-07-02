@@ -2,8 +2,8 @@
   "corn|C4|SELL|CAL": {
     "last_fired": "2026-07-01T00:09:40.835301+00:00",
     "last_fired_price": 4.365,
-    "last_price": 4.43,
-    "last_updated": "2026-07-01T23:57:33.625794+00:00",
+    "last_price": 4.425,
+    "last_updated": "2026-07-02T01:07:11.151083+00:00",
     "status": "HIT"
   }
 }

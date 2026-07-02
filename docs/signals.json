@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-01T23:57:33.626063+00:00",
+  "generated_at": "2026-07-02T01:07:11.151487+00:00",
   "signals": [
     {
       "signal_key": "corn|C4|SELL|CAL",
@@ -11,7 +11,7 @@
       "target_price": null,
       "note": "T4 \u00b7 by Jul 3 \u2014 912 bu (10% of 9,115) | Final scheduled tranche \u2014 completes the season marketing plan",
       "alloc_bu": 912,
-      "live": 4.43,
+      "live": 4.425,
       "status": "HIT",
       "prior_status": "HIT",
       "last_fired": "2026-07-01T00:09:40.835301+00:00"
